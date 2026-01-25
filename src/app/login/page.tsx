@@ -2,12 +2,75 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mail, Lock, User, Github } from 'lucide-react';
+import { ArrowRight, Mail, Lock, User, Github, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
+import { createClient } from '@/utils/supabase/client';
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [message, setMessage] = useState<string | null>(null);
+
+    // Form State
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [fullName, setFullName] = useState('');
+
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleAuth = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setMessage(null);
+
+        try {
+            if (isLogin) {
+                // SIGN IN
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                router.push('/'); // Redirect to home or profile
+                router.refresh();
+            } else {
+                // SIGN UP
+                const { error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            avatar_url: `https://api.dicebear.com/7.x/micah/svg?seed=${fullName}`, // Mock avatar
+                        },
+                    },
+                });
+                if (error) throw error;
+                setMessage('Check your email for the confirmation link!');
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOAuth = async (provider: 'google' | 'facebook') => {
+        setLoading(true);
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+                redirectTo: `${location.origin}/auth/callback`,
+            },
+        });
+        if (error) setError(error.message);
+        setLoading(false);
+    };
 
     return (
         <div className="min-h-screen bg-[#FAF9F7] grid grid-cols-1 md:grid-cols-2">
@@ -62,7 +125,11 @@ export default function LoginPage() {
                         <p className="text-gray-500">
                             {isLogin ? "New here? " : "Already have an account? "}
                             <button
-                                onClick={() => setIsLogin(!isLogin)}
+                                onClick={() => {
+                                    setIsLogin(!isLogin);
+                                    setError(null);
+                                    setMessage(null);
+                                }}
                                 className="text-coral-500 font-bold hover:underline"
                             >
                                 {isLogin ? "Create an account" : "Log in"}
@@ -70,13 +137,30 @@ export default function LoginPage() {
                         </p>
                     </div>
 
-                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-4" onSubmit={handleAuth}>
+                        {/* Messages */}
+                        {error && (
+                            <div className="bg-red-50 text-red-600 p-3 rounded-lg flex items-center gap-2 text-sm">
+                                <AlertCircle size={16} />
+                                {error}
+                            </div>
+                        )}
+                        {message && (
+                            <div className="bg-green-50 text-green-600 p-3 rounded-lg flex items-center gap-2 text-sm">
+                                <CheckCircle size={16} />
+                                {message}
+                            </div>
+                        )}
+
                         {!isLogin && (
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                                 <input
                                     type="text"
                                     placeholder="Full Name"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    required={!isLogin}
                                     className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
                                 />
                             </div>
@@ -87,6 +171,9 @@ export default function LoginPage() {
                             <input
                                 type="email"
                                 placeholder="Email Address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
                                 className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
                             />
                         </div>
@@ -96,6 +183,10 @@ export default function LoginPage() {
                             <input
                                 type="password"
                                 placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
                                 className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
                             />
                         </div>
@@ -106,11 +197,19 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        <Link href="/profile" className="block w-full">
-                            <button className="w-full bg-navy-900 text-white font-bold py-3 rounded-xl hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2">
-                                {isLogin ? 'Sign In' : 'Get Started'} <ArrowRight size={18} />
-                            </button>
-                        </Link>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-navy-900 text-white font-bold py-3 rounded-xl hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+                        >
+                            {loading ? (
+                                <Loader2 size={20} className="animate-spin" />
+                            ) : (
+                                <>
+                                    {isLogin ? 'Sign In' : 'Get Started'} <ArrowRight size={18} />
+                                </>
+                            )}
+                        </button>
                     </form>
 
                     <div className="mt-8 relative">
@@ -123,11 +222,17 @@ export default function LoginPage() {
                     </div>
 
                     <div className="mt-6 grid grid-cols-2 gap-4">
-                        <button className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50">
+                        <button
+                            onClick={() => handleOAuth('google')}
+                            className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50"
+                        >
                             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
                             <span className="font-bold text-navy-900 text-sm">Google</span>
                         </button>
-                        <button className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50">
+                        <button
+                            onClick={() => handleOAuth('facebook')}
+                            className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50"
+                        >
                             <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-5 h-5" alt="Facebook" />
                             <span className="font-bold text-navy-900 text-sm">Facebook</span>
                         </button>
