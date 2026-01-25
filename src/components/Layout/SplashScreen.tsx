@@ -22,12 +22,12 @@ export default function SplashScreen() {
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
                 >
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                         {/* Logo Animation */}
                         <motion.img
                             src="/BroncStudio (2).png"
                             alt="Broncstudio"
-                            className="h-24 w-auto object-contain"
+                            className="h-16 md:h-24 w-auto object-contain"
                             initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
                             animate={{
                                 scale: 1,
@@ -40,7 +40,7 @@ export default function SplashScreen() {
                         {/* Text Reveal Animation */}
                         <div className="overflow-hidden">
                             <motion.h1
-                                className="font-heading text-6xl font-bold text-navy-900 tracking-tight"
+                                className="font-heading text-4xl md:text-6xl font-bold text-navy-900 tracking-tight text-center md:text-left"
                                 initial={{ y: 100, opacity: 0 }}
                                 animate={{
                                     y: 0,

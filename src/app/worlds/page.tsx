@@ -305,7 +305,7 @@ export default function WorldsPage() {
                             <LayoutGrid size={14} />
                             <span>Product Matrix</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-heading font-black text-navy-900 dark:text-white tracking-tight">
+                        <h1 className="text-3xl md:text-5xl font-heading font-black text-navy-900 dark:text-white tracking-tight">
                             CATALOG <span className="text-gray-300 dark:text-white/20">///</span>
                         </h1>
                     </div>
