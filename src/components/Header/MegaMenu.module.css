@@ -1,0 +1,175 @@
+.nav {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.menuList {
+    display: flex;
+    list-style: none;
+    gap: 32px;
+    height: 100%;
+}
+
+.menuItem {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    font-weight: 500;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    /* Text Inverse for Navy Header */
+    transition: color 0.2s;
+}
+
+.menuItem:hover {
+    color: var(--color-coral);
+}
+
+.megaMenuOverlay {
+    position: fixed;
+    top: 72px;
+    /* standard header height, should use var if available but fixed needs explicit top usually */
+    left: 0;
+    width: 100vw;
+    height: auto;
+    max-height: calc(100vh - 72px);
+    overflow-y: auto;
+    background-color: var(--color-porcelain);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 90;
+    padding-bottom: 40px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .megaMenuOverlay {
+        background-color: var(--color-navy);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.menuItem:hover .megaMenuOverlay {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.megaMenuContent {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 40px var(--gutter);
+    display: grid;
+    grid-template-columns: 250px repeat(4, 1fr);
+    gap: 40px;
+}
+
+/* Intro Column (First Column) */
+.introColumn {
+    padding-right: 20px;
+    border-right: 1px solid var(--color-border);
+}
+
+.introColumn h4 {
+    font-size: 24px;
+    font-family: var(--font-heading);
+    color: var(--color-navy);
+    margin-bottom: 12px;
+}
+
+.introColumn p {
+    font-size: 14px;
+    color: var(--color-text-dim);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.shopAllBtn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--color-coral);
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.shopAllBtn:hover {
+    background-color: #ff4040;
+}
+
+/* Standard Columns */
+.column h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--color-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.subHeading {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-navy);
+    margin-bottom: 8px;
+    margin-top: 16px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.linkList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.linkList li a {
+    font-size: 14px;
+    color: var(--color-text-dim);
+    /* Softer text color */
+    transition: color 0.2s;
+    display: block;
+}
+
+.linkList li a:hover {
+    color: var(--color-coral);
+    transform: translateX(4px);
+    /* Subtle nudge */
+}
+
+@media (prefers-color-scheme: dark) {
+    .megaMenuOverlay {
+        background-color: #0d253b;
+        /* Slightly lighter navy for dropdown */
+    }
+
+    .introColumn h4,
+    .column h4,
+    .subHeading {
+        color: white;
+    }
+
+    .introColumn p,
+    .linkList li a {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .introColumn {
+        border-right-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .linkList li a:hover {
+        color: var(--color-coral);
+    }
+}
