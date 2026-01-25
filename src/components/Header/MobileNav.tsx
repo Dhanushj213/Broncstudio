@@ -23,10 +23,10 @@ const MobileNav = () => {
             </Link>
 
             <Link
-                href="/shop/all"
-                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('/shop/all') ? 'text-coral-500' : 'text-gray-400 hover:text-white'}`}
+                href="/worlds"
+                className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('/worlds') ? 'text-coral-500' : 'text-gray-400 hover:text-white'}`}
             >
-                <Grid size={22} strokeWidth={isActive('/shop/all') ? 2.5 : 1.5} />
+                <Grid size={22} strokeWidth={isActive('/worlds') ? 2.5 : 1.5} />
                 <span className="text-[10px] font-medium">Worlds</span>
             </Link>
 
