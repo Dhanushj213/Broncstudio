@@ -16,13 +16,26 @@ const NAV_ITEMS = [
     { label: 'Sale', href: '/shop/sale' },
 ];
 
+import { createClient } from '@/utils/supabase/client';
+
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const { openSearch, toggleWishlist } = useUI();
     const { cartCount } = useCart();
+    const supabase = createClient();
 
     useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (user) {
+                console.log("Supabase Connected: User is logged in", user.email);
+            } else {
+                console.log("Supabase Connected: No active session");
+            }
+        };
+        checkUser();
+
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
