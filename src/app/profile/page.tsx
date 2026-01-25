@@ -1,27 +1,72 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ProfileHeader from '@/components/Profile/ProfileHeader';
 import QuickActions from '@/components/Profile/QuickActions';
 import OrderPreview from '@/components/Profile/OrderPreview';
 import AddressCard from '@/components/Profile/AddressCard';
-import { Bell, Shield, LogOut, FileText, ChevronRight, Globe } from 'lucide-react';
+import { Bell, Shield, LogOut, FileText, ChevronRight, Globe, Loader2 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
+import { createClient } from '@/utils/supabase/client';
 
 export default function ProfilePage() {
     const { currency, setCurrency } = useUI();
+    const router = useRouter();
+    const supabase = createClient();
+
+    const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error || !user) {
+                router.push('/login');
+                return;
+            }
+
+            // Fetch additional profile data from 'profiles' table locally if needed,
+            // or rely on metadata/defaults for this initial integration.
+            // For now, let's use user metadata + email
+            const profileData = {
+                email: user.email,
+                full_name: user.user_metadata?.full_name,
+                avatar_url: user.user_metadata?.avatar_url
+            };
+
+            setUser(profileData);
+            setLoading(false);
+        };
+        getUser();
+    }, [router]);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/');
+        router.refresh();
+    };
+
     const settings = [
         { icon: Bell, label: 'Notifications & Preferences', desc: 'Order updates, offers', href: '/profile/notifications' },
         { icon: Shield, label: 'Login & Security', desc: 'Password, 2FA', href: '/profile/security' },
         { icon: FileText, label: 'Legal & Policies', desc: 'Privacy, Terms, Returns', href: '/profile/legal' },
     ];
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#FAF9F7]">
+                <Loader2 className="animate-spin text-navy-900" size={32} />
+            </div>
+        );
+    }
+
     return (
         <main className="bg-[#FAF9F7] min-h-screen py-8 pb-24 md:pb-12">
             <div className="container-premium max-w-[1000px] mx-auto px-4 md:px-0">
                 {/* Header Section */}
-                <ProfileHeader />
+                <ProfileHeader user={user} />
 
                 {/* Quick Actions Grid */}
                 <QuickActions />
@@ -69,9 +114,12 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Logout */}
-                        <Link href="/" className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border border-red-100 bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors">
+                        <button
+                            onClick={handleSignOut}
+                            className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl border border-red-100 bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors"
+                        >
                             <LogOut size={18} /> Log Out
-                        </Link>
+                        </button>
 
                         <div className="text-center text-xs text-gray-400 mt-4">
                             App Version 2.0.1 • Broncstudio
