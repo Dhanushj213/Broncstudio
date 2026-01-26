@@ -1,26 +1,49 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mail, Lock, User, Github, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowRight, Mail, Lock, User, Github, AlertCircle, CheckCircle, Loader2, Phone, KeyRound } from 'lucide-react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { createClient } from '@/utils/supabase/client';
 
+type AuthMethod = 'email' | 'phone';
+
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
+    const [authMethod, setAuthMethod] = useState<AuthMethod>('email');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    const [checkingAuth, setCheckingAuth] = useState(true);
 
     // Form State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
 
+    // Phone Auth State
+    const [phone, setPhone] = useState('');
+    const [otp, setOtp] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+
     const router = useRouter();
     const supabase = createClient();
+
+    // Check if user is already logged in
+    useEffect(() => {
+        const checkExistingSession = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Already logged in, redirect to profile
+                window.location.href = '/profile';
+            } else {
+                setCheckingAuth(false);
+            }
+        };
+        checkExistingSession();
+    }, [supabase.auth]);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,29 +52,51 @@ export default function LoginPage() {
         setMessage(null);
 
         try {
-            if (isLogin) {
-                // SIGN IN
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                router.push('/'); // Redirect to home or profile
-                router.refresh();
+            if (authMethod === 'phone') {
+                if (!otpSent) {
+                    // 1. Send OTP
+                    const { error } = await supabase.auth.signInWithOtp({
+                        phone: phone,
+                    });
+                    if (error) throw error;
+                    setOtpSent(true);
+                    setMessage('OTP sent! Please check your mobile.');
+                } else {
+                    // 2. Verify OTP
+                    const { error } = await supabase.auth.verifyOtp({
+                        phone: phone,
+                        token: otp,
+                        type: 'sms',
+                    });
+                    if (error) throw error;
+                    window.location.href = '/profile';
+                }
             } else {
-                // SIGN UP
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            full_name: fullName,
-                            avatar_url: `https://api.dicebear.com/7.x/micah/svg?seed=${fullName}`, // Mock avatar
+                // Email Auth
+                if (isLogin) {
+                    // SIGN IN
+                    const { error } = await supabase.auth.signInWithPassword({
+                        email,
+                        password,
+                    });
+                    if (error) throw error;
+                    // Use full page navigation to ensure cookies are properly read by middleware
+                    window.location.href = '/profile';
+                } else {
+                    // SIGN UP
+                    const { error } = await supabase.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: {
+                                full_name: fullName,
+                                avatar_url: `https://api.dicebear.com/7.x/micah/svg?seed=${fullName}`,
+                            },
                         },
-                    },
-                });
-                if (error) throw error;
-                setMessage('Check your email for the confirmation link!');
+                    });
+                    if (error) throw error;
+                    setMessage('Check your email for the confirmation link!');
+                }
             }
         } catch (err: any) {
             setError(err.message);
@@ -60,7 +105,7 @@ export default function LoginPage() {
         }
     };
 
-    const handleOAuth = async (provider: 'google' | 'facebook') => {
+    const handleOAuth = async (provider: 'google') => {
         setLoading(true);
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
@@ -129,12 +174,29 @@ export default function LoginPage() {
                                     setIsLogin(!isLogin);
                                     setError(null);
                                     setMessage(null);
+                                    setAuthMethod('email');
                                 }}
                                 className="text-coral-500 font-bold hover:underline"
                             >
                                 {isLogin ? "Create an account" : "Log in"}
                             </button>
                         </p>
+                    </div>
+
+                    {/* Auth Method Toggle */}
+                    <div className="flex p-1 bg-gray-100 rounded-xl mb-6">
+                        <button
+                            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${authMethod === 'email' ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-500 hover:text-navy-700'}`}
+                            onClick={() => { setAuthMethod('email'); setError(null); }}
+                        >
+                            Email
+                        </button>
+                        <button
+                            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${authMethod === 'phone' ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-500 hover:text-navy-700'}`}
+                            onClick={() => { setAuthMethod('phone'); setError(null); }}
+                        >
+                            Phone
+                        </button>
                     </div>
 
                     <form className="space-y-4" onSubmit={handleAuth}>
@@ -152,46 +214,80 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        {!isLogin && (
-                            <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                                <input
-                                    type="text"
-                                    placeholder="Full Name"
-                                    value={fullName}
-                                    onChange={(e) => setFullName(e.target.value)}
-                                    required={!isLogin}
-                                    className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                                />
-                            </div>
+                        {authMethod === 'email' ? (
+                            <>
+                                {!isLogin && (
+                                    <div className="relative">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                        <input
+                                            type="text"
+                                            placeholder="Full Name"
+                                            value={fullName}
+                                            onChange={(e) => setFullName(e.target.value)}
+                                            required={!isLogin}
+                                            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                    <input
+                                        type="email"
+                                        placeholder="Email Address"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
+                                    />
+                                </div>
+
+                                <div className="relative">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                    <input
+                                        type="password"
+                                        placeholder="Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        minLength={6}
+                                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="relative">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                    <input
+                                        type="tel"
+                                        placeholder="Phone Number (e.g. +91 9999999999)"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        required
+                                        disabled={otpSent}
+                                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all disabled:bg-gray-50"
+                                    />
+                                </div>
+                                {otpSent && (
+                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                        <div className="relative mt-4">
+                                            <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                                            <input
+                                                type="text"
+                                                placeholder="Enter OTP"
+                                                value={otp}
+                                                onChange={(e) => setOtp(e.target.value)}
+                                                required
+                                                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
+                                            />
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </>
                         )}
 
-                        <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                            <input
-                                type="email"
-                                placeholder="Email Address"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                            />
-                        </div>
-
-                        <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                minLength={6}
-                                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                            />
-                        </div>
-
-                        {isLogin && (
+                        {isLogin && authMethod === 'email' && (
                             <div className="text-right">
                                 <a href="#" className="text-sm text-gray-500 hover:text-navy-900">Forgot Password?</a>
                             </div>
@@ -206,7 +302,10 @@ export default function LoginPage() {
                                 <Loader2 size={20} className="animate-spin" />
                             ) : (
                                 <>
-                                    {isLogin ? 'Sign In' : 'Get Started'} <ArrowRight size={18} />
+                                    {authMethod === 'phone'
+                                        ? (otpSent ? 'Verify OTP' : 'Send OTP')
+                                        : (isLogin ? 'Sign In' : 'Get Started')
+                                    } <ArrowRight size={18} />
                                 </>
                             )}
                         </button>
@@ -221,20 +320,13 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-4">
+                    <div className="mt-6">
                         <button
                             onClick={() => handleOAuth('google')}
-                            className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50"
+                            className="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50"
                         >
                             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
                             <span className="font-bold text-navy-900 text-sm">Google</span>
-                        </button>
-                        <button
-                            onClick={() => handleOAuth('facebook')}
-                            className="flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50"
-                        >
-                            <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" className="w-5 h-5" alt="Facebook" />
-                            <span className="font-bold text-navy-900 text-sm">Facebook</span>
                         </button>
                     </div>
                 </div>

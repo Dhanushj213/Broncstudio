@@ -16,6 +16,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'books-stationery',
                 name: 'Story & Scribble',
                 slug: 'story-and-scribble',
+                description: 'Journals & Sketchbooks',
                 items: [
                     { name: 'Tiny Tales', slug: 'tiny-tales', original: 'Kids Books' },
                     { name: 'Colouring Books', slug: 'colouring-books' },
@@ -26,6 +27,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'toys-activities',
                 name: 'Play & Wonder',
                 slug: 'play-and-wonder',
+                description: 'Imaginative Play',
                 items: [
                     { name: 'Brain Builders', slug: 'brain-builders', original: 'MDF Wooden Puzzles' },
                 ]
@@ -34,6 +36,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'kids-clothing',
                 name: 'Mini Fashion',
                 slug: 'mini-fashion',
+                description: 'Trendy Outfits',
                 items: [
                     { name: 'Little Champ Tee', slug: 'little-champ-tee', original: 'Boy Classic Tee' },
                     { name: 'Tiny Trend Tee', slug: 'tiny-trend-tee', original: 'Girl Classic Tee' },
@@ -45,6 +48,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'kids-stationery',
                 name: 'Little Stationers',
                 slug: 'kids-stationery',
+                description: 'Notebooks & Pens',
                 items: [
                     { name: 'Notebooks', slug: 'notebook' },
                     { name: 'Daily Planners', slug: 'planner' },
@@ -58,6 +62,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'kids-activities',
                 name: 'Fun & Games',
                 slug: 'kids-activities',
+                description: 'Board Games & Puzzles',
                 items: [
                     { name: 'Jigsaw Puzzles', slug: 'jigsaw' },
                     { name: 'Tattoos', slug: 'tattoos' },
@@ -84,6 +89,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'men',
                 name: 'Modern Man',
                 slug: 'modern-man',
+                description: 'Menswear Essentials',
                 subcategories: [
                     {
                         id: 'men-tops',
@@ -104,6 +110,7 @@ export const CATEGORY_TAXONOMY = {
                 id: 'women',
                 name: 'Modern Muse',
                 slug: 'modern-muse',
+                description: 'Womenswear Collection',
                 subcategories: [
                     {
                         id: 'women-tops',

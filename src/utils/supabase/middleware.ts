@@ -6,7 +6,6 @@ export async function updateSession(request: NextRequest) {
         request,
     })
 
-    // 1. Create Supabase Client
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -16,7 +15,7 @@ export async function updateSession(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
                     supabaseResponse = NextResponse.next({
                         request,
                     })
@@ -28,21 +27,21 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    // 2. Checking for User Session
+    // IMPORTANT: Do not remove this. It refreshes the auth token and must be called
+    // before any protected routes are accessed. The cookies are automatically refreshed.
     const {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // 3. Current Path
-    const path = request.nextUrl.pathname;
+    const path = request.nextUrl.pathname
 
-    // Protect /profile and /admin and all sub-routes
+    // Protect /profile and /admin routes
     if ((path.startsWith('/profile') || path.startsWith('/admin')) && !user) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
     }
 
-    // 5. Update Session (Important for Server Components)
+    // CRITICAL: Return the supabaseResponse which contains the refreshed session cookies
     return supabaseResponse
 }

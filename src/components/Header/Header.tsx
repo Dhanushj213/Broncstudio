@@ -6,6 +6,8 @@ import { Search, ShoppingCart, Heart, Menu, User } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import MobileMenu from './MobileMenu';
+import { createClient } from '@/utils/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 const NAV_ITEMS = [
     { label: 'Home', href: '/' },
@@ -16,32 +18,37 @@ const NAV_ITEMS = [
     { label: 'Sale', href: '/shop/sale' },
 ];
 
-import { createClient } from '@/utils/supabase/client';
-
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [currentUser, setCurrentUser] = useState<SupabaseUser | null>(null);
     const { openSearch, toggleWishlist } = useUI();
     const { cartCount } = useCart();
     const supabase = createClient();
 
     useEffect(() => {
+        // Check initial session
         const checkUser = async () => {
-            const { data: { user }, error } = await supabase.auth.getUser();
-            if (user) {
-                console.log("Supabase Connected: User is logged in", user.email);
-            } else {
-                console.log("Supabase Connected: No active session");
-            }
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
         };
         checkUser();
+
+        // Subscribe to auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: string, session: { user: SupabaseUser | null } | null) => {
+            setCurrentUser(session?.user ?? null);
+        });
 
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+
+        return () => {
+            subscription.unsubscribe();
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [supabase.auth]);
 
     return (
         <>
@@ -76,7 +83,7 @@ export default function Header() {
                         <button onClick={toggleWishlist} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
                             <Heart size={24} strokeWidth={1.5} />
                         </button>
-                        <Link href="/login" className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
+                        <Link href={currentUser ? '/profile' : '/login'} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
                             <User size={24} strokeWidth={1.5} />
                         </Link>
                         <Link href="/cart" className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors relative">

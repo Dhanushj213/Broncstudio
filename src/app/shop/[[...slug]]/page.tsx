@@ -33,9 +33,22 @@ export default function ShopPage() {
 
             try {
                 // 1. Handle Root /shop
+                // 1. Handle Root /shop
                 if (!targetSlug) {
-                    // Redirect or show all worlds? For now, we'll let it render as 'Shop' and maybe show generic featured
-                    setCategory({ name: 'Shop', description: 'Explore our collection.' });
+                    setCategory({ name: 'Shop Worlds', description: 'Explore our entire collection of themes.' });
+
+                    // Fetch all worlds
+                    const { data: worldsData, error: worldsError } = await supabase
+                        .from('categories')
+                        .select('*')
+                        .eq('type', 'world');
+
+                    if (worldsError) {
+                        console.error("Worlds fetch error:", worldsError);
+                    } else {
+                        setSubcategories(worldsData || []);
+                    }
+
                     setLoading(false);
                     return;
                 }
