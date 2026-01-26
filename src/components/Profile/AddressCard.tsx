@@ -41,7 +41,7 @@ export default function AddressCard() {
             if (orders && orders.length > 0) {
                 // Get unique addresses based on pincode
                 const uniqueAddresses = new Map<string, Address>();
-                orders.forEach((order, index) => {
+                orders.forEach((order: any, index: number) => {
                     const addr = order.shipping_address;
                     if (addr && addr.pincode && !uniqueAddresses.has(addr.pincode)) {
                         uniqueAddresses.set(addr.pincode, {
@@ -98,8 +98,8 @@ export default function AddressCard() {
                         <div
                             key={address.id}
                             className={`min-w-[280px] md:w-full border rounded-xl p-4 relative ${address.isDefault
-                                    ? 'border-green-200 bg-green-50/30'
-                                    : 'border-gray-100 hover:border-gray-200'
+                                ? 'border-green-200 bg-green-50/30'
+                                : 'border-gray-100 hover:border-gray-200'
                                 }`}
                         >
                             {address.isDefault && (

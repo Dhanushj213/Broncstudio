@@ -41,7 +41,7 @@ export default function AddressesPage() {
             if (orders && orders.length > 0) {
                 // Extract unique addresses based on pincode
                 const uniqueAddresses = new Map<string, Address>();
-                orders.forEach((order, index) => {
+                orders.forEach((order: any, index: number) => {
                     const addr = order.shipping_address;
                     if (addr && addr.pincode && !uniqueAddresses.has(addr.pincode)) {
                         uniqueAddresses.set(addr.pincode, {
