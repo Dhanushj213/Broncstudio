@@ -101,7 +101,7 @@ export default function ShopPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-[#FAF9F7]">
+            <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-background">
                 <BrandLoader text="Loading Catalog" />
             </div>
         );
@@ -109,7 +109,7 @@ export default function ShopPage() {
 
     if (error || (!category && targetSlug)) {
         return (
-            <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-[#FAF9F7]">
+            <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-background">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-navy-900 mb-2">Category Not Found</h2>
                     <p className="text-gray-500 mb-6">We couldn't find the page you're looking for.</p>
@@ -130,7 +130,7 @@ export default function ShopPage() {
     // Fallback: If no subcategories and no products, show empty state or parent logic
 
     return (
-        <div className="relative min-h-screen pt-[var(--header-height)] pb-20 bg-[#FAF9F7]">
+        <div className="relative min-h-screen pt-[var(--header-height)] pb-20 bg-background">
             <AmbientBackground />
 
             {/* Breadcrumbs - Simple Version */}

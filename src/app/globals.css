@@ -69,6 +69,6 @@
 .dark .glass-premium {
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
-  background: rgba(17, 24, 39, 0.72);
-  /* Dark surface opacity */
+  background: rgba(17, 24, 39, 0.6);
+  /* Dark surface opacity: Reduced to let ambient glow shine through */
 }

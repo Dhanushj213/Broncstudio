@@ -118,7 +118,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAF9F7] grid grid-cols-1 md:grid-cols-2">
+        <div className="min-h-screen bg-background grid grid-cols-1 md:grid-cols-2">
             <AmbientBackground />
 
             {/* Left: Brand Visual (Visible on Desktop) */}

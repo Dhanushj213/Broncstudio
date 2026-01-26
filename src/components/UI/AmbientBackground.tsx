@@ -9,13 +9,13 @@ interface AmbientBackgroundProps {
 
 export default function AmbientBackground({ className = "" }: AmbientBackgroundProps) {
     return (
-        <div className={`fixed inset-0 min-h-screen w-full -z-10 bg-[#FAFAFA] overflow-hidden ${className}`}>
+        <div className={`fixed inset-0 min-h-screen w-full -z-10 bg-background overflow-hidden transition-colors duration-700 ${className}`}>
             {/* Noise Texture Overlay */}
-            <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] mix-blend-overlay"
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
             />
 
-            {/* Animated Orbs */}
+            {/* Animated Orbs - Tuned for Dark Mode to avoid "fog" */}
             <motion.div
                 animate={{
                     x: [0, 100, 0],
@@ -27,7 +27,8 @@ export default function AmbientBackground({ className = "" }: AmbientBackgroundP
                     repeat: Infinity,
                     ease: "linear"
                 }}
-                className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-200/30 blur-[100px]"
+                // Light: purple-200/30 -> Dark: purple-900/20 (Depeer, subtler)
+                className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-200/30 dark:bg-purple-900/20 blur-[100px]"
             />
 
             <motion.div
@@ -42,7 +43,8 @@ export default function AmbientBackground({ className = "" }: AmbientBackgroundP
                     ease: "linear",
                     delay: 2
                 }}
-                className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-blue-200/30 blur-[100px]"
+                // Light: blue-200/30 -> Dark: blue-900/20
+                className="absolute top-[20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-blue-200/30 dark:bg-blue-900/20 blur-[100px]"
             />
 
             <motion.div
@@ -57,7 +59,8 @@ export default function AmbientBackground({ className = "" }: AmbientBackgroundP
                     ease: "easeInOut",
                     delay: 5
                 }}
-                className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-pink-200/20 blur-[120px]"
+                // Light: pink-200/20 -> Dark: rose-900/20
+                className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-pink-200/20 dark:bg-rose-900/20 blur-[120px]"
             />
         </div>
     );
