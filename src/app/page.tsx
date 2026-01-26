@@ -34,7 +34,7 @@ export default function Home() {
         .limit(8);
 
       if (newProds) {
-        setNewArrivals(newProds.map(p => ({ ...mapProduct(p), badge: 'New' })));
+        setNewArrivals(newProds.map((p: any) => ({ ...mapProduct(p), badge: 'New' })));
       }
 
       // Fetch Featured (Random 25 or just general list)
