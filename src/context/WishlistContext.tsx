@@ -33,11 +33,8 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Failed to parse wishlist", e);
             }
         } else {
-            // Initial Mock Data for Demo
-            setWishlistItems([
-                { id: '1', name: 'Premium Canvas Sneaker', price: 1299, image: 'https://images.unsplash.com/photo-1519457431-44d59405d6e6?auto=format&fit=crop&w=400&q=80', size: 'UK 7' },
-                { id: '2', name: 'Organic Cotton Tee', price: 799, image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=400&q=80', size: 'M' }
-            ]);
+            // Start empty
+            setWishlistItems([]);
         }
     }, []);
 

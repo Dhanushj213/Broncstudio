@@ -8,7 +8,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
     matcher: [
         /*
-         * Match all request paths except for the ones starting with:
+         // Protect /profile and /admin and all sub-routes
+    if ((path.startsWith('/profile') || path.startsWith('/admin')) && !user) {starting with:
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)

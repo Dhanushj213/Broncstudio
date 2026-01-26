@@ -4,11 +4,13 @@ import React from 'react';
 import { Home, Grid, Search, Heart, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
 import { useUI } from '@/context/UIContext';
 
 const MobileNav = () => {
     const pathname = usePathname();
     const { openSearch, toggleWishlist } = useUI();
+    const { cartCount } = useCart();
 
     const isActive = (path: string) => pathname === path;
 
@@ -55,7 +57,11 @@ const MobileNav = () => {
                 <div className="relative">
                     <ShoppingCart size={22} strokeWidth={isActive('/cart') ? 2.5 : 1.5} />
                     {/* Badge */}
-                    <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-coral-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold">2</span>
+                    {cartCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-coral-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold">
+                            {cartCount}
+                        </span>
+                    )}
                 </div>
                 <span className="text-[10px] font-medium">Cart</span>
             </Link>

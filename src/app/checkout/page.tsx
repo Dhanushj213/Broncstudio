@@ -7,35 +7,73 @@ import AmbientBackground from '@/components/UI/AmbientBackground';
 import GlassCard from '@/components/UI/GlassCard';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
+import { createOrder } from '@/actions/orderActions'; // Server Action
 
 export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState('upi');
     const [orderStatus, setOrderStatus] = useState<'idle' | 'processing' | 'success' | 'rejected'>('idle');
     const { userName } = useUI();
-    const { clearCart, cartTotal } = useCart();
+    const { items, clearCart, cartTotal } = useCart();
+
+    // Form State
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        phone: '',
+        address: '',
+        city: '',
+        pincode: ''
+    });
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
     const subtotal = cartTotal;
     const shipping = 0;
     const tax = Math.round(subtotal * 0.05);
     const total = subtotal + shipping + tax;
 
-    const handlePlaceOrder = () => {
+    const handlePlaceOrder = async () => {
+        // Basic Validation
+        if (!formData.firstName || !formData.address || !formData.phone) {
+            alert("Please fill in all shipping details.");
+            return;
+        }
+
         setOrderStatus('processing');
 
-        // Simulate API call
-        setTimeout(() => {
-            // For demo purposes, we'll succeed. 
-            // In a real app, this would depend on the response.
-            // You can manually toggle this to 'rejected' to test.
-            const isSuccess = true;
-            if (isSuccess) {
+        try {
+            // Map Cart Items to fit Server Action interface
+            const orderItems = items.map(i => ({
+                id: i.id,
+                productId: i.productId,
+                name: i.name,
+                price: i.price,
+                qty: i.qty,
+                size: i.size,
+                image: i.image
+            }));
+
+            // Call Server Action
+            const result = await createOrder(orderItems, formData, total, paymentMethod);
+
+            if (result.success) {
                 clearCart();
                 setOrderStatus('success');
             } else {
+                console.error(result.error);
                 setOrderStatus('rejected');
+                alert(result.error); // Simple feedback for now
             }
-        }, 2000);
+        } catch (error) {
+            console.error("Checkout Error:", error);
+            setOrderStatus('rejected');
+        }
     };
+
+    // ... (Render logic remains largely same, just binding inputs)
 
     if (orderStatus === 'success') {
         const name = userName ? userName.toUpperCase() : '';
@@ -129,19 +167,19 @@ export default function CheckoutPage() {
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">First Name</label>
                                     <div className="relative">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                        <input placeholder="First Name" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
+                                        <input name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First Name" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Last Name</label>
-                                    <input placeholder="Last Name" className="w-full px-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
+                                    <input name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last Name" className="w-full px-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
                                 </div>
 
                                 <div className="md:col-span-2 space-y-1">
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Phone Number</label>
                                     <div className="relative">
                                         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                        <input placeholder="Phone Number" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
+                                        <input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="Phone Number" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
                                     </div>
                                 </div>
 
@@ -149,17 +187,17 @@ export default function CheckoutPage() {
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Full Address</label>
                                     <div className="relative">
                                         <MapPin className="absolute left-4 top-3.5 text-gray-400" size={18} />
-                                        <textarea rows={2} placeholder="Address Line 1, Area, Landmark" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none resize-none" />
+                                        <textarea name="address" value={formData.address} onChange={handleInputChange} rows={2} placeholder="Address Line 1, Area, Landmark" className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none resize-none" />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">City</label>
-                                    <input placeholder="City" className="w-full px-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
+                                    <input name="city" value={formData.city} onChange={handleInputChange} placeholder="City" className="w-full px-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider ml-1">Pincode</label>
-                                    <input placeholder="Pincode" className="w-full px-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
+                                    <input name="pincode" value={formData.pincode} onChange={handleInputChange} placeholder="Pincode" className="w-full px-4 py-3 rounded-xl bg-gray-50/50 border border-gray-100 focus:border-navy-900 focus:bg-white transition-all font-bold text-navy-900 outline-none" />
                                 </div>
                             </div>
                         </GlassCard>

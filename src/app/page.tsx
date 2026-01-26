@@ -1,34 +1,56 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BentoGridWorld from '@/components/Home/BentoGridWorld';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
 import ProductShowcase from '@/components/Home/ProductShowcase';
-import { getProductImage } from '@/utils/sampleImages';
+import { createClient } from '@/utils/supabase/client';
 
-// Mock Data
-const FEATURED_PRODUCTS = Array.from({ length: 25 }).map((_, i) => ({
-  id: `feat-${i}`,
-  name: `Premium Canvas Sneaker ${i + 1}`,
-  brand: 'Little Legends',
-  price: 1299 + (i * 100),
-  originalPrice: 1999 + (i * 100),
-  image: getProductImage(i),
-  badge: i < 5 ? 'Bestseller' : undefined,
-}));
-
-const NEW_ARRIVALS = Array.from({ length: 8 }).map((_, i) => ({
-  id: `new-${i}`,
-  name: `Organic Cotton Tee ${i + 1}`,
-  brand: 'Everyday Icons',
-  price: 799,
-  image: getProductImage(i + 5),
-  badge: 'New',
-}));
+// Mapped helper
+const mapProduct = (p: any) => ({
+  id: p.id,
+  name: p.name,
+  brand: 'BroncStudio',
+  price: p.price,
+  originalPrice: p.compare_at_price,
+  image: p.images?.[0] || '/images/placeholder.jpg',
+  badge: undefined, // Logic can be added later
+});
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [newArrivals, setNewArrivals] = useState<any[]>([]);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchData() {
+      // Fetch New Arrivals
+      const { data: newProds } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(8);
+
+      if (newProds) {
+        setNewArrivals(newProds.map(p => ({ ...mapProduct(p), badge: 'New' })));
+      }
+
+      // Fetch Featured (Random 25 or just general list)
+      // Since we don't have a 'featured' flag, we'll just take 25.
+      const { data: featProds } = await supabase
+        .from('products')
+        .select('*')
+        .limit(25);
+
+      if (featProds) {
+        setFeaturedProducts(featProds.map(mapProduct));
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <main className="relative min-h-screen overflow-hidden">
       <AmbientBackground />
@@ -48,14 +70,14 @@ export default function Home() {
       <ProductShowcase
         title="New Arrivals"
         subtitle="Fresh drops from this week."
-        products={NEW_ARRIVALS}
+        products={newArrivals}
       />
 
       {/* Featured Products (25 Items) */}
       <ProductShowcase
         title="Featured Collection"
         subtitle="Our most loved pieces, curated just for you."
-        products={FEATURED_PRODUCTS}
+        products={featuredProducts}
         className="bg-gray-50/50 dark:bg-white/5" // Subtle separation
       />
 

@@ -1,0 +1,300 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { createBrowserClient } from '@supabase/ssr';
+import { ArrowLeft, CheckCircle, XCircle, Truck, Package, CreditCard, User, MapPin, Clock } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+interface OrderItem {
+    id: string;
+    product_id: string; // ID only, we might need to fetch name if not joined, but let's assume simple fetch for now
+    name: string; // We stored name in order_items for snapshot
+    quantity: number;
+    price: number;
+    size?: string;
+    image_url: string;
+}
+
+interface Order {
+    id: string;
+    created_at: string;
+    total_amount: number;
+    status: string;
+    shipping_address: any;
+    user_id: string;
+    payment_status: string;
+    payment_method: string;
+    items?: OrderItem[]; // We'll fetch these manually
+}
+
+export default function OrderDetailPage() {
+    const params = useParams();
+    const router = useRouter();
+    const [order, setOrder] = useState<Order | null>(null);
+    const [items, setItems] = useState<OrderItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState(false);
+
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        if (params.id) {
+            fetchOrderDetails(params.id as string);
+        }
+    }, [params.id]);
+
+    const fetchOrderDetails = async (orderId: string) => {
+        setLoading(true);
+        // 1. Fetch Order
+        const { data: orderData, error: orderError } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('id', orderId)
+            .single();
+
+        if (orderError) {
+            console.error('Error fetching order:', orderError);
+            setLoading(false);
+            return;
+        }
+
+        setOrder(orderData);
+
+        // 2. Fetch Items
+        const { data: itemsData, error: itemsError } = await supabase
+            .from('order_items')
+            .select('*')
+            .eq('order_id', orderId);
+
+        if (itemsData) {
+            setItems(itemsData);
+        }
+        setLoading(false);
+    };
+
+    const handleUpdateStatus = async (newStatus: string) => {
+        if (!order) return;
+        if (!confirm(`Are you sure you want to mark this order as ${newStatus}?`)) return;
+
+        setActionLoading(true);
+        const { error } = await supabase
+            .from('orders')
+            .update({ status: newStatus })
+            .eq('id', order.id);
+
+        if (error) {
+            alert('Failed to update status');
+            console.error(error);
+        } else {
+            // Refresh local state
+            setOrder({ ...order, status: newStatus });
+            alert(`Order ${newStatus} successfully!`);
+        }
+        setActionLoading(false);
+    };
+
+    if (loading) {
+        return <div className="p-12 text-center text-gray-500">Loading order details...</div>;
+    }
+
+    if (!order) {
+        return <div className="p-12 text-center text-red-500">Order not found.</div>;
+    }
+
+    const isPending = order.status === 'pending';
+
+    return (
+        <div className="max-w-5xl mx-auto space-y-6 pb-20">
+            {/* Header / Nav */}
+            <div className="flex items-center gap-4 text-gray-500 mb-4">
+                <Link href="/admin/orders" className="hover:text-navy-900 transition-colors flex items-center gap-1">
+                    <ArrowLeft size={18} /> Back to Orders
+                </Link>
+                <span>/</span>
+                <span className="font-mono text-gray-900">#{order.id.slice(0, 8)}</span>
+            </div>
+
+            {/* Title & Actions Header */}
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-navy-900 flex items-center gap-3">
+                        Order #{order.id.slice(0, 8)}
+                        <span className={`text-base px-3 py-1 rounded-full border uppercase tracking-wider ${order.status === 'pending' ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                                order.status === 'processing' ? 'bg-purple-50 border-purple-200 text-purple-700' :
+                                    order.status === 'shipped' ? 'bg-blue-50 border-blue-200 text-blue-700' :
+                                        order.status === 'delivered' ? 'bg-green-50 border-green-200 text-green-700' :
+                                            'bg-red-50 border-red-200 text-red-700'
+                            }`}>
+                            {order.status}
+                        </span>
+                    </h1>
+                    <p className="text-gray-500 mt-2 flex items-center gap-2">
+                        <Clock size={16} /> Placed on {new Date(order.created_at).toLocaleString()}
+                    </p>
+                </div>
+
+                {/* ACTION BUTTONS */}
+                {isPending && (
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => handleUpdateStatus('cancelled')}
+                            disabled={actionLoading}
+                            className="bg-white border border-gray-200 text-red-600 hover:bg-red-50 hover:border-red-200 font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
+                        >
+                            <XCircle size={20} />
+                            Reject Order
+                        </button>
+                        <button
+                            onClick={() => handleUpdateStatus('processing')}
+                            disabled={actionLoading}
+                            className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all"
+                        >
+                            <CheckCircle size={20} />
+                            Accept Order
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Items & Payment */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Order Items */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
+                        <div className="p-6 border-b border-gray-100">
+                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <Package size={20} className="text-gray-400" />
+                                Order Items
+                            </h2>
+                        </div>
+                        <div className="divide-y divide-gray-100">
+                            {items.map((item, idx) => (
+                                <div key={idx} className="p-6 flex items-start gap-4">
+                                    <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+                                        <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-gray-900">{item.name}</h3>
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            Size: <span className="font-medium text-gray-700">{item.size || 'N/A'}</span>
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            Quantity: <span className="font-medium text-gray-700">{item.quantity}</span>
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-gray-900">₹{item.price * item.quantity}</p>
+                                        <p className="text-xs text-gray-400">₹{item.price} each</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="bg-gray-50 p-6 flex justify-between items-center border-t border-gray-100">
+                            <span className="font-bold text-gray-500">Total Amount</span>
+                            <span className="text-2xl font-bold text-navy-900">₹{order.total_amount}</span>
+                        </div>
+                    </div>
+
+                    {/* Payment Info */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                            <CreditCard size={20} className="text-gray-400" />
+                            Payment Information
+                        </h2>
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <div>
+                                <p className="text-sm text-gray-500 mb-1">Payment Method</p>
+                                <p className="font-bold text-gray-900 capitalize">{order.payment_method?.replace(/_/g, ' ') || 'N/A'}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-sm text-gray-500 mb-1">Payment Status</p>
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 border-green-200 text-green-700' :
+                                        order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
+                                            'bg-amber-100 border-amber-200 text-amber-700'
+                                    }`}>
+                                    {order.payment_status}
+                                </span>
+                            </div>
+                        </div>
+                        {order.status === 'pending' && order.payment_status === 'pending' && (
+                            <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-100 text-sm text-amber-800 flex items-start gap-2">
+                                <div className="min-w-[4px] h-[4px] bg-amber-500 rounded-full mt-2" />
+                                <p>This order is waiting for admin approval. Since payment is pending (COD), verifying the customer via phone is recommended before accepting.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right Column: Customer & Shipping */}
+                <div className="space-y-6">
+                    {/* Customer */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                            <User size={20} className="text-gray-400" />
+                            Customer Details
+                        </h2>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                                    {order.shipping_address?.firstName?.[0]}
+                                </div>
+                                <div>
+                                    <p className="font-bold text-gray-900">
+                                        {order.shipping_address?.firstName} {order.shipping_address?.lastName}
+                                    </p>
+                                    <p className="text-sm text-gray-500">Customer</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Contact Info</p>
+                                <p className="text-sm text-gray-700 font-medium">{order.shipping_address?.phone}</p>
+                                {/* We might want to store email in orders table too if not in address JSON */}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Shipping Address */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                            <MapPin size={20} className="text-gray-400" />
+                            Shipping Address
+                        </h2>
+                        <address className="not-italic text-sm text-gray-600 space-y-1">
+                            <p className="font-medium text-gray-900">{order.shipping_address?.address}</p>
+                            <p>{order.shipping_address?.city}, {order.shipping_address?.pincode}</p>
+                            <p>India</p>
+                        </address>
+
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                <Truck size={16} className="text-gray-400" />
+                                Delivery Status
+                            </h3>
+                            {/* Placeholder for tracking history */}
+                            <div className="relative pl-4 border-l-2 border-gray-100 space-y-6">
+                                <div className="relative">
+                                    <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${isPending ? 'bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.2)]' : 'bg-gray-300'
+                                        }`} />
+                                    <p className="text-sm font-medium text-gray-900">Order Placed</p>
+                                    <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleDateString()}</p>
+                                </div>
+                                {order.status !== 'pending' && order.status !== 'cancelled' && (
+                                    <div className="relative">
+                                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-green-500 border-2 border-white box-content shadow-[0_0_0_3px_rgba(34,197,94,0.2)]" />
+                                        <p className="text-sm font-medium text-gray-900">Processing</p>
+                                        <p className="text-xs text-gray-400">Order Accepted</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

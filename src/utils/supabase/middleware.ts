@@ -36,18 +36,10 @@ export async function updateSession(request: NextRequest) {
     // 3. Current Path
     const path = request.nextUrl.pathname;
 
-    // 4. Protected Routes Logic
-    // Protect /profile and all sub-routes
-    if (path.startsWith('/profile') && !user) {
+    // Protect /profile and /admin and all sub-routes
+    if ((path.startsWith('/profile') || path.startsWith('/admin')) && !user) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
-        return NextResponse.redirect(url)
-    }
-
-    // Optional: Redirect logged-in users away from /login or /signup
-    if ((path === '/login' || path === '/signup') && user) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/profile'
         return NextResponse.redirect(url)
     }
 
