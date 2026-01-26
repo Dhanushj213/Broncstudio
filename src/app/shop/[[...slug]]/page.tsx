@@ -9,7 +9,8 @@ import { motion } from 'framer-motion';
 import { useUI } from '@/context/UIContext';
 import ProductCard from '@/components/Product/ProductCard';
 import { createClient } from '@/utils/supabase/client';
-import { Loader2, LayoutGrid } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
+import BrandLoader from '@/components/UI/BrandLoader';
 
 export default function ShopPage() {
     const { formatPrice } = useUI();
@@ -101,7 +102,7 @@ export default function ShopPage() {
     if (loading) {
         return (
             <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-[#FAF9F7]">
-                <Loader2 className="animate-spin text-navy-900" size={32} />
+                <BrandLoader text="Loading Catalog" />
             </div>
         );
     }
