@@ -69,17 +69,19 @@ export default function MobilePillsRail() {
     return (
         <div className="md:hidden w-full bg-white dark:bg-navy-900 py-3 border-b border-gray-100 dark:border-white/5 sticky top-[var(--header-height)] z-20 shadow-sm">
             <div className="overflow-x-auto no-scrollbar w-full snap-x">
-                <div className="flex gap-2 w-max items-center">
+                <div className="flex w-max items-center">
                     <div className="w-4 flex-shrink-0 h-4" />
-                    {FULL_LIST.map((item, idx) => (
-                        <Link
-                            key={`${item.label}-${idx}`}
-                            href={item.href}
-                            className="flex-shrink-0 snap-start bg-white dark:bg-navy-800 text-navy-900 dark:text-white border border-gray-200 dark:border-white/10 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
+                    <div className="flex gap-2">
+                        {FULL_LIST.map((item, idx) => (
+                            <Link
+                                key={`${item.label}-${idx}`}
+                                href={item.href}
+                                className="flex-shrink-0 snap-start bg-white dark:bg-navy-800 text-navy-900 dark:text-white border border-gray-200 dark:border-white/10 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wide whitespace-nowrap hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                    </div>
                     <div className="w-4 flex-shrink-0 h-4" />
                 </div>
             </div>

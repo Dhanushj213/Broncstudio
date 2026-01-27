@@ -37,13 +37,15 @@ export default function ProductShowcase({ title, subtitle, products, className =
                     </div>
                 ) : (
                     <div className="overflow-x-auto snap-x snap-mandatory pb-8 w-full no-scrollbar">
-                        <div className="flex gap-4 w-max items-stretch">
+                        <div className="flex w-max items-stretch">
                             <div className="w-4 flex-shrink-0 snap-start" />
-                            {products.map((product) => (
-                                <div key={product.id} className="min-w-[160px] md:min-w-[280px] snap-start">
-                                    <ProductCard {...product} />
-                                </div>
-                            ))}
+                            <div className="flex gap-4">
+                                {products.map((product) => (
+                                    <div key={product.id} className="min-w-[160px] md:min-w-[280px] snap-start">
+                                        <ProductCard {...product} />
+                                    </div>
+                                ))}
+                            </div>
                             <div className="w-4 flex-shrink-0 snap-start" />
                         </div>
                     </div>
