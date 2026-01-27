@@ -6,58 +6,34 @@ import Link from 'next/link';
 // Strictly mapped to 'src/data/categories.ts' output
 const CATALOG_CATEGORIES = [
     {
-        label: "KIDS & LEARNING",
-        slug: 'kids-learning',
+        label: "LITTLE LEGENDS",
+        slug: 'little-legends',
         image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
-        href: '/shop/kids-learning'
+        href: '/shop/little-legends'
     },
     {
-        label: "CLOTHING",
-        slug: 'clothing',
+        label: "EVERYDAY ICONS",
+        slug: 'everyday-icons',
         image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80',
-        href: '/shop/clothing'
+        href: '/shop/everyday-icons'
     },
     {
-        label: "ACCESSORIES",
-        slug: 'accessories',
-        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
-        href: '/shop/accessories'
-    },
-    {
-        label: "TECH & DESK",
-        slug: 'tech-desk',
-        image: 'https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=500&q=80',
-        href: '/shop/tech-desk'
-    },
-    {
-        label: "HOME & DECOR",
-        slug: 'home-decor',
-        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
-        href: '/shop/home-decor'
-    },
-    {
-        label: "DRINKWARE",
-        slug: 'drinkware',
-        image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&q=80',
-        href: '/shop/drinkware'
-    },
-    {
-        label: "BAGS",
-        slug: 'bags',
-        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80',
-        href: '/shop/bags'
-    },
-    {
-        label: "GIFTS",
-        slug: 'gifts',
+        label: "LITTLE LUXURIES",
+        slug: 'little-luxuries',
         image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
-        href: '/shop/gifts'
+        href: '/shop/little-luxuries'
     },
     {
-        label: "PETS",
-        slug: 'pets',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
-        href: '/shop/pets'
+        label: "SPACE STORIES",
+        slug: 'space-stories',
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+        href: '/shop/space-stories'
+    },
+    {
+        label: "STYLE EXTRAS",
+        slug: 'style-extras',
+        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
+        href: '/shop/style-extras'
     }
 ];
 
