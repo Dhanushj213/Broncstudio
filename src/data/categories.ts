@@ -76,7 +76,8 @@ export const CATEGORY_TAXONOMY = {
                 name: 'Women',
                 slug: 'women-clothing',
                 items: [
-                    { name: 'Tops & Tees', slug: 'women-tops-tees' },
+                    { name: 'Classic Tees', slug: 'women-classic-tees' },
+                    { name: 'Boyfriend Tees', slug: 'women-boyfriend-tees' },
                     { name: 'Dresses', slug: 'women-dresses' },
                     { name: 'Bottom Wear', slug: 'women-bottoms' },
                     { name: 'Activewear', slug: 'women-activewear' },
