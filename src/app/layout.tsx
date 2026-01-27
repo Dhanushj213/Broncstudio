@@ -33,6 +33,12 @@ export const metadata: Metadata = {
     icon: '/BroncStudio (2).png',
     apple: '/BroncStudio (2).png',
   },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BroncStudio",
+  },
 };
 
 import Header from "@/components/Header/Header";
