@@ -51,7 +51,7 @@ export default function ProductPage() {
     return (
         <main className="bg-white min-h-screen pb-24 md:pb-0">
             {/* Main Product Section */}
-            <div className="container-premium max-w-[1200px] mx-auto px-0 md:px-6 pt-0 md:pt-12 mb-16">
+            <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-0 md:pt-12 mb-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
                     {/* Left: Gallery */}
                     <div className="w-full">
@@ -59,7 +59,7 @@ export default function ProductPage() {
                     </div>
 
                     {/* Right: Info (Sticky) */}
-                    <div className="px-6 md:px-0 sticky top-32">
+                    <div className="px-0 sticky top-32">
                         <ProductInfo product={PRODUCT} />
                     </div>
                 </div>

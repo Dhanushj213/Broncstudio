@@ -93,10 +93,10 @@ export function ProductGalleryOptimized({ images }: ProductGalleryProps) {
             </div>
 
             {/* Mobile: Carousel */}
-            <div className="md:hidden -mx-6">
-                <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 gap-1">
+            <div className="md:hidden">
+                <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 gap-4">
                     {images.map((img, idx) => (
-                        <div key={idx} className="w-[85vw] flex-shrink-0 snap-center first:pl-6 last:pr-6">
+                        <div key={idx} className="w-full flex-shrink-0 snap-center">
                             <div className="aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden relative">
                                 <img src={img} className="w-full h-full object-cover" />
                                 {idx === 0 && <span className="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur">1/{images.length}</span>}
