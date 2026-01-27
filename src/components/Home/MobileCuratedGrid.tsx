@@ -39,16 +39,16 @@ export default function MobileCuratedGrid() {
                 </h2>
                 <div className="h-0.5 w-12 bg-coral-500 mt-1"></div>
             </div>
-            <div className="grid grid-cols-2 gap-1 px-1">
+            <div className="grid grid-cols-2 gap-3 px-4">
                 {CURATED_ITEMS.map((item) => (
-                    <Link key={item.id} href={item.href} className="relative aspect-[4/5] group overflow-hidden">
+                    <Link key={item.id} href={item.href} className="relative aspect-[3/4] group overflow-hidden rounded-lg">
                         <img
                             src={item.image}
                             alt={item.title}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end justify-center pb-4">
-                            <span className="text-white font-bold text-sm tracking-widest uppercase text-shadow">
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-3 flex items-end justify-center">
+                            <span className="text-white font-bold text-xs tracking-widest uppercase text-shadow">
                                 {item.title}
                             </span>
                         </div>

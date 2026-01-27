@@ -32,11 +32,11 @@ export default function ProductCard(props: ProductProps) {
 
     return (
         <div
-            className="group relative bg-white dark:bg-navy-800 rounded-[16px] overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-xl dark:hover:shadow-black/30 transition-all duration-300 hover:-translate-y-1"
+            className="group relative bg-white dark:bg-navy-800 rounded-lg overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-xl dark:hover:shadow-black/30 transition-all duration-300 hover:-translate-y-1"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className="relative aspect-square bg-gray-50 dark:bg-white/5 overflow-hidden">
+            <div className="relative aspect-[3/4] bg-gray-50 dark:bg-white/5 overflow-hidden">
                 {badge && (
                     <span className="absolute top-3 left-3 z-10 bg-navy-900 dark:bg-white dark:text-navy-900 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm">
                         {badge}
