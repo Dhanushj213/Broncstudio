@@ -44,7 +44,7 @@ const MobileNav = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                 />
                             )}
 
@@ -52,7 +52,7 @@ const MobileNav = () => {
                                 <item.icon
                                     size={22} // Unified Size
                                     strokeWidth={isItemActive ? 2.5 : 1.5}
-                                    className={`transition-all duration-300 ${isItemActive
+                                    className={`transition-all duration-200 ${isItemActive
                                         ? 'text-coral-500 drop-shadow-[0_0_12px_rgba(255,100,100,0.5)]'
                                         : 'text-gray-400'
                                         }`}
@@ -71,7 +71,8 @@ const MobileNav = () => {
                             <Link
                                 key={item.name}
                                 href={item.path!}
-                                className="relative flex-1 flex items-center justify-center select-none active:scale-95 transition-transform"
+                                prefetch={true}
+                                className="relative flex-1 flex items-center justify-center select-none active:scale-95 transition-transform duration-75"
                             >
                                 <Content />
                             </Link>
@@ -82,7 +83,7 @@ const MobileNav = () => {
                         <button
                             key={item.name}
                             onClick={item.action}
-                            className="relative flex-1 flex items-center justify-center select-none active:scale-95 transition-transform"
+                            className="relative flex-1 flex items-center justify-center select-none active:scale-95 transition-transform duration-75"
                         >
                             <Content />
                         </button>
