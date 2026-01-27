@@ -11,7 +11,7 @@ const getCategoryData = (key: string) => {
     if (!tax) return null;
     return {
         label: tax.name,
-        href: `/shop/${tax.slug}`,
+        href: `/collections/${tax.slug}`,
         // Use the taxonomy image, or a default if missing
         img: tax.image || '/images/placeholder.jpg',
     };
@@ -23,7 +23,7 @@ const RAIL_ITEMS = [
     { key: 'little-luxuries', labelOverride: 'Gifting' },
     { key: 'space-stories', labelOverride: 'Home' },
     { key: 'style-extras', labelOverride: 'Accessory' },
-    { key: 'pawfect-picks', labelOverride: 'Pets' },
+    { key: 'pets', labelOverride: 'Pets' },
 ];
 
 export default function MobileCategoryRail() {

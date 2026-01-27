@@ -49,15 +49,9 @@ const CATALOG_CATEGORIES = [
     },
     {
         label: "Pawfect Picks",
-        slug: 'pets', // Need to check if 'pets' exists. In categories.ts it wasn't shown in the last read?
-        // Wait, I saw 'PETS' in the Worlds page CATALOG but did I see it in categories.ts?
-        // Checking categories.ts content again... 
-        // It seems 'PETS' might NOT be in categories.ts! I missed adding it to the main taxonomy?
-        // Let's check lines 208-209. It ends at 'style-extras'.
-        // I need to ADD Pets to categories.ts if it's missing, otherwise /collections/pets will 404.
-        // For now, I will add the link, but I might need to fix categories.ts.
+        slug: 'pets',
         image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
-        href: '/collections/pets' // Will likely 404 if not in taxonomy
+        href: '/collections/pets'
     }
 ];
 
