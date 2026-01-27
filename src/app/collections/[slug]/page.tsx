@@ -68,21 +68,26 @@ export default function CollectionPage() {
                     // Leaf: Direct match
                     productQuery = productQuery.eq('category_id', catData.id);
                 } else {
-                    // Category: Match children items
-                    // First get all sub-category IDs that have this parent
-                    const { data: childrenData } = await supabase
-                        .from('categories')
-                        .select('id')
-                        .eq('parent_id', catData.id);
+                    // Category: Match children items from LOCAL TAXONOMY (safer than DB parent_id)
+                    // node.data.items contains the sub-categories (leafs)
+                    const childSlugs = node.data.items?.map((i: any) => i.slug) || [];
 
-                    if (childrenData && childrenData.length > 0) {
-                        const ids = childrenData.map(c => c.id);
-                        // Also include the parent itself in case direct products exist? 
-                        // Usually products are on leaves, but safe to include parent.
-                        ids.push(catData.id);
-                        productQuery = productQuery.in('category_id', ids);
+                    if (childSlugs.length > 0) {
+                        // Resolve all child slugs to IDs
+                        const { data: childrenCats } = await supabase
+                            .from('categories')
+                            .select('id')
+                            .in('slug', childSlugs);
+
+                        if (childrenCats && childrenCats.length > 0) {
+                            const ids = childrenCats.map(c => c.id);
+                            // Also include self
+                            ids.push(catData.id);
+                            productQuery = productQuery.in('category_id', ids);
+                        } else {
+                            productQuery = productQuery.eq('category_id', catData.id);
+                        }
                     } else {
-                        // No children? Just check parent
                         productQuery = productQuery.eq('category_id', catData.id);
                     }
                 }
