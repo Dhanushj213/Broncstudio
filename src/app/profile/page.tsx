@@ -110,6 +110,18 @@ export default function ProfilePage() {
                                         <ChevronRight size={16} className="text-gray-300" />
                                     </Link>
                                 ))}
+
+                                {/* Admin Link (Temporary for Demo/Owner) */}
+                                <Link href="/admin" className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-navy-50 transition-colors text-left group border-t border-dashed border-gray-200 mt-2">
+                                    <div className="w-8 h-8 rounded-full bg-navy-100 flex items-center justify-center text-navy-900 group-hover:bg-navy-900 group-hover:text-white transition-colors">
+                                        <Shield size={16} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-bold text-navy-900">Admin Dashboard</div>
+                                        <div className="text-xs text-gray-500">Manage store & orders</div>
+                                    </div>
+                                    <ChevronRight size={16} className="text-gray-300" />
+                                </Link>
                             </div>
                         </div>
 
