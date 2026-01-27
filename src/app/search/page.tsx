@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import ProductCard from '@/components/Product/ProductCard';
 import BrandLoader from '@/components/UI/BrandLoader';
 import { Search, ArrowLeft } from 'lucide-react';
 
-export default function SearchPage() {
+function SearchContent() {
     const searchParams = useSearchParams();
     const query = searchParams.get('q') || '';
     const router = useRouter();
@@ -90,5 +90,13 @@ export default function SearchPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="h-screen flex items-center justify-center"><BrandLoader /></div>}>
+            <SearchContent />
+        </Suspense>
     );
 }
