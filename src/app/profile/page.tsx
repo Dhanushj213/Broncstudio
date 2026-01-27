@@ -10,6 +10,7 @@ import AddressCard from '@/components/Profile/AddressCard';
 import { Bell, Shield, LogOut, FileText, ChevronRight, Globe, Loader2 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { createClient } from '@/utils/supabase/client';
+import { isAdmin } from '@/utils/admin';
 
 export default function ProfilePage() {
     const { currency, setCurrency } = useUI();
@@ -43,6 +44,7 @@ export default function ProfilePage() {
     }, [router]);
 
     const handleSignOut = async () => {
+        const supabase = createClient(); // Use instantiated client or createBrowser one if context allows
         await supabase.auth.signOut();
         router.push('/');
         router.refresh();
@@ -112,7 +114,7 @@ export default function ProfilePage() {
                                 ))}
 
                                 {/* Admin Link (Only for authorized users) */}
-                                {user?.email && ['dhanushj213@gmail.com', 'admin@broncstudio.com', 'demo@broncstudio.com'].includes(user.email) && (
+                                {user?.email && isAdmin(user.email) && (
                                     <Link href="/admin" className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-navy-50 transition-colors text-left group border-t border-dashed border-gray-200 mt-2">
                                         <div className="w-8 h-8 rounded-full bg-navy-100 flex items-center justify-center text-navy-900 group-hover:bg-navy-900 group-hover:text-white transition-colors">
                                             <Shield size={16} />

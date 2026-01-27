@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
+import { isAdmin } from '@/utils/admin';
 
 const SIDEBAR_ITEMS = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -53,11 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             // Simple Admin Check
             // Ideally this is RLS/Backend, but for Client Logic:
-            const ADMIN_EMAILS = [
-                'dhanushj213@gmail.com', 'admin@broncstudio.com', 'demo@broncstudio.com'
-            ];
-
-            if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
+            if (!isAdmin(user.email)) {
                 // Not authorized
                 router.push('/');
                 return;
