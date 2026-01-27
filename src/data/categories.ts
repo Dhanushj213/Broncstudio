@@ -9,22 +9,22 @@ export const CATEGORY_TAXONOMY = {
             {
                 id: 'books',
                 name: 'Books',
-                slug: 'kids-books',
+                slug: 'kids-books', // Intermediate container
                 items: [
-                    { name: 'Kids Story Books', slug: 'story-books' },
+                    { name: 'Kids Story Books', slug: 'kids-story-books' },
                     { name: 'Classic Books', slug: 'classic-books' },
-                    { name: 'Kids Colouring Books', slug: 'colouring-books' }
+                    { name: 'Kids Colouring Books', slug: 'kids-colouring-books' }
                 ]
             },
             {
                 id: 'stationery',
                 name: 'Stationery',
-                slug: 'kids-stationery',
+                slug: 'stationery', // Direct link requested
                 items: [
-                    { name: 'Sketchbooks', slug: 'sketchbook' },
-                    { name: 'Notebooks', slug: 'notebook' },
-                    { name: 'Daily Planners', slug: 'planner' },
-                    { name: 'Notepads', slug: 'notepad' }
+                    { name: 'Sketchbooks', slug: 'sketchbooks' },
+                    { name: 'Notebooks', slug: 'notebooks' },
+                    { name: 'Daily Planners', slug: 'daily-planners' },
+                    { name: 'Notepads', slug: 'notepads' }
                 ]
             },
             {
@@ -32,7 +32,7 @@ export const CATEGORY_TAXONOMY = {
                 name: 'Paper Accessories',
                 slug: 'paper-accessories',
                 items: [
-                    { name: 'Bookmarks', slug: 'bookmark' },
+                    { name: 'Bookmarks', slug: 'bookmarks' },
                     { name: 'Postcards', slug: 'postcards' },
                     { name: 'Greeting Cards', slug: 'greeting-cards' }
                 ]
@@ -40,12 +40,12 @@ export const CATEGORY_TAXONOMY = {
             {
                 id: 'toys-activities',
                 name: 'Toys & Activities',
-                slug: 'toys-and-activities',
+                slug: 'toys-activities',
                 items: [
                     { name: 'MDF Puzzles', slug: 'mdf-puzzles' },
                     { name: 'Jigsaw Puzzles', slug: 'jigsaw-puzzles' },
-                    { name: 'Tattoos', slug: 'tattoos' },
-                    { name: 'Stickers', slug: 'stickers' }
+                    { name: 'Tattoos', slug: 'kids-tattoos' },
+                    { name: 'Stickers', slug: 'kids-stickers' }
                 ]
             }
         ]
@@ -59,11 +59,11 @@ export const CATEGORY_TAXONOMY = {
         subcategories: [
             {
                 id: 'clothing-men',
-                name: 'Clothing – Men',
-                slug: 'men-clothing',
+                name: 'Men',
+                slug: 'men',
                 items: [
                     { name: 'Classic Crew', slug: 'men-classic-crew' },
-                    { name: 'Oversized Tees', slug: 'men-oversized-tee' },
+                    { name: 'Oversized Tees', slug: 'men-oversized-tees' },
                     { name: 'Polos', slug: 'men-polos' },
                     { name: 'Hoodies', slug: 'men-hoodies' },
                     { name: 'Jackets', slug: 'men-jackets' },
@@ -72,24 +72,24 @@ export const CATEGORY_TAXONOMY = {
             },
             {
                 id: 'clothing-women',
-                name: 'Clothing – Women',
-                slug: 'women-clothing',
+                name: 'Women',
+                slug: 'women',
                 items: [
                     { name: 'Tops & Tees', slug: 'women-tops-tees' },
                     { name: 'Dresses', slug: 'women-dresses' },
-                    { name: 'Bottom Wear', slug: 'women-bottoms' },
+                    { name: 'Bottom Wear', slug: 'women-bottom-wear' },
                     { name: 'Activewear', slug: 'women-activewear' },
                     { name: 'Outerwear', slug: 'women-outerwear' }
                 ]
             },
             {
                 id: 'clothing-kids',
-                name: 'Clothing – Kids',
+                name: 'Kids Clothing',
                 slug: 'kids-clothing',
                 items: [
                     { name: 'Boys Tees', slug: 'boys-tees' },
                     { name: 'Girls Tees', slug: 'girls-tees' },
-                    { name: 'Rompers', slug: 'kids-rompers' },
+                    { name: 'Rompers', slug: 'rompers' },
                     { name: 'Winter Wear', slug: 'kids-winter-wear' }
                 ]
             }
@@ -191,15 +191,17 @@ export const CATEGORY_TAXONOMY = {
                 items: [
                     { name: 'Tote Bags (Zip)', slug: 'tote-bags-zip' },
                     { name: 'Large Totes', slug: 'large-totes' },
-                    { name: 'Drawstrings', slug: 'drawstrings' }
+                    { name: 'Drawstrings', slug: 'drawstring-bags' }
                 ]
             },
             {
                 id: 'tech-accessories',
                 name: 'Tech Accessories',
-                slug: 'tech-accessories',
+                slug: 'phone-cases', // Container slug, actual items below
                 items: [
-                    { name: 'Phone Cases', slug: 'phone-cases' }
+                    { name: 'iPhone', slug: 'iphone-cases' },
+                    { name: 'Samsung', slug: 'samsung-cases' },
+                    { name: 'OnePlus', slug: 'oneplus-cases' }
                 ]
             }
         ]
@@ -207,9 +209,9 @@ export const CATEGORY_TAXONOMY = {
 };
 
 export const MAIN_NAV_LINKS = [
-    { label: 'Little Legends', href: '/shop/little-legends', categoryId: 'little-legends' },
-    { label: 'Everyday Icons', href: '/shop/everyday-icons', categoryId: 'everyday-icons' },
-    { label: 'Little Luxuries', href: '/shop/little-luxuries', categoryId: 'little-luxuries' },
-    { label: 'Space Stories', href: '/shop/space-stories', categoryId: 'space-stories' },
-    { label: 'Style Extras', href: '/shop/style-extras', categoryId: 'style-extras' },
+    { label: 'Little Legends', href: '/collections/little-legends', categoryId: 'little-legends' },
+    { label: 'Everyday Icons', href: '/collections/everyday-icons', categoryId: 'everyday-icons' },
+    { label: 'Little Luxuries', href: '/collections/little-luxuries', categoryId: 'little-luxuries' },
+    { label: 'Space Stories', href: '/collections/space-stories', categoryId: 'space-stories' },
+    { label: 'Style Extras', href: '/collections/style-extras', categoryId: 'style-extras' },
 ];

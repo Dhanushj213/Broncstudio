@@ -9,31 +9,31 @@ const CATALOG_CATEGORIES = [
         label: "LITTLE LEGENDS",
         slug: 'little-legends',
         image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
-        href: '/shop/little-legends'
+        href: '/collections/little-legends'
     },
     {
         label: "EVERYDAY ICONS",
         slug: 'everyday-icons',
         image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80',
-        href: '/shop/everyday-icons'
+        href: '/collections/everyday-icons'
     },
     {
         label: "LITTLE LUXURIES",
         slug: 'little-luxuries',
         image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
-        href: '/shop/little-luxuries'
+        href: '/collections/little-luxuries'
     },
     {
         label: "SPACE STORIES",
         slug: 'space-stories',
         image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
-        href: '/shop/space-stories'
+        href: '/collections/space-stories'
     },
     {
         label: "STYLE EXTRAS",
         slug: 'style-extras',
         image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
-        href: '/shop/style-extras'
+        href: '/collections/style-extras'
     }
 ];
 
