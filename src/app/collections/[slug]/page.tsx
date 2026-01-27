@@ -44,11 +44,12 @@ export default function CollectionPage() {
     // 2. Fetch Products if Node is 'item' (Leaf)
     useEffect(() => {
         const fetchProducts = async () => {
-            if (node?.type === 'item') {
+            // Fetch for Item (Leaf) OR Category (Mid-level like Men/Women)
+            if (node?.type === 'item' || node?.type === 'category') {
                 setLoading(true);
                 const targetSlug = node.data.slug;
 
-                // 1. Get Category ID from Slug
+                // 1. Get Category ID and Info
                 const { data: catData, error: catError } = await supabase
                     .from('categories')
                     .select('id')
@@ -56,22 +57,37 @@ export default function CollectionPage() {
                     .single();
 
                 if (catError || !catData) {
-                    console.error("Category lookup failed:", catError);
-                    // Fallback: Name search
-                    const { data: fallbackData } = await supabase
-                        .from('products')
-                        .select('*')
-                        .ilike('name', `%${node.data.name}%`);
-                    setProducts(fallbackData || []);
+                    // Fallback logic remains...
                     setLoading(false);
                     return;
                 }
 
-                // 2. Fetch Products by Category ID
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .eq('category_id', catData.id);
+                let productQuery = supabase.from('products').select('*');
+
+                if (node.type === 'item') {
+                    // Leaf: Direct match
+                    productQuery = productQuery.eq('category_id', catData.id);
+                } else {
+                    // Category: Match children items
+                    // First get all sub-category IDs that have this parent
+                    const { data: childrenData } = await supabase
+                        .from('categories')
+                        .select('id')
+                        .eq('parent_id', catData.id);
+
+                    if (childrenData && childrenData.length > 0) {
+                        const ids = childrenData.map(c => c.id);
+                        // Also include the parent itself in case direct products exist? 
+                        // Usually products are on leaves, but safe to include parent.
+                        ids.push(catData.id);
+                        productQuery = productQuery.in('category_id', ids);
+                    } else {
+                        // No children? Just check parent
+                        productQuery = productQuery.eq('category_id', catData.id);
+                    }
+                }
+
+                const { data, error } = await productQuery;
 
                 if (error) {
                     console.error("Error fetching products:", error);
@@ -81,7 +97,7 @@ export default function CollectionPage() {
             }
         };
 
-        if (node?.type === 'item') {
+        if (node?.type === 'item' || node?.type === 'category') {
             fetchProducts();
         }
     }, [node]);
@@ -113,7 +129,7 @@ export default function CollectionPage() {
     }
 
     const showCards = children.length > 0;
-    const showProducts = node.type === 'item';
+    const showProducts = node.type === 'item' || node.type === 'category';
 
     return (
         <div className="relative min-h-screen pt-[var(--header-height)] pb-20 bg-background">
