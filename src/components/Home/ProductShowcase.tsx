@@ -24,7 +24,7 @@ export default function ProductShowcase({ title, subtitle, products, className =
     return (
         <section className={`py-12 md:py-16 ${className}`}>
             <div className="container-premium max-w-[1200px] mx-auto">
-                <div className="mb-8 md:mb-10 text-center md:text-left px-6 md:px-0">
+                <div className="mb-8 md:mb-10 text-center md:text-left px-4 md:px-0">
                     <h2 className="text-2xl md:text-3xl font-heading font-bold text-navy-900 dark:text-white mb-2">{title}</h2>
                     {subtitle && <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base">{subtitle}</p>}
                 </div>
@@ -39,7 +39,7 @@ export default function ProductShowcase({ title, subtitle, products, className =
                     <div className="overflow-x-auto snap-x snap-mandatory pb-8 w-full no-scrollbar">
                         <div className="flex w-max items-stretch">
                             <div className="w-4 flex-shrink-0 snap-start" />
-                            <div className="flex gap-4">
+                            <div className="flex gap-3">
                                 {products.map((product) => (
                                     <div key={product.id} className="min-w-[160px] md:min-w-[280px] snap-start">
                                         <ProductCard {...product} />

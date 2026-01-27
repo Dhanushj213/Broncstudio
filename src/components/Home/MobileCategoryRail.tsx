@@ -34,7 +34,7 @@ export default function MobileCategoryRail() {
                     {/* Start Spacer - Exactly 16px (px-4) */}
                     <div className="w-4 flex-shrink-0 h-px snap-start" />
 
-                    <div className="flex gap-4">
+                    <div className="flex gap-3">
                         {/* Special 'New' Item - Premium Solid Tile */}
                         <Link href="/shop/new-arrivals" className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
                             <div className="w-20 h-20 rounded-2xl bg-navy-900 dark:bg-white flex items-center justify-center shadow-lg shadow-navy-900/10 transition-transform group-active:scale-95">
