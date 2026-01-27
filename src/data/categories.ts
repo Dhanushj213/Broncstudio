@@ -91,19 +91,12 @@ export const CATEGORY_TAXONOMY = {
                 slug: 'modern-man',
                 description: 'Menswear Essentials',
                 subcategories: [
-                    {
-                        id: 'men-tops',
-                        name: 'Tops',
-                        slug: 'men-tops',
-                        items: [
-                            { name: 'Classic Tees', slug: 'men-classic-tees' },
-                            { name: 'Oversized Tees', slug: 'men-oversized-tees' },
-                            { name: 'Polos', slug: 'men-polos' },
-                            { name: 'Hoodies', slug: 'men-hoodies' },
-                            { name: 'Jackets', slug: 'men-jackets' },
-                            { name: 'Bottoms', slug: 'men-bottoms' }
-                        ]
-                    },
+                    { id: 'men-classic', name: 'Classic Tees', slug: 'men-classic-tees', items: [] },
+                    { id: 'men-oversized', name: 'Oversized Tees', slug: 'men-oversized-tees', items: [] },
+                    { id: 'men-polos', name: 'Polos', slug: 'men-polos', items: [] },
+                    { id: 'men-hoodies', name: 'Hoodies', slug: 'men-hoodies', items: [] },
+                    { id: 'men-jackets', name: 'Jackets', slug: 'men-jackets', items: [] },
+                    { id: 'men-bottoms', name: 'Bottoms', slug: 'men-bottoms', items: [] }
                 ]
             },
             {
@@ -112,19 +105,12 @@ export const CATEGORY_TAXONOMY = {
                 slug: 'modern-muse',
                 description: 'Womenswear Collection',
                 subcategories: [
-                    {
-                        id: 'women-tops',
-                        name: 'Tops',
-                        slug: 'women-tops',
-                        items: [
-                            { name: 'Classic Tees', slug: 'women-classic-tees' },
-                            { name: 'Boyfriend Tees', slug: 'women-boyfriend-tees' },
-                            { name: 'Dresses', slug: 'women-dresses' },
-                            { name: 'Bottom Wear', slug: 'women-bottoms' },
-                            { name: 'Activewear', slug: 'women-active' },
-                            { name: 'Outerwear', slug: 'women-outerwear' }
-                        ]
-                    }
+                    { id: 'women-classic', name: 'Classic Tees', slug: 'women-classic-tees', items: [] },
+                    { id: 'women-boyfriend', name: 'Boyfriend Tees', slug: 'women-boyfriend-tees', items: [] },
+                    { id: 'women-dresses', name: 'Dresses', slug: 'women-dresses', items: [] },
+                    { id: 'women-bottoms', name: 'Bottom Wear', slug: 'women-bottoms', items: [] },
+                    { id: 'women-active', name: 'Activewear', slug: 'women-active', items: [] },
+                    { id: 'women-outerwear', name: 'Outerwear', slug: 'women-outerwear', items: [] }
                 ]
             }
         ]
