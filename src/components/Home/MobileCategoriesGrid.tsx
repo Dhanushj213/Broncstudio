@@ -6,52 +6,58 @@ import Link from 'next/link';
 // Strictly mapped to 'src/data/categories.ts' output
 const CATALOG_CATEGORIES = [
     {
-        label: "MEN'S EDIT",
-        slug: 'modern-man',
-        image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80',
-        href: '/shop/modern-man'
+        label: "KIDS & LEARNING",
+        slug: 'kids-learning',
+        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
+        href: '/shop/kids-learning'
     },
     {
-        label: "WOMEN'S EDIT",
-        slug: 'modern-muse',
-        image: 'https://images.unsplash.com/photo-1548126032-079a0fb0099f?w=500&q=80',
-        href: '/shop/modern-muse'
+        label: "CLOTHING",
+        slug: 'clothing',
+        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80',
+        href: '/shop/clothing'
     },
     {
-        label: 'LITTLE LEGENDS',
-        slug: 'little-legends',
-        image: 'https://images.unsplash.com/photo-1519238263496-6361937a4ce6?w=500&q=80',
-        href: '/shop/little-legends'
+        label: "ACCESSORIES",
+        slug: 'accessories',
+        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
+        href: '/shop/accessories'
     },
     {
-        label: 'HOME & LIVING',
-        slug: 'space-stories',
+        label: "TECH & DESK",
+        slug: 'tech-desk',
+        image: 'https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=500&q=80',
+        href: '/shop/tech-desk'
+    },
+    {
+        label: "HOME & DECOR",
+        slug: 'home-decor',
         image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
-        href: '/shop/space-stories'
+        href: '/shop/home-decor'
     },
     {
-        label: 'ACCESSORIES',
-        slug: 'style-extras',
-        image: 'https://images.unsplash.com/photo-1551028919-ac7675cf3856?w=500&q=80',
-        href: '/shop/style-extras'
+        label: "DRINKWARE",
+        slug: 'drinkware',
+        image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&q=80',
+        href: '/shop/drinkware'
     },
     {
-        label: 'GIFT SUITE',
-        slug: 'little-luxuries',
-        image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=500&q=80',
-        href: '/shop/little-luxuries'
+        label: "BAGS",
+        slug: 'bags',
+        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80',
+        href: '/shop/bags'
     },
     {
-        label: 'PAWFECT PICKS',
-        slug: 'pawfect-picks',
+        label: "GIFTS",
+        slug: 'gifts',
+        image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
+        href: '/shop/gifts'
+    },
+    {
+        label: "PETS",
+        slug: 'pets',
         image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
-        href: '/shop/pawfect-picks'
-    },
-    {
-        label: 'EVERYDAY ICONS',
-        slug: 'everyday-icons',
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80',
-        href: '/shop/everyday-icons'
+        href: '/shop/pets'
     }
 ];
 
@@ -62,7 +68,7 @@ export default function MobileCategoriesGrid() {
                 <h2 className="text-xl font-heading font-bold text-navy-900 dark:text-white uppercase tracking-wider">
                     SHOP BY CATEGORY
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Explore our curated worlds.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Explore our curated collections.</p>
             </div>
 
             <div className="overflow-x-auto no-scrollbar snap-x w-full scroll-pl-4">

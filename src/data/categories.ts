@@ -1,70 +1,49 @@
 export const CATEGORY_TAXONOMY = {
-    'little-legends': {
-        id: 'little-legends',
-        name: 'Little Legends',
-        slug: 'little-legends',
-        description: 'Where curiosity begins. Books, toys, and outfits for big imaginations.',
-        image: '/images/worlds/little-legends.jpg', // Placeholder
-        intents: [
-            { name: 'Learn & Imagine', slug: 'learn-and-imagine', type: 'collection', items: ['Books', 'Puzzles', 'Flashcards'], description: 'Books & Puzzles' },
-            { name: 'Create & Colour', slug: 'create-and-colour', type: 'collection', items: ['Sketchbooks', 'Crayons', 'DIY Kits'], description: 'Art & Creativity' },
-            { name: 'Play & Explore', slug: 'play-and-explore', type: 'collection', items: ['Toys', 'Games'], description: 'Educational Toys' },
-            { name: 'Mini Style', slug: 'mini-style', type: 'collection', items: ['Kids Apparel'], description: 'Fashion for Kids' }
-        ],
+    'kids-learning': {
+        id: 'kids-learning',
+        name: 'KIDS & LEARNING',
+        slug: 'kids-learning',
+        description: 'Where curiosity begins. Books, toys, and activities.',
+        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
         subcategories: [
             {
-                id: 'books-stationery',
-                name: 'Story & Scribble',
-                slug: 'story-and-scribble',
-                description: 'Journals & Sketchbooks',
+                id: 'books',
+                name: 'Books',
+                slug: 'kids-books',
                 items: [
-                    { name: 'Tiny Tales', slug: 'tiny-tales', original: 'Kids Books' },
-                    { name: 'Colouring Books', slug: 'colouring-books' },
-                    { name: 'Creative Sketches', slug: 'creative-sketches', original: 'Sketchbook' },
+                    { name: 'Kids Story Books', slug: 'story-books' },
+                    { name: 'Classic', slug: 'classic-books' },
+                    { name: 'Kids Colouring Books', slug: 'colouring-books' }
                 ]
             },
             {
-                id: 'toys-activities',
-                name: 'Play & Wonder',
-                slug: 'play-and-wonder',
-                description: 'Imaginative Play',
-                items: [
-                    { name: 'Brain Builders', slug: 'brain-builders', original: 'MDF Wooden Puzzles' },
-                ]
-            },
-            {
-                id: 'kids-clothing',
-                name: 'Mini Fashion',
-                slug: 'mini-fashion',
-                description: 'Trendy Outfits',
-                items: [
-                    { name: 'Little Champ Tee', slug: 'little-champ-tee', original: 'Boy Classic Tee' },
-                    { name: 'Tiny Trend Tee', slug: 'tiny-trend-tee', original: 'Girl Classic Tee' },
-                    { name: 'Rompers', slug: 'kids-rompers' },
-                    { name: 'Winter Wear', slug: 'kids-winter' }
-                ]
-            },
-            {
-                id: 'kids-stationery',
-                name: 'Little Stationers',
+                id: 'stationery',
+                name: 'Stationery',
                 slug: 'kids-stationery',
-                description: 'Notebooks & Pens',
                 items: [
-                    { name: 'Notebooks', slug: 'notebook' },
-                    { name: 'Daily Planners', slug: 'planner' },
-                    { name: 'Notepads', slug: 'notepad' },
-                    { name: 'Bookmarks', slug: 'bookmark' },
+                    { name: 'Sketchbook', slug: 'sketchbook' },
+                    { name: 'Notebook', slug: 'notebook' },
+                    { name: 'Daily Planner', slug: 'planner' },
+                    { name: 'Notepad', slug: 'notepad' }
+                ]
+            },
+            {
+                id: 'paper-accessories',
+                name: 'Paper Accessories',
+                slug: 'paper-accessories',
+                items: [
+                    { name: 'Bookmark', slug: 'bookmark' },
                     { name: 'Postcards', slug: 'postcards' },
                     { name: 'Greeting Cards', slug: 'greeting-cards' }
                 ]
             },
             {
-                id: 'kids-activities',
-                name: 'Fun & Games',
-                slug: 'kids-activities',
-                description: 'Board Games & Puzzles',
+                id: 'toys-activities',
+                name: 'Toys & Activities',
+                slug: 'toys-and-activities',
                 items: [
-                    { name: 'Jigsaw Puzzles', slug: 'jigsaw' },
+                    { name: 'MDF Puzzles', slug: 'mdf-puzzles' },
+                    { name: 'Jigsaw Puzzles', slug: 'jigsaw-puzzles' },
                     { name: 'Tattoos', slug: 'tattoos' },
                     { name: 'Stickers', slug: 'stickers' },
                     { name: 'Ornaments', slug: 'ornaments' }
@@ -72,149 +51,73 @@ export const CATEGORY_TAXONOMY = {
             }
         ]
     },
-    'everyday-icons': {
-        id: 'everyday-icons',
-        name: 'Everyday Icons',
-        slug: 'everyday-icons',
-        description: 'Clothing for men, women & kids — styled by mood.',
-        image: '/images/worlds/everyday-icons.jpg',
-        intents: [
-            { name: 'Chill & Oversized', slug: 'chill-and-oversized', type: 'style', filter: 'oversized', description: 'Relaxed Fits' },
-            { name: 'Clean & Classic', slug: 'clean-and-classic', type: 'style', filter: 'classic', description: 'Timeless Essentials' },
-            { name: 'Bold & Printed', slug: 'bold-and-printed', type: 'style', filter: 'graphic', description: 'Statement Pieces' },
-            { name: 'Family Fits', slug: 'family-fits', type: 'style', filter: 'matching', description: 'Twinning Sets' }
-        ],
-        groups: [
+    'clothing': {
+        id: 'clothing',
+        name: 'CLOTHING',
+        slug: 'clothing',
+        description: 'Style for everyone.',
+        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80',
+        subcategories: [
             {
                 id: 'men',
-                name: 'Modern Man',
-                slug: 'modern-man',
-                description: 'Menswear Essentials',
-                subcategories: [
-                    { id: 'men-classic', name: 'Classic Tees', slug: 'men-classic-tees', items: [] },
-                    { id: 'men-oversized', name: 'Oversized Tees', slug: 'men-oversized-tees', items: [] },
-                    { id: 'men-polos', name: 'Polos', slug: 'men-polos', items: [] },
-                    { id: 'men-hoodies', name: 'Hoodies', slug: 'men-hoodies', items: [] },
-                    { id: 'men-jackets', name: 'Jackets', slug: 'men-jackets', items: [] },
-                    { id: 'men-bottoms', name: 'Bottoms', slug: 'men-bottoms', items: [] }
+                name: 'Men',
+                slug: 'men-clothing',
+                items: [
+                    { name: 'Classic Crew', slug: 'men-classic-crew' },
+                    { name: 'Oversized Tee', slug: 'men-oversized-tee' },
+                    { name: 'Polos', slug: 'men-polos' },
+                    { name: 'Hoodies', slug: 'men-hoodies' },
+                    { name: 'Jackets', slug: 'men-jackets' },
+                    { name: 'Bottoms', slug: 'men-bottoms' }
                 ]
             },
             {
                 id: 'women',
-                name: 'Modern Muse',
-                slug: 'modern-muse',
-                description: 'Womenswear Collection',
-                subcategories: [
-                    { id: 'women-classic', name: 'Classic Tees', slug: 'women-classic-tees', items: [] },
-                    { id: 'women-boyfriend', name: 'Boyfriend Tees', slug: 'women-boyfriend-tees', items: [] },
-                    { id: 'women-dresses', name: 'Dresses', slug: 'women-dresses', items: [] },
-                    { id: 'women-bottoms', name: 'Bottom Wear', slug: 'women-bottoms', items: [] },
-                    { id: 'women-active', name: 'Activewear', slug: 'women-active', items: [] },
-                    { id: 'women-outerwear', name: 'Outerwear', slug: 'women-outerwear', items: [] }
+                name: 'Women',
+                slug: 'women-clothing',
+                items: [
+                    { name: 'Tops & Tees', slug: 'women-tops-tees' },
+                    { name: 'Dresses', slug: 'women-dresses' },
+                    { name: 'Bottom Wear', slug: 'women-bottoms' },
+                    { name: 'Activewear', slug: 'women-activewear' },
+                    { name: 'Outerwear', slug: 'women-outerwear' }
+                ]
+            },
+            {
+                id: 'kids-clothing',
+                name: 'Kids',
+                slug: 'kids-clothing',
+                items: [
+                    { name: 'Boys Tees', slug: 'boys-tees' },
+                    { name: 'Girls Tees', slug: 'girls-tees' },
+                    { name: 'Rompers', slug: 'kids-rompers' },
+                    { name: 'Winter Wear', slug: 'kids-winter-wear' }
                 ]
             }
         ]
     },
-    'little-luxuries': {
-        id: 'little-luxuries',
-        name: 'Little Luxuries',
-        slug: 'little-luxuries',
-        description: 'Small things that feel special. Gifts, keepsakes, and charms.',
+    'accessories': {
+        id: 'accessories',
+        name: 'ACCESSORIES',
+        slug: 'accessories',
+        description: 'Complete the look.',
+        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
         subcategories: [
-            {
-                id: 'personalized',
-                name: 'Personalized Gifts',
-                slug: 'personalized-gifts',
-                description: 'Custom Charms',
-                items: [
-                    { name: 'Keychains', slug: 'keychains', original: 'Keychain' },
-                    { name: 'Badges', slug: 'badges', original: 'Badge' },
-                    { name: 'Luggage Tags', slug: 'luggage-tags', original: 'Luggage Tag' },
-                    { name: 'Patches', slug: 'patches', original: 'Patch' },
-                ]
-            }
-        ]
-    },
-    'space-stories': {
-        id: 'space-stories',
-        name: 'Space Stories',
-        slug: 'space-stories',
-        description: 'Designs that live with you. Decor, dining, and comfort.',
-        subcategories: [
-            {
-                id: 'wall-decor',
-                name: 'Wall Tales',
-                slug: 'wall-tales',
-                description: 'Posters & Art',
-                items: [
-                    { name: 'Posters', slug: 'posters' },
-                    { name: 'Canvas', slug: 'canvas' },
-                    { name: 'Magnets', slug: 'magnets' }
-                ]
-            },
-            {
-                id: 'home-comforts',
-                name: 'Home Comforts',
-                slug: 'home-comforts',
-                description: 'Cushions & Rugs',
-                items: [
-                    { name: 'Cushions', slug: 'cushions' },
-                    { name: 'Coasters', slug: 'coasters' }
-                ]
-            },
-            {
-                id: 'drinkware',
-                name: 'Sip Station',
-                slug: 'sip-station',
-                description: 'Mugs & Bottles',
-                items: [
-                    { name: 'Coffee Mugs', slug: 'mugs' },
-                    { name: 'Magic Mugs', slug: 'magic-mugs' },
-                    { name: 'Steel Bottles', slug: 'bottles' },
-                    { name: 'Sippers', slug: 'sippers' }
-                ]
-            }
-        ]
-    },
-    'style-extras': {
-        id: 'style-extras',
-        name: 'Style Extras',
-        slug: 'style-extras',
-        description: 'Add-ons that complete the look. Caps, bags, and tech gear.',
-        subcategories: [
-            {
-                id: 'bags',
-                name: 'Carry Culture',
-                slug: 'carry-culture',
-                description: 'Backpacks & Totes',
-                items: [
-                    { name: 'Tote Bags (Zip)', slug: 'totes-zipper' },
-                    { name: 'Large Totes', slug: 'totes-large' },
-                    { name: 'Drawstrings', slug: 'drawstring-bags' }
-                ]
-            },
-            {
-                id: 'tech',
-                name: 'Tech Accessories',
-                slug: 'tech-accessories',
-                description: 'Cases & Sleeves',
-                items: [
-                    { name: 'iPhone Cases', slug: 'iphone-cases' },
-                    { name: 'Samsung Cases', slug: 'samsung-cases' },
-                    { name: 'OnePlus Cases', slug: 'oneplus-cases' },
-                    { name: 'Mouse Pads', slug: 'mouse-pads' },
-                    { name: 'Gaming Pads', slug: 'gaming-pads' }
-                ]
-            },
             {
                 id: 'headwear',
-                name: 'Head & Hair',
+                name: 'Headwear',
                 slug: 'headwear',
-                description: 'Caps & Hats',
                 items: [
                     { name: 'Caps', slug: 'caps' },
                     { name: 'Snapbacks', slug: 'snapbacks' },
-                    { name: 'Bucket Hats', slug: 'bucket-hats' },
+                    { name: 'Bucket Hats', slug: 'bucket-hats' }
+                ]
+            },
+            {
+                id: 'wearables',
+                name: 'Wearables',
+                slug: 'wearables',
+                items: [
                     { name: 'Scarves', slug: 'scarves' },
                     { name: 'Scrunchies', slug: 'scrunchies' },
                     { name: 'Aprons', slug: 'aprons' }
@@ -222,27 +125,148 @@ export const CATEGORY_TAXONOMY = {
             }
         ]
     },
-    'pawfect-picks': {
-        id: 'pawfect-picks',
-        name: 'Pawfect Picks',
-        slug: 'pawfect-picks',
-        description: 'For the ones with paws.',
+    'tech-desk': {
+        id: 'tech-desk',
+        name: 'TECH & DESK',
+        slug: 'tech-desk',
+        description: 'Work and play in style.',
+        image: 'https://images.unsplash.com/photo-1491933382434-500287f9b54b?w=500&q=80',
         subcategories: [
             {
-                id: 'pet-apparel',
-                name: 'Furry Fashion',
-                slug: 'furry-fashion',
-                description: 'Apparel for Pets',
+                id: 'cases',
+                name: 'Cases',
+                slug: 'phone-cases',
                 items: [
-                    { name: 'Dog Tees', slug: 'dog-tees' }
+                    { name: 'iPhone', slug: 'iphone-cases' },
+                    { name: 'Samsung', slug: 'samsung-cases' },
+                    { name: 'OnePlus', slug: 'oneplus-cases' }
                 ]
             },
             {
-                id: 'pet-accessories',
-                name: 'Pet Accessories',
-                slug: 'pet-accessories',
-                description: 'Collars & Tags',
+                id: 'desk',
+                name: 'Desk',
+                slug: 'desk-accessories',
                 items: [
+                    { name: 'Mouse Pads', slug: 'mouse-pads' },
+                    { name: 'Gaming Pads', slug: 'gaming-pads' }
+                ]
+            }
+        ]
+    },
+    'home-decor': {
+        id: 'home-decor',
+        name: 'HOME & DECOR',
+        slug: 'home-decor',
+        description: 'Transform your space.',
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+        subcategories: [
+            {
+                id: 'decor',
+                name: 'Decor',
+                slug: 'decor',
+                items: [
+                    { name: 'Posters', slug: 'posters' },
+                    { name: 'Canvas', slug: 'canvas' }
+                ]
+            },
+            {
+                id: 'living',
+                name: 'Living',
+                slug: 'living',
+                items: [
+                    { name: 'Coasters', slug: 'coasters' },
+                    { name: 'Cushions', slug: 'cushions' },
+                    { name: 'Magnets', slug: 'magnets' }
+                ]
+            }
+        ]
+    },
+    'drinkware': {
+        id: 'drinkware',
+        name: 'DRINKWARE',
+        slug: 'drinkware',
+        description: 'Sip in style.',
+        image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&q=80',
+        subcategories: [
+            {
+                id: 'mugs',
+                name: 'Mugs',
+                slug: 'mugs',
+                items: [
+                    { name: 'Coffee Mugs', slug: 'coffee-mugs' },
+                    { name: 'Magic Mugs', slug: 'magic-mugs' }
+                ]
+            },
+            {
+                id: 'bottles',
+                name: 'Bottles',
+                slug: 'bottles',
+                items: [
+                    { name: 'Steel Bottles', slug: 'steel-bottles' },
+                    { name: 'Sippers', slug: 'sippers' }
+                ]
+            }
+        ]
+    },
+    'bags': {
+        id: 'bags',
+        name: 'BAGS',
+        slug: 'bags',
+        description: 'Carry essentials.',
+        image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80',
+        subcategories: [
+            {
+                id: 'carry-essentials',
+                name: 'Carry Essentials',
+                slug: 'carry-essentials',
+                items: [
+                    { name: 'Tote Bags (Zip)', slug: 'tote-bags-zip' },
+                    { name: 'Large Totes', slug: 'large-totes' },
+                    { name: 'Drawstrings', slug: 'drawstrings' }
+                ]
+            }
+        ]
+    },
+    'gifts': {
+        id: 'gifts',
+        name: 'GIFTS',
+        slug: 'gifts',
+        description: 'Small joys.',
+        image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
+        subcategories: [
+            {
+                id: 'trinkets',
+                name: 'Trinkets',
+                slug: 'trinkets',
+                items: [
+                    { name: 'Keychains', slug: 'keychains' },
+                    { name: 'Badges', slug: 'badges' },
+                    { name: 'Patches', slug: 'patches' }
+                ]
+            },
+            {
+                id: 'tags',
+                name: 'Tags',
+                slug: 'luggage-tags',
+                items: [
+                    { name: 'Luggage Tags', slug: 'luggage-tags' }
+                ]
+            }
+        ]
+    },
+    'pets': {
+        id: 'pets',
+        name: 'PETS',
+        slug: 'pets',
+        description: 'Furry friends.',
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
+        subcategories: [
+            {
+                id: 'pet-essentials',
+                name: 'Essentials',
+                slug: 'pet-essentials',
+                items: [
+                    { name: 'Dog Tees', slug: 'dog-tees' },
                     { name: 'Pet Tags', slug: 'pet-tags' }
                 ]
             }
@@ -251,10 +275,13 @@ export const CATEGORY_TAXONOMY = {
 };
 
 export const MAIN_NAV_LINKS = [
-    { label: 'Little Legends', href: '/shop/little-legends', categoryId: 'little-legends' },
-    { label: 'Everyday Icons', href: '/shop/everyday-icons', categoryId: 'everyday-icons' },
-    { label: 'Little Luxuries', href: '/shop/little-luxuries', categoryId: 'little-luxuries' },
-    { label: 'Space Stories', href: '/shop/space-stories', categoryId: 'space-stories' },
-    { label: 'Style Extras', href: '/shop/style-extras', categoryId: 'style-extras' },
-    { label: 'Pawfect Picks', href: '/shop/pawfect-picks', categoryId: 'pawfect-picks' },
+    { label: 'KIDS & LEARNING', href: '/shop/kids-learning', categoryId: 'kids-learning' },
+    { label: 'CLOTHING', href: '/shop/clothing', categoryId: 'clothing' },
+    { label: 'ACCESSORIES', href: '/shop/accessories', categoryId: 'accessories' },
+    { label: 'TECH & DESK', href: '/shop/tech-desk', categoryId: 'tech-desk' },
+    { label: 'HOME & DECOR', href: '/shop/home-decor', categoryId: 'home-decor' },
+    { label: 'DRINKWARE', href: '/shop/drinkware', categoryId: 'drinkware' },
+    { label: 'BAGS', href: '/shop/bags', categoryId: 'bags' },
+    { label: 'GIFTS', href: '/shop/gifts', categoryId: 'gifts' },
+    { label: 'PETS', href: '/shop/pets', categoryId: 'pets' },
 ];
