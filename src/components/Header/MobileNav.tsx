@@ -57,7 +57,7 @@ const MobileNav = () => {
                                         : 'text-gray-400'
                                         }`}
                                 />
-                                {item.badge && item.badge > 0 && (
+                                {(item.badge || 0) > 0 && (
                                     <span className="absolute -top-2 -right-2 w-4 h-4 bg-coral-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold border-2 border-[#0B1220]">
                                         {item.badge}
                                     </span>

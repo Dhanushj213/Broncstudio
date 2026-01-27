@@ -5,10 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { X, ChevronRight, User, LogIn, Heart, ShoppingBag } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface MobileMenuProps {
     isOpen: boolean;
     onClose: () => void;
+    currentUser: SupabaseUser | null;
 }
 
 const NAV_ITEMS = [
@@ -20,7 +22,7 @@ const NAV_ITEMS = [
     { label: 'Sale', href: '/shop/sale' },
 ];
 
-const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
     // Prevent scrolling when menu is open
     React.useEffect(() => {
         if (isOpen) {
@@ -88,8 +90,9 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                         <div className="p-6 bg-white dark:bg-navy-950 border-t border-black/5 dark:border-white/5 space-y-4">
 
                             {/* Profile Link - HIGHLIGHTED */}
+                            {/* Profile Link - HIGHLIGHTED */}
                             <Link
-                                href="/login"
+                                href={currentUser ? "/profile" : "/login"}
                                 onClick={onClose}
                                 className="flex items-center gap-4 p-4 rounded-xl bg-navy-50 dark:bg-white/5 text-navy-900 dark:text-white hover:bg-coral-500/10 hover:text-coral-600 transition-all border border-transparent hover:border-coral-200"
                             >
@@ -97,8 +100,12 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                                     <User size={20} />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-bold text-sm">My Profile</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Login or Sign up</p>
+                                    <p className="font-bold text-sm">
+                                        {currentUser ? `Hi, ${currentUser.user_metadata?.full_name?.split(' ')[0] || 'User'}` : 'My Profile'}
+                                    </p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        {currentUser ? 'View your account' : 'Login or Sign up'}
+                                    </p>
                                 </div>
                                 <ChevronRight size={16} className="text-gray-400" />
                             </Link>

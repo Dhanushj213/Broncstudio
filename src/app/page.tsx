@@ -56,10 +56,10 @@ export default function Home() {
       <AmbientBackground />
 
       {/* Spacer for Header */}
-      <div className="h-[var(--header-height)]" />
+      {/* Spacer for Header - REMOVED for correct spacing */}
 
       {/* Hero Section - Bento Grid */}
-      <div id="worlds" className="relative pt-6 pb-4 text-center scroll-mt-[var(--header-height)]">
+      <div id="worlds" className="relative pt-2 pb-4 text-center scroll-mt-[var(--header-height)]">
         <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-2 animate-fade-in-up">
           Explore Our Worlds
         </h1>
