@@ -205,6 +205,24 @@ export const CATEGORY_TAXONOMY = {
                 ]
             }
         ]
+    },
+    'pets': {
+        id: 'pets',
+        name: 'Pets',
+        slug: 'pets',
+        description: 'Furry Friends.',
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
+        subcategories: [
+            {
+                id: 'pet-essentials',
+                name: 'Essentials',
+                slug: 'pet-essentials',
+                items: [
+                    { name: 'Dog Tees', slug: 'dog-tees' },
+                    { name: 'Pet Tags', slug: 'pet-tags' }
+                ]
+            }
+        ]
     }
 };
 

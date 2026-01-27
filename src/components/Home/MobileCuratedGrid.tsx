@@ -8,25 +8,25 @@ const CURATED_ITEMS = [
         id: 1,
         title: 'OLD MONEY',
         image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&q=80',
-        href: '/shop/old-money'
+        href: '/curated/old-money'
     },
     {
         id: 2,
         title: 'OFFICE EDIT',
         image: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=500&q=80',
-        href: '/shop/office-edit'
+        href: '/curated/office-edit'
     },
     {
         id: 3,
         title: 'CONCERT FITS',
         image: 'https://images.unsplash.com/photo-1501196354995-cbb51c65dcef?w=500&q=80',
-        href: '/shop/concert-fits'
+        href: '/curated/concert-fits'
     },
     {
         id: 4,
         title: 'CULTURE CODE',
         image: 'https://images.unsplash.com/photo-1523396896303-8e053e8a2866?w=500&q=80',
-        href: '/shop/culture-code'
+        href: '/curated/culture-code'
     },
 ];
 
