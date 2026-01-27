@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { useUI } from '@/context/UIContext';
 import { Search, X, TrendingUp } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 export default function SearchOverlay() {
     const { isSearchOpen, closeSearch, openSearch } = useUI();
@@ -30,6 +31,20 @@ export default function SearchOverlay() {
         }
     }, [isSearchOpen]);
 
+    const router = useRouter();
+
+    const handleSearch = (query: string) => {
+        if (!query.trim()) return;
+        closeSearch();
+        router.push(`/search?q=${encodeURIComponent(query)}`);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSearch(inputRef.current?.value || '');
+        }
+    };
+
     return (
         <AnimatePresence>
             {isSearchOpen && (
@@ -54,6 +69,7 @@ export default function SearchOverlay() {
                                 type="text"
                                 placeholder="Search for products, brands, or stories..."
                                 className="w-full bg-gray-100 border border-transparent rounded-2xl py-6 pl-16 pr-16 text-xl text-navy-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-gray-200 focus:ring-1 focus:ring-gray-200 shadow-sm focus:shadow-xl transition-all"
+                                onKeyDown={handleKeyDown}
                             />
                             <button
                                 onClick={closeSearch}
@@ -74,6 +90,7 @@ export default function SearchOverlay() {
                                 {['Little Legends', 'Sustainable', 'Gift Sets', 'Space Decor', 'Dinosaur Tee', 'Party Wear'].map((tag) => (
                                     <button
                                         key={tag}
+                                        onClick={() => handleSearch(tag)}
                                         className="text-navy-900 hover:text-white bg-gray-100 hover:bg-navy-900 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-lg"
                                     >
                                         {tag}

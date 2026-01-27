@@ -62,8 +62,20 @@ export default function CuratedFeedPage() {
 
             if (error) console.error(error);
 
+            let finalProducts = data || [];
+
+            // FALLBACK: If no products found for this specific curation, fetch popular items
+            if (finalProducts.length === 0) {
+                const { data: fallbackData } = await supabase
+                    .from('products')
+                    .select('*')
+                    .limit(20);
+
+                finalProducts = fallbackData || [];
+            }
+
             // Randomize for "Discovery" feel
-            const shuffled = data ? data.sort(() => 0.5 - Math.random()) : [];
+            const shuffled = finalProducts.sort(() => 0.5 - Math.random());
             setProducts(shuffled);
             setLoading(false);
         };
