@@ -10,13 +10,7 @@ import { createClient } from '@/utils/supabase/client';
 import { LayoutGrid, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Mock Metadata for Curated Feeds
-const CURATED_META: Record<string, { title: string; description: string }> = {
-    'old-money': { title: 'Old Money Aesthetic', description: 'Timeless elegance and quiet luxury.' },
-    'office-edit': { title: 'The Office Edit', description: 'Professional fits that mean business.' },
-    'concert-fits': { title: 'Concert Fits', description: 'Stand out in the crowd.' },
-    'culture-code': { title: 'Culture Code', description: 'Streetwear essentials defined by you.' }
-};
+import { CURATED_CONFIG } from '@/data/curatedConfig';
 
 export default function CuratedFeedPage() {
     const params = useParams();
@@ -24,19 +18,47 @@ export default function CuratedFeedPage() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const meta = CURATED_META[slug] || { title: 'Curated Collection', description: 'Handpicked just for you.' };
+    const meta = CURATED_CONFIG[slug] || { title: 'Curated Collection', description: 'Handpicked just for you.', category_slugs: [] };
 
     const supabase = createClient();
 
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
-            // In a real scenario, we might query by specific tags or curated IDs.
-            // For now, we'll fetch random products to simulate a "feed"
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .limit(20); // Fetch a batch
+            const config = CURATED_CONFIG[slug];
+
+            if (!config) {
+                // Fallback for unknown slugs or old links
+                const { data } = await supabase.from('products').select('*').limit(20);
+                setProducts(data || []);
+                setLoading(false);
+                return;
+            }
+
+            // 1. Resolve Category Slugs to IDs
+            let categoryIds: string[] = [];
+            if (config.category_slugs && config.category_slugs.length > 0) {
+                const { data: cats } = await supabase
+                    .from('categories')
+                    .select('id')
+                    .in('slug', config.category_slugs);
+
+                if (cats) categoryIds = cats.map((c: any) => c.id);
+            }
+
+            // 2. Build Product Query
+            let query = supabase.from('products').select('*');
+
+            if (categoryIds.length > 0) {
+                query = query.in('category_id', categoryIds);
+            }
+
+            // 3. Apply Price Filter
+            if (config.price_max) {
+                query = query.lt('price', config.price_max);
+            }
+
+            const { data, error } = await query.limit(50);
 
             if (error) console.error(error);
 
