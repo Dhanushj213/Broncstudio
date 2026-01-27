@@ -231,14 +231,14 @@ export default function CollectionPage() {
                 )}
 
                 {/* 2. Products */}
-                {showProducts && (
+                {showProducts && products.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
                     >
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-12">
-                            {products.length > 0 ? products.map((product, idx) => (
+                            {products.map((product, idx) => (
                                 <motion.div
                                     key={product.id}
                                     initial={{ opacity: 0, y: 20 }}
@@ -255,19 +255,23 @@ export default function CollectionPage() {
                                         badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
                                     />
                                 </motion.div>
-                            )) : (
-                                <div className="col-span-full py-32 text-center text-gray-400">
-                                    <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                                        <LayoutGrid size={32} className="opacity-50" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Products Found</h3>
-                                    <p>We couldn't find any items in this collection just yet.</p>
-                                </div>
-                            )}
+                            ))}
                         </div>
                     </motion.div>
+                )}
+
+                {/* 3. Empty State (Only if NO cards and NO products) */}
+                {showProducts && products.length === 0 && !showCards && (
+                    <div className="col-span-full py-32 text-center text-gray-400">
+                        <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <LayoutGrid size={32} className="opacity-50" />
+                        </div>
+                        <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Products Found</h3>
+                        <p>We couldn't find any items in this collection just yet.</p>
+                    </div>
                 )}
             </div>
         </div>
     );
 }
+
