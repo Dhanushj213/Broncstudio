@@ -2,28 +2,23 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { CATEGORY_TAXONOMY } from '@/data/categories';
 
-// Helper to get image info.
-// We prioritize specific overrides or fall back to taxonomy images.
-const getCategoryData = (key: string) => {
-    const tax = (CATEGORY_TAXONOMY as any)[key];
-    if (!tax) return null;
-    return {
-        label: tax.name,
-        href: `/collections/${tax.slug}`,
-        // Use the taxonomy image, or a default if missing
-        img: tax.image || '/images/placeholder.jpg',
-    };
-};
-
+// 14 Specific items requested by User
 const RAIL_ITEMS = [
-    { key: 'little-legends', labelOverride: 'Kids' },
-    { key: 'everyday-icons', labelOverride: 'Fashion' },
-    { key: 'little-luxuries', labelOverride: 'Gifting' },
-    { key: 'space-stories', labelOverride: 'Home' },
-    { key: 'style-extras', labelOverride: 'Accessory' },
-    { key: 'pets', labelOverride: 'Pets' },
+    { label: 'Men', href: '/collections/men', img: 'https://images.unsplash.com/photo-1516257984-b1b4d8c92305?w=500&q=80' },
+    { label: 'Women', href: '/collections/women', img: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80' },
+    { label: 'Kids', href: '/collections/kids-clothing', img: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=500&q=80' },
+    { label: 'Accessories', href: '/collections/style-extras', img: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80' },
+    { label: 'Books', href: '/collections/kids-books', img: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&q=80' },
+    { label: 'Pets', href: '/collections/pets', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&q=80' },
+    { label: 'Stationery', href: '/collections/stationery', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&q=80' },
+    { label: 'Toys', href: '/collections/toys-activities', img: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&q=80' },
+    { label: 'Drinkware', href: '/collections/drinkware', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&q=80' },
+    { label: 'Gifts', href: '/collections/gifts', img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&q=80' },
+    { label: 'Desk', href: '/collections/desk-essentials', img: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=500&q=80' },
+    { label: 'Decor', href: '/collections/home-decor', img: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=500&q=80' },
+    { label: 'Magnets', href: '/collections/magnets', img: 'https://images.unsplash.com/photo-1596495370355-467332247aa6?w=500&q=80' },
+    { label: 'Posters', href: '/collections/posters', img: 'https://images.unsplash.com/photo-1577083552431-6e5fd01988ec?w=500&q=80' },
 ];
 
 export default function MobileCategoryRail() {
@@ -48,27 +43,22 @@ export default function MobileCategoryRail() {
                             </span>
                         </Link>
 
-                        {RAIL_ITEMS.map((item) => {
-                            const data = getCategoryData(item.key);
-                            if (!data) return null;
-
-                            return (
-                                <Link key={item.key} href={data.href} className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shadow-md transition-transform group-active:scale-95 relative">
-                                        <img
-                                            src={data.img}
-                                            alt={item.labelOverride || data.label}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        {/* Subtle inner border for definition */}
-                                        <div className="absolute inset-0 rounded-2xl border border-black/5 dark:border-white/10 pointer-events-none"></div>
-                                    </div>
-                                    <span className="text-xs font-medium text-navy-900 dark:text-white text-center leading-tight">
-                                        {item.labelOverride || data.label}
-                                    </span>
-                                </Link>
-                            );
-                        })}
+                        {RAIL_ITEMS.map((item) => (
+                            <Link key={item.label} href={item.href} className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
+                                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shadow-md transition-transform group-active:scale-95 relative">
+                                    <img
+                                        src={item.img}
+                                        alt={item.label}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    {/* Subtle inner border for definition */}
+                                    <div className="absolute inset-0 rounded-2xl border border-black/5 dark:border-white/10 pointer-events-none"></div>
+                                </div>
+                                <span className="text-xs font-medium text-navy-900 dark:text-white text-center leading-tight whitespace-nowrap">
+                                    {item.label}
+                                </span>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>
