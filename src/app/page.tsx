@@ -56,7 +56,7 @@ export default function Home() {
       <AmbientBackground />
 
       {/* Spacer for Header */}
-      <div className="h-[var(--header-height)]" />
+      {/* Spacer removed as Header is sticky */}
 
       {/* Hero Section - Bento Grid */}
       <div id="worlds" className="relative pt-2 pb-4 text-center scroll-mt-[var(--header-height)]">
