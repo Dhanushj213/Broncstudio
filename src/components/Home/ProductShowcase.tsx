@@ -30,7 +30,7 @@ export default function ProductShowcase({ title, subtitle, products, className =
                 </div>
 
                 {layout === 'grid' ? (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 md:gap-x-6 px-6 md:px-0">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-6 md:gap-x-6 md:gap-y-8 px-3 md:px-0">
                         {products.map((product) => (
                             <ProductCard key={product.id} {...product} />
                         ))}

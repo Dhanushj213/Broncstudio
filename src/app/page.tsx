@@ -6,6 +6,8 @@ import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
 import ProductShowcase from '@/components/Home/ProductShowcase';
+import Link from 'next/link';
+import MobileCategoryRail from '@/components/Home/MobileCategoryRail';
 import { createClient } from '@/utils/supabase/client';
 
 // Mapped helper
@@ -57,6 +59,7 @@ export default function Home() {
 
       {/* Spacer for Header */}
       {/* Spacer removed as Header is sticky */}
+      <MobileCategoryRail />
 
       {/* Hero Section - Bento Grid */}
       <div id="worlds" className="relative pt-2 pb-4 text-center scroll-mt-[var(--header-height)]">

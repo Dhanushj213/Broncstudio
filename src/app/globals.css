@@ -62,6 +62,17 @@
   }
 }
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 /* Custom Utilities for Glassmorphism strict compliance */
 .glass-premium {
   backdrop-filter: blur(18px);

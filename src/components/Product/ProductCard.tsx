@@ -92,18 +92,18 @@ export default function ProductCard(props: ProductProps) {
             <div className="p-4">
                 {brand && <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">{brand}</p>}
                 <Link href={`/product/${id}`} className="block group-hover:text-coral-500 transition-colors">
-                    <h3 className="text-sm font-bold text-navy-900 dark:text-white leading-tight mb-2 line-clamp-2 min-h-[2.5em]">{name}</h3>
+                    <h3 className="text-xs md:text-sm font-bold text-navy-900 dark:text-white leading-tight mb-1 md:mb-2 line-clamp-2 md:min-h-[2.5em]">{name}</h3>
                 </Link>
 
-                <div className="flex items-center gap-2">
-                    <span className="text-base font-bold text-navy-900 dark:text-white">{formatPrice(price)}</span>
+                <div className="flex flex-wrap items-baseline gap-1.5 md:gap-2">
+                    <span className="text-sm md:text-base font-bold text-navy-900 dark:text-white">{formatPrice(price)}</span>
                     {originalPrice && (
-                        <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
-                    )}
-                    {originalPrice && (
-                        <span className="text-[10px] font-bold text-green-600 bg-green-50 dark:bg-green-900/40 dark:text-green-400 px-1.5 py-0.5 rounded">
-                            {Math.round(((originalPrice - price) / originalPrice) * 100)}% OFF
-                        </span>
+                        <>
+                            <span className="text-[10px] md:text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>
+                            <span className="text-[10px] font-bold text-coral-500 dark:text-coral-400">
+                                {Math.round(((originalPrice - price) / originalPrice) * 100)}% OFF
+                            </span>
+                        </>
                     )}
                 </div>
             </div>
