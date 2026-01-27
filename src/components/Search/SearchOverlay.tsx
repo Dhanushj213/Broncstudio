@@ -37,7 +37,7 @@ export default function SearchOverlay() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[1100] bg-navy-900/60 backdrop-blur-xl flex items-start justify-center pt-20 md:pt-32"
+                    className="fixed inset-0 z-[1100] bg-white/95 backdrop-blur-xl flex items-start justify-center pt-20 md:pt-32"
                     onClick={closeSearch} // Close on backdrop click
                 >
                     <motion.div
@@ -48,33 +48,33 @@ export default function SearchOverlay() {
                         className="w-full max-w-2xl px-6"
                     >
                         <div className="relative mb-8">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={24} />
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-navy-900" size={24} />
                             <input
                                 ref={inputRef}
                                 type="text"
                                 placeholder="Search for products, brands, or stories..."
-                                className="w-full bg-white/10 border border-white/20 rounded-2xl py-6 pl-14 pr-16 text-xl text-white placeholder-gray-400 focus:outline-none focus:border-coral-500 focus:ring-1 focus:ring-coral-500 shadow-2xl"
+                                className="w-full bg-gray-100 border border-transparent rounded-2xl py-6 pl-16 pr-16 text-xl text-navy-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-gray-200 focus:ring-1 focus:ring-gray-200 shadow-sm focus:shadow-xl transition-all"
                             />
                             <button
                                 onClick={closeSearch}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-900 transition-colors"
                             >
-                                <span className="text-xs uppercase font-bold border border-white/20 px-2 py-1 rounded hidden md:inline-block">ESC</span>
+                                <span className="text-xs uppercase font-bold border border-gray-300 px-2 py-1 rounded hidden md:inline-block">ESC</span>
                                 <X size={24} className="md:hidden" />
                             </button>
                         </div>
 
                         {/* Trending Section */}
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8 backdrop-blur-md">
-                            <div className="flex items-center gap-2 text-primary-gold mb-4">
+                        <div className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4">
                                 <TrendingUp size={18} className="text-coral-500" />
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400">Trending Now</h3>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-navy-900">Trending Now</h3>
                             </div>
                             <div className="flex flex-wrap gap-3">
                                 {['Little Legends', 'Sustainable', 'Gift Sets', 'Space Decor', 'Dinosaur Tee', 'Party Wear'].map((tag) => (
                                     <button
                                         key={tag}
-                                        className="text-white hover:text-navy-900 bg-white/10 hover:bg-white px-4 py-2 rounded-full text-sm font-medium transition-all"
+                                        className="text-navy-900 hover:text-white bg-gray-100 hover:bg-navy-900 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-lg"
                                     >
                                         {tag}
                                     </button>
