@@ -194,7 +194,10 @@ export default function CollectionPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2, duration: 0.6 }}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-20"
+                        className={`grid grid-cols-1 gap-6 md:gap-8 mb-20 ${children.length === 1 ? 'max-w-md mx-auto' :
+                                children.length === 2 ? 'sm:grid-cols-2 max-w-4xl mx-auto' :
+                                    'sm:grid-cols-2 lg:grid-cols-3'
+                            }`}
                     >
                         {children.map((child: any, idx: number) => (
                             <Link key={idx} href={`/collections/${child.slug}`} className="group relative">
