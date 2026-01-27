@@ -8,6 +8,9 @@ import GlassCard from '@/components/UI/GlassCard';
 import ProductShowcase from '@/components/Home/ProductShowcase';
 import Link from 'next/link';
 import MobileCategoryRail from '@/components/Home/MobileCategoryRail';
+import MobileCategoriesGrid from '@/components/Home/MobileCategoriesGrid';
+import MobileCuratedGrid from '@/components/Home/MobileCuratedGrid';
+import MobilePillsRail from '@/components/Home/MobilePillsRail';
 import { createClient } from '@/utils/supabase/client';
 
 // Mapped helper
@@ -60,14 +63,18 @@ export default function Home() {
       {/* Spacer for Header */}
       {/* Spacer removed as Header is sticky */}
       <MobileCategoryRail />
+      <MobileCategoriesGrid />
+      <MobileCuratedGrid />
 
       {/* Hero Section - Bento Grid */}
       <div id="worlds" className="relative pt-2 pb-4 text-center scroll-mt-[var(--header-height)]">
-        <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-2 animate-fade-in-up">
+        <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-2 animate-fade-in-up md:block hidden">
           Explore Our Worlds
         </h1>
         <BentoGridWorld />
       </div>
+
+      <MobilePillsRail />
 
       {/* New Arrivals (8 Items) */}
       <ProductShowcase
