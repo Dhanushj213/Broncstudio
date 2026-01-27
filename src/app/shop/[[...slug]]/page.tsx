@@ -12,20 +12,6 @@ import { createClient } from '@/utils/supabase/client';
 import { LayoutGrid } from 'lucide-react';
 import BrandLoader from '@/components/UI/BrandLoader';
 
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import GlassCard from '@/components/UI/GlassCard';
-import AmbientBackground from '@/components/UI/AmbientBackground';
-import { motion } from 'framer-motion';
-import { useUI } from '@/context/UIContext';
-import ProductCard from '@/components/Product/ProductCard';
-import { createClient } from '@/utils/supabase/client';
-import { LayoutGrid } from 'lucide-react';
-import BrandLoader from '@/components/UI/BrandLoader';
-
 // Strict Taxonomy Source
 import { CATEGORY_TAXONOMY } from '@/data/categories';
 
