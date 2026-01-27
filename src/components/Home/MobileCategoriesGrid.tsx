@@ -3,47 +3,55 @@
 import React from 'react';
 import Link from 'next/link';
 
-// Expanded "Premium" Category List
-const PREMIUM_CATEGORIES = [
+// Strictly mapped to 'src/data/categories.ts' output
+const CATALOG_CATEGORIES = [
     {
-        label: 'THE SHIRT EDIT',
+        label: "MEN'S EDIT",
+        slug: 'modern-man',
         image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80',
-        href: '/shop/shirts'
+        href: '/shop/modern-man'
     },
     {
-        label: 'TEE CULTURE',
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80',
-        href: '/shop/t-shirts'
-    },
-    {
-        label: 'DENIM LAB',
-        image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&q=80', // Denim
-        href: '/shop/jeans'
-    },
-    {
-        label: 'WINTER LUXE',
+        label: "WOMEN'S EDIT",
+        slug: 'modern-muse',
         image: 'https://images.unsplash.com/photo-1548126032-079a0fb0099f?w=500&q=80',
-        href: '/shop/winter'
-    },
-    {
-        label: 'URBAN JACKETS',
-        image: 'https://images.unsplash.com/photo-1551028919-ac7675cf3856?w=500&q=80',
-        href: '/shop/jackets'
-    },
-    {
-        label: 'ATHLEISURE',
-        image: 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=500&q=80', // Joggers
-        href: '/shop/joggers'
+        href: '/shop/modern-muse'
     },
     {
         label: 'LITTLE LEGENDS',
+        slug: 'little-legends',
         image: 'https://images.unsplash.com/photo-1519238263496-6361937a4ce6?w=500&q=80',
         href: '/shop/little-legends'
     },
     {
-        label: 'ACCESSORY VAULT',
+        label: 'HOME & LIVING',
+        slug: 'space-stories',
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+        href: '/shop/space-stories'
+    },
+    {
+        label: 'ACCESSORIES',
+        slug: 'style-extras',
+        image: 'https://images.unsplash.com/photo-1551028919-ac7675cf3856?w=500&q=80',
+        href: '/shop/style-extras'
+    },
+    {
+        label: 'GIFT SUITE',
+        slug: 'little-luxuries',
         image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=500&q=80',
-        href: '/shop/accessories'
+        href: '/shop/little-luxuries'
+    },
+    {
+        label: 'PAWFECT PICKS',
+        slug: 'pawfect-picks',
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
+        href: '/shop/pawfect-picks'
+    },
+    {
+        label: 'EVERYDAY ICONS',
+        slug: 'everyday-icons',
+        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80',
+        href: '/shop/everyday-icons'
     }
 ];
 
@@ -54,7 +62,7 @@ export default function MobileCategoriesGrid() {
                 <h2 className="text-xl font-heading font-bold text-navy-900 dark:text-white uppercase tracking-wider">
                     SHOP BY CATEGORY
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Curated collections for every style.</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Explore our curated worlds.</p>
             </div>
 
             <div className="overflow-x-auto no-scrollbar snap-x w-full scroll-pl-4">
@@ -62,7 +70,7 @@ export default function MobileCategoriesGrid() {
                     className="grid grid-rows-2 grid-flow-col gap-3 w-max min-w-full"
                     style={{ paddingLeft: '16px', paddingRight: '16px' }}
                 >
-                    {PREMIUM_CATEGORIES.map((item, idx) => (
+                    {CATALOG_CATEGORIES.map((item, idx) => (
                         <Link
                             key={idx}
                             href={item.href}
