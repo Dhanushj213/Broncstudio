@@ -69,7 +69,8 @@ export default function MobilePillsRail() {
     return (
         <div className="md:hidden w-full bg-white dark:bg-navy-900 py-3 border-b border-gray-100 dark:border-white/5 sticky top-[var(--header-height)] z-20 shadow-sm">
             <div className="overflow-x-auto no-scrollbar w-full snap-x">
-                <div className="flex gap-2 px-5 w-max">
+                <div className="flex gap-2 w-max">
+                    <div className="w-3 flex-shrink-0" />
                     {FULL_LIST.map((item, idx) => (
                         <Link
                             key={`${item.label}-${idx}`}
@@ -79,6 +80,7 @@ export default function MobilePillsRail() {
                             {item.label}
                         </Link>
                     ))}
+                    <div className="w-3 flex-shrink-0" />
                 </div>
             </div>
         </div>

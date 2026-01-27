@@ -30,7 +30,10 @@ export default function MobileCategoryRail() {
     return (
         <div className="md:hidden w-full bg-white dark:bg-navy-900 pt-5 pb-4">
             <div className="overflow-x-auto no-scrollbar snap-x w-full">
-                <div className="flex px-5 gap-4 w-max">
+                <div className="flex gap-4 w-max">
+                    {/* Start Spacer */}
+                    <div className="w-1 flex-shrink-0" />
+
                     {/* Special 'New' Item - Premium Solid Tile */}
                     <Link href="/shop/new-arrivals" className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
                         <div className="w-20 h-20 rounded-2xl bg-navy-900 dark:bg-white flex items-center justify-center shadow-lg shadow-navy-900/10 transition-transform group-active:scale-95">
@@ -65,6 +68,9 @@ export default function MobileCategoryRail() {
                             </Link>
                         );
                     })}
+
+                    {/* End Spacer */}
+                    <div className="w-1 flex-shrink-0" />
                 </div>
             </div>
         </div>
