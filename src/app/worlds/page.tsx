@@ -41,35 +41,35 @@ const CATALOG: Category[] = [
             {
                 title: "Books",
                 items: [
-                    { name: "Kids Story Books", href: "/shop/tiny-tales", badge: "Classic", badgeColor: "gold" },
-                    { name: "Kids Colouring Books", href: "/shop/colouring-books", badge: "New", badgeColor: "green" }
+                    { name: "Kids Story Books", href: "/collections/kids-story-books", badge: "Classic", badgeColor: "gold" },
+                    { name: "Kids Colouring Books", href: "/collections/kids-colouring-books", badge: "New", badgeColor: "green" },
+                    { name: "Classic Books", href: "/collections/classic-books" }
                 ]
             },
             {
                 title: "Stationery",
                 items: [
-                    { name: "Sketchbook", href: "/shop/creative-sketches" },
-                    { name: "Notebook", href: "/shop/notebook" },
-                    { name: "Daily Planner", href: "/shop/planner", badge: "Hot", badgeColor: "pink" },
-                    { name: "Notepad", href: "/shop/notepad" }
+                    { name: "Sketchbooks", href: "/collections/sketchbooks" },
+                    { name: "Notebooks", href: "/collections/notebooks" },
+                    { name: "Daily Planners", href: "/collections/daily-planners", badge: "Hot", badgeColor: "pink" },
+                    { name: "Notepads", href: "/collections/notepads" }
                 ]
             },
             {
                 title: "Paper Accessories",
                 items: [
-                    { name: "Bookmark", href: "/shop/bookmark" },
-                    { name: "Postcards", href: "/shop/postcards" },
-                    { name: "Greeting Cards", href: "/shop/greeting-cards" }
+                    { name: "Bookmarks", href: "/collections/bookmarks" },
+                    { name: "Postcards", href: "/collections/postcards" },
+                    { name: "Greeting Cards", href: "/collections/greeting-cards" }
                 ]
             },
             {
                 title: "Toys & Activities",
                 items: [
-                    { name: "MDF Puzzles", href: "/shop/brain-builders" },
-                    { name: "Jigsaw Puzzle", href: "/shop/jigsaw" },
-                    { name: "Tattoos", href: "/shop/tattoos", badge: "Fun", badgeColor: "blue" },
-                    { name: "Stickers", href: "/shop/stickers" },
-                    { name: "Ornaments", href: "/shop/ornaments" }
+                    { name: "MDF Puzzles", href: "/collections/mdf-puzzles" },
+                    { name: "Jigsaw Puzzles", href: "/collections/jigsaw-puzzles" },
+                    { name: "Tattoos", href: "/collections/kids-tattoos", badge: "Fun", badgeColor: "blue" },
+                    { name: "Stickers", href: "/collections/kids-stickers" }
                 ]
             }
         ]
@@ -84,31 +84,31 @@ const CATALOG: Category[] = [
             {
                 title: "Men",
                 items: [
-                    { name: "Classic Crew", href: "/shop/men-classic-tees" },
-                    { name: "Oversized Tee", href: "/shop/men-oversized-tees", badge: "Trending", badgeColor: "pink" },
-                    { name: "Polos", href: "/shop/men-polos" },
-                    { name: "Hoodies", href: "/shop/men-hoodies", badge: "Winter", badgeColor: "blue" },
-                    { name: "Jackets", href: "/shop/men-jackets" },
-                    { name: "Bottoms", href: "/shop/men-bottoms" }
+                    { name: "Classic Crew", href: "/collections/men-classic-crew" },
+                    { name: "Oversized Tees", href: "/collections/men-oversized-tees", badge: "Trending", badgeColor: "pink" },
+                    { name: "Polos", href: "/collections/men-polos" },
+                    { name: "Hoodies", href: "/collections/men-hoodies", badge: "Winter", badgeColor: "blue" },
+                    { name: "Jackets", href: "/collections/men-jackets" },
+                    { name: "Bottoms", href: "/collections/men-bottoms" }
                 ]
             },
             {
                 title: "Women",
                 items: [
-                    { name: "Tops & Tees", href: "/shop/women-tops" },
-                    { name: "Dresses", href: "/shop/women-dresses" },
-                    { name: "Bottom Wear", href: "/shop/women-bottoms" },
-                    { name: "Activewear", href: "/shop/women-active", badge: "Pro", badgeColor: "green" },
-                    { name: "Outerwear", href: "/shop/women-outerwear" }
+                    { name: "Tops & Tees", href: "/collections/women-tops-tees" },
+                    { name: "Dresses", href: "/collections/women-dresses" },
+                    { name: "Bottom Wear", href: "/collections/women-bottom-wear" },
+                    { name: "Activewear", href: "/collections/women-activewear", badge: "Pro", badgeColor: "green" },
+                    { name: "Outerwear", href: "/collections/women-outerwear" }
                 ]
             },
             {
                 title: "Kids",
                 items: [
-                    { name: "Boys Tees", href: "/shop/little-champ-tee" },
-                    { name: "Girls Tees", href: "/shop/tiny-trend-tee" },
-                    { name: "Rompers", href: "/shop/kids-rompers", badge: "Cute", badgeColor: "pink" },
-                    { name: "Winter Wear", href: "/shop/kids-winter" }
+                    { name: "Boys Tees", href: "/collections/boys-tees" },
+                    { name: "Girls Tees", href: "/collections/girls-tees" },
+                    { name: "Rompers", href: "/collections/rompers", badge: "Cute", badgeColor: "pink" },
+                    { name: "Winter Wear", href: "/collections/kids-winter-wear" }
                 ]
             }
         ]
@@ -122,17 +122,17 @@ const CATALOG: Category[] = [
             {
                 title: "Headwear",
                 items: [
-                    { name: "Caps", href: "/shop/caps", badge: "Best", badgeColor: "gold" },
-                    { name: "Snapbacks", href: "/shop/snapbacks" },
-                    { name: "Bucket Hats", href: "/shop/bucket-hats" }
+                    { name: "Caps", href: "/collections/caps", badge: "Best", badgeColor: "gold" },
+                    { name: "Snapbacks", href: "/collections/snapbacks" },
+                    { name: "Bucket Hats", href: "/collections/bucket-hats" }
                 ]
             },
             {
                 title: "Wearables",
                 items: [
-                    { name: "Scarves", href: "/shop/scarves" },
-                    { name: "Scrunchies", href: "/shop/scrunchies" },
-                    { name: "Aprons", href: "/shop/aprons" }
+                    { name: "Scarves", href: "/collections/scarves" },
+                    { name: "Scrunchies", href: "/collections/scrunchies" },
+                    { name: "Aprons", href: "/collections/aprons" }
                 ]
             }
         ]
@@ -146,16 +146,16 @@ const CATALOG: Category[] = [
             {
                 title: "Cases",
                 items: [
-                    { name: "iPhone", href: "/shop/iphone-cases", badge: "New", badgeColor: "gold" },
-                    { name: "Samsung", href: "/shop/samsung-cases" },
-                    { name: "OnePlus", href: "/shop/oneplus-cases" }
+                    { name: "iPhone", href: "/collections/iphone-cases", badge: "New", badgeColor: "gold" },
+                    { name: "Samsung", href: "/collections/samsung-cases" },
+                    { name: "OnePlus", href: "/collections/oneplus-cases" }
                 ]
             },
             {
                 title: "Desk",
                 items: [
-                    { name: "Mouse Pads", href: "/shop/mouse-pads" },
-                    { name: "Gaming Pads", href: "/shop/gaming-pads" }
+                    { name: "Mouse Pads", href: "/collections/mouse-pads" },
+                    { name: "Gaming Pads", href: "/collections/gaming-pads" }
                 ]
             }
         ]
@@ -169,16 +169,17 @@ const CATALOG: Category[] = [
             {
                 title: "Wall",
                 items: [
-                    { name: "Posters", href: "/shop/posters" },
-                    { name: "Canvas", href: "/shop/canvas" }
+                    { name: "Posters", href: "/collections/posters" },
+                    { name: "Canvas", href: "/collections/canvas" }
                 ]
             },
             {
                 title: "Living",
                 items: [
-                    { name: "Coasters", href: "/shop/coasters" },
-                    { name: "Cushions", href: "/shop/cushions" },
-                    { name: "Magnets", href: "/shop/magnets" }
+                    { name: "Pop Sockets", href: "/collections/pop-sockets" }, // Assuming replacement or keep
+                    { name: "Coasters", href: "/collections/coasters" },
+                    { name: "Cushions", href: "/collections/cushions" },
+                    { name: "Magnets", href: "/collections/magnets" }
                 ]
             }
         ]
@@ -192,15 +193,15 @@ const CATALOG: Category[] = [
             {
                 title: "Mugs",
                 items: [
-                    { name: "Coffee Mugs", href: "/shop/mugs" },
-                    { name: "Magic Mugs", href: "/shop/magic-mugs" }
+                    { name: "Coffee Mugs", href: "/collections/coffee-mugs" },
+                    { name: "Magic Mugs", href: "/collections/magic-mugs" }
                 ]
             },
             {
                 title: "Bottles",
                 items: [
-                    { name: "Steel Bottles", href: "/shop/bottles" },
-                    { name: "Sippers", href: "/shop/sippers" }
+                    { name: "Steel Bottles", href: "/collections/steel-bottles" },
+                    { name: "Sippers", href: "/collections/sippers" }
                 ]
             }
         ]
@@ -214,9 +215,9 @@ const CATALOG: Category[] = [
             {
                 title: "Daily",
                 items: [
-                    { name: "Tote Bags (Zip)", href: "/shop/totes-zipper", badge: "Must Have", badgeColor: "blue" },
-                    { name: "Large Totes", href: "/shop/totes-large" },
-                    { name: "Drawstrings", href: "/shop/drawstring-bags" }
+                    { name: "Tote Bags (Zip)", href: "/collections/tote-bags-zip", badge: "Must Have", badgeColor: "blue" },
+                    { name: "Large Totes", href: "/collections/large-totes" },
+                    { name: "Drawstrings", href: "/collections/drawstring-bags" }
                 ]
             }
         ]
@@ -230,15 +231,15 @@ const CATALOG: Category[] = [
             {
                 title: "Trinkets",
                 items: [
-                    { name: "Keychains", href: "/shop/keychains" },
-                    { name: "Badges", href: "/shop/badges" }
+                    { name: "Keychains", href: "/collections/keychains" },
+                    { name: "Badges", href: "/collections/badges" }
                 ]
             },
             {
                 title: "Tags",
                 items: [
-                    { name: "Luggage Tags", href: "/shop/luggage-tags" },
-                    { name: "Patches", href: "/shop/patches" }
+                    { name: "Luggage Tags", href: "/collections/luggage-tags" },
+                    { name: "Patches", href: "/collections/patches" }
                 ]
             }
         ]
@@ -252,8 +253,8 @@ const CATALOG: Category[] = [
             {
                 title: "Essentials",
                 items: [
-                    { name: "Dog Tees", href: "/shop/dog-tees", badge: "Cute", badgeColor: "orange" },
-                    { name: "Pet Tags", href: "/shop/pet-tags" }
+                    { name: "Dog Tees", href: "/collections/dog-tees", badge: "Cute", badgeColor: "orange" },
+                    { name: "Pet Tags", href: "/collections/pet-tags" }
                 ]
             }
         ]
@@ -376,7 +377,7 @@ export default function WorldsPage() {
                 {/* Footer CTA */}
                 <div className="mt-16 text-center border-t border-navy-900/10 dark:border-white/10 pt-8">
                     <Link
-                        href="/gift-finder"
+                        href="/curated"
                         className="inline-flex items-center gap-2 px-8 py-4 bg-navy-900 dark:bg-white text-white dark:text-navy-900 rounded-full font-bold uppercase tracking-widest text-sm hover:scale-105 hover:shadow-lg transition-all duration-300"
                     >
                         <Star size={16} className="fill-current" />

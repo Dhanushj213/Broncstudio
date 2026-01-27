@@ -12,10 +12,10 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 const NAV_ITEMS = [
     { label: 'Home', href: '/' },
     { label: 'Worlds', href: '/worlds' },
-    { label: 'Icons', href: '/shop/everyday-icons' },
-    { label: 'Luxuries', href: '/shop/little-luxuries' },
-    { label: 'Stories', href: '/shop/space-stories' },
-    { label: 'Sale', href: '/shop/sale' },
+    { label: 'Icons', href: '/collections/everyday-icons' },
+    { label: 'Luxuries', href: '/collections/little-luxuries' },
+    { label: 'Stories', href: '/collections/space-stories' },
+    { label: 'Sale', href: '/collections/sale' },
 ];
 
 export default function Header() {

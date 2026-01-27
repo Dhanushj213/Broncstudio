@@ -46,17 +46,36 @@ export default function CollectionPage() {
         const fetchProducts = async () => {
             if (node?.type === 'item') {
                 setLoading(true);
-                // Exact match strategies
                 const targetSlug = node.data.slug;
 
-                // Try multiple columns where the tag might live
+                // 1. Get Category ID from Slug
+                const { data: catData, error: catError } = await supabase
+                    .from('categories')
+                    .select('id')
+                    .eq('slug', targetSlug)
+                    .single();
+
+                if (catError || !catData) {
+                    console.error("Category lookup failed:", catError);
+                    // Fallback: Name search
+                    const { data: fallbackData } = await supabase
+                        .from('products')
+                        .select('*')
+                        .ilike('name', `%${node.data.name}%`);
+                    setProducts(fallbackData || []);
+                    setLoading(false);
+                    return;
+                }
+
+                // 2. Fetch Products by Category ID
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
-                    .or(`tags.cs.{${targetSlug}}, category_slug.eq.${targetSlug}, subcategory_slug.eq.${targetSlug}`);
+                    .eq('category_id', catData.id);
 
-                if (error) console.error("Error fetching products:", error);
-
+                if (error) {
+                    console.error("Error fetching products:", error);
+                }
                 setProducts(data || []);
                 setLoading(false);
             }
@@ -169,7 +188,7 @@ export default function CollectionPage() {
                                 brand="BroncStudio"
                                 price={product.price}
                                 originalPrice={product.compare_at_price}
-                                image={product.images?.[0] || '/images/placeholder.jpg'}
+                                image={product.images?.[0] || product.image_url || '/images/placeholder.jpg'}
                                 badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
                             />
                         )) : (
