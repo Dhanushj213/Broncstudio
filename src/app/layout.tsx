@@ -29,6 +29,10 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "Broncstudio",
   description: "Stories, Style & Smiles — All in One Place",
+  icons: {
+    icon: '/BroncStudio (2).png',
+    apple: '/BroncStudio (2).png',
+  },
 };
 
 import Header from "@/components/Header/Header";
