@@ -36,6 +36,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
+    const [verifying, setVerifying] = useState(true);
+
+    React.useEffect(() => {
+        const checkAccess = async () => {
+            const supabase = createBrowserClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+            );
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (!user) {
+                router.push('/login');
+                return;
+            }
+
+            // Simple Admin Check
+            // Ideally this is RLS/Backend, but for Client Logic:
+            const ADMIN_EMAILS = [
+                'dhanushj213@gmail.com', 'admin@broncstudio.com', 'demo@broncstudio.com'
+            ];
+
+            if (!user.email || !ADMIN_EMAILS.includes(user.email)) {
+                // Not authorized
+                router.push('/');
+                return;
+            }
+
+            setVerifying(false);
+        };
+
+        checkAccess();
+    }, [router]);
 
     const handleSignOut = async () => {
         const supabase = createBrowserClient(
@@ -45,6 +77,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         await supabase.auth.signOut();
         router.push('/login');
     };
+
+    if (verifying) {
+        return <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center font-bold text-gray-500">Verifying Access...</div>;
+    }
 
     return (
         <div className="min-h-screen bg-[#F3F4F6] flex font-sans">
