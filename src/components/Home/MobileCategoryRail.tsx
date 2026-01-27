@@ -29,8 +29,11 @@ const RAIL_ITEMS = [
 export default function MobileCategoryRail() {
     return (
         <div className="md:hidden w-full bg-white dark:bg-navy-900 pt-5 pb-4">
-            <div className="overflow-x-auto no-scrollbar snap-x w-full">
-                <div className="flex w-max min-w-full px-4">
+            <div className="overflow-x-auto no-scrollbar snap-x w-full scroll-pl-4">
+                <div
+                    className="flex w-max min-w-full"
+                    style={{ paddingLeft: '16px', paddingRight: '16px' }}
+                >
                     <div className="flex gap-3">
                         {/* Special 'New' Item - Premium Solid Tile */}
                         <Link href="/shop/new-arrivals" className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
