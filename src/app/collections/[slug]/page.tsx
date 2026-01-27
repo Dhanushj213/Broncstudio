@@ -80,7 +80,7 @@ export default function CollectionPage() {
                             .in('slug', childSlugs);
 
                         if (childrenCats && childrenCats.length > 0) {
-                            const ids = childrenCats.map(c => c.id);
+                            const ids = childrenCats.map((c: { id: string }) => c.id);
                             // Also include self
                             ids.push(catData.id);
                             productQuery = productQuery.in('category_id', ids);

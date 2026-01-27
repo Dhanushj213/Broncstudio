@@ -41,10 +41,10 @@ const MegaMenu = () => {
                                         </div>
                                     ))}
 
-                                    {'groups' in category && category.groups?.map(group => (
+                                    {'groups' in category && Array.isArray(category.groups) && category.groups.map(group => (
                                         <div key={group.id} className={styles.column}>
                                             <h4>{group.name}</h4>
-                                            {group.subcategories.map(sub => (
+                                            {group.subcategories.map((sub: any) => (
                                                 <div key={sub.id} className="mb-4">
                                                     <h5 className={styles.subHeading}>{sub.name}</h5>
                                                     <ul className={styles.linkList}>
