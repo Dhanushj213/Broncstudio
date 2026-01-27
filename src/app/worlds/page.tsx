@@ -347,7 +347,7 @@ export default function WorldsPage() {
                                 <div className={`p-4 grid gap-6 ${category.subGridCols || 'grid-cols-1'}`}>
                                     {category.subcategories.map((sub) => (
                                         <div key={sub.title} className="space-y-2">
-                                            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-dashed border-gray-200 dark:border-white/10 pb-1 mb-2">
+                                            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-300 border-b border-dashed border-gray-200 dark:border-white/20 pb-1 mb-2">
                                                 {sub.title}
                                             </h3>
                                             <ul className="space-y-1">
@@ -355,10 +355,11 @@ export default function WorldsPage() {
                                                     <li key={item.name}>
                                                         <Link
                                                             href={item.href}
-                                                            className="block py-1 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-navy-900 dark:hover:text-white hover:translate-x-1 transition-all duration-200"
+                                                            className="block py-1 text-sm font-semibold text-gray-600 dark:text-gray-200 hover:text-navy-900 dark:hover:text-white hover:translate-x-1 transition-all duration-200"
                                                         >
                                                             <div className="flex items-center flex-wrap gap-1">
                                                                 {item.name}
+                                                                {item.badge && <GlowingBadge text={item.badge} color={item.badgeColor} />}
                                                             </div>
                                                         </Link>
                                                     </li>

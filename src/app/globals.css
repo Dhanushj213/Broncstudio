@@ -56,6 +56,10 @@
     margin-left: auto;
     margin-right: auto;
   }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 /* Custom Utilities for Glassmorphism strict compliance */

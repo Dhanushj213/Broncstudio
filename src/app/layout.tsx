@@ -61,7 +61,7 @@ export default function RootLayout({
                 <SplashScreen />
                 <AnnouncementBar />
                 <Header />
-                <main style={{ paddingBottom: '0' }}>
+                <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
                   {children}
                 </main>
                 <PremiumFooter />

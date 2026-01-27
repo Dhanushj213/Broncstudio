@@ -135,7 +135,7 @@ export default function ShopPage() {
 
             {/* Breadcrumbs - Simple Version */}
             <div className="sticky top-[72px] z-40 px-6 py-4 pointer-events-none">
-                <div className="max-w-fit mx-auto px-6 py-2 bg-white/70 backdrop-blur-[18px] rounded-full shadow-sm border border-white/50 pointer-events-auto flex items-center space-x-2 text-sm text-navy-700 font-medium">
+                <div className="max-w-fit mx-auto px-6 py-2 bg-white/70 dark:bg-navy-900/70 backdrop-blur-[18px] rounded-full shadow-sm border border-white/50 dark:border-white/10 pointer-events-auto flex items-center space-x-2 text-sm text-navy-700 dark:text-gray-300 font-medium">
                     <Link href="/">Home</Link>
                     <span>/</span>
                     <Link href="/shop">Shop</Link>
@@ -152,10 +152,10 @@ export default function ShopPage() {
             <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-12 flex flex-col justify-center text-center">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                     {category?.type === 'world' && <div className="text-sm font-bold tracking-widest uppercase mb-4 text-coral-500">World</div>}
-                    <h1 className="text-4xl md:text-[42px] font-heading font-bold text-navy-900 mb-4 leading-tight">
+                    <h1 className="text-4xl md:text-[42px] font-heading font-bold text-navy-900 dark:text-white mb-4 leading-tight">
                         {category?.name}
                     </h1>
-                    <p className="text-[16px] text-gray-600 max-w-[520px] mx-auto leading-relaxed">
+                    <p className="text-[16px] text-gray-600 dark:text-gray-400 max-w-[520px] mx-auto leading-relaxed">
                         {category?.description || `Explore our collection of ${category?.name}.`}
                     </p>
                 </motion.div>
@@ -169,9 +169,9 @@ export default function ShopPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] mb-12">
                         {subcategories.map((item: any) => (
                             <Link key={item.id} href={`/shop/${slugArray.join('/')}/${item.slug}`} className="block">
-                                <GlassCard className="h-[200px] flex flex-col justify-center items-center text-center p-6 bg-white/72 backdrop-blur-[18px] hover:border-coral-500/30 transition-colors">
-                                    <h3 className="text-2xl font-heading text-navy-900 mb-2">{item.name}</h3>
-                                    {item.description && <p className="text-[10px] text-navy-800/60 font-bold uppercase tracking-wider mb-4">{item.description}</p>}
+                                <GlassCard className="h-[200px] flex flex-col justify-center items-center text-center p-6 bg-white/72 dark:bg-navy-800/60 backdrop-blur-[18px] hover:border-coral-500/30 transition-colors">
+                                    <h3 className="text-2xl font-heading text-navy-900 dark:text-white mb-2">{item.name}</h3>
+                                    {item.description && <p className="text-[10px] text-navy-800/60 dark:text-gray-400 font-bold uppercase tracking-wider mb-4">{item.description}</p>}
                                     <span className="text-sm text-coral-500 font-bold">Explore &rarr;</span>
                                 </GlassCard>
                             </Link>
