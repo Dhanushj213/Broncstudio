@@ -33,7 +33,7 @@ export default function BentoGridWorld() {
             >
                 {/* 1. Little Legends - Main Large Card (2 rows x 2 cols) */}
                 <motion.div variants={itemVariants} className="flex-shrink-0 w-[85vw] md:w-auto md:col-span-2 md:row-span-2 relative group h-[400px] md:h-full cursor-pointer snap-center">
-                    <Link href="/shop/little-legends" className="block h-full w-full">
+                    <Link href="/collections/little-legends" className="block h-full w-full">
                         <div className="h-full w-full rounded-3xl overflow-hidden relative shadow-lg">
                             {/* Image & Overlay */}
                             <div className="absolute inset-0 bg-[url('/bentogrid/littlelegends.jpg')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" />
@@ -64,7 +64,7 @@ export default function BentoGridWorld() {
 
                 {/* 2. Everyday Icons */}
                 <motion.div variants={itemVariants} className="flex-shrink-0 w-[85vw] md:w-auto md:col-span-1 md:row-span-1 h-[400px] md:h-full cursor-pointer snap-center">
-                    <Link href="/shop/everyday-icons" className="block h-full w-full">
+                    <Link href="/collections/everyday-icons" className="block h-full w-full">
                         <div className="h-full w-full rounded-3xl overflow-hidden relative group shadow-lg">
                             <div className="absolute inset-0 bg-[url('/bentogrid/everydayicon.jpg')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
@@ -87,7 +87,7 @@ export default function BentoGridWorld() {
 
                 {/* 3. Little Luxuries */}
                 <motion.div variants={itemVariants} className="flex-shrink-0 w-[85vw] md:w-auto md:col-span-1 md:row-span-1 h-[400px] md:h-full cursor-pointer snap-center">
-                    <Link href="/shop/little-luxuries" className="block h-full w-full">
+                    <Link href="/collections/little-luxuries" className="block h-full w-full">
                         <div className="h-full w-full rounded-3xl overflow-hidden relative group shadow-lg">
                             <div className="absolute inset-0 bg-[url('/bentogrid/littlelux.jpg')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
@@ -108,7 +108,7 @@ export default function BentoGridWorld() {
 
                 {/* 4. Space Stories */}
                 <motion.div variants={itemVariants} className="flex-shrink-0 w-[85vw] md:w-auto md:col-span-1 md:row-span-1 h-[400px] md:h-full cursor-pointer snap-center">
-                    <Link href="/shop/space-stories" className="block h-full w-full">
+                    <Link href="/collections/space-stories" className="block h-full w-full">
                         <div className="h-full w-full rounded-3xl overflow-hidden relative group shadow-lg">
                             <div className="absolute inset-0 bg-[url('/bentogrid/spacestories.jpg')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
@@ -129,7 +129,7 @@ export default function BentoGridWorld() {
 
                 {/* 5. Style Extras */}
                 <motion.div variants={itemVariants} className="flex-shrink-0 w-[85vw] md:w-auto md:col-span-1 md:row-span-1 h-[400px] md:h-full cursor-pointer snap-center">
-                    <Link href="/shop/style-extras" className="block h-full w-full">
+                    <Link href="/collections/style-extras" className="block h-full w-full">
                         <div className="h-full w-full rounded-3xl overflow-hidden relative group shadow-lg">
                             <div className="absolute inset-0 bg-[url('/bentogrid/accessiories.jpg')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
