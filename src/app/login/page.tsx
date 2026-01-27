@@ -36,8 +36,8 @@ export default function LoginPage() {
         const checkExistingSession = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                // Already logged in, redirect to profile
-                window.location.href = '/profile';
+                // Already logged in, redirect to home
+                window.location.href = '/?login=success';
             } else {
                 setCheckingAuth(false);
             }
@@ -69,7 +69,7 @@ export default function LoginPage() {
                         type: 'sms',
                     });
                     if (error) throw error;
-                    window.location.href = '/profile';
+                    window.location.href = '/?login=success';
                 }
             } else {
                 // Email Auth
@@ -81,7 +81,7 @@ export default function LoginPage() {
                     });
                     if (error) throw error;
                     // Use full page navigation to ensure cookies are properly read by middleware
-                    window.location.href = '/profile';
+                    window.location.href = '/?login=success';
                 } else {
                     // SIGN UP
                     const { error } = await supabase.auth.signUp({

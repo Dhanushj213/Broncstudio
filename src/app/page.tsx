@@ -12,6 +12,7 @@ import MobileCategoriesGrid from '@/components/Home/MobileCategoriesGrid';
 import MobileCuratedGrid from '@/components/Home/MobileCuratedGrid';
 import MobilePillsRail from '@/components/Home/MobilePillsRail';
 import { createClient } from '@/utils/supabase/client';
+import { useToast } from '@/context/ToastContext';
 
 // Mapped helper
 const mapProduct = (p: any) => ({
@@ -28,6 +29,20 @@ export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [newArrivals, setNewArrivals] = useState<any[]>([]);
   const supabase = createClient();
+  const { addToast } = useToast();
+
+  useEffect(() => {
+    const checkLoginSuccess = () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('login') === 'success') {
+        setTimeout(() => {
+          addToast('Welcome back! Login successful.', 'success');
+        }, 500); // Small delay to ensure Toast provider is ready
+        window.history.replaceState({}, '', '/');
+      }
+    };
+    checkLoginSuccess();
+  }, [addToast]);
 
   useEffect(() => {
     async function fetchData() {
