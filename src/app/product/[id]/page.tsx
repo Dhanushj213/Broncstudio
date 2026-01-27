@@ -49,7 +49,7 @@ export default function ProductPage() {
     };
 
     return (
-        <main className="bg-white min-h-screen pb-24 md:pb-0">
+        <main className="bg-white min-h-screen pb-8 md:pb-0">
             {/* Main Product Section */}
             <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-0 md:pt-12 mb-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
