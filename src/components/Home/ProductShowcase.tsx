@@ -43,7 +43,7 @@ export default function ProductShowcase({ title, subtitle, products, className =
                         >
                             <div className="flex gap-3">
                                 {products.map((product) => (
-                                    <div key={product.id} className="min-w-[160px] md:min-w-[280px] snap-start">
+                                    <div key={product.id} className="w-[53vw] flex-shrink-0 sm:w-[40vw] md:w-auto md:min-w-[280px] snap-start">
                                         <ProductCard {...product} />
                                     </div>
                                 ))}
