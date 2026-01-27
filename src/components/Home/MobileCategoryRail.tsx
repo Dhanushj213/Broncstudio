@@ -32,7 +32,7 @@ export default function MobileCategoryRail() {
             <div className="overflow-x-auto no-scrollbar snap-x w-full">
                 <div className="flex gap-4 w-max">
                     {/* Start Spacer */}
-                    <div className="w-1 flex-shrink-0" />
+                    <div className="w-6 flex-shrink-0 h-px snap-start" />
 
                     {/* Special 'New' Item - Premium Solid Tile */}
                     <Link href="/shop/new-arrivals" className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
@@ -70,7 +70,7 @@ export default function MobileCategoryRail() {
                     })}
 
                     {/* End Spacer */}
-                    <div className="w-1 flex-shrink-0" />
+                    <div className="w-6 flex-shrink-0 h-px snap-start" />
                 </div>
             </div>
         </div>
