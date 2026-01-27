@@ -38,7 +38,7 @@ export default function QuickViewModal() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[200] bg-navy-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+                    className="fixed inset-0 z-[1100] bg-navy-900/60 backdrop-blur-sm flex items-center justify-center p-4"
                     onClick={closeQuickView}
                 >
                     <motion.div
