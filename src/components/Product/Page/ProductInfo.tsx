@@ -4,14 +4,18 @@ import React, { useState } from 'react';
 import { Star, Truck, RotateCcw, ShieldCheck, ChevronDown, Ruler, ShoppingBag, Zap } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
+import { useRouter } from 'next/navigation';
 
 interface ProductInfoProps {
     product: any; // Using any for simplicity in this rapid iteration, ideally strict type
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
+    const router = useRouter();
     const { formatPrice } = useUI();
     const { addToCart } = useCart();
+    const { addToast } = useToast();
 
     const meta = product.metadata || {};
     const colors = meta.colors || []; // Array of {name, code}
@@ -36,11 +40,21 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const handleAddToCart = () => {
         if (isOutOfStock) return;
         if (sizes.length > 0 && !selectedSize) {
-            alert('Please select a size');
+            addToast('Please select a size', 'error');
             return;
         }
         addToCart({ ...product, color: selectedColor }, selectedSize);
-        alert(`Added ${product.name} to Bag!`);
+        addToast(`${product.name} added to your bag!`, 'success');
+    };
+
+    const handleBuyNow = () => {
+        if (isOutOfStock) return;
+        if (sizes.length > 0 && !selectedSize) {
+            addToast('Please select a size', 'error');
+            return;
+        }
+        addToCart({ ...product, color: selectedColor }, selectedSize);
+        router.push('/cart');
     };
 
     return (
@@ -147,6 +161,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                     <ShoppingBag size={20} /> {isOutOfStock ? 'Out of Stock' : 'Add to Bag'}
                 </button>
                 <button
+                    onClick={handleBuyNow}
                     disabled={isOutOfStock}
                     className={`flex-1 py-4 font-bold rounded-xl transition-colors shadow-xl flex items-center justify-center gap-2 ${isOutOfStock
                         ? 'bg-gray-300 text-white cursor-not-allowed shadow-none'

@@ -30,6 +30,7 @@ const SIMILAR_PRODUCTS = Array.from({ length: 4 }).map((_, i) => ({
 export default function ProductPage() {
     const params = useParams(); // params.id may be undefined initially
     const id = params?.id as string;
+    const router = useRouter();
     const { addToCart } = useCart();
     const { addToast } = useToast();
     const [product, setProduct] = useState<any>(null);
@@ -67,6 +68,12 @@ export default function ProductPage() {
         if (!product) return;
         addToCart(product, product.metadata?.sizes?.[0] || 'Default');
         addToast(`${product.name} added to your bag!`, 'success');
+    };
+
+    const handleBuyNow = () => {
+        if (!product) return;
+        addToCart(product, product.metadata?.sizes?.[0] || 'Default');
+        router.push('/cart');
     };
 
     if (loading) {
@@ -123,7 +130,7 @@ export default function ProductPage() {
                 price={product.price}
                 originalPrice={product.compare_at_price}
                 onAddToCart={handleAddFromSticky}
-                onBuyNow={() => { }}
+                onBuyNow={handleBuyNow}
             />
         </main>
     );
