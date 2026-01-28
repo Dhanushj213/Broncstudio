@@ -21,13 +21,14 @@ export default function EditProductPage() {
     const [fetching, setFetching] = useState(true);
     const [categories, setCategories] = useState<Category[]>([]);
 
+    const [imageInput, setImageInput] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         price: '',
         compare_at_price: '',
         category_id: '',
-        image_url: '',
+        images: [] as string[],
         is_featured: false,
 
         tags: '',
@@ -82,7 +83,7 @@ export default function EditProductPage() {
             price: data.price.toString(),
             compare_at_price: data.compare_at_price ? data.compare_at_price.toString() : '',
             category_id: data.category_id,
-            image_url: data.images?.[0] || '',
+            images: data.images || [],
             is_featured: meta.is_featured || false,
             tags: meta.tags?.join(', ') || '',
             // Load Dynamic Fields
@@ -114,6 +115,21 @@ export default function EditProductPage() {
         const newColors = [...formData.colors];
         newColors.splice(index, 1);
         setFormData({ ...formData, colors: newColors });
+    };
+
+    const handleAddImage = () => {
+        if (!imageInput.trim()) return;
+        setFormData({
+            ...formData,
+            images: [...formData.images, imageInput.trim()]
+        });
+        setImageInput('');
+    };
+
+    const handleRemoveImage = (index: number) => {
+        const newImages = [...formData.images];
+        newImages.splice(index, 1);
+        setFormData({ ...formData, images: newImages });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -148,7 +164,7 @@ export default function EditProductPage() {
                 price: parseFloat(formData.price),
                 compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
                 category_id: formData.category_id,
-                images: formData.image_url ? [formData.image_url] : [],
+                images: formData.images,
                 metadata: metadata
             })
             .eq('id', id);
@@ -399,25 +415,56 @@ export default function EditProductPage() {
 
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                         <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Media & Tags</h2>
+                        {/* Image Input */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Image URL</label>
-                            <input
-                                type="url"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                                placeholder="https://..."
-                                value={formData.image_url}
-                                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                            />
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Add Image URL</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="url"
+                                    className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    placeholder="https://..."
+                                    value={imageInput}
+                                    onChange={(e) => setImageInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddImage();
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddImage}
+                                    className="px-4 py-2 bg-navy-900 text-white font-bold rounded-lg hover:bg-navy-800 transition-colors"
+                                >
+                                    Add
+                                </button>
+                            </div>
                         </div>
 
-                        {formData.image_url && (
-                            <div className="w-full h-32 relative rounded-lg overflow-hidden border border-gray-200">
-                                <Image
-                                    src={formData.image_url}
-                                    alt="Preview"
-                                    fill
-                                    className="object-cover"
-                                />
+                        {/* Image Grid */}
+                        {formData.images.length > 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                                {formData.images.map((img, idx) => (
+                                    <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
+                                        <Image
+                                            src={img}
+                                            alt={`Image ${idx + 1}`}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveImage(idx)}
+                                            className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                        {idx === 0 && (
+                                            <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-bold">MAIN</span>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         )}
                         <div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { ArrowLeft, Upload, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Upload, Save, Loader2, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,8 +22,9 @@ export default function AddProductPage() {
         description: '',
         price: '',
         category_id: '',
-        image_url: ''
+        images: [] as string[]
     });
+    const [imageInput, setImageInput] = useState('');
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -37,6 +38,21 @@ export default function AddProductPage() {
     const fetchCategories = async () => {
         const { data } = await supabase.from('categories').select('id, name');
         if (data) setCategories(data);
+    };
+
+    const handleAddImage = () => {
+        if (!imageInput.trim()) return;
+        setFormData({
+            ...formData,
+            images: [...formData.images, imageInput.trim()]
+        });
+        setImageInput('');
+    };
+
+    const handleRemoveImage = (index: number) => {
+        const newImages = [...formData.images];
+        newImages.splice(index, 1);
+        setFormData({ ...formData, images: newImages });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +86,7 @@ export default function AddProductPage() {
                 description: formData.description,
                 price: parseFloat(formData.price),
                 category_id: formData.category_id,
-                images: [formData.image_url || 'https://placehold.co/600x400/png']
+                images: formData.images.length > 0 ? formData.images : ['https://placehold.co/600x400/png']
             });
 
         if (error) {
@@ -159,29 +175,58 @@ export default function AddProductPage() {
                     </div>
                 </div>
 
-                {/* Media (URL only for now) */}
+                {/* Media */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                     <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Media</h2>
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Image URL</label>
-                        <input
-                            type="url"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="https://..."
-                            value={formData.image_url}
-                            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                        />
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Add Image URL</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="url"
+                                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="https://..."
+                                value={imageInput}
+                                onChange={(e) => setImageInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleAddImage();
+                                    }
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={handleAddImage}
+                                className="px-4 py-2 bg-navy-900 text-white font-bold rounded-lg hover:bg-navy-800 transition-colors"
+                            >
+                                Add
+                            </button>
+                        </div>
                         <p className="text-xs text-gray-400 mt-1">Paste a direct link to an image.</p>
                     </div>
 
-                    {formData.image_url && (
-                        <div className="mt-4 w-40 h-40 relative rounded-lg overflow-hidden border border-gray-200">
-                            <Image
-                                src={formData.image_url}
-                                alt="Preview"
-                                fill
-                                className="object-cover"
-                            />
+                    {formData.images.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                            {formData.images.map((img, idx) => (
+                                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
+                                    <Image
+                                        src={img}
+                                        alt={`Image ${idx + 1}`}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveImage(idx)}
+                                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <Trash2 size={14} /> {/* Error: Trash2 import might be missing? No, I checked imports in step 2937, it was missing Trash2 */}
+                                    </button>
+                                    {idx === 0 && (
+                                        <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-bold">MAIN</span>
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
