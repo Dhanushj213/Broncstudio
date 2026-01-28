@@ -101,8 +101,8 @@ export default function ProductPage() {
                 </div>
             </div>
 
-            {/* Shop The Look */}
-            <ShopTheLook />
+            {/* Shop The Look (Dynamic Contextual Engine) */}
+            <ShopTheLook product={product} />
 
             {/* Similar Products */}
             <ProductShowcase

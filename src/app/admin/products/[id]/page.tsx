@@ -39,7 +39,14 @@ export default function EditProductPage() {
         highlights: '',
         material_care: '',
         shipping_returns: '',
-        size_guide: ''
+        size_guide: '',
+
+        // Recommendation Engine Meta
+        gender: 'unisex',
+        product_type: '',
+        fit: 'regular',
+        style: 'minimal',
+        primary_color: ''
     });
 
     const supabase = createBrowserClient(
@@ -93,7 +100,14 @@ export default function EditProductPage() {
             highlights: meta.highlights?.join('\n') || '',
             material_care: meta.material_care || '',
             shipping_returns: meta.shipping_returns || '',
-            size_guide: meta.size_guide || ''
+            size_guide: meta.size_guide || '',
+
+            // Load Engine Meta
+            gender: meta.gender || 'unisex',
+            product_type: meta.product_type || '',
+            fit: meta.fit || 'regular',
+            style: meta.style || 'minimal',
+            primary_color: meta.primary_color || ''
         });
         setFetching(false);
     };
@@ -153,7 +167,14 @@ export default function EditProductPage() {
             highlights: formData.highlights.split('\n').filter(Boolean),
             material_care: formData.material_care,
             shipping_returns: formData.shipping_returns,
-            size_guide: formData.size_guide
+            size_guide: formData.size_guide,
+
+            // Save Engine Meta
+            gender: formData.gender,
+            product_type: formData.product_type,
+            fit: formData.fit,
+            style: formData.style,
+            primary_color: formData.primary_color
         };
 
         const { error } = await supabase
@@ -410,6 +431,104 @@ export default function EditProductPage() {
                                 <option value="low_stock">Only Few Left (Low Stock)</option>
                                 <option value="out_of_stock">Out of Stock</option>
                             </select>
+                        </div>
+                    </div>
+
+                    {/* Classification & Engine Metadata */}
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
+                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Engine Classification (Required for "Shop The Look")</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Gender */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Gender</label>
+                                <select
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                    value={formData.gender}
+                                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                >
+                                    <option value="unisex">Unisex</option>
+                                    <option value="men">Men</option>
+                                    <option value="women">Women</option>
+                                    <option value="kids">Kids</option>
+                                </select>
+                            </div>
+
+                            {/* Product Type */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Product Type</label>
+                                <select
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                    value={formData.product_type}
+                                    onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
+                                >
+                                    <option value="">Select Type</option>
+                                    <option value="tshirt">T-Shirt / Top</option>
+                                    <option value="hoodie">Hoodie / Sweatshirt</option>
+                                    <option value="jacket">Jacket / Outerwear</option>
+                                    <option value="bottom">Bottom / Pants / Shorts</option>
+                                    <option value="dress">Dress</option>
+                                    <option value="footwear">Footwear</option>
+                                    <option value="headwear">Headwear / Cap</option>
+                                    <option value="bag">Bag</option>
+                                    <option value="accessory">Accessory</option>
+                                </select>
+                            </div>
+
+                            {/* Fit */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Fit</label>
+                                <select
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                    value={formData.fit}
+                                    onChange={(e) => setFormData({ ...formData, fit: e.target.value })}
+                                >
+                                    <option value="regular">Regular</option>
+                                    <option value="oversized">Oversized</option>
+                                    <option value="slim">Slim</option>
+                                    <option value="skinny">Skinny</option>
+                                    <option value="relaxed">Relaxed</option>
+                                </select>
+                            </div>
+
+                            {/* Style */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Style Vibe</label>
+                                <select
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                    value={formData.style}
+                                    onChange={(e) => setFormData({ ...formData, style: e.target.value })}
+                                >
+                                    <option value="minimal">Minimal</option>
+                                    <option value="graphic">Graphic / Bold</option>
+                                    <option value="sporty">Sporty</option>
+                                    <option value="classic">Classic</option>
+                                    <option value="streetwear">Streetwear</option>
+                                </select>
+                            </div>
+
+                            {/* Primary Color */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Primary Color (for Matching)</label>
+                                <select
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                    value={formData.primary_color}
+                                    onChange={(e) => setFormData({ ...formData, primary_color: e.target.value })}
+                                >
+                                    <option value="">Select Color</option>
+                                    <option value="white">White</option>
+                                    <option value="black">Black</option>
+                                    <option value="blue">Blue</option>
+                                    <option value="olive">Olive / Green</option>
+                                    <option value="beige">Beige / Cream</option>
+                                    <option value="grey">Grey</option>
+                                    <option value="red">Red</option>
+                                    <option value="brown">Brown</option>
+                                    <option value="yellow">Yellow</option>
+                                    <option value="pink">Pink</option>
+                                    <option value="purple">Purple</option>
+                                    <option value="orange">Orange</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
