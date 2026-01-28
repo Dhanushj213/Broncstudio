@@ -171,13 +171,31 @@ export async function getRecommendations(currentProduct: any) {
         if (diverseRecommendations.length >= 3) break;
     }
 
-    // Fallback: If not enough diverse types, just fill with top scores
-    if (diverseRecommendations.length < 3) {
-        const remaining = recommendations
-            .filter(r => !diverseRecommendations.find(d => d.id === r.id))
+    // Fallback: If logic found nothing or very few, fill with ANY gender-matched items (Bestsellers/Random)
+    if (diverseRecommendations.length < 2) {
+        const fallbackPool = candidates
+            .filter(c => {
+                // Determine candidate gender
+                const cGender = c.metadata?.gender || 'unisex';
+                // 1. Must not be current product
+                if (c.id === current.id) return false;
+                // 2. Must not already be recommended
+                if (diverseRecommendations.find(d => d.id === c.id)) return false;
+                // 3. Gender Check (Permissive)
+                // If current is Men, allow Men/Unisex. If Women, allow Women/Unisex.
+                if (current.gender === 'men' && cGender === 'women') return false;
+                if (current.gender === 'women' && cGender === 'men') return false;
+
+                return true;
+            })
+            // Shuffle (Randomize)
+            .sort(() => 0.5 - Math.random())
             .slice(0, 3 - diverseRecommendations.length);
-        diverseRecommendations.push(...remaining);
+
+        diverseRecommendations.push(...fallbackPool);
     }
+
+    return diverseRecommendations;
 
     return diverseRecommendations;
 }
