@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { ArrowLeft, Save, Loader2, ChevronDown, ChevronUp, Check, AlertTriangle, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -36,6 +36,7 @@ export default function AddPersonalizationProductPage() {
     const [sections, setSections] = useState({
         identity: true,
         customization: true,
+        printing: true,
         pricing: true
     });
 
