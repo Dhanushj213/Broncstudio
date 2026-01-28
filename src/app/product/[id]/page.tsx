@@ -9,44 +9,80 @@ import ShopTheLook from '@/components/Product/ShopTheLook';
 import ProductShowcase from '@/components/Home/ProductShowcase';
 import { SAMPLE_IMAGES, getProductImage } from '@/utils/sampleImages';
 
-// Dummy Data (Retained and Expanded)
-const PRODUCT = {
-    id: '1',
-    name: 'Little Explorer Premium Cotton T-Shirt',
-    brand: 'BRONC KIDS',
-    price: 499,
-    originalPrice: 999,
-    description: 'Let your child explore the world in style with our premium cotton t-shirt. Breathable fabric, vibrant colors, and a fit that loves to play.',
-    images: SAMPLE_IMAGES,
-    sizes: ['2-3Y', '3-4Y', '4-5Y', '5-6Y', '6-7Y'],
-    colors: [
-        { name: 'Yellow', code: '#FFD966' },
-        { name: 'Blue', code: '#5BC0EB' },
-        { name: 'Peach', code: '#FF6F61' },
-    ]
-};
+import { createBrowserClient } from '@supabase/ssr';
+import { useParams, useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
-const SIMILAR_PRODUCTS = Array.from({ length: 25 }).map((_, i) => ({
+// Dummy Similar Products (Keep for now or fetch real later)
+const SIMILAR_PRODUCTS = Array.from({ length: 4 }).map((_, i) => ({
     id: `sim-${i}`,
-    name: ['Urban Denim Joggers', 'Cosmic Dreamer Pajama', 'Dino Hoodie', 'Space Backpack', 'Velvet Party Dress', 'Striped Cotton Tee'][i % 6],
+    name: ['Urban Denim Joggers', 'Cosmic Dreamer Pajama', 'Dino Hoodie', 'Space Backpack'][i],
     brand: 'BRONC KIDS',
     price: 499 + (i * 50),
     originalPrice: 999 + (i * 100),
     image: getProductImage(i),
-    badge: i % 5 === 0 ? 'Trending' : i % 7 === 0 ? 'New' : undefined
+    badge: i % 2 === 0 ? 'Trending' : undefined
 }));
 
-import { useCart } from '@/context/CartContext';
-
 export default function ProductPage() {
+    const params = useParams(); // params.id may be undefined initially
+    const id = params?.id as string;
     const { addToCart } = useCart();
+    const [product, setProduct] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Handler for Sticky Bar (defaults to 'M' since we don't have access to ProductInfo state here easily)
-    // A better solution would be lifting state up, but for this quick fix, default is fine.
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        if (!id) return;
+
+        const fetchProduct = async () => {
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('products')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            if (error || !data) {
+                console.error('Error fetching product:', error);
+                setProduct(null);
+            } else {
+                setProduct(data);
+            }
+            setLoading(false);
+        };
+
+        fetchProduct();
+    }, [id]);
+
     const handleAddFromSticky = () => {
-        addToCart(PRODUCT, '3-4Y'); // Default size
+        if (!product) return;
+        addToCart(product, product.metadata?.sizes?.[0] || 'Default');
         alert('Added to Bag!');
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <Loader2 className="animate-spin text-navy-900" size={32} />
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-white">
+                <h1 className="text-2xl font-bold text-navy-900 mb-4">Product Not Found</h1>
+                <p className="text-gray-500">The product you are looking for does not exist.</p>
+            </div>
+        );
+    }
 
     return (
         <main className="bg-white min-h-screen pb-8 md:pb-0">
@@ -55,12 +91,12 @@ export default function ProductPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
                     {/* Left: Gallery */}
                     <div className="w-full">
-                        <ProductGallery images={PRODUCT.images} />
+                        <ProductGallery images={product.images || []} />
                     </div>
 
                     {/* Right: Info (Sticky) */}
                     <div className="px-0 sticky top-32">
-                        <ProductInfo product={PRODUCT} />
+                        <ProductInfo product={product} />
                     </div>
                 </div>
             </div>
@@ -82,8 +118,8 @@ export default function ProductPage() {
 
             {/* Mobile Sticky Bar */}
             <StickyActionBar
-                price={PRODUCT.price}
-                originalPrice={PRODUCT.originalPrice}
+                price={product.price}
+                originalPrice={product.compare_at_price}
                 onAddToCart={handleAddFromSticky}
                 onBuyNow={() => { }}
             />
