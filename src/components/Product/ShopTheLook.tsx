@@ -26,19 +26,20 @@ export default function ShopTheLook() {
                     <h3 className="font-bold text-navy-900 mb-4 text-sm uppercase tracking-wide">Buy it with</h3>
 
                     {/* Image Row */}
-                    <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                    <div className="flex items-center justify-between gap-1 mb-6">
                         {LOOK_ITEMS.map((item, i) => (
                             <React.Fragment key={item.id}>
-                                <div className="relative w-20 h-24 flex-shrink-0 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+                                <div className="relative flex-1 aspect-[3/4] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                                     <Image
                                         src={item.image}
                                         alt={item.name}
                                         fill
                                         className="object-cover"
+                                        sizes="(max-width: 768px) 33vw"
                                     />
                                 </div>
                                 {i < LOOK_ITEMS.length - 1 && (
-                                    <Plus size={16} className="text-gray-400 flex-shrink-0" />
+                                    <Plus size={14} className="text-gray-400 flex-shrink-0" />
                                 )}
                             </React.Fragment>
                         ))}
