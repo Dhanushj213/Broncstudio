@@ -156,6 +156,32 @@ export default function OrderDetailPage() {
                         </button>
                     </div>
                 )}
+
+                {order.status === 'processing' && (
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => handleUpdateStatus('shipped')}
+                            disabled={actionLoading}
+                            className="bg-blue-600 text-white hover:bg-blue-700 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all"
+                        >
+                            <Truck size={20} />
+                            Mark as Shipped
+                        </button>
+                    </div>
+                )}
+
+                {order.status === 'shipped' && (
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => handleUpdateStatus('delivered')}
+                            disabled={actionLoading}
+                            className="bg-green-600 text-white hover:bg-green-700 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-green-600/20 transition-all"
+                        >
+                            <CheckCircle size={20} />
+                            Mark as Delivered
+                        </button>
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
