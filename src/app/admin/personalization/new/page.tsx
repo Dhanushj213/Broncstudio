@@ -174,13 +174,20 @@ export default function AddPersonalizationProductPage() {
             }
         }
 
+        // Generate Slug
+        const slug = name.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '') + '-' + Date.now();
+
         // Insert Product
         const { error } = await supabase.from('products').insert({
             name: name, // Internal Name
+            slug: slug,
             description: formData.description,
             price: parseFloat(price),
             category_id: resolvedCategoryId,
             images: images.length > 0 ? images : ['https://placehold.co/600x600/png?text=Base'],
+            stock: 99999, // Infinite stock for base products
             metadata: {
                 type: 'personalization_base',
                 product_type: product_type,

@@ -15,11 +15,13 @@ create table if not exists public.orders (
 alter table public.orders enable row level security;
 
 -- Policy: Users can view their own orders
+drop policy if exists "Users can view their own orders" on public.orders;
 create policy "Users can view their own orders"
   on public.orders for select
   using (auth.uid() = user_id);
 
 -- Policy: Users can insert their own orders
+drop policy if exists "Users can insert their own orders" on public.orders;
 create policy "Users can insert their own orders"
   on public.orders for insert
   with check (auth.uid() = user_id);
@@ -45,6 +47,7 @@ create table if not exists public.order_items (
 alter table public.order_items enable row level security;
 
 -- Policy: Users can view their own order items
+drop policy if exists "Users can view their own order items" on public.order_items;
 create policy "Users can view their own order items"
   on public.order_items for select
   using (
@@ -56,6 +59,7 @@ create policy "Users can view their own order items"
   );
 
 -- Policy: Users can insert their own order items
+drop policy if exists "Users can insert their own order items" on public.order_items;
 create policy "Users can insert their own order items"
   on public.order_items for insert
   with check (
