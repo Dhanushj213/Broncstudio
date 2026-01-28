@@ -68,6 +68,7 @@ export default function EditPersonalizationProductPage() {
     });
 
     const [imageInput, setImageInput] = useState('');
+    const [customColor, setCustomColor] = useState(''); // New State
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -307,7 +308,7 @@ export default function EditPersonalizationProductPage() {
                                     Available Colors <span className="text-red-500">*</span>
                                     <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Select at least one</span>
                                 </h3>
-                                <div className="flex flex-wrap gap-3">
+                                <div className="flex flex-wrap gap-3 mb-4">
                                     {PREDEFINED_COLORS.map(color => {
                                         const isSelected = formData.personalization.colors.includes(color);
                                         return (
@@ -330,6 +331,69 @@ export default function EditPersonalizationProductPage() {
                                             </label>
                                         );
                                     })}
+                                    {/* Selected Custom Colors */}
+                                    {formData.personalization.colors.filter(c => !PREDEFINED_COLORS.includes(c)).map(color => (
+                                        <label key={color} className="cursor-pointer px-4 py-2 rounded-lg border bg-navy-900 text-white border-navy-900 transition-all flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                className="hidden"
+                                                checked={true}
+                                                onChange={() => setFormData({
+                                                    ...formData,
+                                                    personalization: {
+                                                        ...formData.personalization,
+                                                        colors: formData.personalization.colors.filter(c => c !== color)
+                                                    }
+                                                })}
+                                            />
+                                            <div className="w-3 h-3 rounded-full border border-white/20 bg-white" />
+                                            <span className="font-bold text-sm">{color}</span>
+                                        </label>
+                                    ))}
+                                </div>
+
+                                {/* Add Custom Color Input */}
+                                <div className="flex items-center gap-2 max-w-sm">
+                                    <input
+                                        type="text"
+                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 text-sm"
+                                        placeholder="Add Custom Color (e.g. Teal)"
+                                        value={customColor}
+                                        onChange={(e) => setCustomColor(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                if (customColor.trim()) {
+                                                    setFormData({
+                                                        ...formData,
+                                                        personalization: {
+                                                            ...formData.personalization,
+                                                            colors: [...formData.personalization.colors, customColor.trim()]
+                                                        }
+                                                    });
+                                                    setCustomColor('');
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (customColor.trim()) {
+                                                setFormData({
+                                                    ...formData,
+                                                    personalization: {
+                                                        ...formData.personalization,
+                                                        colors: [...formData.personalization.colors, customColor.trim()]
+                                                    }
+                                                });
+                                                setCustomColor('');
+                                            }
+                                        }}
+                                        className="px-4 py-2 bg-gray-100 font-bold text-gray-600 rounded-lg hover:bg-gray-200 text-sm"
+                                    >
+                                        Add
+                                    </button>
                                 </div>
                             </div>
 
@@ -341,7 +405,7 @@ export default function EditPersonalizationProductPage() {
                                         {PREDEFINED_SIZES.map(size => {
                                             const isSelected = formData.personalization.sizes.includes(size);
                                             return (
-                                                <label key={size} className={`cursor-pointer w-12 h-10 flex items-center justify-center rounded-lg border transition-all text-sm font-bold ${isSelected ? 'bg-navy-900 text-white border-navy-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                                <label key={size} className={`cursor-pointer px-3 h-10 flex items-center justify-center rounded-lg border transition-all text-sm font-bold min-w-[3rem] ${isSelected ? 'bg-navy-900 text-white border-navy-900' : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                                                     }`}>
                                                     <input
                                                         type="checkbox"
