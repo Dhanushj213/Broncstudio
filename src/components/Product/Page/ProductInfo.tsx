@@ -19,9 +19,19 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const highlights = meta.highlights || []; // Array of strings
 
 
+
     const stockStatus = meta.stock_status || 'in_stock'; // in_stock, out_of_stock, low_stock
     const isOutOfStock = stockStatus === 'out_of_stock';
     const isLowStock = stockStatus === 'low_stock';
+
+    const [selectedSize, setSelectedSize] = useState(sizes[0] || '');
+    const [selectedColor, setSelectedColor] = useState(colors[0]?.name || '');
+
+    // Reset selection if product changes (optional, but good practice)
+    React.useEffect(() => {
+        if (sizes.length > 0) setSelectedSize(sizes[0]);
+        if (colors.length > 0) setSelectedColor(colors[0].name);
+    }, [product]);
 
     const handleAddToCart = () => {
         if (isOutOfStock) return;
