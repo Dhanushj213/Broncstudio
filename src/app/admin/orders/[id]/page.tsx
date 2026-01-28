@@ -5,7 +5,7 @@ import { createBrowserClient } from '@supabase/ssr';
 import { ArrowLeft, CheckCircle, XCircle, Truck, Package, CreditCard, User, MapPin, Clock } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { updateOrderStatus } from '@/actions/adminActions';
+import { updateOrderStatus, updatePaymentStatus } from '@/actions/adminActions';
 
 interface OrderItem {
     id: string;
@@ -92,6 +92,23 @@ export default function OrderDetailPage() {
             setOrder({ ...order, status: newStatus });
             alert(`Order ${newStatus} successfully!`);
             router.refresh(); // Refresh server state
+        }
+        setActionLoading(false);
+    };
+
+    const handleMarkAsPaid = async () => {
+        if (!order) return;
+        if (!confirm('Mark payment as PAID? This cannot be undone.')) return;
+
+        setActionLoading(true);
+        const { success, error } = await updatePaymentStatus(order.id, 'paid');
+
+        if (!success) {
+            alert('Failed to update payment: ' + error);
+        } else {
+            setOrder({ ...order, payment_status: 'paid' });
+            alert('Payment marked as PAID.');
+            router.refresh();
         }
         setActionLoading(false);
     };
@@ -274,12 +291,23 @@ export default function OrderDetailPage() {
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-gray-500 mb-1">Payment Status</p>
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 border-green-200 text-green-700' :
-                                    order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
-                                        'bg-amber-100 border-amber-200 text-amber-700'
-                                    }`}>
-                                    {order.payment_status}
-                                </span>
+                                <div className="flex flex-col items-end gap-2">
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 border-green-200 text-green-700' :
+                                        order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
+                                            'bg-amber-100 border-amber-200 text-amber-700'
+                                        }`}>
+                                        {order.payment_status}
+                                    </span>
+                                    {order.payment_status !== 'paid' && (
+                                        <button
+                                            onClick={handleMarkAsPaid}
+                                            disabled={actionLoading}
+                                            className="text-xs text-blue-600 font-bold hover:underline disabled:text-gray-400"
+                                        >
+                                            Mark as Paid
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         {order.status === 'pending' && order.payment_status === 'pending' && (

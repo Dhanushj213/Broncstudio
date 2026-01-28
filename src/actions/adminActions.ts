@@ -139,3 +139,58 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
 
     return { success: true };
 }
+
+export async function updatePaymentStatus(orderId: string, newStatus: string) {
+    const cookieStore = await cookies();
+
+    // 1. Authenticate User (Standard Client)
+    const supabaseAuth = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) {
+                    return cookieStore.get(name)?.value
+                },
+            },
+        }
+    );
+
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+
+    if (authError || !user) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    // 2. Verify Admin Role
+    if (!isAdmin(user.email)) {
+        return { success: false, error: 'Access Denied: Not an Admin' };
+    }
+
+    // 3. Determine Client (Service Role for Bypass)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    let supabaseClient = supabaseAuth;
+
+    if (serviceRoleKey) {
+        supabaseClient = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            serviceRoleKey,
+            { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+    } else {
+        console.warn("Missing SUPABASE_SERVICE_ROLE_KEY. Performing actions with User Context (RLS applies).");
+    }
+
+    // 4. Update Payment Status
+    const { error: updateError } = await supabaseClient
+        .from('orders')
+        .update({ payment_status: newStatus })
+        .eq('id', orderId);
+
+    if (updateError) {
+        console.error("Payment Update Error:", updateError);
+        return { success: false, error: 'Database Update Failed: ' + updateError.message };
+    }
+
+    return { success: true };
+}
