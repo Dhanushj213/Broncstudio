@@ -131,13 +131,7 @@ const CartPage = () => {
                         ))}
 
                         {/* Gift Note / Upsell (Optional Adorable Touch) */}
-                        <div className="bg-yellow-50/50 rounded-2xl p-4 border border-yellow-100 flex items-center gap-4">
-                            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-2xl">🎁</div>
-                            <div>
-                                <h4 className="font-bold text-navy-900 text-sm">Review your order</h4>
-                                <p className="text-xs text-gray-500">Every order comes with a free sticker pack!</p>
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Summary Column */}
