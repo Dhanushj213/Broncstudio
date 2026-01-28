@@ -187,7 +187,6 @@ export default function AddPersonalizationProductPage() {
             price: parseFloat(price),
             category_id: resolvedCategoryId,
             images: images.length > 0 ? images : ['https://placehold.co/600x600/png?text=Base'],
-            stock: 99999, // Infinite stock for base products
             metadata: {
                 type: 'personalization_base',
                 product_type: product_type,
