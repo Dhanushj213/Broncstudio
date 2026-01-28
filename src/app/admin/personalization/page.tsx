@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Plus, Search, Filter, Edit, Trash2, Palette, Loader2 } from 'lucide-react';
+import { Plus, Search, Filter, Edit, Trash2, Palette, Loader2, Database } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -127,10 +127,22 @@ export default function AdminPersonalizationPage() {
                     <div className="p-12 text-center text-gray-400">
                         <Palette size={48} className="mx-auto mb-4 opacity-20" />
                         <p className="text-lg font-medium">No personalizable products found</p>
-                        <p className="text-sm text-gray-400 mb-4">Add a product and enable "Personalization" in config.</p>
-                        <Link href="/admin/products/new" className="text-coral-500 hover:text-coral-600 font-bold inline-block">
-                            Create Product
-                        </Link>
+                        <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
+                            Your catalog is empty. You can manually add products or run the seeder tool to import the default list.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <Link href="/admin/personalization/new">
+                                <button className="px-6 py-2 bg-white border border-gray-200 hover:border-navy-900 text-gray-600 hover:text-navy-900 font-bold rounded-lg transition-all">
+                                    Create Manually
+                                </button>
+                            </Link>
+                            <Link href="/admin/seed">
+                                <button className="px-6 py-2 bg-coral-500 hover:bg-coral-600 text-white font-bold rounded-lg shadow-lg shadow-coral-500/20 transition-all flex items-center gap-2">
+                                    <Database size={16} />
+                                    Import Default Products
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
