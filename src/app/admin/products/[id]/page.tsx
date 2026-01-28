@@ -25,8 +25,11 @@ export default function EditProductPage() {
         name: '',
         description: '',
         price: '',
+        compare_at_price: '',
         category_id: '',
-        image_url: ''
+        image_url: '',
+        is_featured: false,
+        tags: ''
     });
 
     const supabase = createBrowserClient(
@@ -66,8 +69,11 @@ export default function EditProductPage() {
             name: data.name,
             description: data.description || '',
             price: data.price.toString(),
+            compare_at_price: data.compare_at_price ? data.compare_at_price.toString() : '',
             category_id: data.category_id,
-            image_url: data.images?.[0] || ''
+            image_url: data.images?.[0] || '',
+            is_featured: data.metadata?.is_featured || false,
+            tags: data.metadata?.tags?.join(', ') || ''
         });
         setFetching(false);
     };
@@ -83,14 +89,21 @@ export default function EditProductPage() {
             return;
         }
 
+        const metadata = {
+            is_featured: formData.is_featured,
+            tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean)
+        };
+
         const { error } = await supabase
             .from('products')
             .update({
                 name: formData.name,
                 description: formData.description,
                 price: parseFloat(formData.price),
+                compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
                 category_id: formData.category_id,
-                images: formData.image_url ? [formData.image_url] : []
+                images: formData.image_url ? [formData.image_url] : [],
+                metadata: metadata
             })
             .eq('id', id);
 
@@ -149,7 +162,18 @@ export default function EditProductPage() {
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* General Info */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">General Information</h2>
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                        <h2 className="text-lg font-bold text-gray-900">General Information</h2>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={formData.is_featured}
+                                onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                                className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                            />
+                            <span className="text-sm font-bold text-navy-900">Featured Product</span>
+                        </label>
+                    </div>
 
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-1">Product Name *</label>
@@ -173,6 +197,18 @@ export default function EditProductPage() {
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
                     </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Tags (Comma separated)</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            placeholder="e.g. summer, curated, new-arrival"
+                            value={formData.tags}
+                            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                        />
+                        <p className="text-xs text-gray-400 mt-1">Used for collections and search.</p>
+                    </div>
                 </div>
 
                 {/* Pricing & Category */}
@@ -190,6 +226,18 @@ export default function EditProductPage() {
                                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                                 required
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Compare at Price (₹)</label>
+                            <input
+                                type="number"
+                                min="0" step="0.01"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="0.00"
+                                value={formData.compare_at_price}
+                                onChange={(e) => setFormData({ ...formData, compare_at_price: e.target.value })}
+                            />
+                            <p className="text-xs text-gray-400 mt-1">If set, original price shows crossed out.</p>
                         </div>
                     </div>
 
