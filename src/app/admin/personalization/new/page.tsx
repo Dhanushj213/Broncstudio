@@ -38,15 +38,28 @@ export default function AddPersonalizationProductPage() {
         customization: true,
         printing: true,
         pricing: true
-    });
+    useEffect(() => {
+        const fetchResources = async () => {
+            // Fetch Categories
+            const { data: cats } = await supabase.from('categories').select('id, name');
+            if (cats) {
+                setCategories(cats);
+                if (cats.length > 0) setFormData(prev => ({ ...prev, category_id: cats[0].id }));
+            }
+        };
+        fetchResources();
+    }, []);
 
     const toggleSection = (key: keyof typeof sections) => setSections(prev => ({ ...prev, [key]: !prev[key] }));
 
     const [formData, setFormData] = useState({
         name: '', // Internal Admin Name
         product_type: 'T-Shirt',
+        name: '', // Internal Admin Name
+        product_type: 'T-Shirt',
         description: '', // Optional
         price: '', // Base Price
+        category_id: '', // Selected Category
 
         images: [] as string[],
 
@@ -70,6 +83,8 @@ export default function AddPersonalizationProductPage() {
 
     const [imageInput, setImageInput] = useState('');
     const [customColor, setCustomColor] = useState(''); // New State for Custom Color
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -139,7 +154,7 @@ export default function AddPersonalizationProductPage() {
             name: name, // Internal Name
             description: formData.description,
             price: parseFloat(price),
-            category_id: 'd00d00d0-00d0-00d0-00d0-000000000000', // Dummy or find 'Personalization' category if exists
+            category_id: formData.category_id || categories[0]?.id || 'd00d00d0-00d0-00d0-00d0-000000000000', // Use selected or fallback to first valid
             images: images.length > 0 ? images : ['https://placehold.co/600x600/png?text=Base'],
             metadata: {
                 type: 'personalization_base',
@@ -213,6 +228,17 @@ export default function AddPersonalizationProductPage() {
                                         required
                                     />
                                     <p className="text-xs text-gray-400 mt-1.5">Used internally to identify this blank stock.</p>
+                                </div>
+                                <div className="col-span-1 md:col-span-2">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Store Category *</label>
+                                    <select
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
+                                        value={formData.category_id}
+                                        onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                                    >
+                                        <option value="">Select a Category</option>
+                                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
                                 </div>
                             </div>
                             <div>
