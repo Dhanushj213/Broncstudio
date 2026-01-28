@@ -1,46 +1,90 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Package, Clock, MapPin, CreditCard, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Package, Clock, MapPin, CreditCard, ChevronRight, Truck, CheckCircle, XCircle } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useParams } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
+
+interface OrderItem {
+    name: string;
+    price: number;
+    quantity: number;
+    image_url: string;
+    metadata?: any;
+}
+
+interface StatusHistory {
+    status: string;
+    timestamp: string;
+}
+
+interface Order {
+    id: string;
+    created_at: string;
+    total_amount: number;
+    status: string;
+    shipping_address: any;
+    payment_method: string;
+    payment_status: string;
+    items?: OrderItem[];
+    status_history?: StatusHistory[];
+}
 
 export default function OrderDetailsPage() {
     const { formatPrice } = useUI();
     const params = useParams();
-    const orderId = params?.id || 'ORD-0000';
+    const [order, setOrder] = useState<Order | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Mock Data based on ID (simplified logic)
-    const order = {
-        id: orderId,
-        date: 'Jan 24, 2026',
-        status: 'Processing',
-        statusColor: 'bg-orange-100 text-orange-600',
-        total: 1499,
-        items: [
-            {
-                name: 'Little Explorer T-Shirt',
-                price: 799,
-                qty: 1,
-                image: 'https://images.unsplash.com/photo-1519457431-44d59405d6e6?auto=format&fit=crop&w=200&q=80'
-            },
-            {
-                name: 'Organic Cotton Socks (Pack of 3)',
-                price: 700,
-                qty: 1,
-                image: 'https://images.unsplash.com/photo-1503919545874-8621bfdfafa4?auto=format&fit=crop&w=200&q=80'
-            }
-        ],
-        shipping: {
-            name: 'Dhanush J',
-            address: 'Plot 123, Sunshine Apartments, MG Road, Indiranagar',
-            city: 'Bangalore - 560038',
-            phone: '+91 9876543210'
-        },
-        payment: {
-            method: 'VISA •••• 4242',
-            status: 'Paid'
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        if (params.id) {
+            fetchOrder(params.id as string);
+        }
+    }, [params.id]);
+
+    const fetchOrder = async (id: string) => {
+        setLoading(true);
+        // Fetch Order
+        const { data: orderData, error } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            console.error(error);
+            setLoading(false);
+            return;
+        }
+
+        // Fetch Items
+        const { data: itemsData } = await supabase
+            .from('order_items')
+            .select('*')
+            .eq('order_id', id);
+
+        setOrder({ ...orderData, items: itemsData || [] });
+        setLoading(false);
+    };
+
+    if (loading) return <div className="min-h-screen flex items-center justify-center">Loading Order...</div>;
+    if (!order) return <div className="min-h-screen flex items-center justify-center">Order not found</div>;
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'pending': return 'bg-amber-100 text-amber-600';
+            case 'processing': return 'bg-purple-100 text-purple-600';
+            case 'shipped': return 'bg-blue-100 text-blue-600';
+            case 'delivered': return 'bg-green-100 text-green-600';
+            case 'cancelled': return 'bg-red-100 text-red-600';
+            default: return 'bg-gray-100 text-gray-600';
         }
     };
 
@@ -53,51 +97,86 @@ export default function OrderDetailsPage() {
                         <ArrowLeft size={20} className="text-navy-900" />
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-navy-900 font-heading">Order #{order.id}</h1>
-                        <p className="text-sm text-gray-500">Placed on {order.date}</p>
+                        <h1 className="text-2xl font-bold text-navy-900 font-heading">Order #{order.id.slice(0, 8)}</h1>
+                        <p className="text-sm text-gray-500">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
                 </div>
 
-                {/* Status Bar */}
-                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${order.statusColor}`}>
-                            <Clock size={20} />
+                {/* Status Timeline Card */}
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mb-6">
+                    <h3 className="font-bold text-navy-900 mb-6 flex items-center gap-2">
+                        <Truck size={18} className="text-gray-400" /> Order Timeline
+                    </h3>
+
+                    <div className="space-y-6 pl-4 border-l-2 border-gray-100 relative">
+                        {/* Created At */}
+                        <div className="relative">
+                            <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.1)]`} />
+                            <p className="text-sm font-bold text-navy-900">Order Placed</p>
+                            <p className="text-xs text-gray-500">{new Date(order.created_at).toLocaleString()}</p>
                         </div>
-                        <div>
-                            <h3 className="font-bold text-navy-900">{order.status}</h3>
-                            <p className="text-xs text-gray-500">Estimated Delivery: Jan 29</p>
-                        </div>
-                    </div>
-                    {/* Progress Bar (Visual only) */}
-                    <div className="hidden md:flex gap-1">
-                        <div className="w-12 h-1.5 rounded-full bg-green-500" />
-                        <div className="w-12 h-1.5 rounded-full bg-green-500" />
-                        <div className="w-12 h-1.5 rounded-full bg-gray-200" />
-                        <div className="w-12 h-1.5 rounded-full bg-gray-200" />
+
+                        {/* Dynamic History */}
+                        {order.status_history && order.status_history.map((hist, idx) => {
+                            let dotColor = 'bg-gray-400';
+                            if (hist.status === 'processing') dotColor = 'bg-purple-500';
+                            if (hist.status === 'shipped') dotColor = 'bg-blue-500';
+                            if (hist.status === 'delivered') dotColor = 'bg-green-500';
+                            if (hist.status === 'cancelled') dotColor = 'bg-red-500';
+
+                            const isLast = idx === order.status_history!.length - 1;
+                            const shadow = isLast ? `shadow-[0_0_0_3px_rgba(0,0,0,0.1)]` : '';
+
+                            return (
+                                <div key={idx} className="relative">
+                                    <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${dotColor} ${shadow}`} />
+                                    <p className="text-sm font-bold text-navy-900 capitalize">{hist.status.replace(/_/g, ' ')}</p>
+                                    <p className="text-xs text-gray-500">{new Date(hist.timestamp).toLocaleString()}</p>
+                                </div>
+                            )
+                        })}
+
+                        {/* Legacy Support if no history */}
+                        {(!order.status_history || order.status_history.length === 0) && order.status !== 'pending' && (
+                            <div className="relative">
+                                <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${getStatusColor(order.status).split(' ')[0].replace('100', '500')}`} />
+                                <p className="text-sm font-bold text-navy-900 capitalize">{order.status}</p>
+                                <p className="text-xs text-gray-500">Current Status</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Items */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
-                    <div className="p-4 border-b border-gray-50 font-bold text-navy-900">Items ({order.items.length})</div>
+                    <div className="p-4 border-b border-gray-50 font-bold text-navy-900">Items ({order.items?.length || 0})</div>
                     <div className="divide-y divide-gray-50">
-                        {order.items.map((item, i) => (
-                            <div key={i} className="p-4 flex gap-4">
-                                <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover bg-gray-100" />
-                                <div className="flex-1">
-                                    <h4 className="font-bold text-navy-900">{item.name}</h4>
-                                    <p className="text-sm text-gray-500">Qty: {item.qty}</p>
+                        {order.items?.map((item, i) => {
+                            const meta = item.metadata;
+                            return (
+                                <div key={i} className="p-4 flex gap-4">
+                                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                        <img src={meta?.image_url || item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-bold text-navy-900">{item.name}</h4>
+                                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                                        {meta?.is_custom && (
+                                            <span className="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-bold uppercase mt-1 inline-block">
+                                                Customized
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="font-bold text-navy-900">
+                                        {formatPrice(item.price * item.quantity)}
+                                    </div>
                                 </div>
-                                <div className="font-bold text-navy-900">
-                                    {formatPrice(item.price)}
-                                </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                     <div className="p-4 bg-gray-50 flex justify-between items-center">
                         <span className="font-bold text-navy-900">Total Amount</span>
-                        <span className="text-xl font-bold text-navy-900">{formatPrice(order.total)}</span>
+                        <span className="text-xl font-bold text-navy-900">{formatPrice(order.total_amount)}</span>
                     </div>
                 </div>
 
@@ -108,12 +187,14 @@ export default function OrderDetailsPage() {
                         <h3 className="font-bold text-navy-900 mb-4 flex items-center gap-2">
                             <MapPin size={18} className="text-gray-400" /> Shipping Details
                         </h3>
-                        <p className="font-bold text-navy-900 text-sm">{order.shipping.name}</p>
-                        <p className="text-sm text-gray-500 leading-relaxed mt-1">
-                            {order.shipping.address}<br />
-                            {order.shipping.city}
+                        <p className="font-bold text-navy-900 text-sm">
+                            {order.shipping_address?.firstName} {order.shipping_address?.lastName}
                         </p>
-                        <p className="text-sm text-gray-500 mt-2">{order.shipping.phone}</p>
+                        <p className="text-sm text-gray-500 leading-relaxed mt-1">
+                            {order.shipping_address?.address}<br />
+                            {order.shipping_address?.city} - {order.shipping_address?.pincode}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-2">{order.shipping_address?.phone}</p>
                     </div>
 
                     {/* Payment */}
@@ -123,11 +204,13 @@ export default function OrderDetailsPage() {
                         </h3>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-sm text-gray-500">Method</span>
-                            <span className="text-sm font-bold text-navy-900">{order.payment.method}</span>
+                            <span className="text-sm font-bold text-navy-900 capitalize">{order.payment_method}</span>
                         </div>
                         <div className="flex justify-between items-center">
                             <span className="text-sm text-gray-500">Status</span>
-                            <span className="text-xs font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase">{order.payment.status}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full uppercase ${order.payment_status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                {order.payment_status}
+                            </span>
                         </div>
                     </div>
                 </div>
