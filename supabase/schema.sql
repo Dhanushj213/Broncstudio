@@ -2,7 +2,7 @@
 create extension if not exists "uuid-ossp";
 
 -- 1. PROFILES (Linked to Auth)
-create table public.profiles (
+create table if not exists public.profiles (
   id uuid references auth.users not null primary key,
   email text,
   full_name text,
@@ -14,12 +14,18 @@ create table public.profiles (
 
 -- RLS for Profiles
 alter table public.profiles enable row level security;
+
+drop policy if exists "Public profiles are viewable by everyone." on public.profiles;
 create policy "Public profiles are viewable by everyone." on public.profiles for select using (true);
+
+drop policy if exists "Users can insert their own profile." on public.profiles;
 create policy "Users can insert their own profile." on public.profiles for insert with check (auth.uid() = id);
+
+drop policy if exists "Users can update their own profile." on public.profiles;
 create policy "Users can update their own profile." on public.profiles for update using (auth.uid() = id);
 
 -- 2. CATEGORIES (Hierarchical: Worlds -> Intents -> Items)
-create table public.categories (
+create table if not exists public.categories (
   id uuid default uuid_generate_v4() primary key,
   slug text not null unique,
   name text not null,
@@ -32,11 +38,13 @@ create table public.categories (
 
 -- RLS for Categories
 alter table public.categories enable row level security;
+
+drop policy if exists "Categories are viewable by everyone." on public.categories;
 create policy "Categories are viewable by everyone." on public.categories for select using (true);
 -- Only admins should update/insert (skipping admin logic for simplicity now, maybe add later)
 
 -- 3. PRODUCTS
-create table public.products (
+create table if not exists public.products (
   id uuid default uuid_generate_v4() primary key,
   slug text not null unique,
   name text not null,
@@ -52,10 +60,12 @@ create table public.products (
 
 -- RLS for Products
 alter table public.products enable row level security;
+
+drop policy if exists "Products are viewable by everyone." on public.products;
 create policy "Products are viewable by everyone." on public.products for select using (true);
 
 -- 4. WISHLIST
-create table public.wishlist (
+create table if not exists public.wishlist (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references public.profiles(id) not null,
   product_id uuid references public.products(id) not null,
@@ -65,8 +75,14 @@ create table public.wishlist (
 
 -- RLS for Wishlist
 alter table public.wishlist enable row level security;
+
+drop policy if exists "Users can view their own wishlist." on public.wishlist;
 create policy "Users can view their own wishlist." on public.wishlist for select using (auth.uid() = user_id);
+
+drop policy if exists "Users can add to their own wishlist." on public.wishlist;
 create policy "Users can add to their own wishlist." on public.wishlist for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can delete from their own wishlist." on public.wishlist;
 create policy "Users can delete from their own wishlist." on public.wishlist for delete using (auth.uid() = user_id);
 
 -- 5. Helper Function to handle new user signup
@@ -80,7 +96,7 @@ end;
 $$ language plpgsql security definer;
 
 -- Trigger to call the function on signup
+drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
-
