@@ -32,82 +32,80 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         return { success: false, error: 'Access Denied: Not an Admin' };
     }
 
-    // 3. Perform Update (Service Role Bypass)
-    // We use the Service Role Key to bypass RLS policies entirely
+
+    // 3. Determine Client (Service Role or User Context)
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    let supabaseClient = supabaseAuth;
+    let usingServiceRole = false;
 
-    if (!serviceRoleKey) {
-        // Fallback: Try using the auth client if Service Role is missing, 
-        // but this relies on RLS being correct (which is currently failing).
-        console.warn("Missing SUPABASE_SERVICE_ROLE_KEY. Attempting update with user context...");
-        const { error } = await supabaseAuth
-            .from('orders')
-            .update({ status: newStatus })
-            .eq('id', orderId);
-
-        if (error) return { success: false, error: error.message };
-        return { success: true };
+    if (serviceRoleKey) {
+        supabaseClient = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            serviceRoleKey,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        );
+        usingServiceRole = true;
+    } else {
+        console.warn("Missing SUPABASE_SERVICE_ROLE_KEY. Performing actions with User Context (RLS applies).");
     }
 
-    const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        serviceRoleKey,
-        {
-            auth: {
-                autoRefreshToken: false,
-                persistSession: false
-            }
-        }
-    );
-
-    const { error: updateError } = await supabaseAdmin
+    // 4. Update Status
+    const { error: updateError } = await supabaseClient
         .from('orders')
         .update({ status: newStatus })
         .eq('id', orderId);
 
     if (updateError) {
-        console.error("Admin Action Error:", updateError);
+        console.error("Order Update Error:", updateError);
         return { success: false, error: 'Database Update Failed: ' + updateError.message };
     }
 
-    // Auto-Cleanup: Delete personalization images if Order is Finished/Cancelled
+    // 5. Auto-Cleanup: Delete personalization images
     if (newStatus === 'delivered' || newStatus === 'cancelled') {
-        const { data: items } = await supabaseAdmin
+        const { data: items } = await supabaseClient
             .from('order_items')
             .select('metadata')
             .eq('order_id', orderId);
+
+        console.log(`[Admin] Cleanup: Found ${items?.length || 0} items for order ${orderId}`);
 
         if (items && items.length > 0) {
             const BUCKET_NAME = 'personalization-uploads';
             const pathsToDelete: string[] = [];
 
             items.forEach(item => {
-                // The custom image is stored in metadata.image_url
                 const url = item.metadata?.image_url;
                 if (url && typeof url === 'string' && url.includes(`/${BUCKET_NAME}/`)) {
-                    // Extract relative path from URL
-                    // URL Format: .../storage/v1/object/public/personalization-uploads/folder/filename.png
-                    // Split by bucket name to be safe
                     const parts = url.split(`/${BUCKET_NAME}/`);
                     if (parts.length === 2) {
-                        const filePath = decodeURIComponent(parts[1]); // Ensure spaces/special chars are handled
+                        const filePath = decodeURIComponent(parts[1]);
                         pathsToDelete.push(filePath);
+                        console.log(`[Admin] Cleanup: Scheduled for deletion: ${filePath}`);
                     }
                 }
             });
 
             if (pathsToDelete.length > 0) {
-                console.log(`[Admin] Cleanup: Deleting ${pathsToDelete.length} images for order ${orderId}`);
-                const { error: storageError } = await supabaseAdmin
+                console.log(`[Admin] Cleanup: Deleting ${pathsToDelete.length} images...`);
+                // Use the same client (User or Admin) for storage deletion
+                const { data: deleteData, error: storageError } = await supabaseClient
                     .storage
                     .from(BUCKET_NAME)
                     .remove(pathsToDelete);
 
                 if (storageError) {
                     console.error("[Admin] Image Cleanup Failed:", storageError);
+                    // Do not fail the whole action, just log
                 } else {
-                    console.log("[Admin] Image Cleanup Success");
+                    console.log("[Admin] Image Cleanup Success:", deleteData);
                 }
+            } else {
+                console.log("[Admin] Cleanup: No matching images found to delete.");
             }
         }
     }
