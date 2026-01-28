@@ -160,7 +160,7 @@ export async function getRecommendations(currentProduct: any) {
 
     // Deduplicate Types (Optional: Ensure variety)
     const uniqueTypes = new Set();
-    const diverseRecommendations = [];
+    const diverseRecommendations: any[] = [];
 
     for (const rec of recommendations) {
         const type = rec.metadata?.product_type || 'other';
