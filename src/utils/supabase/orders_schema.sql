@@ -37,7 +37,8 @@ create table if not exists public.order_items (
   price decimal(10, 2) not null, -- Snapshot of price
   size text,
   color text,
-  image_url text
+  image_url text,
+  metadata jsonb -- Stores personalization details
 );
 
 -- Enable RLS on Order Items

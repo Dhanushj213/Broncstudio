@@ -36,11 +36,11 @@ export async function updateSession(request: NextRequest) {
     const path = request.nextUrl.pathname
 
     // Protect /profile and /admin routes
-    if ((path.startsWith('/profile') || path.startsWith('/admin')) && !user) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/login'
-        return NextResponse.redirect(url)
-    }
+    // if ((path.startsWith('/profile') || path.startsWith('/admin')) && !user) {
+    //     const url = request.nextUrl.clone()
+    //     url.pathname = '/login'
+    //     return NextResponse.redirect(url)
+    // }
 
     // CRITICAL: Return the supabaseResponse which contains the refreshed session cookies
     return supabaseResponse

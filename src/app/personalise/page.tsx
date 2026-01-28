@@ -2,40 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Loader2, Upload, ShoppingBag, ArrowRight, ArrowLeft, Check, X, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { Loader2, Upload, ShoppingBag, ArrowRight, ArrowLeft, Check, X, ShieldCheck, ChevronDown, Info } from 'lucide-react';
 import Image from 'next/image';
+import { PERSONALIZATION_TAXONOMY, PrintTypeConfig, PlacementConfig, PersonalizationConfig } from '@/lib/personalization';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
-// TYPES (Derived from New Admin Schema)
+// TYPES
 // ----------------------------------------------------------------------
-interface PlacementConfig {
-    enabled: boolean;
-    price: number;
-    max_width: number;
-    max_height: number;
-}
-
-interface PrintTypeConfig {
-    enabled: boolean;
-    price: number;
-}
-
-interface PersonalizationConfig {
-    enabled: boolean;
-    colors: string[];
-    sizes: string[];
-    print_types: Record<string, PrintTypeConfig>;
-    placements: Record<string, PlacementConfig>;
-    image_requirements: {
-        min_dpi: number;
-        max_size_mb: number;
-        allowed_formats: string[];
-    };
-}
-
 interface BaseProduct {
     id: string;
-    name: string; // Internal name
+    name: string;
     price: number;
     images: string[];
     description: string;
@@ -46,571 +23,447 @@ interface BaseProduct {
 }
 
 // ----------------------------------------------------------------------
-// DATA & UTILS (Client Side Taxonomy)
+// MAIN PAGE
 // ----------------------------------------------------------------------
-import { PERSONALIZATION_TAXONOMY, Gender } from '@/lib/personalization';
-const CATEGORY_GROUPS = Object.keys(PERSONALIZATION_TAXONOMY);
+export default function PersonalisePage() {
+    // State: Selection
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
+    const [availableProducts, setAvailableProducts] = useState<BaseProduct[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<BaseProduct | null>(null);
+    const [loadingProducts, setLoadingProducts] = useState(false);
 
-// ----------------------------------------------------------------------
-// COMPONENT: START SCREEN (Categories)
-// ----------------------------------------------------------------------
-function CategorySelectionView({ onSelect }: { onSelect: (category: string, subCategory?: string) => void }) {
-    const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-
-    return (
-        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-            <h1 className="text-4xl md:text-5xl font-black text-navy-900 tracking-tight mb-4">Start Designing</h1>
-            <p className="text-gray-500 text-lg mb-12">Select a category to view available blank products.</p>
-
-            {!selectedGroup ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {CATEGORY_GROUPS.map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => {
-                                // @ts-ignore
-                                if (PERSONALIZATION_TAXONOMY[cat].subcategories) {
-                                    setSelectedGroup(cat);
-                                } else {
-                                    onSelect(cat);
-                                }
-                            }}
-                            className="p-8 rounded-3xl bg-gray-50 hover:bg-white hover:shadow-xl border border-gray-100 hover:border-navy-100 transition-all group"
-                        >
-                            <span className="text-xl font-bold text-navy-900 group-hover:text-blue-600">{cat}</span>
-                        </button>
-                    ))}
-                </div>
-            ) : (
-                <div className="animate-in fade-in zoom-in-95 duration-300">
-                    <button onClick={() => setSelectedGroup(null)} className="mb-8 text-sm font-bold text-gray-400 hover:text-navy-900 flex items-center justify-center gap-2">
-                        <ArrowLeft size={16} /> Back to Categories
-                    </button>
-                    <h2 className="text-2xl font-bold text-navy-900 mb-8">Select Collection</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {/* @ts-ignore */}
-                        {PERSONALIZATION_TAXONOMY[selectedGroup].subcategories?.map((sub: string) => (
-                            <button
-                                key={sub}
-                                onClick={() => onSelect(selectedGroup, sub)}
-                                className="p-8 rounded-3xl bg-blue-50 hover:bg-blue-600 hover:shadow-xl border border-blue-100 transition-all group"
-                            >
-                                <span className="text-xl font-bold text-blue-900 group-hover:text-white capitalize">{sub}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// ----------------------------------------------------------------------
-// COMPONENT: FILTERED PRODUCT GRID
-// ----------------------------------------------------------------------
-function FilteredProductList({ category, subCategory, onSelect, onBack }: { category: string; subCategory?: string; onSelect: (p: BaseProduct) => void; onBack: () => void }) {
-    const [products, setProducts] = useState<BaseProduct[]>([]);
-    const [loading, setLoading] = useState(true);
+    // State: Customization
+    const [size, setSize] = useState<string>('');
+    const [placement, setPlacement] = useState<string>('');
+    const [printType, setPrintType] = useState<string>('');
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [note, setNote] = useState('');
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
+    // 1. Fetch Products when criteria change
     useEffect(() => {
+        if (!selectedCategory) return;
+
         const fetchProducts = async () => {
-            setLoading(true);
+            setLoadingProducts(true);
+            setAvailableProducts([]);
+
+            // Fetch all base products
             const { data } = await supabase
                 .from('products')
                 .select('*')
                 .eq('metadata->>type', 'personalization_base');
 
             if (data) {
-                // Filter Logic
-                const filtered = data.filter((p: any) => {
-                    const pMeta = p.metadata?.personalization || {};
-                    // Check if product belongs to this category logic (using internal name or explicit field if added)
-                    // Currently rely on 'Name' or 'Product Type' matching the taxonomy?
-                    // Better: We should filter by gender_supported if subCategory is a Gender
+                // Client-side filtering based on taxonomy + gender visibility
+                const filtered = data.filter((p: BaseProduct) => {
+                    const pMeta = p.metadata?.personalization;
+                    const pType = p.metadata?.product_type;
+                    if (!pType || !pMeta) return false;
 
-                    if (category === 'Clothing' && subCategory) {
-                        // Gender check
-                        const supported = p.metadata?.gender_supported || [];
-                        const targetGender = subCategory.toLowerCase();
-                        // Special case: 'Unisex' products show up in Men and Women
-                        if (targetGender === 'men' || targetGender === 'women') {
-                            return supported.includes(targetGender) || supported.includes('unisex');
-                        }
-                        return supported.includes(targetGender);
-                    }
-                    // For other categories, just show all for now or filter by type string matching
-                    // Crude filter: check if Product Type is in the taxonomy list for this category
+                    // 1. Check if Category matches (Taxonomy)
                     // @ts-ignore
-                    const types = PERSONALIZATION_TAXONOMY[category]?.types || [];
-                    return Array.isArray(types) && types.includes(p.metadata.product_type);
+                    const categoryConfig = PERSONALIZATION_TAXONOMY[selectedCategory];
+                    if (!categoryConfig) return false;
+
+                    // 2. Handle Subcategories (Clothing)
+                    if (categoryConfig.subcategories) {
+                        if (!selectedSubCategory) return false;
+
+                        const targetGender = selectedSubCategory.toLowerCase();
+                        const pGenders = pMeta.gender_supported || [];
+
+                        // Rule: Product must support the selected gender (e.g. 'Men' selected -> Product supports 'men')
+                        // Unisex products support ['men', 'women', 'unisex'] so they will pass.
+                        // Standard products supports ['men'] so they will pass.
+                        // We do NOT strictly check if the type is listed in the taxonomy for *that specific* subcategory if it's a cross-listed unisex item?
+                        // Actually, let's rely on the gender_supported flag as the primary truth for "Visibility" as per request.
+
+                        return pGenders.includes(targetGender);
+                    } else {
+                        // Direct types (Non-Clothing)
+                        // @ts-ignore
+                        const allowedTypes = categoryConfig.types || [];
+                        return allowedTypes.includes(pType);
+                    }
                 });
-                setProducts(filtered);
+                setAvailableProducts(filtered);
             }
-            setLoading(false);
+            setLoadingProducts(false);
         };
+
         fetchProducts();
-    }, [category, subCategory]);
+    }, [selectedCategory, selectedSubCategory]);
 
-    return (
-        <div className="max-w-7xl mx-auto px-4 py-12">
-            <div className="flex items-center gap-4 mb-8">
-                <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100">
-                    <ArrowLeft size={20} className="text-navy-900" />
-                </button>
-                <h2 className="text-2xl font-black text-navy-900">
-                    {category} {subCategory && ` / ${subCategory}`}
-                </h2>
-            </div>
+    // 2. Handle File Upload
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files?.[0]) return;
 
-            {loading ? (
-                <div className="h-64 flex items-center justify-center"><Loader2 className="animate-spin" /></div>
-            ) : products.length === 0 ? (
-                <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                    <h3 className="text-xl font-bold text-gray-400">No products found.</h3>
-                    <p className="text-gray-400">Try a different category.</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {products.map(product => (
-                        <div key={product.id} className="group cursor-pointer" onClick={() => onSelect(product)}>
-                            <div className="relative aspect-[4/5] bg-gray-100 rounded-2xl overflow-hidden mb-4">
-                                <Image src={product.images[0]} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                            </div>
-                            <h3 className="font-bold text-navy-900">{product.name}</h3>
-                            <p className="text-sm text-gray-500">₹{product.price}</p>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
+        const file = e.target.files[0];
+        setUploading(true);
 
-// ----------------------------------------------------------------------
-// COMPONENT: BUILDER WIZARD
-// ----------------------------------------------------------------------
-function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onBack: () => void }) {
-    // Normalization Helper for Backwards Compatibility
-    const normalizeConfig = (rawConfig: any): PersonalizationConfig => {
-        const config = { ...rawConfig };
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
 
-        // Migrate Print Types (Array -> Record)
-        if (Array.isArray(config.print_types)) {
-            const newTypes: Record<string, PrintTypeConfig> = {};
-            config.print_types.forEach((t: string) => {
-                // Default legacy types to enabled with standard price if not present
-                newTypes[t] = { enabled: true, price: 50 };
-            });
-            config.print_types = newTypes;
-        }
+            const { error: uploadError } = await supabase.storage
+                .from('personalization-uploads')
+                .upload(filePath, file);
 
-        // Migrate Placements if needed (though admin handles this, read-only might need safety) //
-        return config;
-    };
+            if (uploadError) throw uploadError;
 
-    const config = normalizeConfig(product.metadata.personalization);
+            // Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('personalization-uploads')
+                .getPublicUrl(filePath);
 
-    // Derived Data
-    const enabledPlacements = Object.entries(config.placements || {})
-        .filter(([_, v]) => v.enabled)
-        .map(([k, v]) => ({ name: k, ...v }));
-
-    // State
-    const [step, setStep] = useState(1); // 1=Options, 2=Print Type, 3=Design
-    const [selection, setSelection] = useState({
-        color: config.colors?.[0] || '',
-        size: '',
-        print_type: Object.keys(config.print_types || {})[0] || '',
-        placements: {} as Record<string, File | null>, // 'Front' -> File
-        notes: ''
-    });
-
-    // Price Calc
-    const selectedPrintTypePrice = config.print_types?.[selection.print_type]?.price || 0;
-
-    // Total Print Cost = Sum of (Placement Cost + Placement Print Surcharge)
-    // Wait, typically Surcharge is per placement. So for every active placement, we add the print type price.
-    const numberOfPlacements = Object.keys(selection.placements).length;
-    const placementBaseCost = Object.keys(selection.placements).reduce((acc, placement) => {
-        return acc + (config.placements[placement]?.price || 0);
-    }, 0);
-
-    const totalPrintCost = placementBaseCost + (selectedPrintTypePrice * numberOfPlacements);
-
-    const gstRate = 0.18;
-    const subtotal = product.price + totalPrintCost;
-    const gstAmount = subtotal * gstRate;
-    const total = subtotal + gstAmount;
-
-    // Helpers
-    const handleNext = () => setStep(s => s + 1);
-    const handlePrev = () => setStep(s => s - 1);
-
-    const canProceed = () => {
-        if (step === 1) {
-            // Validate Color & Size (if applicable)
-            if (!selection.color) return false;
-            // If sizes exist, it MUST be selected
-            if (config.sizes?.length > 0 && !selection.size) return false;
-            return true;
-        }
-        if (step === 2) return !!selection.print_type;
-        if (step === 3) return Object.keys(selection.placements).length > 0;
-        return false;
-    };
-
-    const handleFileUpload = (placement: string, e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files?.[0]) {
-            setSelection(prev => ({
-                ...prev,
-                placements: { ...prev.placements, [placement]: e.target.files![0] }
-            }));
+            setUploadedImage(publicUrl);
+            toast.success('Image uploaded successfully');
+        } catch (error: any) {
+            console.error('Upload error:', error);
+            toast.error('Failed to upload image. Please try again.');
+        } finally {
+            setUploading(false);
         }
     };
 
-    const removeFile = (placement: string) => {
-        const newPlacements = { ...selection.placements };
-        delete newPlacements[placement];
-        setSelection(prev => ({ ...prev, placements: newPlacements }));
+    // 3. Price Calculation
+    const calculatePrice = () => {
+        if (!selectedProduct) return 0;
+        let total = selectedProduct.price;
+
+        const config = selectedProduct.metadata.personalization;
+
+        // Add Print Type Price
+        if (printType && config.print_types[printType]) {
+            total += config.print_types[printType].price;
+        }
+
+        // Add Placement Price
+        if (placement && config.placements[placement]) {
+            total += config.placements[placement].price;
+        }
+
+        return total;
     };
+
+    const finalPrice = calculatePrice();
+    const canAddToCart = selectedProduct && size && placement && printType && uploadedImage;
 
     const handleAddToCart = () => {
-        alert("Added to Cart Successfully! (Simulated)");
-        // In real app: Add to Context Cart with metadata
-        // router.push('/cart');
+        if (!canAddToCart) return;
+
+        // In a real implementation: Add to Cart Context / Database
+        // We'll mock it for now or assume a store hook exists
+        toast.success("Product has been successfully added to cart");
+
+        // Use a hidden console log to verify metadata structure for development
+        console.log('Adding to cart:', {
+            productId: selectedProduct.id,
+            metadata: {
+                is_custom: true,
+                size,
+                placement,
+                print_type: printType,
+                image_url: uploadedImage,
+                note
+            }
+        });
     };
 
+    // Derived Lists
+    // @ts-ignore
+    const subCategories = selectedCategory ? (PERSONALIZATION_TAXONOMY[selectedCategory]?.subcategories || []) : [];
+
     return (
-        <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl w-full bg-white rounded-3xl shadow-xl overflow-hidden min-h-[800px] flex flex-col md:flex-row">
 
-            {/* LEFT: PREVIEW AREA */}
-            <div className="w-full lg:w-1/2 bg-gray-50 flex flex-col relative px-4 py-8 lg:p-0">
-                <div className="absolute top-6 left-6 z-10">
-                    <button
-                        onClick={onBack}
-                        className="p-3 bg-white rounded-full shadow-md text-navy-900 hover:scale-110 transition-transform flex items-center justify-center"
-                    >
-                        <ArrowLeft size={20} />
-                    </button>
-                </div>
-
-                <div className="flex-1 flex items-center justify-center min-h-[50vh] lg:min-h-screen">
-                    <div className="relative w-full max-w-lg aspect-[4/5] bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all hover:scale-[1.01]">
-                        <Image
-                            src={product.images[0]}
-                            alt="Preview"
-                            fill
-                            className="object-cover"
-                        />
-                        {/* Fake Tint Overlay */}
-                        <div
-                            className="absolute inset-0 mix-blend-multiply opacity-20 pointer-events-none"
-                            style={{ backgroundColor: selection.color.toLowerCase() }}
-                        />
-
-                        {/* Simple Tag */}
-                        <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold text-navy-900 shadow-sm border border-gray-100 flex items-center gap-2">
-                            <ShieldCheck size={14} className="text-green-600" /> Base: {product.metadata.product_type}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* RIGHT: CONFIGURATION WIZARD */}
-            <div className="w-full lg:w-1/2 bg-white flex flex-col h-screen overflow-y-auto">
-
-                {/* Header */}
-                <div className="pt-12 px-8 lg:px-16 pb-6 border-b border-gray-100 bg-white sticky top-0 z-20">
-                    <div className="flex items-center gap-2 mb-6 text-sm font-bold text-gray-400">
-                        <span className={`transition-colors ${step >= 1 ? 'text-navy-900' : ''}`}>01 Options</span>
-                        <div className={`h-px w-8 transition-colors ${step >= 2 ? 'bg-navy-900' : 'bg-gray-200'}`} />
-                        <span className={`transition-colors ${step >= 2 ? 'text-navy-900' : ''}`}>02 Method</span>
-                        <div className={`h-px w-8 transition-colors ${step >= 3 ? 'bg-navy-900' : 'bg-gray-200'}`} />
-                        <span className={`transition-colors ${step >= 3 ? 'text-navy-900' : ''}`}>03 Design</span>
-                    </div>
-                    <h2 className="text-3xl font-black text-navy-900 mb-1">{product.name}</h2>
-                    <p className="text-sm text-gray-500">Customize your premium product.</p>
-                </div>
-
-                {/* STEPS CONTENT */}
-                <div className="flex-1 px-8 lg:px-16 py-8 space-y-12">
-
-                    {/* STEP 1: OPTIONS (Color & Size) */}
-                    {step === 1 && (
-                        <div className="animate-in fade-in slide-in-from-right-4 space-y-10">
-
-                            {/* Colors */}
-                            <div>
-                                <h3 className="text-lg font-bold text-navy-900 mb-4 flex items-center gap-2">
-                                    Product Color <span className="text-red-500">*</span>
-                                </h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {config.colors.map(color => (
-                                        <button
-                                            key={color}
-                                            onClick={() => setSelection({ ...selection, color })}
-                                            className={`group relative w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center ${selection.color === color
-                                                ? 'border-navy-900 scale-110 shadow-lg'
-                                                : 'border-transparent hover:scale-105'
-                                                }`}
-                                        >
-                                            <div
-                                                className="w-full h-full rounded-full border border-gray-200 shadow-inner"
-                                                style={{ backgroundColor: color.toLowerCase() }}
-                                            />
-                                            {selection.color === color && (
-                                                <div className="absolute -bottom-8 bg-black text-white text-xs px-2 py-1 rounded font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {color}
-                                                </div>
-                                            )}
-                                        </button>
-                                    ))}
+                {/* ------------------------------------------------------------- */}
+                {/* LEFT: VISUALIZER (Only if product selected) or WELCOME GRAPHIC */}
+                {/* ------------------------------------------------------------- */}
+                <div className="w-full md:w-1/2 bg-gray-100 relative flex items-center justify-center p-8">
+                    {selectedProduct ? (
+                        <div className="relative w-full max-w-md aspect-[4/5] bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden group">
+                            <Image
+                                src={selectedProduct.images[0]}
+                                alt={selectedProduct.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                            />
+                            {uploadedImage && (
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <div className="w-1/2 aspect-square relative opacity-90 mix-blend-multiply border-2 border-dashed border-blue-400 bg-blue-50/20">
+                                        {/* Simple overlay simulation */}
+                                        <Image src={uploadedImage} alt="Print Preview" fill className="object-contain p-2" />
+                                    </div>
                                 </div>
-                                <p className="mt-3 text-sm font-bold text-navy-900/70">Selected: {selection.color || 'None'}</p>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="text-center text-gray-400">
+                            <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
+                                <ShieldCheck size={40} className="opacity-20" />
+                            </div>
+                            <p className="font-bold text-lg">Select a product to start designing</p>
+                        </div>
+                    )}
+                </div>
+
+
+                {/* ------------------------------------------------------------- */}
+                {/* RIGHT: CONTROLS */}
+                {/* ------------------------------------------------------------- */}
+                <div className="w-full md:w-1/2 p-8 lg:p-12 overflow-y-auto max-h-[100vh]">
+                    <h1 className="text-3xl font-black text-navy-900 mb-2">Personalize Your Gear</h1>
+                    <p className="text-gray-500 mb-8">Choose a product, upload your art, and we'll handle the rest.</p>
+
+                    {/* 1. SELECTION DROPDOWNS */}
+                    <div className="space-y-6 mb-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-900 mb-2">Category</label>
+                                <div className="relative">
+                                    <select
+                                        className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-navy-900 font-bold"
+                                        value={selectedCategory}
+                                        onChange={(e) => {
+                                            setSelectedCategory(e.target.value);
+                                            setSelectedSubCategory('');
+                                            setSelectedProduct(null);
+                                        }}
+                                    >
+                                        <option value="">Select Category</option>
+                                        {Object.keys(PERSONALIZATION_TAXONOMY).map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <ChevronDown size={16} />
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Sizes */}
-                            {config.sizes?.length > 0 && (
+                            {subCategories.length > 0 && (
                                 <div>
-                                    <h3 className="text-lg font-bold text-navy-900 mb-4 flex items-center gap-2">
-                                        Size <span className="text-red-500">*</span>
-                                    </h3>
-                                    <div className="flex flex-wrap gap-3">
-                                        {config.sizes.map(size => (
+                                    <label className="block text-sm font-bold text-gray-900 mb-2">Collection</label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-navy-900 font-bold"
+                                            value={selectedSubCategory}
+                                            onChange={(e) => {
+                                                setSelectedSubCategory(e.target.value);
+                                                setSelectedProduct(null); // Reset product on subcat change
+                                            }}
+                                        >
+                                            <option value="">Select Collection</option>
+                                            {subCategories.map((sub: string) => (
+                                                <option key={sub} value={sub}>{sub}</option>
+                                            ))}
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                            <ChevronDown size={16} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* PRODUCT SELECTOR */}
+                        {(selectedCategory && (!subCategories.length || selectedSubCategory)) && (
+                            <div className="animate-in fade-in slide-in-from-top-4">
+                                <label className="block text-sm font-bold text-gray-900 mb-2">Select Product</label>
+                                {loadingProducts ? (
+                                    <div className="flex items-center gap-2 text-gray-400 py-2"><Loader2 className="animate-spin" size={16} /> Loading products...</div>
+                                ) : (
+                                    <div className="relative">
+                                        <select
+                                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-navy-900 font-bold"
+                                            value={selectedProduct?.id || ''}
+                                            onChange={(e) => {
+                                                const prod = availableProducts.find(p => p.id === e.target.value);
+                                                setSelectedProduct(prod || null);
+                                                // Reset configs
+                                                setSize('');
+                                                setPlacement('');
+                                                setPrintType('');
+                                                setUploadedImage(null);
+                                            }}
+                                        >
+                                            <option value="">Choose a Base Product...</option>
+                                            {availableProducts.map(product => (
+                                                <option key={product.id} value={product.id}>{product.name} - ₹{product.price}</option>
+                                            ))}
+                                        </select>
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                            <ChevronDown size={16} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 2. CUSTOMIZATION FORM */}
+                    {selectedProduct && (
+                        <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
+                            <div className="h-px bg-gray-100" />
+
+                            <h2 className="text-xl font-black text-navy-900">Customize It</h2>
+
+                            {/* SIZE */}
+                            {selectedProduct.metadata.personalization.sizes?.length > 0 && (
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-900 mb-3">Size</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedProduct.metadata.personalization.sizes.map(s => (
                                             <button
-                                                key={size}
-                                                onClick={() => setSelection({ ...selection, size })}
-                                                className={`w-16 h-12 rounded-xl text-sm font-bold border-2 transition-all ${selection.size === size
-                                                    ? 'border-navy-900 bg-navy-900 text-white shadow-lg shadow-navy-900/20'
-                                                    : 'border-gray-100 text-gray-600 hover:border-gray-300'
+                                                key={s}
+                                                onClick={() => setSize(s)}
+                                                className={`px-4 py-2 rounded-lg border font-bold text-sm transition-all ${size === s
+                                                    ? 'bg-navy-900 text-white border-navy-900 shadow-md transform scale-105'
+                                                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
-                                                {size}
+                                                {s}
                                             </button>
                                         ))}
                                     </div>
-                                    <button className="text-xs font-bold text-blue-600 mt-4 hover:underline">View Size Guide</button>
                                 </div>
                             )}
-                        </div>
-                    )}
 
-                    {/* STEP 2: PRINT TYPE */}
-                    {step === 2 && (
-                        <div className="animate-in fade-in slide-in-from-right-4">
-                            <h3 className="text-lg font-bold text-navy-900 mb-6 flex items-center gap-2">
-                                Printing Method <span className="text-red-500">*</span>
-                            </h3>
-                            <div className="grid gap-4">
-                                <div className="grid gap-4">
-                                    {Object.entries(config.print_types || {}).filter(([_, v]) => v.enabled).map(([type, typeConfig]) => (
-                                        <label
-                                            key={type}
-                                            className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${selection.print_type === type
-                                                ? 'border-navy-900 bg-navy-50 shadow-md ring-1 ring-navy-900'
-                                                : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
-                                                }`}
-                                            onClick={() => setSelection({ ...selection, print_type: type })}
-                                        >
-                                            <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${selection.print_type === type ? 'border-navy-900' : 'border-gray-300'
-                                                }`}>
-                                                {selection.print_type === type && <div className="w-2.5 h-2.5 rounded-full bg-navy-900" />}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="flex justify-between">
-                                                    <span className="block font-bold text-navy-900 text-lg mb-1">{type}</span>
-                                                    {numberOfPlacements > 0 && (
-                                                        <span className="text-sm font-bold text-navy-900 bg-white px-2 py-1 rounded border border-gray-200">
-                                                            +₹{typeConfig.price * numberOfPlacements}
-                                                        </span>
-                                                    )}
-                                                    {numberOfPlacements === 0 && (
-                                                        <span className="text-sm font-bold text-gray-400">
-                                                            +₹{typeConfig.price}/loc
-                                                        </span>
-                                                    )}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {/* PRINT PLACEMENT */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-900 mb-3">Placement</label>
+                                    <div className="space-y-2">
+                                        {Object.entries(selectedProduct.metadata.personalization.placements)
+                                            .filter(([_, conf]) => conf.enabled)
+                                            .map(([key, conf]) => (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => setPlacement(key)}
+                                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm ${placement === key
+                                                        ? 'border-navy-900 bg-navy-50 text-navy-900 font-bold ring-1 ring-navy-900'
+                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    <span>{key}</span>
+                                                    <span className="text-xs bg-white px-2 py-1 rounded border border-gray-100 shadow-sm">+₹{conf.price}</span>
+                                                </button>
+                                            ))}
+                                    </div>
+                                </div>
+
+                                {/* PRINT TYPE */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-900 mb-3">Print Type</label>
+                                    <div className="space-y-2">
+                                        {Object.entries(selectedProduct.metadata.personalization.print_types)
+                                            .filter(([_, conf]) => conf.enabled)
+                                            .map(([key, conf]) => (
+                                                <button
+                                                    key={key}
+                                                    onClick={() => setPrintType(key)}
+                                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm ${printType === key
+                                                        ? 'border-navy-900 bg-navy-50 text-navy-900 font-bold ring-1 ring-navy-900'
+                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                        }`}
+                                                >
+                                                    <span>{key}</span>
+                                                    <span className="text-xs bg-white px-2 py-1 rounded border border-gray-100 shadow-sm">+₹{conf.price}</span>
+                                                </button>
+                                            ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* UPLOAD */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-900 mb-3">Upload Design</label>
+                                <div className={`border-2 border-dashed rounded-xl p-6 transition-all text-center ${uploadedImage ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-navy-900 hover:bg-gray-50'}`}>
+                                    {uploadedImage ? (
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-green-200 text-green-700 rounded-lg flex items-center justify-center">
+                                                    <Check size={20} />
                                                 </div>
-                                                <span className="text-sm text-gray-500">Premium quality {type.toLowerCase()}.</span>
+                                                <div className="text-left">
+                                                    <p className="font-bold text-green-800 text-sm">Image uploaded successfully</p>
+                                                    <p className="text-xs text-green-600">Ready for print</p>
+                                                </div>
                                             </div>
+                                            <button onClick={() => setUploadedImage(null)} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-red-500">
+                                                <X size={18} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <label className="cursor-pointer block">
+                                            <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                                            {uploading ? (
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <Loader2 className="animate-spin text-navy-900" />
+                                                    <span className="text-sm font-bold text-gray-500">Uploading...</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <Upload className="mx-auto text-gray-400 mb-2" />
+                                                    <span className="block text-sm font-bold text-navy-900">Click to Upload Image</span>
+                                                    <span className="block text-xs text-gray-400 mt-1">PNG, JPG (Max 10MB)</span>
+                                                </>
+                                            )}
                                         </label>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* STEP 3: PLACEMENTS & UPLOAD */}
-                    {step === 3 && (
-                        <div className="animate-in fade-in slide-in-from-right-4 space-y-8 pb-32">
-                            <div>
-                                <h3 className="text-lg font-bold text-navy-900 mb-2">Upload Your Design</h3>
-                                <p className="text-gray-500 text-sm mb-6">Choose print locations and upload artwork for each.</p>
-
-                                <div className="space-y-4">
-                                    {enabledPlacements.map(placement => {
-                                        const hasFile = !!selection.placements[placement.name];
-                                        return (
-                                            <div key={placement.name} className={`relative overflow-hidden p-6 rounded-2xl border-2 transition-all ${hasFile ? 'border-green-500 bg-white ring-1 ring-green-500' : 'border-dashed border-gray-200 hover:border-navy-200 bg-gray-50/50'
-                                                }`}>
-                                                <div className="flex items-start justify-between mb-4">
-                                                    <div>
-                                                        <span className="font-bold text-navy-900 text-lg">{placement.name}</span>
-                                                        <br />
-                                                        <span className="text-xs text-gray-500">Max {placement.max_width}" x {placement.max_height}"</span>
-                                                    </div>
-                                                    <span className="text-sm font-bold bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm text-gray-700">
-                                                        {selectedPrintTypePrice > 0 ? `+₹${placement.price + selectedPrintTypePrice}` : `+₹${placement.price}`}
-                                                    </span>
-                                                </div>
-
-                                                {hasFile ? (
-                                                    <div className="flex items-center justify-between bg-green-50 p-3 rounded-xl border border-green-100">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 rounded-lg bg-green-200 flex items-center justify-center text-green-700">
-                                                                <Check size={20} />
-                                                            </div>
-                                                            <div>
-                                                                <span className="block text-sm font-bold text-green-800 truncate max-w-[150px]">
-                                                                    {selection.placements[placement.name]?.name}
-                                                                </span>
-                                                                <span className="text-[10px] text-green-600 font-bold">Ready for print</span>
-                                                            </div>
-                                                        </div>
-                                                        <button onClick={() => removeFile(placement.name)} className="p-2 hover:bg-white rounded-full text-gray-400 hover:text-red-500 transition-colors">
-                                                            <X size={18} />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <label className="flex flex-col items-center justify-center gap-3 cursor-pointer w-full py-6 bg-white border border-gray-200 rounded-xl hover:border-navy-900 hover:shadow-md transition-all group">
-                                                        <div className="w-12 h-12 rounded-full bg-navy-50 flex items-center justify-center text-navy-900 group-hover:scale-110 transition-transform">
-                                                            <Upload size={20} />
-                                                        </div>
-                                                        <div className="text-center">
-                                                            <span className="text-sm font-bold text-navy-900 block mb-0.5">Click to upload</span>
-                                                            <span className="text-[10px] text-gray-400">JPG, PNG, PDF (Max 20MB)</span>
-                                                        </div>
-                                                        <input
-                                                            type="file"
-                                                            className="hidden"
-                                                            accept={config.image_requirements.allowed_formats.map(f => `.${f}`).join(',')}
-                                                            onChange={(e) => handleFileUpload(placement.name, e)}
-                                                        />
-                                                    </label>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Notes */}
+                            {/* NOTE */}
                             <div>
-                                <h3 className="text-sm font-bold text-navy-900 mb-2">Instructions for printing (Optional)</h3>
+                                <label className="block text-sm font-bold text-gray-900 mb-3">Special Instructions (Optional)</label>
                                 <textarea
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors text-sm"
-                                    placeholder="e.g. Center logo perfectly, Make logo 3 inch wide..."
+                                    className="w-full border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-navy-900 text-sm"
                                     rows={3}
-                                    value={selection.notes}
-                                    onChange={(e) => setSelection({ ...selection, notes: e.target.value })}
+                                    placeholder="Any specific requirements for printing..."
+                                    value={note}
+                                    onChange={(e) => setNote(e.target.value)}
                                 />
                             </div>
-                        </div>
-                    )}
-                </div>
 
-                {/* STICKY FOOTER: PRICE & ACTIONS */}
-                <div className="border-t border-gray-100 bg-white p-6 lg:px-16 shadow-2xl">
-                    <div className="flex items-center justify-between mb-4 text-sm">
-                        <span className="text-gray-500">Base Product</span>
-                        <span className="font-bold">₹{product.price.toFixed(2)}</span>
-                    </div>
-                    {totalPrintCost > 0 && (
-                        <div className="flex items-center justify-between mb-4 text-sm animate-in slide-in-from-bottom-2">
-                            <span className="text-gray-500">Printing Charges</span>
-                            <span className="font-bold text-green-600">+₹{totalPrintCost.toFixed(2)}</span>
-                        </div>
-                    )}
-                    <div className="flex items-center justify-between mb-6 pt-4 border-t border-gray-100">
-                        <div>
-                            <span className="block text-2xl font-black text-navy-900">₹{subtotal.toFixed(2)}</span>
-                            <span className="text-xs text-gray-400">+18% GST Calculated at Checkout</span>
-                        </div>
-
-                        <div className="flex gap-3">
-                            {step > 1 && (
-                                <button onClick={handlePrev} className="px-6 py-4 font-bold text-gray-500 hover:text-navy-900 hover:bg-gray-50 rounded-xl transition-colors">
-                                    Back
-                                </button>
-                            )}
-
-                            {step < 3 ? (
-                                <button
-                                    onClick={handleNext}
-                                    disabled={!canProceed()}
-                                    className="px-8 py-4 bg-navy-900 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-navy-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Next Step <ArrowRight size={18} />
-                                </button>
-                            ) : (
+                            {/* PRICE & ACTION */}
+                            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mt-8">
+                                <div className="flex justify-between items-center mb-6">
+                                    <span className="text-gray-500 font-medium">Total Price</span>
+                                    <span className="text-3xl font-black text-navy-900">₹{finalPrice.toFixed(2)}</span>
+                                </div>
                                 <button
                                     onClick={handleAddToCart}
-                                    disabled={!canProceed()}
-                                    className="px-8 py-4 bg-navy-900 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-navy-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={!canAddToCart}
+                                    className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${canAddToCart
+                                        ? 'bg-navy-900 text-white hover:bg-navy-800 hover:scale-[1.02]'
+                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        }`}
                                 >
-                                    <ShoppingBag size={18} /> Add to Cart
+                                    <ShoppingBag size={20} />
+                                    Add to Bag
                                 </button>
-                            )}
+                                {!canAddToCart && (
+                                    <p className="text-center text-xs text-red-400 mt-3 font-medium flex items-center justify-center gap-1">
+                                        <Info size={12} /> Please complete all selections
+                                    </p>
+                                )}
+                            </div>
+
                         </div>
-                    </div>
+                    )}
                 </div>
-
             </div>
-        </div>
-    );
-}
-
-// ----------------------------------------------------------------------
-// MAIN PAGE ROUTER
-// ----------------------------------------------------------------------
-export default function PersonalisePage() {
-    const [view, setView] = useState<'CATEGORY' | 'LIST' | 'BUILDER'>('CATEGORY');
-    const [category, setCategory] = useState<{ main: string; sub?: string } | null>(null);
-    const [selectedProduct, setSelectedProduct] = useState<BaseProduct | null>(null);
-
-    const handleCategorySelect = (main: string, sub?: string) => {
-        setCategory({ main, sub });
-        setView('LIST');
-    };
-
-    const handleProductSelect = (p: BaseProduct) => {
-        setSelectedProduct(p);
-        setView('BUILDER');
-    };
-
-    return (
-        <div className="min-h-screen bg-white">
-            {view === 'CATEGORY' && <CategorySelectionView onSelect={handleCategorySelect} />}
-
-            {view === 'LIST' && category && (
-                <FilteredProductList
-                    category={category.main}
-                    subCategory={category.sub}
-                    onSelect={handleProductSelect}
-                    onBack={() => setView('CATEGORY')}
-                />
-            )}
-
-            {view === 'BUILDER' && selectedProduct && (
-                <PersonalizationBuilder
-                    product={selectedProduct}
-                    onBack={() => setView('LIST')}
-                />
-            )}
         </div>
     );
 }

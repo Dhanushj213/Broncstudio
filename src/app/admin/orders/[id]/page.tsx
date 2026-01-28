@@ -14,6 +14,7 @@ interface OrderItem {
     price: number;
     size?: string;
     image_url: string;
+    metadata?: any;
 }
 
 interface Order {
@@ -124,10 +125,10 @@ export default function OrderDetailPage() {
                     <h1 className="text-3xl font-bold text-navy-900 flex items-center gap-3">
                         Order #{order.id.slice(0, 8)}
                         <span className={`text-base px-3 py-1 rounded-full border uppercase tracking-wider ${order.status === 'pending' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                                order.status === 'processing' ? 'bg-purple-50 border-purple-200 text-purple-700' :
-                                    order.status === 'shipped' ? 'bg-blue-50 border-blue-200 text-blue-700' :
-                                        order.status === 'delivered' ? 'bg-green-50 border-green-200 text-green-700' :
-                                            'bg-red-50 border-red-200 text-red-700'
+                            order.status === 'processing' ? 'bg-purple-50 border-purple-200 text-purple-700' :
+                                order.status === 'shipped' ? 'bg-blue-50 border-blue-200 text-blue-700' :
+                                    order.status === 'delivered' ? 'bg-green-50 border-green-200 text-green-700' :
+                                        'bg-red-50 border-red-200 text-red-700'
                             }`}>
                             {order.status}
                         </span>
@@ -172,26 +173,63 @@ export default function OrderDetailPage() {
                             </h2>
                         </div>
                         <div className="divide-y divide-gray-100">
-                            {items.map((item, idx) => (
-                                <div key={idx} className="p-6 flex items-start gap-4">
-                                    <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
-                                        <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                            {items.map((item, idx) => {
+                                const meta = item.metadata as any;
+                                return (
+                                    <div key={idx} className="p-6 flex items-start gap-4">
+                                        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 relative group">
+                                            <img src={meta?.image_url || item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                            {meta?.image_url && (
+                                                <a
+                                                    href={meta.image_url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    download
+                                                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-bold"
+                                                >
+                                                    Download
+                                                </a>
+                                            )}
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                                                {item.name}
+                                                {meta?.is_custom && (
+                                                    <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">
+                                                        Custom
+                                                    </span>
+                                                )}
+                                            </h3>
+                                            <div className="space-y-1 mt-1">
+                                                <p className="text-sm text-gray-500">
+                                                    Size: <span className="font-medium text-gray-700">{meta?.size || item.size || 'N/A'}</span>
+                                                </p>
+
+                                                {meta?.is_custom && (
+                                                    <div className="text-sm bg-gray-50 p-2 rounded border border-gray-100 inline-block mt-1">
+                                                        <p className="text-gray-500 text-xs uppercase font-bold mb-1">Print Details</p>
+                                                        <p>Type: <span className="font-medium text-gray-900">{meta.print_type}</span></p>
+                                                        <p>Placement: <span className="font-medium text-gray-900">{meta.placement}</span></p>
+                                                        {meta.note && (
+                                                            <div className="mt-2 pt-2 border-t border-gray-200">
+                                                                <p className="text-xs text-gray-400">Customer Note:</p>
+                                                                <p className="italic text-gray-700">"{meta.note}"</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="font-bold text-gray-900">₹{item.price * item.quantity}</p>
+                                            <p className="text-xs text-gray-400">₹{item.price} each</p>
+                                            <p className="text-sm text-gray-500 mt-1">
+                                                Qty: <span className="font-medium text-gray-700">{item.quantity}</span>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-bold text-gray-900">{item.name}</h3>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            Size: <span className="font-medium text-gray-700">{item.size || 'N/A'}</span>
-                                        </p>
-                                        <p className="text-sm text-gray-500">
-                                            Quantity: <span className="font-medium text-gray-700">{item.quantity}</span>
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-bold text-gray-900">₹{item.price * item.quantity}</p>
-                                        <p className="text-xs text-gray-400">₹{item.price} each</p>
-                                    </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                         <div className="bg-gray-50 p-6 flex justify-between items-center border-t border-gray-100">
                             <span className="font-bold text-gray-500">Total Amount</span>
@@ -213,8 +251,8 @@ export default function OrderDetailPage() {
                             <div className="text-right">
                                 <p className="text-sm text-gray-500 mb-1">Payment Status</p>
                                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 border-green-200 text-green-700' :
-                                        order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
-                                            'bg-amber-100 border-amber-200 text-amber-700'
+                                    order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
+                                        'bg-amber-100 border-amber-200 text-amber-700'
                                     }`}>
                                     {order.payment_status}
                                 </span>
