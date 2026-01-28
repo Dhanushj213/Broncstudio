@@ -5,7 +5,8 @@ import Image from 'next/image';
 import { createBrowserClient } from '@supabase/ssr';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
-import { Upload, Check, Loader2, Package, Gift, PenTool, ArrowRight, ChevronRight } from 'lucide-react';
+import { Upload, Check, Loader2, Package, Gift, PenTool, ArrowRight, Info, AlertCircle } from 'lucide-react';
+import { PRODUCT_TAXONOMY, COLORS, PLACEMENTS, PRINT_SIZES } from '@/data/product_taxonomy';
 
 // --- Types ---
 interface Product {
@@ -15,142 +16,163 @@ interface Product {
     images: string[];
     description: string;
     category_id: string;
-    metadata?: any;
+    metadata?: {
+        product_type?: string;
+        gender_visibility?: string[];
+        personalization?: {
+            enabled: boolean;
+            colors?: string[];
+            sizes?: string[];
+            placements?: string[];
+            print_type?: string;
+            print_price?: number;
+            image_requirements?: {
+                min_dpi: number;
+                max_size_mb: number;
+            };
+        };
+        // fallback legacy fields
+        colors?: { name: string; code: string }[];
+        primary_color?: string;
+    };
 }
-
-interface Category {
-    id: string; // We might map descriptive names to IDs or use names if consistent
-    name: string;
-}
-
-const CATEGORIES = [
-    'Clothing', 'Accessories', 'Tech & Desk', 'Home & Decor', 'Drinkware', 'Bags', 'Gifts', 'Pets'
-];
 
 export default function PersonalisePage() {
     // --- State ---
-    const [step, setStep] = useState(1);
 
-    // Step 1: Selection
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [productType, setProductType] = useState('');
-    const [variant, setVariant] = useState('');
+    // Step 1: Segmentation
+    const [selectedCategory, setSelectedCategory] = useState(''); // e.g. "Clothing"
+    const [selectedSubCategory, setSelectedSubCategory] = useState(''); // e.g. "Men" (or "Unisex")
+    const [productType, setProductType] = useState(''); // e.g. "Classic Crew T-Shirt"
 
-    // Data
+    // Step 2: Product Specifics
     const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [loadingProducts, setLoadingProducts] = useState(false);
 
-    // Step 2: Design
+    // Step 3: Configuration
+    const [selectedColor, setSelectedColor] = useState('');
+    const [selectedSize, setSelectedSize] = useState('');
+
+    // Step 4: Personalization
+    const [selectedPlacement, setSelectedPlacement] = useState('');
     const [designFile, setDesignFile] = useState<File | null>(null);
     const [designPreview, setDesignPreview] = useState<string | null>(null);
     const [designIdea, setDesignIdea] = useState('');
 
-    // Step 3: Placement
-    const [placement, setPlacement] = useState('Center');
-    const [printSize, setPrintSize] = useState('Medium');
-
-    // Step 4: Add-ons
+    // Step 5: Add-ons
     const [isGiftPacked, setIsGiftPacked] = useState(false);
     const [isBoxPacked, setIsBoxPacked] = useState(false);
     const [hasPersonalNote, setHasPersonalNote] = useState(false);
     const [personalNoteFile, setPersonalNoteFile] = useState<File | null>(null);
-    const [customerNote, setCustomerNote] = useState('');
+    const [customerNote, setCustomerNote] = useState(''); // Internal note
 
-    // Cart
-    const { addToCart } = useCart();
-    const { addToast } = useToast();
     const [addingToCart, setAddingToCart] = useState(false);
 
-    // Supabase
+    // Hooks
+    const { addToCart } = useCart();
+    const { addToast } = useToast();
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
+    // --- Derived Data ---
+
+    const currentCategoryData = PRODUCT_TAXONOMY.find(c => c.category === selectedCategory);
+    const currentSubCategoryData = currentCategoryData?.subcategories.find(s => s.name === selectedSubCategory);
+
     // --- Effects ---
 
-    // Fetch products when category changes
+    // Fetch products based on selection
     useEffect(() => {
-        if (!selectedCategory) {
+        if (!selectedCategory || !selectedSubCategory) {
             setAvailableProducts([]);
             return;
         }
 
         const fetchProducts = async () => {
             setLoadingProducts(true);
-            // In a real app, we would query by category ID. 
-            // Here, we'll fetch all and filter client-side or use a loose match if category schema is different.
-            // Let's assume we fetch a batch and filter.
+            // Fetch all products and filter locally for this demo (production would query by tags/meta)
             const { data } = await supabase.from('products').select('*');
 
             if (data) {
-                // Mock filtering logic if DB categories aren't set up perfectly for this demo
-                // We'll just show all products for now to ensure flow works, or filter by loose metadata if possible.
-                // For "Clothing", we rely on `metadata.product_type` or similar.
-                setAvailableProducts(data);
+                // Filter Logic:
+                // 1. Must match product type if selected
+                // 2. Must support Personalization (config.enabled = true)
+                // 3. Must be in category (loose match for demo) or match Gender Visibility
+
+                let filtered = data.filter((p: Product) => {
+                    const meta = p.metadata || {};
+                    // Must enable personalization
+                    if (!meta.personalization?.enabled) return false;
+
+                    // Match Type
+                    if (productType && meta.product_type !== productType && !p.name.includes(productType)) {
+                        // Loose match name if type field missing
+                        return false;
+                    }
+
+                    // Match SubCategory (Gender)
+                    // If subcategory is 'Men', Product must have 'men' or 'unisex' in visibility
+                    // If subcategory is 'Unisex', product must have 'unisex'
+                    const vis = meta.gender_visibility || [];
+                    const subLower = selectedSubCategory.toLowerCase();
+
+                    if (selectedSubCategory === 'Unisex') {
+                        if (!vis.includes('unisex')) return false;
+                    } else if (['Men', 'Women', 'Kids'].includes(selectedSubCategory)) {
+                        if (!vis.includes(subLower) && !vis.includes('unisex')) return false;
+                    }
+
+                    return true;
+                });
+
+                setAvailableProducts(filtered);
+                // Auto-select if only 1
+                // if (filtered.length === 1) setSelectedProduct(filtered[0]);
             }
             setLoadingProducts(false);
         };
+
         fetchProducts();
-    }, [selectedCategory]);
+    }, [selectedCategory, selectedSubCategory, productType]);
 
-    // Reset downstream selections when upstream changes
+    // Reset when product changes
     useEffect(() => {
-        setSelectedProduct(null);
-        setProductType('');
-        setVariant('');
-    }, [selectedCategory]);
+        setSelectedColor('');
+        setSelectedSize('');
+        setSelectedPlacement('');
+    }, [selectedProduct]);
 
-    // --- Helpers ---
 
-    const getUniqueTypes = () => {
-        // dynamic types based on available products
-        // e.g. T-Shirt, Hoodie
-        const types = Array.from(new Set(availableProducts.map(p => p.metadata?.product_type || 'Standard')));
-        return types.filter(t => t !== 'Standard'); // Clean up
-    };
-
-    const getFilteredProducts = () => {
-        let filtered = availableProducts;
-        if (productType) {
-            filtered = filtered.filter(p => p.metadata?.product_type === productType);
-        }
-        return filtered;
-    };
-
-    const handleProductSelect = (product: Product) => {
-        setSelectedProduct(product);
-        // If needed, scroll to next step or just show preview
-    };
+    // --- Handlers ---
 
     const handleDesignUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
+            // Validations
             if (file.size > 20 * 1024 * 1024) {
                 alert("File too large (>20MB)");
                 return;
             }
+            // DPI Check (Mock)
+            // In real app, we'd read image metadata.
+
             setDesignFile(file);
             setDesignPreview(URL.createObjectURL(file));
         }
     };
 
-    const handleNoteUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setPersonalNoteFile(e.target.files[0]);
-        }
-    };
-
     const calculateTotal = () => {
         if (!selectedProduct) return 0;
-        let total = selectedProduct.price; // Base
-        total += 199; // Custom Print Base Cost (Implicit in user requirement: "Custom Print ₹199")
-        // Wait, user spec said sticky price: "Custom Print ₹199". 
-        // So we add a base customization fee? 
-        // Or is it included? The sticky example showed it separately.
-        // I will add it as a line item.
+        let total = selectedProduct.price;
 
+        // Print Cost
+        const printCost = selectedProduct.metadata?.personalization?.print_price || 199;
+        total += printCost;
+
+        // Add-ons
         if (isBoxPacked) total += (20 * 1.18);
         if (isGiftPacked) total += (50 * 1.18);
         if (hasPersonalNote) total += (50 * 1.18);
@@ -160,40 +182,68 @@ export default function PersonalisePage() {
 
     const handleAddToCart = () => {
         if (!selectedProduct) return;
+
+        // Validation
+        if (!selectedColor && (selectedProduct.metadata?.personalization?.colors?.length || 0) > 0) {
+            alert("Please select a color"); return;
+        }
+        if (!selectedSize && (selectedProduct.metadata?.personalization?.sizes?.length || 0) > 0) {
+            alert("Please select a size"); return;
+        }
+        if (!selectedPlacement) {
+            alert("Please select a print placement"); return;
+        }
         if (!designFile && !designIdea) {
-            alert("Please upload a design or describe your idea.");
-            return;
+            alert("Please upload a design or provide detailed instructions."); return;
         }
 
         setAddingToCart(true);
 
-        // Construct metadata payload
-        const metadata = {
-            base_product_id: selectedProduct.id,
+        // Payload Construction
+        const payload = {
+            product_id: selectedProduct.id,
             category: selectedCategory,
-            variant: variant || 'Standard',
-            uploaded_design: designFile?.name, // Mock upload
+            subcategory: selectedSubCategory,
+            product_type: productType,
+            gender_visibility: selectedProduct.metadata?.gender_visibility,
+
+            // Selection
+            color: selectedColor,
+            size: selectedSize,
+
+            // Personalization
+            print_type: selectedProduct.metadata?.personalization?.print_type || 'DTG',
+            design_placement: selectedPlacement,
+            uploaded_design: designFile?.name || 'No file',
             design_idea: designIdea,
-            design_placement: placement,
-            print_size: printSize,
+
+            // Metadata
+            dpi_verified: true, // Assumed passed validation
+
+            // Add-ons
             gift_packing: isGiftPacked,
             box_packing: isBoxPacked,
-            personal_note_enabled: hasPersonalNote,
             personal_note_file: personalNoteFile?.name,
             customer_note: customerNote,
-            customization_fee: 199
+
+            // Price Breakdown
+            price_breakdown: {
+                base: selectedProduct.price,
+                print: selectedProduct.metadata?.personalization?.print_price || 199,
+                addons: (calculateTotal() - selectedProduct.price - (selectedProduct.metadata?.personalization?.print_price || 199))
+            }
         };
 
         const customProduct = {
             ...selectedProduct,
-            name: `Personalised ${selectedProduct.name}`,
+            name: `Personalised ${selectedProduct.name} (${selectedPlacement})`,
             price: calculateTotal(),
-            image: selectedProduct.images?.[0], // Ensure image is passed
-            metadata
+            image: selectedProduct.images?.[0] || '',
+            metadata: payload
         };
 
         addToCart(customProduct, 'Custom');
-        addToast('Personalised order added to bag!', 'success');
+        addToast("Added custom order to bag!", "success");
         setAddingToCart(false);
     };
 
@@ -201,261 +251,233 @@ export default function PersonalisePage() {
 
     return (
         <div className="min-h-screen bg-[#FAF9F7] pb-32">
-
-            {/* Header */}
-            <div className="bg-white border-b border-gray-100 py-12 px-6 text-center">
+            <div className="bg-white border-b border-gray-100 py-12 px-6 text-center shadow-sm">
                 <h1 className="font-heading text-4xl font-bold text-navy-900 mb-2">🎨 Personalise Your Product</h1>
-                <p className="text-gray-500">Choose a product, add your design, and we’ll craft it for you.</p>
+                <p className="text-gray-500">The studio is yours. Create something unique.</p>
             </div>
 
             <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8">
 
-                {/* LEFT COLUMN: Configurator */}
+                {/* CONFIGURATOR */}
                 <div className="flex-1 space-y-8">
 
-                    {/* STEP 1: SELECT PRODUCT */}
+                    {/* STEP 1: CATEGORY SELECTION */}
                     <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100/50">
-                        <h2 className="text-xl font-bold text-navy-900 mb-6 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm">1</span>
-                            Select Product
-                        </h2>
+                        <div className="flex items-center gap-3 mb-6">
+                            <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                            <h2 className="text-xl font-bold text-navy-900">Select Product Base</h2>
+                        </div>
 
-                        <div className="space-y-4">
-                            {/* Category Dropdown */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Category */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Category</label>
                                 <select
                                     className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
                                     value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                    onChange={(e) => { setSelectedCategory(e.target.value); setSelectedSubCategory(''); setProductType(''); }}
                                 >
-                                    <option value="">Select Category ▼</option>
-                                    {CATEGORIES.map(cat => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
+                                    <option value="">Select Category</option>
+                                    {PRODUCT_TAXONOMY.map(c => <option key={c.category} value={c.category}>{c.category}</option>)}
                                 </select>
                             </div>
 
-                            {/* Product Type (Dynamic) */}
-                            {selectedCategory && (
-                                <div className="animate-in fade-in slide-in-from-top-2">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Product Type</label>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                        {/* Simplified 'Dropdown' as buttons/cards for better UX in builder, or standard Select if requested. Spec said "Dropdown 2". */}
-                                        {/* Implementing as Select for strict adherence to spec, but buttons are nicer. Let's stick to Select. */}
-                                        <select
-                                            className="w-full col-span-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
-                                            value={productType}
-                                            onChange={(e) => setProductType(e.target.value)}
-                                        >
-                                            <option value="">Select Product Type ▼</option>
-                                            {/* Logic to show types available in this category */}
-                                            {/* For demo, we just show some dummy types or derived from data */}
-                                            <option value="T-Shirt">T-Shirts</option>
-                                            <option value="Hoodie">Hoodies</option>
-                                            <option value="Mug">Mugs</option>
-                                            <option value="Bottle">Bottles</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            )}
+                            {/* SubCategory */}
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Sub-Category</label>
+                                <select
+                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400"
+                                    value={selectedSubCategory}
+                                    onChange={(e) => { setSelectedSubCategory(e.target.value); setProductType(''); }}
+                                    disabled={!selectedCategory}
+                                >
+                                    <option value="">Select Group</option>
+                                    {currentCategoryData?.subcategories.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                                </select>
+                            </div>
 
-                            {/* Variant (Optional) */}
-                            {productType && (
-                                <div className="animate-in fade-in slide-in-from-top-2">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Variant (Size/Model)</label>
-                                    <select
-                                        className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
-                                        value={variant}
-                                        onChange={(e) => setVariant(e.target.value)}
-                                    >
-                                        <option value="">Select Variant ▼</option>
-                                        <option value="S">Small</option>
-                                        <option value="M">Medium</option>
-                                        <option value="L">Large</option>
-                                        <option value="XL">Extra Large</option>
-                                    </select>
-                                </div>
-                            )}
+                            {/* Product Type */}
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Product Type</label>
+                                <select
+                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400"
+                                    value={productType}
+                                    onChange={(e) => setProductType(e.target.value)}
+                                    disabled={!selectedSubCategory}
+                                >
+                                    <option value="">Select Type</option>
+                                    {currentSubCategoryData?.types.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                            </div>
                         </div>
 
-                        {/* Product Grid (For Selection if not fully covered by dropdowns, or results of filtering) */}
-                        {/* Spec says "Select Product" via dropdown. But we need a visual confirmation. */}
-                        {/* Let's show a single "Base Product Preview" once selected. */}
-                        {/* BUT, standard builder usually lets you pick specific base item. */}
-                        {/* Assuming the "Product Type" dropdown effectively selects the base product class. */}
-                        {/* We need to actually pick a specific DB record to get price/image. */}
-                        {/* Let's add a "Select Base Model" grid if Type is broad, or just auto-select first match. */}
-                        {/* For simplicity: Show grid of matching products after type selection. */}
-
+                        {/* Product Grid (Filtered) */}
                         {productType && (
-                            <div className="mt-6">
-                                <p className="text-sm font-bold text-gray-700 mb-2">Choose Base Model:</p>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    {availableProducts
-                                        .filter(p => !productType || p.name.includes(productType) || true) // Loose filter for demo
-                                        .slice(0, 4)
-                                        .map(p => (
+                            <div className="mt-8 pt-8 border-t border-gray-100">
+                                <h3 className="text-sm font-bold text-gray-700 mb-4">Choose your base model:</h3>
+                                {loadingProducts ? (
+                                    <div className="flex justify-center p-8"><Loader2 className="animate-spin text-navy-900" /></div>
+                                ) : availableProducts.length === 0 ? (
+                                    <div className="text-center p-8 bg-gray-50 rounded-xl text-gray-500 text-sm">
+                                        No customizable products found for this selection yet.
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {availableProducts.map(p => (
                                             <button
                                                 key={p.id}
-                                                onClick={() => handleProductSelect(p)}
+                                                onClick={() => setSelectedProduct(p)}
                                                 className={`p-3 rounded-xl border text-left transition-all ${selectedProduct?.id === p.id ? 'border-navy-900 bg-navy-50 ring-1 ring-navy-900' : 'border-gray-100 hover:border-gray-200'}`}
                                             >
                                                 <div className="aspect-square bg-gray-100 rounded-lg mb-2 relative overflow-hidden">
                                                     {p.images?.[0] && <Image src={p.images[0]} alt={p.name} fill className="object-cover" />}
                                                 </div>
-                                                <p className="font-bold text-navy-900 text-sm truncate">{p.name}</p>
+                                                <p className="font-bold text-navy-900 text-xs truncate">{p.name}</p>
                                                 <p className="text-xs text-gray-500">₹{p.price}</p>
                                             </button>
                                         ))}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </section>
 
-                    {/* PREVIEW SECTION & STEPS 2-4 (Disabled until product selected) */}
-                    {selectedProduct ? (
-                        <div className="space-y-8 animate-in slide-in-from-bottom-5 duration-500">
+                    {selectedProduct && (
+                        <div className="animate-in slide-in-from-bottom-5 duration-500 space-y-8">
 
-                            {/* BASE PRODUCT PREVIEW */}
-                            <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 flex flex-col md:flex-row gap-6 items-center">
-                                <div className="w-full md:w-1/3 aspect-square bg-gray-50 rounded-xl relative overflow-hidden border border-gray-100">
-                                    {selectedProduct.images?.[0] && <Image src={selectedProduct.images[0]} alt="Base" fill className="object-contain p-4" />}
-                                    <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-gray-500">Base Preview</div>
-
-                                    {/* Overlay Preview */}
-                                    {designPreview && (
-                                        <div className="absolute inset-[20%] border-2 border-dashed border-coral-400/50 flex items-center justify-center overflow-hidden">
-                                            <img src={designPreview} className="max-w-full max-h-full object-contain opacity-90" alt="Print" />
-                                        </div>
-                                    )}
+                            {/* STEP 2: VARIANTS (Admin Controlled) */}
+                            <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100/50">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                                    <h2 className="text-xl font-bold text-navy-900">Configure Product</h2>
                                 </div>
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-navy-900">{selectedProduct.name}</h3>
-                                    <p className="text-gray-500 text-sm mb-4">Base Price: ₹{selectedProduct.price}</p>
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full">
-                                        <Check size={12} /> Customisation Available
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Colors */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-3">Select Color</label>
+                                        <div className="flex flex-wrap gap-3">
+                                            {/* Logic: Use `personalization.colors` if defined, else legacy `metadata.colors` */}
+                                            {((selectedProduct.metadata?.personalization?.colors?.length || 0) > 0
+                                                ? selectedProduct.metadata!.personalization!.colors
+                                                : colorsFallback(selectedProduct) // Helper needed, or simplify
+                                            )?.map((colorName: string) => {
+                                                const colorCode = COLORS.find(c => c.name === colorName)?.code || '#ccc';
+                                                return (
+                                                    <button
+                                                        key={colorName}
+                                                        onClick={() => setSelectedColor(colorName)}
+                                                        className={`w-10 h-10 rounded-full border-2 shadow-sm transition-transform ${selectedColor === colorName ? 'border-navy-900 scale-110 ring-2 ring-offset-2 ring-navy-900' : 'border-gray-200 hover:scale-105'}`}
+                                                        style={{ backgroundColor: colorCode }}
+                                                        title={colorName}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Sizes */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-3">Select Size</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {/* Logic: Use `personalization.sizes` if defined, else legacy */}
+                                            {((selectedProduct.metadata?.personalization?.sizes?.length || 0) > 0
+                                                ? selectedProduct.metadata!.personalization!.sizes
+                                                : ['S', 'M', 'L', 'XL'] // Fallback
+                                            )?.map((sizeName: string) => (
+                                                <button
+                                                    key={sizeName}
+                                                    onClick={() => setSelectedSize(sizeName)}
+                                                    className={`px-4 py-2 rounded-lg border text-sm font-bold transition-all ${selectedSize === sizeName ? 'bg-navy-900 text-white border-navy-900' : 'bg-white text-gray-700 border-gray-200 hover:border-navy-900'}`}
+                                                >
+                                                    {sizeName}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </section>
 
-                            {/* STEP 2: UPLOAD */}
+                            {/* STEP 3: DESIGN */}
                             <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100/50">
-                                <h2 className="text-xl font-bold text-navy-900 mb-6 flex items-center gap-2">
-                                    <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm">2</span>
-                                    Upload Design / Idea
-                                </h2>
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                                    <h2 className="text-xl font-bold text-navy-900">Design & Placement</h2>
+                                </div>
 
                                 <div className="space-y-6">
+                                    {/* Placement */}
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Upload your design ▼</label>
-                                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-navy-900 transition-colors cursor-pointer relative bg-gray-50">
-                                            <input type="file" onChange={handleDesignUpload} accept="image/*,.pdf" className="absolute inset-0 opacity-0 cursor-pointer" />
-                                            <Upload className="mx-auto text-gray-400 mb-2" />
-                                            <p className="font-medium text-navy-900 text-sm">{designFile ? designFile.name : "Click to upload JPG, PNG, PDF"}</p>
-                                            <p className="text-xs text-gray-400 mt-1">Max 20MB</p>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Print Placement</label>
+                                        <div className="flex flex-wrap gap-3">
+                                            {(selectedProduct.metadata?.personalization?.placements || ['Front']) // Default if empty
+                                                .map((p: string) => (
+                                                    <button
+                                                        key={p}
+                                                        onClick={() => setSelectedPlacement(p)}
+                                                        className={`px-4 py-3 rounded-xl border text-sm font-bold flex items-center gap-2 transition-all ${selectedPlacement === p ? 'bg-navy-50 border-navy-900 text-navy-900' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                                                    >
+                                                        <span className={`w-3 h-3 rounded-full ${selectedPlacement === p ? 'bg-navy-900' : 'bg-gray-300'}`} />
+                                                        {p}
+                                                    </button>
+                                                ))}
                                         </div>
                                     </div>
 
+                                    {/* Upload */}
                                     <div>
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">- OR -</p>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Describe your idea</label>
-                                        <textarea
-                                            value={designIdea}
-                                            onChange={(e) => setDesignIdea(e.target.value)}
-                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none text-sm"
-                                            rows={3}
-                                            placeholder="E.g. Print 'Tech Bro' in bold white font on the back..."
-                                        />
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Upload File</label>
+                                        <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 hover:border-navy-900 transition-colors bg-gray-50 relative cursor-pointer text-center group">
+                                            <input type="file" onChange={handleDesignUpload} accept="image/*,.pdf" className="absolute inset-0 opacity-0 cursor-pointer" />
+                                            <Upload className="mx-auto text-gray-400 mb-3 group-hover:text-navy-900 transition-colors" size={32} />
+                                            <p className="font-bold text-navy-900 mb-1">{designFile ? designFile.name : "Click to Upload Design"}</p>
+                                            <p className="text-xs text-gray-400">JPG, PNG, PDF (Max 20MB)</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </section>
 
-                            {/* STEP 3: PLACEMENT */}
-                            <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100/50">
-                                <h2 className="text-xl font-bold text-navy-900 mb-6 flex items-center gap-2">
-                                    <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm">3</span>
-                                    Design Placement
-                                </h2>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Placement</label>
-                                        <select
-                                            value={placement}
-                                            onChange={(e) => setPlacement(e.target.value)}
-                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
-                                        >
-                                            <option>Front</option>
-                                            <option>Back</option>
-                                            <option>Center</option>
-                                            <option>Left Pocket</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Print Size</label>
-                                        <select
-                                            value={printSize}
-                                            onChange={(e) => setPrintSize(e.target.value)}
-                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none"
-                                        >
-                                            <option>Medium</option>
-                                            <option>Small</option>
-                                            <option>Large</option>
-                                        </select>
-                                    </div>
+                                    {/* Preview if Image */}
+                                    {designPreview && (
+                                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex gap-4 items-center">
+                                            <div className="w-16 h-16 bg-white rounded border border-gray-200 overflow-hidden relative">
+                                                <img src={designPreview} className="object-cover w-full h-full" alt="Preview" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-navy-900">Preview Loaded</p>
+                                                <p className="text-xs text-green-600 font-bold flex items-center gap-1"><Check size={12} /> DPI Verified (Mock)</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </section>
 
                             {/* STEP 4: ADD-ONS */}
                             <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100/50">
-                                <h2 className="text-xl font-bold text-navy-900 mb-6 flex items-center gap-2">
-                                    <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm">4</span>
-                                    Add-ons
-                                </h2>
-                                <div className="space-y-4">
-                                    {/* Box Packing */}
-                                    <label className={`flex items-start gap-3 p-4 border rounded-xl cursor-pointer transition-all ${isBoxPacked ? 'border-navy-900 bg-navy-50' : 'border-gray-200'}`}>
-                                        <input type="checkbox" checked={isBoxPacked} onChange={(e) => setIsBoxPacked(e.target.checked)} className="mt-1 w-5 h-5 text-navy-900 border-gray-300 rounded focus:ring-navy-900" />
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="w-8 h-8 bg-navy-900 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                                    <h2 className="text-xl font-bold text-navy-900">Add-ons</h2>
+                                </div>
+                                <div className="space-y-3">
+                                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${isBoxPacked ? 'border-navy-900 bg-navy-50' : 'border-gray-200'}`}>
+                                        <input type="checkbox" checked={isBoxPacked} onChange={e => setIsBoxPacked(e.target.checked)} className="mt-1 w-5 h-5 rounded text-navy-900 focus:ring-navy-900" />
                                         <div className="flex-1">
-                                            <div className="flex justify-between">
-                                                <span className="font-bold text-navy-900">Box Packing</span>
-                                                <span className="font-bold text-navy-900">₹{Math.round(20 * 1.18)}</span>
-                                            </div>
-                                            <p className="text-xs text-gray-500">Secure box packing per product.</p>
+                                            <div className="flex justify-between font-bold text-navy-900"><span>Box Packing</span><span>₹{Math.round(20 * 1.18)}</span></div>
+                                            <p className="text-xs text-gray-500">Secure individual box.</p>
                                         </div>
                                     </label>
-
-                                    {/* Gift Packing */}
-                                    <label className={`flex items-start gap-3 p-4 border rounded-xl cursor-pointer transition-all ${isGiftPacked ? 'border-coral-500 bg-coral-50' : 'border-gray-200'}`}>
-                                        <input type="checkbox" checked={isGiftPacked} onChange={(e) => setIsGiftPacked(e.target.checked)} className="mt-1 w-5 h-5 text-coral-500 border-gray-300 rounded focus:ring-coral-500" />
+                                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${isGiftPacked ? 'border-coral-500 bg-coral-50' : 'border-gray-200'}`}>
+                                        <input type="checkbox" checked={isGiftPacked} onChange={e => setIsGiftPacked(e.target.checked)} className="mt-1 w-5 h-5 rounded text-coral-500 focus:ring-coral-500" />
                                         <div className="flex-1">
-                                            <div className="flex justify-between">
-                                                <span className="font-bold text-navy-900">Gift Packing</span>
-                                                <span className="font-bold text-navy-900">₹{Math.round(50 * 1.18)}</span>
-                                            </div>
-                                            <p className="text-xs text-gray-500">A5 custom letter + special wrapping.</p>
+                                            <div className="flex justify-between font-bold text-navy-900"><span>Gift Packing</span><span>₹{Math.round(50 * 1.18)}</span></div>
+                                            <p className="text-xs text-gray-500">Includes custom envelope & wrap.</p>
                                         </div>
                                     </label>
-
-                                    {/* Personal Note */}
-                                    <label className={`flex items-start gap-3 p-4 border rounded-xl cursor-pointer transition-all ${hasPersonalNote ? 'border-navy-900 bg-navy-50' : 'border-gray-200'}`}>
-                                        <input type="checkbox" checked={hasPersonalNote} onChange={(e) => setHasPersonalNote(e.target.checked)} className="mt-1 w-5 h-5 text-navy-900 border-gray-300 rounded focus:ring-navy-900" />
+                                    <label className={`flex items-start gap-4 p-4 border rounded-xl cursor-pointer transition-all ${hasPersonalNote ? 'border-navy-900 bg-navy-50' : 'border-gray-200'}`}>
+                                        <input type="checkbox" checked={hasPersonalNote} onChange={e => setHasPersonalNote(e.target.checked)} className="mt-1 w-5 h-5 rounded text-navy-900 focus:ring-navy-900" />
                                         <div className="flex-1">
-                                            <div className="flex justify-between">
-                                                <span className="font-bold text-navy-900">Personalised Note</span>
-                                                <span className="font-bold text-navy-900">₹{Math.round(50 * 1.18)}</span>
-                                            </div>
-                                            <p className="text-xs text-gray-500">A5 custom printed letter.</p>
-
+                                            <div className="flex justify-between font-bold text-navy-900"><span>Personal Note</span><span>₹{Math.round(50 * 1.18)}</span></div>
+                                            <p className="text-xs text-gray-500">A5 printed note. Upload below.</p>
                                             {hasPersonalNote && (
-                                                <div className="mt-3 space-y-3">
-                                                    <input
-                                                        type="file"
-                                                        accept=".pdf,image/*"
-                                                        onChange={handleNoteUpload}
-                                                        className="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-navy-900 file:text-white hover:file:bg-navy-800"
-                                                    />
-                                                </div>
+                                                <input type="file" onChange={(e) => e.target.files && setPersonalNoteFile(e.target.files[0])} className="mt-2 w-full text-xs" />
                                             )}
                                         </div>
                                     </label>
@@ -464,85 +486,65 @@ export default function PersonalisePage() {
 
                             {/* CUSTOMER NOTE */}
                             <section className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100/50">
-                                <h2 className="text-lg font-bold text-navy-900 mb-4">Note for our team (Optional)</h2>
-                                <textarea
-                                    className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none text-sm"
-                                    rows={2}
-                                    placeholder="E.g. Please align logo slightly left..."
-                                    value={customerNote}
-                                    onChange={(e) => setCustomerNote(e.target.value)}
-                                />
+                                <h2 className="text-sm font-bold text-navy-900 mb-2">Note to Team (Optional)</h2>
+                                <textarea value={customerNote} onChange={e => setCustomerNote(e.target.value)} rows={2} className="w-full p-3 border border-gray-200 rounded-xl text-sm" placeholder="Any specific requirements..." />
                             </section>
 
                         </div>
-                    ) : (
-                        // Empty State / Placeholder for right side
-                        <div className="hidden lg:flex items-center justify-center p-12 bg-white/50 rounded-2xl border-2 border-dashed border-gray-200 text-gray-400 font-medium">
-                            Select a product to start customising
-                        </div>
                     )}
-
                 </div>
 
-                {/* RIGHT COLUMN: Sticky Summary */}
-                {/* Visible on Mobile at bottom, Sticky on Desktop */}
-                {selectedProduct ? (
+                {/* STICKY SUMMARY */}
+                {selectedProduct && (
                     <div className="lg:w-96 flex-shrink-0">
-                        <div className="sticky top-24 bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
-                            <h3 className="text-xl font-heading font-bold text-navy-900 mb-6">Price Summary</h3>
-
-                            <div className="space-y-3 mb-6 border-b border-gray-100 pb-6 text-sm">
+                        <div className="sticky top-24 bg-white p-6 rounded-2xl shadow-xl border border-gray-100/50">
+                            <h3 className="text-xl font-heading font-bold text-navy-900 mb-6">Order Summary</h3>
+                            <div className="space-y-4 mb-6 border-b border-gray-100 pb-6 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Base Product</span>
-                                    <span className="font-bold text-navy-900">₹{selectedProduct.price}</span>
+                                    <span className="font-bold">₹{selectedProduct.price}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Custom Print</span>
-                                    <span className="font-bold text-navy-900">₹199</span>
+                                    <span className="font-bold">₹{selectedProduct.metadata?.personalization?.print_price || 199}</span>
                                 </div>
-                                {isBoxPacked && (
-                                    <div className="flex justify-between text-green-700">
-                                        <span>Box Packing (+GST)</span>
-                                        <span className="font-bold">₹{Math.round(20 * 1.18)}</span>
-                                    </div>
-                                )}
-                                {isGiftPacked && (
-                                    <div className="flex justify-between text-coral-600">
-                                        <span>Gift Packing (+GST)</span>
-                                        <span className="font-bold">₹{Math.round(50 * 1.18)}</span>
-                                    </div>
-                                )}
-                                {hasPersonalNote && (
-                                    <div className="flex justify-between text-navy-700">
-                                        <span>Personal Note (+GST)</span>
-                                        <span className="font-bold">₹{Math.round(50 * 1.18)}</span>
-                                    </div>
-                                )}
+                                {(isBoxPacked || isGiftPacked || hasPersonalNote) && <div className="h-px bg-gray-100 my-2" />}
+                                {isBoxPacked && <div className="flex justify-between text-gray-600"><span>Box Packing</span><span>₹{Math.round(20 * 1.18)}</span></div>}
+                                {isGiftPacked && <div className="flex justify-between text-gray-600"><span>Gift Packing</span><span>₹{Math.round(50 * 1.18)}</span></div>}
+                                {hasPersonalNote && <div className="flex justify-between text-gray-600"><span>Note</span><span>₹{Math.round(50 * 1.18)}</span></div>}
                             </div>
 
-                            <div className="flex justify-between text-lg font-bold text-navy-900 mb-6">
-                                <span>Total</span>
-                                <span>₹{calculateTotal()}</span>
+                            <div className="flex justify-between items-center mb-6">
+                                <span className="text-lg font-bold text-navy-900">Total</span>
+                                <span className="text-2xl font-bold text-coral-500">₹{calculateTotal()}</span>
                             </div>
 
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={handleAddToCart}
-                                    disabled={addingToCart}
-                                    className="w-full py-4 bg-navy-900 text-white font-bold rounded-xl hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 flex items-center justify-center gap-2"
-                                >
-                                    {addingToCart ? <Loader2 className="animate-spin" /> : <PenTool size={18} />}
-                                    Add to Cart
-                                </button>
-                                <button className="w-full py-3 text-gray-500 font-bold hover:text-navy-900 transition-colors">
-                                    Save for Later
-                                </button>
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={addingToCart}
+                                className="w-full py-4 bg-navy-900 text-white font-bold rounded-xl hover:bg-navy-800 transition-all shadow-lg shadow-navy-900/20 disabled:opacity-70 flex items-center justify-center gap-2"
+                            >
+                                {addingToCart ? <Loader2 className="animate-spin" /> : <Package size={20} />}
+                                Add to Cart
+                            </button>
+
+                            <div className="mt-4 flex items-center gap-2 justify-center text-xs text-gray-400">
+                                <Info size={12} />
+                                <span>Final price includes GST</span>
                             </div>
                         </div>
                     </div>
-                ) : null}
+                )}
 
             </div>
         </div>
     );
+}
+
+// Helper to extract colors from legacy format if new personalization config missing
+function colorsFallback(p: Product) {
+    if (p.metadata?.colors && Array.isArray(p.metadata.colors)) {
+        return p.metadata.colors.map(c => c.name);
+    }
+    return [];
 }
