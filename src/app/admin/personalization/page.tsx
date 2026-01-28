@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Plus, Search, Filter, Edit, Trash2, Package, Loader2 } from 'lucide-react';
+import { Plus, Search, Filter, Edit, Trash2, Palette, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -15,14 +15,15 @@ interface Product {
     description: string;
     created_at: string;
     metadata?: {
-        stock_status?: string;
         personalization?: {
             enabled: boolean;
+            print_type?: string;
         };
+        stock_status?: string;
     };
 }
 
-export default function AdminProductsPage() {
+export default function AdminPersonalizationPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -38,6 +39,9 @@ export default function AdminProductsPage() {
 
     const fetchProducts = async () => {
         setLoading(true);
+        // Fetch ALL and filter on client is easiest for JSONB, 
+        // OR use specific query if metadata is indexed. 
+        // For now, client side filtering is reliable for small catalogs.
         const { data, error } = await supabase
             .from('products')
             .select('*')
@@ -46,23 +50,23 @@ export default function AdminProductsPage() {
         if (error) {
             console.error('Error fetching products:', error);
         } else {
-            // Filter: EXCLUDE products with personalization.enabled = true
-            const standard = (data || []).filter((p: Product) =>
-                !p.metadata?.personalization?.enabled
+            // Filter: Only products with personalization.enabled = true
+            const personalized = (data || []).filter((p: Product) =>
+                p.metadata?.personalization?.enabled === true
             );
-            setProducts(standard);
+            setProducts(personalized);
         }
         setLoading(false);
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this product?')) return;
+        if (!confirm('Are you sure you want to delete this product base?')) return;
 
         const { error } = await supabase.from('products').delete().eq('id', id);
 
         if (error) {
             console.error('Delete error:', error);
-            alert(`Failed to delete product: ${error.message} (Code: ${error.code})`);
+            alert(`Failed to delete product: ${error.message}`);
         } else {
             setProducts(products.filter(p => p.id !== id));
         }
@@ -76,13 +80,21 @@ export default function AdminProductsPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Products</h1>
-                    <p className="text-gray-500 text-sm">Manage your product catalog</p>
+                    <h1 className="text-2xl font-bold text-navy-900 flex items-center gap-2">
+                        <Palette className="text-coral-500" />
+                        Personalization Products
+                    </h1>
+                    <p className="text-gray-500 text-sm">Manage customizable product bases</p>
                 </div>
+                {/* 
+                  Option 1: Link to generic 'Add Product' but instructed to enable personalization? 
+                  Option 2: Special 'Add Personalizable' that auto-enables?
+                  Let's just link to standard Add for now, but maybe with a clear UI hint.
+                */}
                 <Link href="/admin/products/new">
                     <button className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all">
                         <Plus size={20} />
-                        Add Product
+                        Add New Base
                     </button>
                 </Link>
             </div>
@@ -93,7 +105,7 @@ export default function AdminProductsPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
                         type="text"
-                        placeholder="Search products..."
+                        placeholder="Search base products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
@@ -109,14 +121,15 @@ export default function AdminProductsPage() {
                 {loading ? (
                     <div className="p-12 flex flex-col items-center justify-center text-gray-400">
                         <Loader2 size={40} className="animate-spin mb-4 text-navy-900" />
-                        <p>Loading products...</p>
+                        <p>Loading catalog...</p>
                     </div>
                 ) : filteredProducts.length === 0 ? (
                     <div className="p-12 text-center text-gray-400">
-                        <Package size={48} className="mx-auto mb-4 opacity-20" />
-                        <p className="text-lg font-medium">No products found</p>
-                        <Link href="/admin/products/new" className="text-coral-500 hover:text-coral-600 font-bold mt-2 inline-block">
-                            Create your first product
+                        <Palette size={48} className="mx-auto mb-4 opacity-20" />
+                        <p className="text-lg font-medium">No personalizable products found</p>
+                        <p className="text-sm text-gray-400 mb-4">Add a product and enable "Personalization" in config.</p>
+                        <Link href="/admin/products/new" className="text-coral-500 hover:text-coral-600 font-bold inline-block">
+                            Create Product
                         </Link>
                     </div>
                 ) : (
@@ -124,10 +137,10 @@ export default function AdminProductsPage() {
                         <table className="w-full text-sm text-left">
                             <thead className="bg-[#FAF9F7] text-gray-500 font-bold uppercase text-xs border-b border-gray-100">
                                 <tr>
-                                    <th className="px-6 py-4">Product</th>
-                                    <th className="px-6 py-4">Category</th>
-                                    <th className="px-6 py-4">Price</th>
-                                    <th className="px-6 py-4">Stock</th>
+                                    <th className="px-6 py-4">Product Base</th>
+                                    <th className="px-6 py-4">Print Type</th>
+                                    <th className="px-6 py-4">Base Price</th>
+                                    <th className="px-6 py-4">Status</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -146,7 +159,7 @@ export default function AdminProductsPage() {
                                                         />
                                                     ) : (
                                                         <div className="flex items-center justify-center w-full h-full text-gray-300">
-                                                            <Package size={20} />
+                                                            <Palette size={20} />
                                                         </div>
                                                     )}
                                                 </div>
@@ -154,25 +167,22 @@ export default function AdminProductsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
-                                            {/* Would need a join to show category name properly */}
-                                            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                                                Category
+                                            <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded-md text-xs font-bold border border-purple-100">
+                                                {product.metadata?.personalization?.print_type || 'Custom'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 font-bold text-navy-900">
                                             ₹{product.price}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
-                                            {product.metadata?.stock_status === 'out_of_stock' ? (
-                                                <span className="text-red-500 font-bold bg-red-50 px-2 py-1 rounded text-xs">Out of Stock</span>
-                                            ) : product.metadata?.stock_status === 'low_stock' ? (
-                                                <span className="text-orange-500 font-bold bg-orange-50 px-2 py-1 rounded text-xs">Low Stock</span>
-                                            ) : (
-                                                <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded text-xs">In Stock</span>
-                                            )}
+                                            <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded text-xs flex items-center gap-1 w-fit">
+                                                <span className="w-2 h-2 rounded-full bg-green-500" />
+                                                Active
+                                            </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
+                                                {/* Re-use standard edit page for now since it supports everything */}
                                                 <Link href={`/admin/products/${product.id}`}>
                                                     <button className="p-2 hover:bg-blue-50 text-gray-400 hover:text-blue-600 rounded-lg transition-colors">
                                                         <Edit size={18} />
