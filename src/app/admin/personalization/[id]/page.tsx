@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2, ChevronDown, ChevronUp, AlertTriangle, Image 
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { PERSONALIZATION_TAXONOMY } from '@/lib/personalization';
 
 const BASE_PRODUCT_TYPES = [
     'T-Shirt', 'Hoodie', 'Sweatshirt', 'Mug', 'Bottle', 'Cap', 'Tote Bag', 'Phone Case', 'Mouse Pad', 'Other'
@@ -243,7 +244,11 @@ export default function EditPersonalizationProductPage() {
         router.refresh();
     };
 
-    const isApparel = ['T-Shirt', 'Hoodie', 'Sweatshirt'].includes(formData.product_type);
+    const isApparel = (() => {
+        // @ts-ignore
+        const clothingTypes = Object.values(PERSONALIZATION_TAXONOMY.Clothing.types).flat();
+        return clothingTypes.includes(formData.product_type) || ['T-Shirt', 'Hoodie', 'Sweatshirt'].includes(formData.product_type);
+    })();
 
     if (fetching) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin text-navy-900" /></div>;
 

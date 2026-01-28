@@ -208,7 +208,7 @@ export default function AddPersonalizationProductPage() {
         setLoading(false);
     };
 
-    const isApparel = ['T-Shirt', 'Hoodie', 'Sweatshirt'].includes(formData.product_type);
+    const isApparel = formData.category_group === 'Clothing';
 
     return (
         <div className="max-w-4xl mx-auto pb-32">
