@@ -14,7 +14,12 @@ const BASE_PRODUCT_TYPES = [
 const PREDEFINED_COLORS = ['White', 'Black', 'Navy', 'Olive', 'Grey', 'Red', 'Blue', 'Yellow', 'Pink', 'Beige', 'Maroon'];
 const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'Standard'];
 const PLACEMENTS = ['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve', 'Wrap Around'];
-const PRINT_TYPES = ['DTG Printing', 'Embroidery', 'DTF Printing', 'Vinyl Printing'];
+const PRINT_TYPES = ['DTG Printing', 'Embroidery'];
+
+interface PrintTypeConfig {
+    enabled: boolean;
+    price: number;
+}
 
 interface PlacementConfig {
     enabled: boolean;
@@ -50,7 +55,7 @@ export default function AddPersonalizationProductPage() {
             enabled: true,
             colors: [] as string[],
             sizes: [] as string[],
-            print_types: [] as string[],
+            print_types: {} as Record<string, PrintTypeConfig>,
 
             // Rich Placement Config
             placements: {} as Record<string, PlacementConfig>,
@@ -382,24 +387,71 @@ export default function AddPersonalizationProductPage() {
                             {/* Print Methods */}
                             <div>
                                 <h3 className="text-sm font-bold text-gray-900 mb-3">Supported Print Methods</h3>
-                                <div className="flex flex-wrap gap-4">
-                                    {PRINT_TYPES.map(type => (
-                                        <label key={type} className="flex items-center gap-2 cursor-pointer select-none">
-                                            <input
-                                                type="checkbox"
-                                                className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
-                                                checked={formData.personalization.print_types.includes(type)}
-                                                onChange={() => setFormData({
-                                                    ...formData,
-                                                    personalization: {
-                                                        ...formData.personalization,
-                                                        print_types: toggleArrayItem(formData.personalization.print_types, type)
-                                                    }
-                                                })}
-                                            />
-                                            <span className="text-gray-700 font-medium">{type}</span>
-                                        </label>
-                                    ))}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {PRINT_TYPES.map(type => {
+                                        const config = formData.personalization.print_types[type] || { enabled: false, price: 50 };
+
+                                        return (
+                                            <div key={type} className={`rounded-xl border transition-all ${config.enabled ? 'bg-white border-amber-200 shadow-sm ring-1 ring-amber-100' : 'bg-gray-50 border-gray-100 opacity-70 hover:opacity-100'}`}>
+                                                <div className="p-4 flex items-center justify-between">
+                                                    <label className="flex items-center gap-3 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-600"
+                                                            checked={config.enabled}
+                                                            onChange={(e) => {
+                                                                const isEnabled = e.target.checked;
+                                                                if (!isEnabled) {
+                                                                    const newTypes = { ...formData.personalization.print_types };
+                                                                    delete newTypes[type];
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        personalization: { ...formData.personalization, print_types: newTypes }
+                                                                    });
+                                                                } else {
+                                                                    setFormData({
+                                                                        ...formData,
+                                                                        personalization: {
+                                                                            ...formData.personalization,
+                                                                            print_types: {
+                                                                                ...formData.personalization.print_types,
+                                                                                [type]: { enabled: true, price: config.price }
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }}
+                                                        />
+                                                        <span className={`font-bold ${config.enabled ? 'text-gray-900' : 'text-gray-500'}`}>{type}</span>
+                                                    </label>
+                                                </div>
+
+                                                {config.enabled && (
+                                                    <div className="p-4 pt-0 border-t border-amber-50 mt-1">
+                                                        <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Surcharge (Per Print)</label>
+                                                        <div className="relative">
+                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
+                                                            <input
+                                                                type="number"
+                                                                className="w-full pl-6 pr-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900 bg-amber-50/30 border-amber-100 focus:outline-none focus:border-amber-300"
+                                                                value={config.price}
+                                                                onChange={(e) => setFormData({
+                                                                    ...formData,
+                                                                    personalization: {
+                                                                        ...formData.personalization,
+                                                                        print_types: {
+                                                                            ...formData.personalization.print_types,
+                                                                            [type]: { ...config, price: parseFloat(e.target.value) || 0 }
+                                                                        }
+                                                                    }
+                                                                })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
 

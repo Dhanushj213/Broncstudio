@@ -15,11 +15,16 @@ interface PlacementConfig {
     max_height: number;
 }
 
+interface PrintTypeConfig {
+    enabled: boolean;
+    price: number;
+}
+
 interface PersonalizationConfig {
     enabled: boolean;
     colors: string[];
     sizes: string[];
-    print_types: string[];
+    print_types: Record<string, PrintTypeConfig>;
     placements: Record<string, PlacementConfig>;
     image_requirements: {
         min_dpi: number;
@@ -129,18 +134,25 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
     const [selection, setSelection] = useState({
         color: config.colors?.[0] || '',
         size: '',
-        print_type: config.print_types?.[0] || '',
+        print_type: Object.keys(config.print_types || {})[0] || '',
         placements: {} as Record<string, File | null>, // 'Front' -> File
         notes: ''
     });
 
     // Price Calc
-    const printCost = Object.keys(selection.placements).reduce((acc, placement) => {
+    const selectedPrintTypePrice = config.print_types?.[selection.print_type]?.price || 0;
+
+    // Total Print Cost = Sum of (Placement Cost + Placement Print Surcharge)
+    // Wait, typically Surcharge is per placement. So for every active placement, we add the print type price.
+    const numberOfPlacements = Object.keys(selection.placements).length;
+    const placementBaseCost = Object.keys(selection.placements).reduce((acc, placement) => {
         return acc + (config.placements[placement]?.price || 0);
     }, 0);
 
+    const totalPrintCost = placementBaseCost + (selectedPrintTypePrice * numberOfPlacements);
+
     const gstRate = 0.18;
-    const subtotal = product.price + printCost;
+    const subtotal = product.price + totalPrintCost;
     const gstAmount = subtotal * gstRate;
     const total = subtotal + gstAmount;
 
@@ -252,8 +264,8 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
                                             key={color}
                                             onClick={() => setSelection({ ...selection, color })}
                                             className={`group relative w-12 h-12 rounded-full border-2 transition-all flex items-center justify-center ${selection.color === color
-                                                    ? 'border-navy-900 scale-110 shadow-lg'
-                                                    : 'border-transparent hover:scale-105'
+                                                ? 'border-navy-900 scale-110 shadow-lg'
+                                                : 'border-transparent hover:scale-105'
                                                 }`}
                                         >
                                             <div
@@ -283,8 +295,8 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
                                                 key={size}
                                                 onClick={() => setSelection({ ...selection, size })}
                                                 className={`w-16 h-12 rounded-xl text-sm font-bold border-2 transition-all ${selection.size === size
-                                                        ? 'border-navy-900 bg-navy-900 text-white shadow-lg shadow-navy-900/20'
-                                                        : 'border-gray-100 text-gray-600 hover:border-gray-300'
+                                                    ? 'border-navy-900 bg-navy-900 text-white shadow-lg shadow-navy-900/20'
+                                                    : 'border-gray-100 text-gray-600 hover:border-gray-300'
                                                     }`}
                                             >
                                                 {size}
@@ -304,25 +316,39 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
                                 Printing Method <span className="text-red-500">*</span>
                             </h3>
                             <div className="grid gap-4">
-                                {config.print_types.map(type => (
-                                    <label
-                                        key={type}
-                                        className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${selection.print_type === type
+                                <div className="grid gap-4">
+                                    {Object.entries(config.print_types || {}).filter(([_, v]) => v.enabled).map(([type, typeConfig]) => (
+                                        <label
+                                            key={type}
+                                            className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all ${selection.print_type === type
                                                 ? 'border-navy-900 bg-navy-50 shadow-md ring-1 ring-navy-900'
                                                 : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
-                                            }`}
-                                        onClick={() => setSelection({ ...selection, print_type: type })}
-                                    >
-                                        <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${selection.print_type === type ? 'border-navy-900' : 'border-gray-300'
-                                            }`}>
-                                            {selection.print_type === type && <div className="w-2.5 h-2.5 rounded-full bg-navy-900" />}
-                                        </div>
-                                        <div>
-                                            <span className="block font-bold text-navy-900 text-lg mb-1">{type}</span>
-                                            <span className="text-sm text-gray-500">High quality durable print suitable for this product.</span>
-                                        </div>
-                                    </label>
-                                ))}
+                                                }`}
+                                            onClick={() => setSelection({ ...selection, print_type: type })}
+                                        >
+                                            <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${selection.print_type === type ? 'border-navy-900' : 'border-gray-300'
+                                                }`}>
+                                                {selection.print_type === type && <div className="w-2.5 h-2.5 rounded-full bg-navy-900" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between">
+                                                    <span className="block font-bold text-navy-900 text-lg mb-1">{type}</span>
+                                                    {numberOfPlacements > 0 && (
+                                                        <span className="text-sm font-bold text-navy-900 bg-white px-2 py-1 rounded border border-gray-200">
+                                                            +₹{typeConfig.price * numberOfPlacements}
+                                                        </span>
+                                                    )}
+                                                    {numberOfPlacements === 0 && (
+                                                        <span className="text-sm font-bold text-gray-400">
+                                                            +₹{typeConfig.price}/loc
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <span className="text-sm text-gray-500">Premium quality {type.toLowerCase()}.</span>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -347,7 +373,7 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
                                                         <span className="text-xs text-gray-500">Max {placement.max_width}" x {placement.max_height}"</span>
                                                     </div>
                                                     <span className="text-sm font-bold bg-white border border-gray-200 px-3 py-1 rounded-full shadow-sm text-gray-700">
-                                                        +₹{placement.price}
+                                                        {selectedPrintTypePrice > 0 ? `+₹${placement.price + selectedPrintTypePrice}` : `+₹${placement.price}`}
                                                     </span>
                                                 </div>
 
@@ -412,10 +438,10 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
                         <span className="text-gray-500">Base Product</span>
                         <span className="font-bold">₹{product.price.toFixed(2)}</span>
                     </div>
-                    {printCost > 0 && (
+                    {totalPrintCost > 0 && (
                         <div className="flex items-center justify-between mb-4 text-sm animate-in slide-in-from-bottom-2">
                             <span className="text-gray-500">Printing Charges</span>
-                            <span className="font-bold text-green-600">+₹{printCost.toFixed(2)}</span>
+                            <span className="font-bold text-green-600">+₹{totalPrintCost.toFixed(2)}</span>
                         </div>
                     )}
                     <div className="flex items-center justify-between mb-6 pt-4 border-t border-gray-100">
