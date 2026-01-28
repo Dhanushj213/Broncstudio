@@ -12,6 +12,7 @@ interface ShopTheLookProps {
 
 export default function ShopTheLook({ product }: ShopTheLookProps) {
     const { addToCart } = useCart();
+    const { addToast } = useToast();
 
     // State for Dynamic Recommendations
     const [items, setItems] = useState<any[]>([]);
