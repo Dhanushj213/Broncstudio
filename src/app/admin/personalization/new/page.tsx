@@ -6,27 +6,14 @@ import { ArrowLeft, Save, Loader2, ChevronDown, ChevronUp, Check, AlertTriangle,
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-
-const BASE_PRODUCT_TYPES = [
-    'T-Shirt', 'Hoodie', 'Sweatshirt', 'Mug', 'Bottle', 'Cap', 'Tote Bag', 'Phone Case', 'Mouse Pad', 'Other'
-];
+import { PERSONALIZATION_TAXONOMY, SUPPORTED_GENDERS, Gender, PrintTypeConfig, PlacementConfig } from '@/lib/personalization';
 
 const PREDEFINED_COLORS = ['White', 'Black', 'Navy', 'Olive', 'Grey', 'Red', 'Blue', 'Yellow', 'Pink', 'Beige', 'Maroon'];
 const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'Standard'];
 const PLACEMENTS = ['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve', 'Wrap Around'];
 const PRINT_TYPES = ['DTG Printing', 'Embroidery'];
 
-interface PrintTypeConfig {
-    enabled: boolean;
-    price: number;
-}
 
-interface PlacementConfig {
-    enabled: boolean;
-    price: number;
-    max_width: number;
-    max_height: number;
-}
 
 export default function AddPersonalizationProductPage() {
     const router = useRouter();
@@ -56,10 +43,15 @@ export default function AddPersonalizationProductPage() {
 
     const [formData, setFormData] = useState({
         name: '', // Internal Admin Name
-        product_type: 'T-Shirt',
+
+        // Taxonomy Selections
+        category_group: 'Clothing', // Top Level (Clothing, Accessories...)
+        subcategory_group: 'Men', // Secondary (Men, Women.. for Clothing only)
+        product_type: 'Classic Crew T-Shirt', // Specific Base Type
+
         description: '', // Optional
         price: '', // Base Price
-        category_id: '', // Selected Category
+        category_id: '', // Database Category ID (Still needed for legacy/schema reasons)
 
         images: [] as string[],
 
@@ -69,9 +61,10 @@ export default function AddPersonalizationProductPage() {
             colors: [] as string[],
             sizes: [] as string[],
             print_types: {} as Record<string, PrintTypeConfig>,
-
-            // Rich Placement Config
             placements: {} as Record<string, PlacementConfig>,
+
+            // New Gender Logic
+            gender_supported: [] as Gender[],
 
             image_requirements: {
                 min_dpi: 300,
@@ -159,7 +152,7 @@ export default function AddPersonalizationProductPage() {
             metadata: {
                 type: 'personalization_base',
                 product_type: product_type,
-                gender_supported: [], // Not used for base products per new spec
+                gender_supported: personalization.gender_supported,
                 personalization: personalization
             }
         });
@@ -206,17 +199,109 @@ export default function AddPersonalizationProductPage() {
                     {sections.identity && (
                         <div className="p-6 border-t border-gray-100 space-y-6 animate-in slide-in-from-top-2">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* CATEGORY GROUP (Top Level) */}
                                 <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Category Group *</label>
+                                    <select
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
+                                        value={formData.category_group}
+                                        onChange={(e) => {
+                                            const newGroup = e.target.value;
+                                            const tax = PERSONALIZATION_TAXONOMY as any;
+                                            const firstSub = tax[newGroup]?.subcategories?.[0] || '';
+                                            const types = tax[newGroup]?.types;
+                                            const firstType = Array.isArray(types) ? types[0] : (types?.[firstSub]?.[0] || '');
+
+                                            setFormData({
+                                                ...formData,
+                                                category_group: newGroup,
+                                                subcategory_group: firstSub,
+                                                product_type: firstType
+                                            });
+                                        }}
+                                    >
+                                        {Object.keys(PERSONALIZATION_TAXONOMY).map(k => <option key={k} value={k}>{k}</option>)}
+                                    </select>
+                                </div>
+
+                                {/* SUBCATEGORY (If Applicable, e.g. Men/Women) */}
+                                {/* @ts-ignore */}
+                                {(PERSONALIZATION_TAXONOMY[formData.category_group] as any)?.subcategories && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Sub-Category *</label>
+                                        <select
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
+                                            value={formData.subcategory_group}
+                                            onChange={(e) => {
+                                                const newSub = e.target.value;
+                                                // @ts-ignore
+                                                const firstType = PERSONALIZATION_TAXONOMY[formData.category_group].types[newSub]?.[0] || '';
+                                                setFormData({ ...formData, subcategory_group: newSub, product_type: firstType });
+                                            }}
+                                        >
+                                            {/* @ts-ignore */}
+                                            {(PERSONALIZATION_TAXONOMY[formData.category_group] as any).subcategories.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {/* BASE PRODUCT TYPE (Specific) */}
+                                <div className="col-span-1 md:col-span-2">
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Base Product Type *</label>
                                     <select
                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
                                         value={formData.product_type}
                                         onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
                                     >
-                                        {BASE_PRODUCT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                                        {(() => {
+                                            const group = PERSONALIZATION_TAXONOMY[formData.category_group as keyof typeof PERSONALIZATION_TAXONOMY] as any;
+                                            let types: string[] = [];
+                                            if (group.subcategories) {
+                                                // @ts-ignore
+                                                types = group.types[formData.subcategory_group] || [];
+                                            } else {
+                                                // @ts-ignore
+                                                types = group.types || [];
+                                            }
+                                            return types.map(t => <option key={t} value={t}>{t}</option>);
+                                        })()}
                                     </select>
                                     <p className="text-xs text-gray-400 mt-1.5">Determines available size options and placement defaults.</p>
                                 </div>
+
+                                {/* GENDER SUPPORTED (Multi-Select) */}
+                                <div className="col-span-1 md:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                    <label className="block text-sm font-bold text-navy-900 mb-2">Supported Genders (Visibility) *</label>
+                                    <p className="text-xs text-gray-500 mb-3">Select where this product should appear in the shop. (e.g. Unisex appears in Men & Women)</p>
+                                    <div className="flex gap-4">
+                                        {SUPPORTED_GENDERS.map(g => (
+                                            <label key={g} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-4 h-4 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                                                    checked={formData.personalization.gender_supported.includes(g)}
+                                                    onChange={(e) => {
+                                                        const checked = e.target.checked;
+                                                        setFormData(prev => {
+                                                            const current = prev.personalization.gender_supported;
+                                                            return {
+                                                                ...prev,
+                                                                personalization: {
+                                                                    ...prev.personalization,
+                                                                    gender_supported: checked
+                                                                        ? [...current, g]
+                                                                        : current.filter(x => x !== g)
+                                                                }
+                                                            };
+                                                        });
+                                                    }}
+                                                />
+                                                <span className="capitalize font-bold text-gray-700">{g}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Internal Name *</label>
                                     <input
@@ -229,27 +314,16 @@ export default function AddPersonalizationProductPage() {
                                     />
                                     <p className="text-xs text-gray-400 mt-1.5">Used internally to identify this blank stock.</p>
                                 </div>
-                                <div className="col-span-1 md:col-span-2">
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Store Category *</label>
-                                    <select
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Description (Optional)</label>
+                                    <textarea
                                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
-                                        value={formData.category_id}
-                                        onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-                                    >
-                                        <option value="">Select a Category</option>
-                                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                    </select>
+                                        rows={3}
+                                        placeholder="Details about material, fit, etc."
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    />
                                 </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Description (Optional)</label>
-                                <textarea
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
-                                    rows={3}
-                                    placeholder="Details about material, fit, etc."
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                />
                             </div>
                         </div>
                     )}
@@ -520,7 +594,7 @@ export default function AddPersonalizationProductPage() {
                                                             <input
                                                                 type="number"
                                                                 className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900"
-                                                                value={config.max_width}
+                                                                value={isNaN(config.max_width) ? '' : config.max_width}
                                                                 onChange={(e) => updatePlacement(placement, 'max_width', parseFloat(e.target.value))}
                                                             />
                                                         </div>
@@ -529,7 +603,7 @@ export default function AddPersonalizationProductPage() {
                                                             <input
                                                                 type="number"
                                                                 className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900"
-                                                                value={config.max_height}
+                                                                value={isNaN(config.max_height) ? '' : config.max_height}
                                                                 onChange={(e) => updatePlacement(placement, 'max_height', parseFloat(e.target.value))}
                                                             />
                                                         </div>
@@ -540,7 +614,7 @@ export default function AddPersonalizationProductPage() {
                                                                 <input
                                                                     type="number"
                                                                     className="w-full pl-6 pr-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900 bg-green-50/30 border-green-100"
-                                                                    value={config.price}
+                                                                    value={isNaN(config.price) ? '' : config.price}
                                                                     onChange={(e) => updatePlacement(placement, 'price', parseFloat(e.target.value))}
                                                                 />
                                                             </div>

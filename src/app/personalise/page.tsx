@@ -46,9 +46,69 @@ interface BaseProduct {
 }
 
 // ----------------------------------------------------------------------
-// COMPONENT: PRODUCT GRID
+// DATA & UTILS (Client Side Taxonomy)
 // ----------------------------------------------------------------------
-function ProductSelector({ onSelect }: { onSelect: (p: BaseProduct) => void }) {
+import { PERSONALIZATION_TAXONOMY, Gender } from '@/lib/personalization';
+const CATEGORY_GROUPS = Object.keys(PERSONALIZATION_TAXONOMY);
+
+// ----------------------------------------------------------------------
+// COMPONENT: START SCREEN (Categories)
+// ----------------------------------------------------------------------
+function CategorySelectionView({ onSelect }: { onSelect: (category: string, subCategory?: string) => void }) {
+    const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+
+    return (
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+            <h1 className="text-4xl md:text-5xl font-black text-navy-900 tracking-tight mb-4">Start Designing</h1>
+            <p className="text-gray-500 text-lg mb-12">Select a category to view available blank products.</p>
+
+            {!selectedGroup ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {CATEGORY_GROUPS.map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => {
+                                // @ts-ignore
+                                if (PERSONALIZATION_TAXONOMY[cat].subcategories) {
+                                    setSelectedGroup(cat);
+                                } else {
+                                    onSelect(cat);
+                                }
+                            }}
+                            className="p-8 rounded-3xl bg-gray-50 hover:bg-white hover:shadow-xl border border-gray-100 hover:border-navy-100 transition-all group"
+                        >
+                            <span className="text-xl font-bold text-navy-900 group-hover:text-blue-600">{cat}</span>
+                        </button>
+                    ))}
+                </div>
+            ) : (
+                <div className="animate-in fade-in zoom-in-95 duration-300">
+                    <button onClick={() => setSelectedGroup(null)} className="mb-8 text-sm font-bold text-gray-400 hover:text-navy-900 flex items-center justify-center gap-2">
+                        <ArrowLeft size={16} /> Back to Categories
+                    </button>
+                    <h2 className="text-2xl font-bold text-navy-900 mb-8">Select Collection</h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {/* @ts-ignore */}
+                        {PERSONALIZATION_TAXONOMY[selectedGroup].subcategories?.map((sub: string) => (
+                            <button
+                                key={sub}
+                                onClick={() => onSelect(selectedGroup, sub)}
+                                className="p-8 rounded-3xl bg-blue-50 hover:bg-blue-600 hover:shadow-xl border border-blue-100 transition-all group"
+                            >
+                                <span className="text-xl font-bold text-blue-900 group-hover:text-white capitalize">{sub}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ----------------------------------------------------------------------
+// COMPONENT: FILTERED PRODUCT GRID
+// ----------------------------------------------------------------------
+function FilteredProductList({ category, subCategory, onSelect, onBack }: { category: string; subCategory?: string; onSelect: (p: BaseProduct) => void; onBack: () => void }) {
     const [products, setProducts] = useState<BaseProduct[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -58,60 +118,73 @@ function ProductSelector({ onSelect }: { onSelect: (p: BaseProduct) => void }) {
     );
 
     useEffect(() => {
-        const fetchBases = async () => {
-            // Fetch all valid personalization bases
-            const { data, error } = await supabase
+        const fetchProducts = async () => {
+            setLoading(true);
+            const { data } = await supabase
                 .from('products')
                 .select('*')
-                .eq('metadata->>type', 'personalization_base'); // If migrated
+                .eq('metadata->>type', 'personalization_base');
 
             if (data) {
-                // Fallback check if type isn't set yet
-                const valid = data.filter((p: any) =>
-                    p.metadata?.type === 'personalization_base' ||
-                    p.metadata?.personalization?.enabled === true
-                );
-                setProducts(valid);
+                // Filter Logic
+                const filtered = data.filter((p: any) => {
+                    const pMeta = p.metadata?.personalization || {};
+                    // Check if product belongs to this category logic (using internal name or explicit field if added)
+                    // Currently rely on 'Name' or 'Product Type' matching the taxonomy?
+                    // Better: We should filter by gender_supported if subCategory is a Gender
+
+                    if (category === 'Clothing' && subCategory) {
+                        // Gender check
+                        const supported = p.metadata?.gender_supported || [];
+                        const targetGender = subCategory.toLowerCase();
+                        // Special case: 'Unisex' products show up in Men and Women
+                        if (targetGender === 'men' || targetGender === 'women') {
+                            return supported.includes(targetGender) || supported.includes('unisex');
+                        }
+                        return supported.includes(targetGender);
+                    }
+                    // For other categories, just show all for now or filter by type string matching
+                    // Crude filter: check if Product Type is in the taxonomy list for this category
+                    // @ts-ignore
+                    const types = PERSONALIZATION_TAXONOMY[category]?.types || [];
+                    return Array.isArray(types) && types.includes(p.metadata.product_type);
+                });
+                setProducts(filtered);
             }
             setLoading(false);
         };
-        fetchBases();
-    }, []);
-
-    if (loading) return <div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin text-navy-900" /></div>;
+        fetchProducts();
+    }, [category, subCategory]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-16">
-            <div className="text-center mb-16 space-y-4">
-                <h1 className="text-4xl md:text-5xl font-black text-navy-900 tracking-tight">Create Your Own</h1>
-                <p className="text-gray-500 text-lg max-w-2xl mx-auto">Select a premium base product below, upload your design, and we'll handle the rest. Museum-quality printing on demand.</p>
+        <div className="max-w-7xl mx-auto px-4 py-12">
+            <div className="flex items-center gap-4 mb-8">
+                <button onClick={onBack} className="p-2 rounded-full hover:bg-gray-100">
+                    <ArrowLeft size={20} className="text-navy-900" />
+                </button>
+                <h2 className="text-2xl font-black text-navy-900">
+                    {category} {subCategory && ` / ${subCategory}`}
+                </h2>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
-                {products.map(product => (
-                    <div key={product.id} className="group cursor-pointer flex flex-col items-center text-center" onClick={() => onSelect(product)}>
-                        <div className="relative w-full aspect-[4/5] bg-gray-100 rounded-3xl overflow-hidden mb-5 shadow-sm group-hover:shadow-2xl transition-all duration-500 border border-transparent group-hover:border-gray-200">
-                            <Image
-                                src={product.images[0] || 'https://placehold.co/600x800'}
-                                alt={product.name}
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-                                <span className="bg-white text-navy-900 px-6 py-2.5 rounded-full font-bold text-sm shadow-xl whitespace-nowrap">Customize</span>
-                            </div>
-                        </div>
-                        <h3 className="text-lg font-bold text-navy-900 mb-1 line-clamp-1">{product.metadata?.product_type || product.name}</h3>
-                        <p className="text-gray-500 font-medium">From ₹{product.price}</p>
-                    </div>
-                ))}
-            </div>
-
-            {products.length === 0 && (
+            {loading ? (
+                <div className="h-64 flex items-center justify-center"><Loader2 className="animate-spin" /></div>
+            ) : products.length === 0 ? (
                 <div className="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                    <h3 className="text-xl font-bold text-gray-400">No base products available.</h3>
-                    <p className="text-gray-400">Please check back later or contact support.</p>
+                    <h3 className="text-xl font-bold text-gray-400">No products found.</h3>
+                    <p className="text-gray-400">Try a different category.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {products.map(product => (
+                        <div key={product.id} className="group cursor-pointer" onClick={() => onSelect(product)}>
+                            <div className="relative aspect-[4/5] bg-gray-100 rounded-2xl overflow-hidden mb-4">
+                                <Image src={product.images[0]} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                            </div>
+                            <h3 className="font-bold text-navy-900">{product.name}</h3>
+                            <p className="text-sm text-gray-500">₹{product.price}</p>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>
@@ -505,17 +578,38 @@ function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onB
 // MAIN PAGE ROUTER
 // ----------------------------------------------------------------------
 export default function PersonalisePage() {
+    const [view, setView] = useState<'CATEGORY' | 'LIST' | 'BUILDER'>('CATEGORY');
+    const [category, setCategory] = useState<{ main: string; sub?: string } | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<BaseProduct | null>(null);
+
+    const handleCategorySelect = (main: string, sub?: string) => {
+        setCategory({ main, sub });
+        setView('LIST');
+    };
+
+    const handleProductSelect = (p: BaseProduct) => {
+        setSelectedProduct(p);
+        setView('BUILDER');
+    };
 
     return (
         <div className="min-h-screen bg-white">
-            {selectedProduct ? (
+            {view === 'CATEGORY' && <CategorySelectionView onSelect={handleCategorySelect} />}
+
+            {view === 'LIST' && category && (
+                <FilteredProductList
+                    category={category.main}
+                    subCategory={category.sub}
+                    onSelect={handleProductSelect}
+                    onBack={() => setView('CATEGORY')}
+                />
+            )}
+
+            {view === 'BUILDER' && selectedProduct && (
                 <PersonalizationBuilder
                     product={selectedProduct}
-                    onBack={() => setSelectedProduct(null)}
+                    onBack={() => setView('LIST')}
                 />
-            ) : (
-                <ProductSelector onSelect={setSelectedProduct} />
             )}
         </div>
     );
