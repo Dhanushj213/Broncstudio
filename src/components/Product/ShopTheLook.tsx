@@ -43,19 +43,20 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
             qty: 1,
             size: product.metadata?.sizes?.[0] || 'One Size',
             color: product.metadata?.colors?.[0]?.name || 'Default'
-        });
+        }, product.metadata?.sizes?.[0] || 'One Size');
 
         // Add Recommendations
         items.forEach(item => {
+            const size = item.metadata?.sizes?.[0] || 'One Size';
             addToCart({
                 id: item.id,
                 name: item.name,
                 price: item.price,
                 image: item.images?.[0] || item.image || '',
                 qty: 1,
-                size: item.metadata?.sizes?.[0] || 'One Size',
+                size: size,
                 color: item.metadata?.colors?.[0]?.name || 'Default'
-            });
+            }, size);
         });
         toast.success('Complete look added to your bag!');
     };
@@ -113,7 +114,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                         onClick={handleAddBundle}
                         className="w-full py-3 bg-navy-900 text-white font-bold rounded-xl shadow-lg hover:bg-navy-800 transition-colors flex items-center justify-center gap-2 mb-4 text-sm"
                     >
-                        Add all {items.length + 1} to Cart
+                        Add all {items.length + 1} to Bag
                     </button>
 
                     {/* Checklist */}
