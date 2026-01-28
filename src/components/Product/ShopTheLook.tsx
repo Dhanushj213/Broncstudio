@@ -3,7 +3,7 @@ import ProductCard from '@/components/Product/ProductCard';
 import { ShoppingBag, Check, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
-import { toast } from 'sonner';
+import { useToast } from '@/context/ToastContext';
 import { getRecommendations } from '@/lib/recommendations';
 
 interface ShopTheLookProps {
@@ -58,7 +58,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                 color: item.metadata?.colors?.[0]?.name || 'Default'
             }, size);
         });
-        toast.success('Complete look added to your bag!');
+        addToast('Complete look added to your bag!', 'success');
     };
 
     return (
