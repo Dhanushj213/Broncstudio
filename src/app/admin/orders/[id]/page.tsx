@@ -6,6 +6,8 @@ import { ArrowLeft, CheckCircle, XCircle, Truck, Package, CreditCard, User, MapP
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { updateOrderStatus, updatePaymentStatus } from '@/actions/adminActions';
+import { useToast } from '@/context/ToastContext';
+
 
 interface OrderItem {
     id: string;
@@ -34,6 +36,7 @@ interface Order {
 export default function OrderDetailPage() {
     const params = useParams();
     const router = useRouter();
+    const { addToast } = useToast();
     const [order, setOrder] = useState<Order | null>(null);
     const [items, setItems] = useState<OrderItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -81,36 +84,48 @@ export default function OrderDetailPage() {
 
     const handleUpdateStatus = async (newStatus: string) => {
         if (!order) return;
-        if (!confirm(`Are you sure you want to mark this order as ${newStatus}?`)) return;
 
+        // Only confirm for destructive actions
+        if (newStatus === 'cancelled' || newStatus === 'rejected') {
+            if (!confirm(`Are you sure you want to REJECT this order?`)) return;
+        }
+
+        setActionLoading(true);
         const { success, error } = await updateOrderStatus(order.id, newStatus);
 
         if (!success) {
-            alert('Failed to update status: ' + error);
+            addToast('Failed to update status: ' + error, 'error');
         } else {
-            // Refresh local state
             setOrder({ ...order, status: newStatus });
-            alert(`Order ${newStatus} successfully!`);
-            router.refresh(); // Refresh server state
+            addToast(`Order marked as ${newStatus}`, 'success');
+            router.refresh();
         }
         setActionLoading(false);
     };
 
     const handleMarkAsPaid = async () => {
-        if (!order) return;
-        if (!confirm('Mark payment as PAID? This cannot be undone.')) return;
+        console.log("DEBUG: Calling updatePaymentStatus for order:", order.id);
 
-        setActionLoading(true);
-        const { success, error } = await updatePaymentStatus(order.id, 'paid');
+        try {
+            const { success, error } = await updatePaymentStatus(order.id, 'paid');
+            console.log("DEBUG: updatePaymentStatus returned:", { success, error });
 
-        if (!success) {
-            alert('Failed to update payment: ' + error);
-        } else {
-            setOrder({ ...order, payment_status: 'paid' });
-            alert('Payment marked as PAID.');
-            router.refresh();
+            if (!success) {
+                console.error("DEBUG: Failed to update payment:", error);
+                alert('Failed to update payment: ' + error);
+            } else {
+                console.log("DEBUG: Local update: setting payment_status to 'paid'");
+                setOrder({ ...order, payment_status: 'paid' });
+                alert('Payment marked as PAID.');
+                router.refresh();
+            }
+        } catch (err) {
+            console.error("DEBUG: Unexpected error in handleMarkAsPaid:", err);
+            alert("Unexpected error: " + err);
+        } finally {
+            setActionLoading(false);
+            console.log("DEBUG: actionLoading set to false");
         }
-        setActionLoading(false);
     };
 
     if (loading) {
