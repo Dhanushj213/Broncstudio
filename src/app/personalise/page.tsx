@@ -160,6 +160,15 @@ export default function PersonalisePage() {
     const hasSizes = (selectedProduct?.metadata.personalization.sizes?.length || 0) > 0;
     const canAddToCart = selectedProduct && (!hasSizes || size) && placement && printType;
 
+    console.log("DEBUG VALIDATION:", {
+        hasSizes,
+        size,
+        placement,
+        printType,
+        canAddToCart,
+        productSizes: selectedProduct?.metadata.personalization.sizes
+    });
+
     const handleAddToCart = () => {
         if (!canAddToCart) return;
 
