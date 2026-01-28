@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Heart, Menu, User } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, User } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import MobileMenu from './MobileMenu';
@@ -86,8 +86,8 @@ export default function Header() {
                         <Link href={currentUser ? '/profile' : '/login'} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
                             <User size={24} strokeWidth={1.5} />
                         </Link>
-                        <Link href="/cart" className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors relative hidden md:block">
-                            <ShoppingCart size={24} strokeWidth={1.5} />
+                        <Link href="/cart" className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors relative block">
+                            <ShoppingBag size={24} strokeWidth={1.5} />
                             {cartCount > 0 && (
                                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-coral-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{cartCount}</span>
                             )}
