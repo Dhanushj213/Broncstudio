@@ -12,6 +12,7 @@ import { SAMPLE_IMAGES, getProductImage } from '@/utils/sampleImages';
 import { createBrowserClient } from '@supabase/ssr';
 import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
@@ -30,6 +31,7 @@ export default function ProductPage() {
     const params = useParams(); // params.id may be undefined initially
     const id = params?.id as string;
     const { addToCart } = useCart();
+    const { addToast } = useToast();
     const [product, setProduct] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -64,7 +66,7 @@ export default function ProductPage() {
     const handleAddFromSticky = () => {
         if (!product) return;
         addToCart(product, product.metadata?.sizes?.[0] || 'Default');
-        alert('Added to Bag!');
+        addToast(`${product.name} added to your bag!`, 'success');
     };
 
     if (loading) {
