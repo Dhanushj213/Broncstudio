@@ -57,7 +57,7 @@ export default function AddProductPage() {
                 description: formData.description,
                 price: parseFloat(formData.price),
                 category_id: formData.category_id,
-                image_url: formData.image_url || 'https://placehold.co/600x400/png' // Fallback
+                images: [formData.image_url || 'https://placehold.co/600x400/png']
             });
 
         if (error) {

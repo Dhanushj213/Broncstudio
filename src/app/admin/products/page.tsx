@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Plus, Search, Filter, Edit, Trash2, MoreHorizontal, Package, Loader2 } from 'lucide-react';
+import { Plus, Search, Filter, Edit, Trash2, Package, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -11,7 +11,7 @@ interface Product {
     name: string;
     price: number;
     category_id: string;
-    image_url: string;
+    images: string[];
     description: string;
     created_at: string;
 }
@@ -127,9 +127,9 @@ export default function AdminProductsPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 relative">
-                                                    {product.image_url ? (
+                                                    {product.images?.[0] ? (
                                                         <Image
-                                                            src={product.image_url}
+                                                            src={product.images[0]}
                                                             alt={product.name}
                                                             fill
                                                             className="object-cover"
@@ -153,7 +153,7 @@ export default function AdminProductsPage() {
                                             ₹{product.price}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
-                                            <span className="text-green-600 font-medium">In Stock</span> {/* Placeholder */}
+                                            <span className="text-green-600 font-medium">In Stock</span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">

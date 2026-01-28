@@ -67,7 +67,7 @@ export default function EditProductPage() {
             description: data.description || '',
             price: data.price.toString(),
             category_id: data.category_id,
-            image_url: data.image_url || ''
+            image_url: data.images?.[0] || ''
         });
         setFetching(false);
     };
@@ -90,7 +90,7 @@ export default function EditProductPage() {
                 description: formData.description,
                 price: parseFloat(formData.price),
                 category_id: formData.category_id,
-                image_url: formData.image_url || 'https://placehold.co/600x400/png'
+                images: formData.image_url ? [formData.image_url] : []
             })
             .eq('id', id);
 
