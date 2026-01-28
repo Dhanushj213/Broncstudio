@@ -50,6 +50,19 @@ export default function AddProductPage() {
             return;
         }
 
+        // Duplicate Check
+        const { data: existing } = await supabase
+            .from('products')
+            .select('id')
+            .eq('name', formData.name.trim())
+            .single();
+
+        if (existing) {
+            alert('A product with this name already exists! Please use a different name.');
+            setLoading(false);
+            return;
+        }
+
         const { error } = await supabase
             .from('products')
             .insert({
