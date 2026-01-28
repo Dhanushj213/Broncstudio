@@ -103,29 +103,37 @@ export default function OrderDetailPage() {
         setActionLoading(false);
     };
 
-    const handleMarkAsPaid = async () => {
-        console.log("DEBUG: Calling updatePaymentStatus for order:", order.id);
+    const handleUndoStatus = async () => {
+        if (!order) return;
+        if (!confirm('Undo last status update?')) return;
 
-        try {
-            const { success, error } = await updatePaymentStatus(order.id, 'paid');
-            console.log("DEBUG: updatePaymentStatus returned:", { success, error });
+        setActionLoading(true);
+        const { success, error, newStatus } = await undoLastStatusUpdate(order.id);
 
-            if (!success) {
-                console.error("DEBUG: Failed to update payment:", error);
-                alert('Failed to update payment: ' + error);
-            } else {
-                console.log("DEBUG: Local update: setting payment_status to 'paid'");
-                setOrder({ ...order, payment_status: 'paid' });
-                alert('Payment marked as PAID.');
-                router.refresh();
-            }
-        } catch (err) {
-            console.error("DEBUG: Unexpected error in handleMarkAsPaid:", err);
-            alert("Unexpected error: " + err);
-        } finally {
-            setActionLoading(false);
-            console.log("DEBUG: actionLoading set to false");
+        if (!success) {
+            addToast('Failed to undo: ' + error, 'error');
+        } else {
+            setOrder({ ...order, status: newStatus as string });
+            addToast(`Reverted to ${newStatus}`, 'success');
+            router.refresh();
         }
+        setActionLoading(false);
+    };
+
+    const handleMarkAsPaid = async () => {
+        if (!order) return;
+
+        setActionLoading(true);
+        const { success, error } = await updatePaymentStatus(order.id, 'paid');
+
+        if (!success) {
+            addToast('Failed to update payment: ' + error, 'error');
+        } else {
+            setOrder({ ...order, payment_status: 'paid' });
+            addToast('Payment marked as PAID', 'success');
+            router.refresh();
+        }
+        setActionLoading(false);
     };
 
     if (loading) {
@@ -169,52 +177,66 @@ export default function OrderDetailPage() {
                 </div>
 
                 {/* ACTION BUTTONS */}
-                {isPending && (
-                    <div className="flex gap-3">
+                <div className="flex items-center gap-3">
+                    {/* Undo Button - Only show if history exists or status is not pending */}
+                    {(order.status !== 'pending' || (order.status_history && order.status_history.length > 0)) && (
                         <button
-                            onClick={() => handleUpdateStatus('cancelled')}
+                            onClick={handleUndoStatus}
                             disabled={actionLoading}
-                            className="bg-white border border-gray-200 text-red-600 hover:bg-red-50 hover:border-red-200 font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
+                            className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                            title="Undo last status update"
                         >
-                            <XCircle size={20} />
-                            Reject Order
+                            <Clock size={20} className="transform -scale-x-100" />
                         </button>
-                        <button
-                            onClick={() => handleUpdateStatus('processing')}
-                            disabled={actionLoading}
-                            className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all"
-                        >
-                            <CheckCircle size={20} />
-                            Accept Order
-                        </button>
-                    </div>
-                )}
+                    )}
 
-                {order.status === 'processing' && (
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => handleUpdateStatus('shipped')}
-                            disabled={actionLoading}
-                            className="bg-blue-600 text-white hover:bg-blue-700 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all"
-                        >
-                            <Truck size={20} />
-                            Mark as Shipped
-                        </button>
-                    </div>
-                )}
+                    {isPending && (
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleUpdateStatus('cancelled')}
+                                disabled={actionLoading}
+                                className="bg-white border border-gray-200 text-red-600 hover:bg-red-50 hover:border-red-200 font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
+                            >
+                                <XCircle size={20} />
+                                Reject Order
+                            </button>
+                            <button
+                                onClick={() => handleUpdateStatus('processing')}
+                                disabled={actionLoading}
+                                className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all"
+                            >
+                                <CheckCircle size={20} />
+                                Accept Order
+                            </button>
+                        </div>
+                    )}
 
-                {order.status === 'shipped' && (
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => handleUpdateStatus('delivered')}
-                            disabled={actionLoading}
-                            className="bg-green-600 text-white hover:bg-green-700 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-green-600/20 transition-all"
-                        >
-                            <CheckCircle size={20} />
-                            Mark as Delivered
-                        </button>
-                    </div>
-                )}
+                    {order.status === 'processing' && (
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleUpdateStatus('shipped')}
+                                disabled={actionLoading}
+                                className="bg-blue-600 text-white hover:bg-blue-700 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-all"
+                            >
+                                <Truck size={20} />
+                                Mark as Shipped
+                            </button>
+                        </div>
+                    )}
+
+                    {order.status === 'shipped' && (
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleUpdateStatus('delivered')}
+                                disabled={actionLoading}
+                                className="bg-green-600 text-white hover:bg-green-700 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-green-600/20 transition-all"
+                            >
+                                <CheckCircle size={20} />
+                                Mark as Delivered
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -380,7 +402,6 @@ export default function OrderDetailPage() {
                                 <Truck size={16} className="text-gray-400" />
                                 Delivery Status
                             </h3>
-                            {/* Placeholder for tracking history */}
                             {/* Tracking History Timeline */}
                             <div className="relative pl-4 border-l-2 border-gray-100 space-y-6">
                                 {/* Always show Created At */}

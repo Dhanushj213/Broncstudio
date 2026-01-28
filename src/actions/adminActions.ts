@@ -28,7 +28,9 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
     }
 
     // 2. Verify Admin Role
-    if (!isAdmin(user.email)) {
+    const adminCheck = isAdmin(user.email);
+
+    if (!adminCheck) {
         return { success: false, error: 'Access Denied: Not an Admin' };
     }
 
@@ -51,7 +53,7 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         );
         usingServiceRole = true;
     } else {
-        console.warn("Missing SUPABASE_SERVICE_ROLE_KEY. Performing actions with User Context (RLS applies).");
+        // console.warn("[ServerAction] Missing SUPABASE_SERVICE_ROLE_KEY. Fallback to User Context.");
     }
 
     // 4. Update Status with History
@@ -193,4 +195,77 @@ export async function updatePaymentStatus(orderId: string, newStatus: string) {
     }
 
     return { success: true };
+}
+
+export async function undoLastStatusUpdate(orderId: string) {
+    const cookieStore = await cookies();
+
+    // 1. Authenticate & Verify Admin
+    const supabaseAuth = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) { return cookieStore.get(name)?.value },
+            },
+        }
+    );
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) return { success: false, error: 'Unauthorized' };
+    if (!isAdmin(user.email)) return { success: false, error: 'Access Denied' };
+
+    // 2. Setup Client (Service Role)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    let supabaseClient = supabaseAuth;
+    if (serviceRoleKey) {
+        supabaseClient = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            serviceRoleKey,
+            { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+    }
+
+    // 3. Fetch Current History
+    const { data: order, error: fetchError } = await supabaseClient
+        .from('orders')
+        .select('status, status_history')
+        .eq('id', orderId)
+        .single();
+
+    if (fetchError || !order) return { success: false, error: 'Fetch failed' };
+
+    const history = Array.isArray(order.status_history) ? order.status_history : [];
+
+    // 4. Validate Undo Capability
+    // We need at least 1 entry in history to "undo" (by removing it). 
+    // Ideally we should have > 0 history.
+    // If history has 1 item, removing it -> empty -> status 'pending' (default)
+    // If history has > 1 items, remove last -> status becomes the new last item's status.
+
+    if (history.length === 0) {
+        return { success: false, error: 'No history to undo' };
+    }
+
+    const poppedItem = history[history.length - 1];
+    const newHistory = history.slice(0, -1);
+
+    let newStatus = 'pending'; // Default fallback
+    if (newHistory.length > 0) {
+        newStatus = newHistory[newHistory.length - 1].status;
+    }
+
+    // 5. Update DB
+    const { error: updateError } = await supabaseClient
+        .from('orders')
+        .update({
+            status: newStatus,
+            status_history: newHistory
+        })
+        .eq('id', orderId);
+
+    if (updateError) {
+        return { success: false, error: updateError.message };
+    }
+
+    return { success: true, newStatus };
 }
