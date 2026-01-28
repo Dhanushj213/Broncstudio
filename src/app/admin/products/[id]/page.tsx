@@ -42,6 +42,7 @@ export default function EditProductPage() {
         size_guide: '',
 
         // Recommendation Engine Meta
+        is_pet: false,
         gender: 'unisex',
         product_type: '',
         fit: 'regular',
@@ -103,6 +104,7 @@ export default function EditProductPage() {
             size_guide: meta.size_guide || '',
 
             // Load Engine Meta
+            is_pet: meta.is_pet || false,
             gender: meta.gender || 'unisex',
             product_type: meta.product_type || '',
             fit: meta.fit || 'regular',
@@ -170,10 +172,11 @@ export default function EditProductPage() {
             size_guide: formData.size_guide,
 
             // Save Engine Meta
-            gender: formData.gender,
-            product_type: formData.product_type,
-            fit: formData.fit,
-            style: formData.style,
+            is_pet: formData.is_pet,
+            gender: formData.is_pet ? 'unisex' : formData.gender, // Default to unisex for pets
+            product_type: formData.is_pet ? (formData.product_type || 'pet_accessory') : formData.product_type,
+            fit: formData.is_pet ? 'regular' : formData.fit,
+            style: formData.is_pet ? 'recreational' : formData.style, // Custom style for pets if needed, or keep existing
             primary_color: formData.primary_color
         };
 
@@ -435,101 +438,121 @@ export default function EditProductPage() {
                     </div>
 
                     {/* Classification & Engine Metadata */}
+                    {/* Classification & Engine Metadata */}
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
-                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Engine Classification (Required for "Shop The Look")</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Gender */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Gender</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
-                                    value={formData.gender}
-                                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                >
-                                    <option value="unisex">Unisex</option>
-                                    <option value="men">Men</option>
-                                    <option value="women">Women</option>
-                                    <option value="kids">Kids</option>
-                                </select>
-                            </div>
-
-                            {/* Product Type */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Product Type</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
-                                    value={formData.product_type}
-                                    onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
-                                >
-                                    <option value="">Select Type</option>
-                                    <option value="tshirt">T-Shirt / Top</option>
-                                    <option value="hoodie">Hoodie / Sweatshirt</option>
-                                    <option value="jacket">Jacket / Outerwear</option>
-                                    <option value="bottom">Bottom / Pants / Shorts</option>
-                                    <option value="dress">Dress</option>
-                                    <option value="footwear">Footwear</option>
-                                    <option value="headwear">Headwear / Cap</option>
-                                    <option value="bag">Bag</option>
-                                    <option value="accessory">Accessory</option>
-                                </select>
-                            </div>
-
-                            {/* Fit */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Fit</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
-                                    value={formData.fit}
-                                    onChange={(e) => setFormData({ ...formData, fit: e.target.value })}
-                                >
-                                    <option value="regular">Regular</option>
-                                    <option value="oversized">Oversized</option>
-                                    <option value="slim">Slim</option>
-                                    <option value="skinny">Skinny</option>
-                                    <option value="relaxed">Relaxed</option>
-                                </select>
-                            </div>
-
-                            {/* Style */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Style Vibe</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
-                                    value={formData.style}
-                                    onChange={(e) => setFormData({ ...formData, style: e.target.value })}
-                                >
-                                    <option value="minimal">Minimal</option>
-                                    <option value="graphic">Graphic / Bold</option>
-                                    <option value="sporty">Sporty</option>
-                                    <option value="classic">Classic</option>
-                                    <option value="streetwear">Streetwear</option>
-                                </select>
-                            </div>
-
-                            {/* Primary Color */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Primary Color (for Matching)</label>
-                                <select
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
-                                    value={formData.primary_color}
-                                    onChange={(e) => setFormData({ ...formData, primary_color: e.target.value })}
-                                >
-                                    <option value="">Select Color</option>
-                                    <option value="white">White</option>
-                                    <option value="black">Black</option>
-                                    <option value="blue">Blue</option>
-                                    <option value="olive">Olive / Green</option>
-                                    <option value="beige">Beige / Cream</option>
-                                    <option value="grey">Grey</option>
-                                    <option value="red">Red</option>
-                                    <option value="brown">Brown</option>
-                                    <option value="yellow">Yellow</option>
-                                    <option value="pink">Pink</option>
-                                    <option value="purple">Purple</option>
-                                    <option value="orange">Orange</option>
-                                </select>
-                            </div>
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                            <h2 className="text-lg font-bold text-gray-900">Engine Classification</h2>
+                            <label className="flex items-center gap-2 cursor-pointer bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.is_pet as boolean}
+                                    onChange={(e) => setFormData({ ...formData, is_pet: e.target.checked })}
+                                    className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                                />
+                                <span className="text-sm font-bold text-navy-900">It's a Pet Product 🐾</span>
+                            </label>
                         </div>
+
+                        {!formData.is_pet && (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                                {/* Gender */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Gender</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                        value={formData.gender}
+                                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                    >
+                                        <option value="unisex">Unisex</option>
+                                        <option value="men">Men</option>
+                                        <option value="women">Women</option>
+                                        <option value="kids">Kids</option>
+                                    </select>
+                                </div>
+
+                                {/* Product Type */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Product Type</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                        value={formData.product_type}
+                                        onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
+                                    >
+                                        <option value="">Select Type</option>
+                                        <option value="tshirt">T-Shirt / Top</option>
+                                        <option value="hoodie">Hoodie / Sweatshirt</option>
+                                        <option value="jacket">Jacket / Outerwear</option>
+                                        <option value="bottom">Bottom / Pants / Shorts</option>
+                                        <option value="dress">Dress</option>
+                                        <option value="footwear">Footwear</option>
+                                        <option value="headwear">Headwear / Cap</option>
+                                        <option value="bag">Bag</option>
+                                        <option value="accessory">Accessory</option>
+                                    </select>
+                                </div>
+
+                                {/* Fit */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Fit</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                        value={formData.fit}
+                                        onChange={(e) => setFormData({ ...formData, fit: e.target.value })}
+                                    >
+                                        <option value="regular">Regular</option>
+                                        <option value="oversized">Oversized</option>
+                                        <option value="slim">Slim</option>
+                                        <option value="skinny">Skinny</option>
+                                        <option value="relaxed">Relaxed</option>
+                                    </select>
+                                </div>
+
+                                {/* Style */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Style Vibe</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                        value={formData.style}
+                                        onChange={(e) => setFormData({ ...formData, style: e.target.value })}
+                                    >
+                                        <option value="minimal">Minimal</option>
+                                        <option value="graphic">Graphic / Bold</option>
+                                        <option value="sporty">Sporty</option>
+                                        <option value="classic">Classic</option>
+                                        <option value="streetwear">Streetwear</option>
+                                    </select>
+                                </div>
+
+                                {/* Primary Color */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Primary Color (for Matching)</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                        value={formData.primary_color}
+                                        onChange={(e) => setFormData({ ...formData, primary_color: e.target.value })}
+                                    >
+                                        <option value="">Select Color</option>
+                                        <option value="white">White</option>
+                                        <option value="black">Black</option>
+                                        <option value="blue">Blue</option>
+                                        <option value="olive">Olive / Green</option>
+                                        <option value="beige">Beige / Cream</option>
+                                        <option value="grey">Grey</option>
+                                        <option value="red">Red</option>
+                                        <option value="brown">Brown</option>
+                                        <option value="yellow">Yellow</option>
+                                        <option value="pink">Pink</option>
+                                        <option value="purple">Purple</option>
+                                        <option value="orange">Orange</option>
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+                        {formData.is_pet && (
+                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-center text-sm text-navy-800">
+                                🐾 You are creating a Pet Product. Standard sizing and gender rules are relaxed.
+                            </div>
+                        )}
                     </div>
 
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
