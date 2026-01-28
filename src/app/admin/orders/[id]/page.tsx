@@ -27,6 +27,7 @@ interface Order {
     user_id: string;
     payment_status: string;
     payment_method: string;
+    status_history?: { status: string; timestamp: string; updated_by?: string }[];
     items?: OrderItem[]; // We'll fetch these manually
 }
 
@@ -337,33 +338,48 @@ export default function OrderDetailPage() {
                                 Delivery Status
                             </h3>
                             {/* Placeholder for tracking history */}
+                            {/* Tracking History Timeline */}
                             <div className="relative pl-4 border-l-2 border-gray-100 space-y-6">
+                                {/* Always show Created At */}
                                 <div className="relative">
-                                    <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${isPending ? 'bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.2)]' :
-                                        order.status === 'cancelled' ? 'bg-red-500 shadow-[0_0_0_3px_rgba(239,68,68,0.2)]' : 'bg-green-500'
+                                    <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${isPending && (!order.status_history || order.status_history.length === 0) ? 'bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.2)]' : 'bg-gray-300'
                                         }`} />
                                     <p className="text-sm font-medium text-gray-900">Order Placed</p>
-                                    <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleDateString()}</p>
+                                    <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleString()}</p>
                                 </div>
-                                {order.status === 'processing' && (
+
+                                {/* Render History Items */}
+                                {order.status_history && Array.isArray(order.status_history) && order.status_history.map((hist: any, idx: number) => {
+                                    // Determine color based on status
+                                    let colorClass = 'bg-gray-500';
+                                    let shadowClass = '';
+                                    if (hist.status === 'processing') { colorClass = 'bg-purple-500'; shadowClass = 'shadow-[0_0_0_3px_rgba(168,85,247,0.2)]'; }
+                                    else if (hist.status === 'shipped') { colorClass = 'bg-blue-500'; shadowClass = 'shadow-[0_0_0_3px_rgba(59,130,246,0.2)]'; }
+                                    else if (hist.status === 'delivered') { colorClass = 'bg-green-500'; shadowClass = 'shadow-[0_0_0_3px_rgba(34,197,94,0.2)]'; }
+                                    else if (hist.status === 'cancelled') { colorClass = 'bg-red-500'; shadowClass = 'shadow-[0_0_0_3px_rgba(239,68,68,0.2)]'; }
+
+                                    // Only show shadow on the LAST item (current state)
+                                    const isLast = idx === order.status_history!.length - 1;
+                                    const finalShadow = isLast ? shadowClass : '';
+
+                                    return (
+                                        <div key={idx} className="relative">
+                                            <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${colorClass} ${finalShadow}`} />
+                                            <p className="text-sm font-medium text-gray-900 capitalize">{hist.status.replace(/_/g, ' ')}</p>
+                                            <p className="text-xs text-gray-400">
+                                                {new Date(hist.timestamp).toLocaleString()}
+                                                {hist.updated_by && <span className="block text-[10px] text-gray-300">by {hist.updated_by}</span>}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+
+                                {/* Fallback for Old Orders (No History Array) but have status */}
+                                {(!order.status_history || order.status_history.length === 0) && order.status !== 'pending' && (
                                     <div className="relative">
-                                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-purple-500 border-2 border-white box-content shadow-[0_0_0_3px_rgba(168,85,247,0.2)]" />
-                                        <p className="text-sm font-medium text-gray-900">Processing</p>
-                                        <p className="text-xs text-gray-400">Order Accepted</p>
-                                    </div>
-                                )}
-                                {order.status === 'cancelled' && (
-                                    <div className="relative">
-                                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-red-500 border-2 border-white box-content shadow-[0_0_0_3px_rgba(239,68,68,0.2)]" />
-                                        <p className="text-sm font-medium text-red-700">Order Rejected</p>
-                                        <p className="text-xs text-red-500">Refund Initiated (if paid)</p>
-                                    </div>
-                                )}
-                                {order.status === 'delivered' && (
-                                    <div className="relative">
-                                        <div className="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-green-500 border-2 border-white box-content shadow-[0_0_0_3px_rgba(34,197,94,0.2)]" />
-                                        <p className="text-sm font-medium text-gray-900">Delivered</p>
-                                        <p className="text-xs text-gray-400">Package Arrived</p>
+                                        <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${order.status === 'cancelled' ? 'bg-red-500' : 'bg-green-500'}`} />
+                                        <p className="text-sm font-medium text-gray-900 capitalize">{order.status}</p>
+                                        <p className="text-xs text-gray-400">Date unknown (Legacy)</p>
                                     </div>
                                 )}
                             </div>

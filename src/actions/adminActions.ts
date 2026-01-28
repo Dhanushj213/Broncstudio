@@ -54,10 +54,37 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         console.warn("Missing SUPABASE_SERVICE_ROLE_KEY. Performing actions with User Context (RLS applies).");
     }
 
-    // 4. Update Status
+    // 4. Update Status with History
+    // First, fetch current history
+    const { data: currentOrder, error: fetchError } = await supabaseClient
+        .from('orders')
+        .select('status_history')
+        .eq('id', orderId)
+        .single();
+
+    if (fetchError) {
+        console.error("Error fetching order history:", fetchError);
+        return { success: false, error: 'Failed to fetch order history' };
+    }
+
+    const currentHistory = currentOrder?.status_history || [];
+    // If mixed types exist or it's null, ensure it's an array
+    const historyArray = Array.isArray(currentHistory) ? currentHistory : [];
+
+    const newHistoryEntry = {
+        status: newStatus,
+        timestamp: new Date().toISOString(),
+        updated_by: user.email // Optional: track who updated it
+    };
+
+    const updatedHistory = [...historyArray, newHistoryEntry];
+
     const { error: updateError } = await supabaseClient
         .from('orders')
-        .update({ status: newStatus })
+        .update({
+            status: newStatus,
+            status_history: updatedHistory
+        })
         .eq('id', orderId);
 
     if (updateError) {
