@@ -19,18 +19,24 @@ export default function NewArrivalsPage() {
         const fetchNewArrivals = async () => {
             setLoading(true);
 
-            // Fetch latest 50 products
-            const { data, error } = await supabase
+            // 1. Fetch Manual "new-arrival" tag
+            const { data: manualData } = await supabase
+                .from('products')
+                .select('*')
+                .contains('metadata', { tags: ['new-arrival'] });
+
+            // 2. Fetch latest 50 products (Automatic)
+            const { data: autoData } = await supabase
                 .from('products')
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(50);
 
-            if (error) {
-                console.error('Error fetching new arrivals:', error);
-            }
+            // 3. Merge: Manual first, then Auto (Dedupe by ID)
+            const combined = [...(manualData || []), ...(autoData || [])];
+            const unique = Array.from(new Map(combined.map(item => [item.id, item])).values());
 
-            setProducts(data || []);
+            setProducts(unique);
             setLoading(false);
         };
 

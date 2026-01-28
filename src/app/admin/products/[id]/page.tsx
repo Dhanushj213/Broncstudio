@@ -203,11 +203,11 @@ export default function EditProductPage() {
                         <input
                             type="text"
                             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="e.g. summer, curated, new-arrival"
+                            placeholder="e.g. new-arrival, summer, curated"
                             value={formData.tags}
                             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                         />
-                        <p className="text-xs text-gray-400 mt-1">Used for collections and search.</p>
+                        <p className="text-xs text-gray-400 mt-1">Add &quot;new-arrival&quot; to pin to New Arrivals page.</p>
                     </div>
                 </div>
 

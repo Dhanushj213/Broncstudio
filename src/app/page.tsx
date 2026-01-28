@@ -46,16 +46,23 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchData() {
-      // Fetch New Arrivals
-      const { data: newProds } = await supabase
+      // Fetch New Arrivals (Manual Priority + Date)
+      const { data: manualNew } = await supabase
+        .from('products')
+        .select('*')
+        .contains('metadata', { tags: ['new-arrival'] })
+        .limit(4);
+
+      const { data: autoNew } = await supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(8);
 
-      if (newProds) {
-        setNewArrivals(newProds.map((p: any) => ({ ...mapProduct(p), badge: 'New' })));
-      }
+      const mergedNew = [...(manualNew || []), ...(autoNew || [])];
+      const uniqueNew = Array.from(new Map(mergedNew.map(p => [p.id, p])).values()).slice(0, 8);
+
+      setNewArrivals(uniqueNew.map((p: any) => ({ ...mapProduct(p), badge: 'New' })));
 
       // Fetch Featured (Random 25 or just general list)
       // Since we don't have a 'featured' flag, we'll just take 25.
