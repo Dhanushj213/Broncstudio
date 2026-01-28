@@ -1,66 +1,47 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { ArrowLeft, Upload, Save, Loader2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Trash2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-interface Category {
-    id: string;
+interface Placement {
     name: string;
+    max_w: number;
+    max_h: number;
 }
 
-export default function AddPersonalizedProductPage() {
+export default function CreatePersonalizedProductPage() {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [saving, setSaving] = useState(false);
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
 
+    // Form State matching Strict Spec
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        price: '',
-        compare_at_price: '',
         category_id: '',
         images: [] as string[],
-        is_featured: false,
-        tags: '',
 
-        // Dynamic Fields
-        stock_status: 'in_stock',
-        colors: [] as { name: string; code: string }[],
-        sizes: '',
-        highlights: '',
-        material_care: '',
-        shipping_returns: '',
-        size_guide: '',
+        // Pricing
+        base_price: 699,
+        print_price: 249,
 
-        // Recommendation Engine Meta
-        is_pet: false,
-        gender: 'unisex',
-        gender_visibility: ['unisex'] as string[],
-        product_type: '',
-        fit: 'regular',
-        style: 'minimal',
-        primary_color: '',
+        // Config
+        colors: [] as string[],
+        sizes: [] as string[],
+        print_types: ['DTG'] as string[],
+        placements: [{ name: 'Front', max_w: 10, max_h: 12 }] as Placement[], // Default Front
 
-        // Personalization Config - ENABLED BY DEFAULT
-        personalization: {
-            enabled: true,
-            colors: [] as string[],
-            sizes: [] as string[],
-            placements: [] as string[],
-            print_type: 'DTG',
-            print_price: 199,
-            image_requirements: {
-                min_dpi: 300,
-                max_size_mb: 20
-            }
-        }
+        min_dpi: 300
     });
 
     const [imageInput, setImageInput] = useState('');
+
+    // Helper for Placements
+    const [newPlacement, setNewPlacement] = useState<Placement>({ name: 'Back', max_w: 10, max_h: 12 });
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -76,318 +57,263 @@ export default function AddPersonalizedProductPage() {
         if (data) setCategories(data);
     };
 
-    const handleAddImage = () => {
-        if (!imageInput.trim()) return;
+    const handleAddPlacement = () => {
         setFormData({
             ...formData,
-            images: [...formData.images, imageInput.trim()]
+            placements: [...formData.placements, newPlacement]
         });
-        setImageInput('');
     };
 
-    const handleRemoveImage = (index: number) => {
-        const newImages = [...formData.images];
-        newImages.splice(index, 1);
-        setFormData({ ...formData, images: newImages });
+    const handleRemovePlacement = (idx: number) => {
+        const updated = [...formData.placements];
+        updated.splice(idx, 1);
+        setFormData({ ...formData, placements: updated });
+    };
+
+    const handleAddImage = () => {
+        if (!imageInput.trim()) return;
+        setFormData({ ...formData, images: [...formData.images, imageInput.trim()] });
+        setImageInput('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setSaving(true);
 
-        // Validation
-        if (!formData.name || !formData.price || !formData.category_id) {
-            alert('Please fill in all required fields');
-            setLoading(false);
-            return;
-        }
+        const metadata = {
+            personalization: {
+                enabled: true,
+                base_product: true,
+                colors: formData.colors,
+                sizes: formData.sizes,
+                print_types: formData.print_types,
+                placements: formData.placements,
+                print_price: formData.print_price,
+                image_requirements: {
+                    min_dpi: formData.min_dpi,
+                    max_size_mb: 20
+                }
+            },
+            gender_visibility: [],
+            is_pet: false
+        };
 
         const { error } = await supabase
             .from('products')
             .insert({
                 name: formData.name,
                 description: formData.description,
-                price: parseFloat(formData.price),
                 category_id: formData.category_id,
-                images: formData.images.length > 0 ? formData.images : ['https://placehold.co/600x400/png'],
-
-                // Metadata
-                metadata: {
-                    is_pet: formData.is_pet,
-                    gender: formData.is_pet ? 'unisex' : formData.gender,
-                    gender_visibility: formData.gender_visibility,
-                    product_type: formData.product_type,
-                    fit: formData.fit,
-                    style: formData.style,
-                    primary_color: formData.primary_color,
-                    personalization: formData.personalization
-                }
+                price: formData.base_price,
+                images: formData.images.length > 0 ? formData.images : ['https://placehold.co/600x600/png?text=Base'],
+                metadata: metadata
             });
 
         if (error) {
-            console.error('Error creating product:', error);
-            alert('Failed to create product');
+            alert('Failed to create: ' + error.message);
         } else {
-            router.push('/admin/personalization'); // Redirect to Personalization List
+            router.push('/admin/personalization');
             router.refresh();
         }
-        setLoading(false);
+        setSaving(false);
     };
 
+    const gstAmount = (formData.base_price + formData.print_price) * 0.18;
+    const totalEstimate = formData.base_price + formData.print_price + gstAmount;
+
     return (
-        <div className="max-w-3xl mx-auto pb-20">
-            {/* Header */}
+        <div className="max-w-4xl mx-auto pb-20">
             <div className="mb-6">
-                <Link href="/admin/personalization" className="text-gray-500 hover:text-navy-900 transition-colors flex items-center gap-1 mb-4">
-                    <ArrowLeft size={18} /> Back to Personalization
+                <Link href="/admin/personalization" className="text-gray-500 hover:text-navy-900 flex items-center gap-1 mb-4">
+                    <ArrowLeft size={18} /> Back
                 </Link>
-                <h1 className="text-2xl font-bold text-navy-900">Add New Personalization Base</h1>
+                <h1 className="text-2xl font-bold text-navy-900">Create New Base Product</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                {/* General Info */}
+
+                {/* 1. Base Info */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">General Information</h2>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Product Name *</label>
-                        <input
-                            type="text"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="e.g. Classic White Hoodie (Base)"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
-                        <textarea
-                            rows={4}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="Product description..."
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        />
-                    </div>
-                </div>
-
-                {/* Organization */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Pricing</h2>
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">1. Base Product Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Base Price (₹) *</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Base Name</label>
                             <input
-                                type="number"
-                                min="0" step="0.01"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                                placeholder="0.00"
-                                value={formData.price}
-                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                type="text"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                                placeholder="e.g. Plain Classic Tee"
+                                value={formData.name}
+                                onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 required
                             />
                         </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Organization</h2>
-
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Category *</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Archive Category</label>
                             <select
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
                                 value={formData.category_id}
-                                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                                onChange={e => setFormData({ ...formData, category_id: e.target.value })}
                                 required
                             >
-                                <option value="">Select Category</option>
-                                {categories.map(cat => (
-                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                                ))}
+                                <option value="">Select Internal Category</option>
+                                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
                         </div>
-
-                        {/* Gender Visibility */}
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Gender Visibility</label>
-                            <div className="flex gap-4 flex-wrap">
-                                {['men', 'women', 'unisex', 'kids'].map(g => (
-                                    <label key={g} className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.gender_visibility?.includes(g)}
-                                            onChange={(e) => {
-                                                const current = formData.gender_visibility || [];
-                                                const updated = e.target.checked
-                                                    ? [...current, g]
-                                                    : current.filter(x => x !== g);
-                                                setFormData({ ...formData, gender_visibility: updated });
-                                            }}
-                                            className="rounded border-gray-300 text-navy-900"
-                                        />
-                                        <span className="capitalize">{g}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                {/* Personalization Configuration (New Panel) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                        <h2 className="text-lg font-bold text-gray-900">Personalization Configuration 🎨</h2>
-                        <div className="bg-purple-100 px-3 py-1 rounded-full text-xs font-bold text-purple-700">
-                            Active
-                        </div>
-                    </div>
-
-                    <div className="space-y-6 animate-in fade-in slide-in-from-top-2">
-                        {/* Config Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                            {/* Print Type & Price */}
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Print Type</label>
-                                    <select
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg"
-                                        value={formData.personalization.print_type}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            personalization: { ...formData.personalization, print_type: e.target.value }
-                                        })}
-                                    >
-                                        <option value="DTG">DTG Printing</option>
-                                        <option value="Embroidery">Embroidery</option>
-                                        <option value="Sublimation">Sublimation</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Print Price (₹)</label>
-                                    <input
-                                        type="number"
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg"
-                                        value={formData.personalization.print_price}
-                                        onChange={(e) => setFormData({
-                                            ...formData,
-                                            personalization: { ...formData.personalization, print_price: Number(e.target.value) }
-                                        })}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Placements */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Allowed Placements</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve'].map(placement => (
-                                        <label key={placement} className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.personalization.placements.includes(placement)}
-                                                onChange={(e) => {
-                                                    const current = formData.personalization.placements;
-                                                    const updated = e.target.checked
-                                                        ? [...current, placement]
-                                                        : current.filter(p => p !== placement);
-                                                    setFormData({
-                                                        ...formData,
-                                                        personalization: { ...formData.personalization, placements: updated }
-                                                    });
-                                                }}
-                                                className="rounded border-gray-300 text-navy-900"
-                                            />
-                                            <span className="text-sm">{placement}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {/* Helper Text */}
-                        <div className="bg-gray-50 p-4 rounded-lg text-xs text-gray-500">
-                            <p className="font-bold mb-1">💡 Admin Note:</p>
-                            <p>Ensure you have selected at least one placement and configured pricing.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Media */}
+                {/* 2. Pricing */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Media</h2>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Add Image URL</label>
-                        <div className="flex gap-2">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">2. Pricing Structure</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Base Product Price (₹)</label>
                             <input
-                                type="url"
-                                className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                                placeholder="https://..."
-                                value={imageInput}
-                                onChange={(e) => setImageInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleAddImage();
-                                    }
-                                }}
+                                type="number"
+                                className="w-full px-4 py-2 border border-blue-200 bg-blue-50 rounded-lg font-bold text-blue-900"
+                                value={formData.base_price}
+                                onChange={e => setFormData({ ...formData, base_price: Number(e.target.value) })}
                             />
-                            <button
-                                type="button"
-                                onClick={handleAddImage}
-                                className="px-4 py-2 bg-navy-900 text-white font-bold rounded-lg hover:bg-navy-800 transition-colors"
-                            >
-                                Add
-                            </button>
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">Paste a direct link to an image.</p>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Printing Charge (₹)</label>
+                            <input
+                                type="number"
+                                className="w-full px-4 py-2 border border-green-200 bg-green-50 rounded-lg font-bold text-green-900"
+                                value={formData.print_price}
+                                onChange={e => setFormData({ ...formData, print_price: Number(e.target.value) })}
+                            />
+                        </div>
+                        <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <p className="text-xs text-gray-500 mb-1">Customer Price Check (Approx)</p>
+                            <p className="text-sm">Base: ₹{formData.base_price}</p>
+                            <p className="text-sm">Print: ₹{formData.print_price}</p>
+                            <p className="text-sm text-gray-400">GST (18%): ₹{gstAmount.toFixed(2)}</p>
+                            <p className="font-bold text-navy-900 border-t border-gray-200 mt-1 pt-1">Total: ₹{totalEstimate.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. Configuration */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">3. Personalization Config</h2>
+
+                    {/* Print Types */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Allowed Print Types</label>
+                        <div className="flex gap-4">
+                            {['DTG', 'Embroidery'].map(type => (
+                                <label key={type} className="flex items-center gap-2 cursor-pointer bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 hover:border-navy-900">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.print_types.includes(type)}
+                                        onChange={e => {
+                                            const updated = e.target.checked
+                                                ? [...formData.print_types, type]
+                                                : formData.print_types.filter(t => t !== type);
+                                            setFormData({ ...formData, print_types: updated });
+                                        }}
+                                        className="rounded text-navy-900"
+                                    />
+                                    <span>{type}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
 
-                    {formData.images.length > 0 && (
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                            {formData.images.map((img, idx) => (
-                                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
-                                    <Image
-                                        src={img}
-                                        alt={`Image ${idx + 1}`}
-                                        fill
-                                        className="object-cover"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveImage(idx)}
-                                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <Trash2 size={14} />
+                    {/* Placements */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Print Placements (Zones)</label>
+
+                        {/* List */}
+                        <div className="space-y-2 mb-4">
+                            {formData.placements.map((p, idx) => (
+                                <div key={idx} className="flex items-center gap-4 bg-gray-50 p-2 rounded-lg border border-gray-200">
+                                    <span className="font-bold text-navy-900 w-32">{p.name}</span>
+                                    <span className="text-sm text-gray-500">Max: {p.max_w}" x {p.max_h}"</span>
+                                    <button type="button" onClick={() => handleRemovePlacement(idx)} className="ml-auto text-red-500 hover:bg-red-50 p-1 rounded">
+                                        <Trash2 size={16} />
                                     </button>
-                                    {idx === 0 && (
-                                        <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-bold">MAIN</span>
-                                    )}
                                 </div>
                             ))}
                         </div>
-                    )}
+
+                        {/* Add New */}
+                        <div className="flex gap-2 items-end bg-gray-50 p-3 rounded-lg border border-dashed border-gray-300">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500">Zone Name</label>
+                                <select
+                                    className="w-full p-2 text-sm rounded border border-gray-200"
+                                    value={newPlacement.name}
+                                    onChange={e => setNewPlacement({ ...newPlacement, name: e.target.value })}
+                                >
+                                    {['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve'].map(o => (
+                                        <option key={o} value={o}>{o}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500">Width (in)</label>
+                                <input
+                                    type="number" className="w-20 p-2 text-sm rounded border border-gray-200"
+                                    value={newPlacement.max_w}
+                                    onChange={e => setNewPlacement({ ...newPlacement, max_w: Number(e.target.value) })}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500">Height (in)</label>
+                                <input
+                                    type="number" className="w-20 p-2 text-sm rounded border border-gray-200"
+                                    value={newPlacement.max_h}
+                                    onChange={e => setNewPlacement({ ...newPlacement, max_h: Number(e.target.value) })}
+                                />
+                            </div>
+                            <button type="button" onClick={handleAddPlacement} className="px-3 py-2 bg-navy-900 text-white rounded text-sm font-bold">Add</button>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Footer Actions */}
-                <div className="flex items-center justify-end gap-4 pt-4">
-                    <Link href="/admin/personalization">
-                        <button type="button" className="px-6 py-3 font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-colors">
-                            Cancel
-                        </button>
-                    </Link>
+                {/* 4. Images */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">4. Base Images</h2>
+                    <div className="flex gap-2">
+                        <input
+                            type="url"
+                            className="flex-1 px-4 py-2 border border-gray-200 rounded-lg"
+                            placeholder="Image URL..."
+                            value={imageInput}
+                            onChange={e => setImageInput(e.target.value)}
+                        />
+                        <button type="button" onClick={handleAddImage} className="bg-navy-900 text-white px-4 rounded-lg font-bold">Add</button>
+                    </div>
+                    <div className="grid grid-cols-4 gap-4">
+                        {formData.images.map((img, idx) => (
+                            <div key={idx} className="relative aspect-square border rounded-lg overflow-hidden group">
+                                <Image src={img} alt="Base" fill className="object-cover" />
+                                <button type="button" onClick={() => {
+                                    const newImgs = [...formData.images];
+                                    newImgs.splice(idx, 1);
+                                    setFormData({ ...formData, images: newImgs });
+                                }} className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100">
+                                    <X size={12} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Save */}
+                <div className="flex justify-end pt-6">
                     <button
                         type="submit"
-                        disabled={loading}
-                        className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-3 px-8 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all disabled:opacity-70"
+                        disabled={saving}
+                        className="bg-coral-500 hover:bg-coral-600 text-white font-bold py-3 px-10 rounded-xl shadow-lg shadow-coral-500/20 flex items-center gap-2"
                     >
-                        {loading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
+                        {saving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
                         Save Base Product
                     </button>
                 </div>
+
             </form>
         </div>
     );
