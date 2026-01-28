@@ -44,25 +44,11 @@ export default function EditProductPage() {
         // Recommendation Engine Meta
         is_pet: false,
         gender: 'unisex',
-        gender_visibility: [] as string[], // New: ['men', 'women', 'unisex']
+        gender_visibility: [] as string[],
         product_type: '',
         fit: 'regular',
         style: 'minimal',
-        primary_color: '',
-
-        // Personalization Config
-        personalization: {
-            enabled: false,
-            colors: [] as string[], // Allowed color names
-            sizes: [] as string[], // Allowed sizes
-            placements: [] as string[], // Allowed placements
-            print_type: 'DTG', // DTG or Embroidery
-            print_price: 199,
-            image_requirements: {
-                min_dpi: 300,
-                max_size_mb: 20
-            }
-        }
+        primary_color: ''
     });
 
     const supabase = createBrowserClient(
@@ -125,16 +111,7 @@ export default function EditProductPage() {
             product_type: meta.product_type || '',
             fit: meta.fit || 'regular',
             style: meta.style || 'minimal',
-            primary_color: meta.primary_color || '',
-            personalization: meta.personalization || {
-                enabled: false,
-                colors: [],
-                sizes: [],
-                placements: [],
-                print_type: 'DTG',
-                print_price: 199,
-                image_requirements: { min_dpi: 300, max_size_mb: 20 }
-            }
+            primary_color: meta.primary_color || ''
         });
         setFetching(false);
     };
@@ -203,10 +180,7 @@ export default function EditProductPage() {
             product_type: formData.is_pet ? (formData.product_type || 'pet_accessory') : formData.product_type,
             fit: formData.is_pet ? 'regular' : formData.fit,
             style: formData.is_pet ? 'recreational' : formData.style,
-            primary_color: formData.primary_color,
-
-            // Save Personalization Config
-            personalization: formData.personalization
+            primary_color: formData.primary_color
         };
 
         const { error } = await supabase
@@ -467,7 +441,6 @@ export default function EditProductPage() {
                     </div>
 
                     {/* Classification & Engine Metadata */}
-                    {/* Classification & Engine Metadata */}
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                             <h2 className="text-lg font-bold text-gray-900">Engine Classification</h2>
@@ -660,98 +633,6 @@ export default function EditProductPage() {
                         </div>
                     </div>
 
-
-                    {/* Personalization Configuration (New Panel) */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-                            <h2 className="text-lg font-bold text-gray-900">Personalization Configuration 🎨</h2>
-                            <label className="flex items-center gap-2 cursor-pointer bg-purple-50 px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.personalization.enabled}
-                                    onChange={(e) => setFormData({
-                                        ...formData,
-                                        personalization: { ...formData.personalization, enabled: e.target.checked }
-                                    })}
-                                    className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
-                                />
-                                <span className="text-sm font-bold text-navy-900">Enable Personalization</span>
-                            </label>
-                        </div>
-
-                        {formData.personalization.enabled && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-top-2">
-                                {/* Config Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                                    {/* Print Type & Price */}
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-1">Print Type</label>
-                                            <select
-                                                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
-                                                value={formData.personalization.print_type}
-                                                onChange={(e) => setFormData({
-                                                    ...formData,
-                                                    personalization: { ...formData.personalization, print_type: e.target.value }
-                                                })}
-                                            >
-                                                <option value="DTG">DTG Printing</option>
-                                                <option value="Embroidery">Embroidery</option>
-                                                <option value="Sublimation">Sublimation</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-1">Print Price (₹)</label>
-                                            <input
-                                                type="number"
-                                                className="w-full px-4 py-2 border border-gray-200 rounded-lg"
-                                                value={formData.personalization.print_price}
-                                                onChange={(e) => setFormData({
-                                                    ...formData,
-                                                    personalization: { ...formData.personalization, print_price: Number(e.target.value) }
-                                                })}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Placements */}
-                                    <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Allowed Placements</label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve'].map(placement => (
-                                                <label key={placement} className="flex items-center gap-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={formData.personalization.placements.includes(placement)}
-                                                        onChange={(e) => {
-                                                            const current = formData.personalization.placements;
-                                                            const updated = e.target.checked
-                                                                ? [...current, placement]
-                                                                : current.filter(p => p !== placement);
-                                                            setFormData({
-                                                                ...formData,
-                                                                personalization: { ...formData.personalization, placements: updated }
-                                                            });
-                                                        }}
-                                                        className="rounded border-gray-300 text-navy-900"
-                                                    />
-                                                    <span className="text-sm">{placement}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                {/* Helper Text */}
-                                <div className="bg-gray-50 p-4 rounded-lg text-xs text-gray-500">
-                                    <p className="font-bold mb-1">💡 Admin Note:</p>
-                                    <p>Only enabled options will be visible to the customer. Ensure you have selected at least one placement and configured pricing.</p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </div>
                 <div className="flex items-center justify-end gap-4 pt-4 sticky bottom-0 bg-white/80 backdrop-blur-md p-4 border-t border-gray-100 -mx-4 md:mx-0">
                     <Link href="/admin/products">

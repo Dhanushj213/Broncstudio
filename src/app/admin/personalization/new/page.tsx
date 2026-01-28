@@ -12,7 +12,7 @@ interface Category {
     name: string;
 }
 
-export default function AddProductPage() {
+export default function AddPersonalizedProductPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
@@ -43,7 +43,21 @@ export default function AddProductPage() {
         product_type: '',
         fit: 'regular',
         style: 'minimal',
-        primary_color: ''
+        primary_color: '',
+
+        // Personalization Config - ENABLED BY DEFAULT
+        personalization: {
+            enabled: true,
+            colors: [] as string[],
+            sizes: [] as string[],
+            placements: [] as string[],
+            print_type: 'DTG',
+            print_price: 199,
+            image_requirements: {
+                min_dpi: 300,
+                max_size_mb: 20
+            }
+        }
     });
 
     const [imageInput, setImageInput] = useState('');
@@ -88,19 +102,6 @@ export default function AddProductPage() {
             return;
         }
 
-        // Duplicate Check
-        const { data: existing } = await supabase
-            .from('products')
-            .select('id')
-            .eq('name', formData.name.trim())
-            .single();
-
-        if (existing) {
-            alert('A product with this name already exists! Please use a different name.');
-            setLoading(false);
-            return;
-        }
-
         const { error } = await supabase
             .from('products')
             .insert({
@@ -118,7 +119,8 @@ export default function AddProductPage() {
                     product_type: formData.product_type,
                     fit: formData.fit,
                     style: formData.style,
-                    primary_color: formData.primary_color
+                    primary_color: formData.primary_color,
+                    personalization: formData.personalization
                 }
             });
 
@@ -126,7 +128,7 @@ export default function AddProductPage() {
             console.error('Error creating product:', error);
             alert('Failed to create product');
         } else {
-            router.push('/admin/products');
+            router.push('/admin/personalization'); // Redirect to Personalization List
             router.refresh();
         }
         setLoading(false);
@@ -136,10 +138,10 @@ export default function AddProductPage() {
         <div className="max-w-3xl mx-auto pb-20">
             {/* Header */}
             <div className="mb-6">
-                <Link href="/admin/products" className="text-gray-500 hover:text-navy-900 transition-colors flex items-center gap-1 mb-4">
-                    <ArrowLeft size={18} /> Back to Products
+                <Link href="/admin/personalization" className="text-gray-500 hover:text-navy-900 transition-colors flex items-center gap-1 mb-4">
+                    <ArrowLeft size={18} /> Back to Personalization
                 </Link>
-                <h1 className="text-2xl font-bold text-navy-900">Add New Product</h1>
+                <h1 className="text-2xl font-bold text-navy-900">Add New Personalization Base</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
@@ -152,7 +154,7 @@ export default function AddProductPage() {
                         <input
                             type="text"
                             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="e.g. Vintage Leather Jacket"
+                            placeholder="e.g. Classic White Hoodie (Base)"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             required
@@ -176,7 +178,7 @@ export default function AddProductPage() {
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                         <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Pricing</h2>
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹) *</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Base Price (₹) *</label>
                             <input
                                 type="number"
                                 min="0" step="0.01"
@@ -230,19 +232,87 @@ export default function AddProductPage() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        {/* Product Type */}
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Product Type</label>
-                            <input
-                                type="text"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                                placeholder="e.g. Classic T-Shirt"
-                                value={formData.product_type}
-                                onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
-                            />
+                {/* Personalization Configuration (New Panel) */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                        <h2 className="text-lg font-bold text-gray-900">Personalization Configuration 🎨</h2>
+                        <div className="bg-purple-100 px-3 py-1 rounded-full text-xs font-bold text-purple-700">
+                            Active
+                        </div>
+                    </div>
+
+                    <div className="space-y-6 animate-in fade-in slide-in-from-top-2">
+                        {/* Config Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            {/* Print Type & Price */}
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Print Type</label>
+                                    <select
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                                        value={formData.personalization.print_type}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            personalization: { ...formData.personalization, print_type: e.target.value }
+                                        })}
+                                    >
+                                        <option value="DTG">DTG Printing</option>
+                                        <option value="Embroidery">Embroidery</option>
+                                        <option value="Sublimation">Sublimation</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Print Price (₹)</label>
+                                    <input
+                                        type="number"
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                                        value={formData.personalization.print_price}
+                                        onChange={(e) => setFormData({
+                                            ...formData,
+                                            personalization: { ...formData.personalization, print_price: Number(e.target.value) }
+                                        })}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Placements */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Allowed Placements</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve'].map(placement => (
+                                        <label key={placement} className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.personalization.placements.includes(placement)}
+                                                onChange={(e) => {
+                                                    const current = formData.personalization.placements;
+                                                    const updated = e.target.checked
+                                                        ? [...current, placement]
+                                                        : current.filter(p => p !== placement);
+                                                    setFormData({
+                                                        ...formData,
+                                                        personalization: { ...formData.personalization, placements: updated }
+                                                    });
+                                                }}
+                                                className="rounded border-gray-300 text-navy-900"
+                                            />
+                                            <span className="text-sm">{placement}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
                         </div>
 
+                        {/* Helper Text */}
+                        <div className="bg-gray-50 p-4 rounded-lg text-xs text-gray-500">
+                            <p className="font-bold mb-1">💡 Admin Note:</p>
+                            <p>Ensure you have selected at least one placement and configured pricing.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -304,7 +374,7 @@ export default function AddProductPage() {
 
                 {/* Footer Actions */}
                 <div className="flex items-center justify-end gap-4 pt-4">
-                    <Link href="/admin/products">
+                    <Link href="/admin/personalization">
                         <button type="button" className="px-6 py-3 font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-colors">
                             Cancel
                         </button>
@@ -315,7 +385,7 @@ export default function AddProductPage() {
                         className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-3 px-8 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all disabled:opacity-70"
                     >
                         {loading ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
-                        Create Product
+                        Save Base Product
                     </button>
                 </div>
             </form>

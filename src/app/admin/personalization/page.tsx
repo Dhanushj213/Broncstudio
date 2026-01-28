@@ -91,7 +91,7 @@ export default function AdminPersonalizationPage() {
                   Option 2: Special 'Add Personalizable' that auto-enables?
                   Let's just link to standard Add for now, but maybe with a clear UI hint.
                 */}
-                <Link href="/admin/products/new">
+                <Link href="/admin/personalization/new">
                     <button className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all">
                         <Plus size={20} />
                         Add New Base
@@ -183,7 +183,7 @@ export default function AdminPersonalizationPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 {/* Re-use standard edit page for now since it supports everything */}
-                                                <Link href={`/admin/products/${product.id}`}>
+                                                <Link href={`/admin/personalization/${product.id}`}>
                                                     <button className="p-2 hover:bg-blue-50 text-gray-400 hover:text-blue-600 rounded-lg transition-colors">
                                                         <Edit size={18} />
                                                     </button>
