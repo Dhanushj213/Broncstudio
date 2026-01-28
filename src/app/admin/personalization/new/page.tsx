@@ -142,12 +142,44 @@ export default function AddPersonalizationProductPage() {
             return;
         }
 
-        // Insert
+        // Taxonomy Sync: Ensure Category exists
+        let resolvedCategoryId = formData.category_id;
+
+        // If not manually selected, try to find a category matching the Group (e.g. 'Clothing')
+        if (!resolvedCategoryId) {
+            const { data: existing } = await supabase.from('categories')
+                .select('id')
+                .ilike('name', formData.category_group)
+                .maybeSingle();
+
+            if (existing) {
+                resolvedCategoryId = existing.id;
+            } else {
+                // Auto-create category for the new taxonomy
+                const slug = formData.category_group.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                const { data: newCat, error: catError } = await supabase.from('categories').insert({
+                    name: formData.category_group,
+                    slug: slug,
+                    description: `All ${formData.category_group} products`,
+                    image: 'https://placehold.co/500x500/png?text=' + formData.category_group
+                }).select().single();
+
+                if (catError) {
+                    console.error('Category Auto-Create Error:', catError);
+                    alert('Failed to initialize category: ' + catError.message);
+                    setLoading(false);
+                    return;
+                }
+                resolvedCategoryId = newCat.id;
+            }
+        }
+
+        // Insert Product
         const { error } = await supabase.from('products').insert({
             name: name, // Internal Name
             description: formData.description,
             price: parseFloat(price),
-            category_id: formData.category_id || categories[0]?.id || 'd00d00d0-00d0-00d0-00d0-000000000000', // Use selected or fallback to first valid
+            category_id: resolvedCategoryId,
             images: images.length > 0 ? images : ['https://placehold.co/600x600/png?text=Base'],
             metadata: {
                 type: 'personalization_base',
@@ -158,8 +190,11 @@ export default function AddPersonalizationProductPage() {
         });
 
         if (error) {
-            console.error(error);
-            alert('Failed to create base product: ' + error.message);
+            console.error('Insert Error:', JSON.stringify(error, null, 2));
+            console.log('Payload:', {
+                name, price, personalization // partial log
+            });
+            alert('Failed to create base product: ' + (error.message || JSON.stringify(error)));
         } else {
             router.push('/admin/personalization');
             router.refresh();
