@@ -157,7 +157,8 @@ export default function PersonalisePage() {
     };
 
     const finalPrice = calculatePrice();
-    const canAddToCart = selectedProduct && size && placement && printType;
+    const hasSizes = (selectedProduct?.metadata.personalization.sizes?.length || 0) > 0;
+    const canAddToCart = selectedProduct && (!hasSizes || size) && placement && printType;
 
     const handleAddToCart = () => {
         if (!canAddToCart) return;
