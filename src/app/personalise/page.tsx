@@ -85,7 +85,7 @@ export default function PersonalisePage() {
                         // We do NOT strictly check if the type is listed in the taxonomy for *that specific* subcategory if it's a cross-listed unisex item?
                         // Actually, let's rely on the gender_supported flag as the primary truth for "Visibility" as per request.
 
-                        return pGenders.includes(targetGender);
+                        return pGenders.includes(targetGender as any);
                     } else {
                         // Direct types (Non-Clothing)
                         // @ts-ignore
