@@ -6,6 +6,7 @@ import { Loader2, Upload, ShoppingBag, ArrowRight, ArrowLeft, Check, X, ShieldCh
 import Image from 'next/image';
 import { PERSONALIZATION_TAXONOMY, PrintTypeConfig, PlacementConfig, PersonalizationConfig } from '@/lib/personalization';
 import { toast } from 'sonner';
+import { useCart } from '@/context/CartContext';
 
 // ----------------------------------------------------------------------
 // TYPES
@@ -26,6 +27,7 @@ interface BaseProduct {
 // MAIN PAGE
 // ----------------------------------------------------------------------
 export default function PersonalisePage() {
+    const { addToCart } = useCart();
     // State: Selection
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
@@ -160,13 +162,9 @@ export default function PersonalisePage() {
     const handleAddToCart = () => {
         if (!canAddToCart) return;
 
-        // In a real implementation: Add to Cart Context / Database
-        // We'll mock it for now or assume a store hook exists
-        toast.success("Product has been successfully added to cart");
-
-        // Use a hidden console log to verify metadata structure for development
-        console.log('Adding to cart:', {
-            productId: selectedProduct.id,
+        addToCart({
+            ...selectedProduct,
+            price: finalPrice, // Override base price with calculated price
             metadata: {
                 is_custom: true,
                 size,
@@ -175,7 +173,10 @@ export default function PersonalisePage() {
                 image_url: uploadedImage,
                 note
             }
-        });
+        }, size);
+
+        toast.success("Added to cart!");
+        // Reset or redirect? For now, we keep them there to maybe add another.
     };
 
     // Derived Lists

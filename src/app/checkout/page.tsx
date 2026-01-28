@@ -46,6 +46,7 @@ export default function CheckoutPage() {
 
         try {
             // Map Cart Items to fit Server Action interface
+            // Map Cart Items to fit Server Action interface
             const orderItems = items.map(i => ({
                 id: i.id,
                 productId: i.productId,
@@ -53,7 +54,8 @@ export default function CheckoutPage() {
                 price: i.price,
                 qty: i.qty,
                 size: i.size,
-                image: i.image
+                image: i.image,
+                metadata: i.metadata
             }));
 
             // Call Server Action

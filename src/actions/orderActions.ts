@@ -11,6 +11,7 @@ interface CartItem {
     qty: number;
     size?: string;
     image: string;
+    metadata?: any;
 }
 
 interface ShippingAddress {
@@ -71,7 +72,8 @@ export async function createOrder(items: CartItem[], address: ShippingAddress, t
         quantity: item.qty,
         price: item.price,
         size: item.size,
-        image_url: item.image
+        image_url: item.image,
+        metadata: item.metadata // Pass metadata
     }));
 
     const { error: itemsError } = await supabase
