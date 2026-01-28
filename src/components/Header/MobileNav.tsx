@@ -1,17 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Home, Grid, Search, Heart, ShoppingCart } from 'lucide-react';
+import { Home, Grid, Search, Gift, PenTool } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
 import { useUI } from '@/context/UIContext';
 import { motion } from 'framer-motion';
 
 const MobileNav = () => {
     const pathname = usePathname();
-    const { openSearch, toggleWishlist } = useUI();
-    const { cartCount } = useCart();
+    const { openSearch } = useUI();
 
     const isActive = (path: string) => pathname === path;
 
@@ -19,8 +17,8 @@ const MobileNav = () => {
         { name: 'Home', path: '/', icon: Home, type: 'link' },
         { name: 'Worlds', path: '/worlds', icon: Grid, type: 'link' },
         { name: 'Search', action: openSearch, icon: Search, type: 'button' },
-        { name: 'Saved', action: toggleWishlist, icon: Heart, type: 'button' },
-        { name: 'Bag', path: '/cart', icon: ShoppingCart, type: 'link', badge: cartCount },
+        { name: 'Gifting', path: '/gift-finder', icon: Gift, type: 'link' },
+        { name: 'Customize', path: '/customize', icon: PenTool, type: 'link' },
     ];
 
     return (
@@ -57,11 +55,7 @@ const MobileNav = () => {
                                         : 'text-gray-400'
                                         }`}
                                 />
-                                {(item.badge || 0) > 0 && (
-                                    <span className="absolute -top-2 -right-2 w-4 h-4 bg-coral-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold border-2 border-[#0B1220]">
-                                        {item.badge}
-                                    </span>
-                                )}
+
                             </div>
                         </div>
                     );

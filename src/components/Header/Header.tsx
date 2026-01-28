@@ -80,7 +80,7 @@ export default function Header() {
                         <button onClick={openSearch} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
                             <Search size={24} strokeWidth={1.5} />
                         </button>
-                        <button onClick={toggleWishlist} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
+                        <button onClick={toggleWishlist} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors">
                             <Heart size={24} strokeWidth={1.5} />
                         </button>
                         <Link href={currentUser ? '/profile' : '/login'} className="hover:text-coral-500 dark:hover:text-coral-400 transition-colors hidden md:block">
