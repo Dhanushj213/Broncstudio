@@ -21,9 +21,45 @@ export default function AddProductPage() {
         name: '',
         description: '',
         price: '',
+        compare_at_price: '',
         category_id: '',
-        images: [] as string[]
+        images: [] as string[],
+        is_featured: false,
+        tags: '',
+
+        // Dynamic Fields
+        stock_status: 'in_stock',
+        colors: [] as { name: string; code: string }[],
+        sizes: '',
+        highlights: '',
+        material_care: '',
+        shipping_returns: '',
+        size_guide: '',
+
+        // Recommendation Engine Meta
+        is_pet: false,
+        gender: 'unisex',
+        gender_visibility: ['unisex'] as string[],
+        product_type: '',
+        fit: 'regular',
+        style: 'minimal',
+        primary_color: '',
+
+        // Personalization Config
+        personalization: {
+            enabled: false,
+            colors: [] as string[],
+            sizes: [] as string[],
+            placements: [] as string[],
+            print_type: 'DTG',
+            print_price: 199,
+            image_requirements: {
+                min_dpi: 300,
+                max_size_mb: 20
+            }
+        }
     });
+
     const [imageInput, setImageInput] = useState('');
 
     const supabase = createBrowserClient(
@@ -86,7 +122,19 @@ export default function AddProductPage() {
                 description: formData.description,
                 price: parseFloat(formData.price),
                 category_id: formData.category_id,
-                images: formData.images.length > 0 ? formData.images : ['https://placehold.co/600x400/png']
+                images: formData.images.length > 0 ? formData.images : ['https://placehold.co/600x400/png'],
+
+                // Metadata
+                metadata: {
+                    is_pet: formData.is_pet,
+                    gender: formData.is_pet ? 'unisex' : formData.gender,
+                    gender_visibility: formData.gender_visibility,
+                    product_type: formData.product_type,
+                    fit: formData.fit,
+                    style: formData.style,
+                    primary_color: formData.primary_color,
+                    personalization: formData.personalization
+                }
             });
 
         if (error) {
@@ -138,7 +186,7 @@ export default function AddProductPage() {
                     </div>
                 </div>
 
-                {/* Pricing & Category */}
+                {/* Organization */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                         <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Pricing</h2>
@@ -158,6 +206,7 @@ export default function AddProductPage() {
 
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                         <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Organization</h2>
+
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Category *</label>
                             <select
@@ -172,7 +221,136 @@ export default function AddProductPage() {
                                 ))}
                             </select>
                         </div>
+
+                        {/* Gender Visibility */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Gender Visibility</label>
+                            <div className="flex gap-4 flex-wrap">
+                                {['men', 'women', 'unisex', 'kids'].map(g => (
+                                    <label key={g} className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.gender_visibility?.includes(g)}
+                                            onChange={(e) => {
+                                                const current = formData.gender_visibility || [];
+                                                const updated = e.target.checked
+                                                    ? [...current, g]
+                                                    : current.filter(x => x !== g);
+                                                setFormData({ ...formData, gender_visibility: updated });
+                                            }}
+                                            className="rounded border-gray-300 text-navy-900"
+                                        />
+                                        <span className="capitalize">{g}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Product Type */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Product Type</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="e.g. Classic T-Shirt"
+                                value={formData.product_type}
+                                onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
+                            />
+                        </div>
+
                     </div>
+                </div>
+
+                {/* Personalization Configuration (New Panel) */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                        <h2 className="text-lg font-bold text-gray-900">Personalization Configuration 🎨</h2>
+                        <label className="flex items-center gap-2 cursor-pointer bg-purple-50 px-3 py-1.5 rounded-lg hover:bg-purple-100 transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={formData.personalization.enabled}
+                                onChange={(e) => setFormData({
+                                    ...formData,
+                                    personalization: { ...formData.personalization, enabled: e.target.checked }
+                                })}
+                                className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                            />
+                            <span className="text-sm font-bold text-navy-900">Enable Personalization</span>
+                        </label>
+                    </div>
+
+                    {formData.personalization.enabled && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-top-2">
+                            {/* Config Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                {/* Print Type & Price */}
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Print Type</label>
+                                        <select
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                                            value={formData.personalization.print_type}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                personalization: { ...formData.personalization, print_type: e.target.value }
+                                            })}
+                                        >
+                                            <option value="DTG">DTG Printing</option>
+                                            <option value="Embroidery">Embroidery</option>
+                                            <option value="Sublimation">Sublimation</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Print Price (₹)</label>
+                                        <input
+                                            type="number"
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                                            value={formData.personalization.print_price}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                personalization: { ...formData.personalization, print_price: Number(e.target.value) }
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Placements */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Allowed Placements</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve'].map(placement => (
+                                            <label key={placement} className="flex items-center gap-2">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.personalization.placements.includes(placement)}
+                                                    onChange={(e) => {
+                                                        const current = formData.personalization.placements;
+                                                        const updated = e.target.checked
+                                                            ? [...current, placement]
+                                                            : current.filter(p => p !== placement);
+                                                        setFormData({
+                                                            ...formData,
+                                                            personalization: { ...formData.personalization, placements: updated }
+                                                        });
+                                                    }}
+                                                    className="rounded border-gray-300 text-navy-900"
+                                                />
+                                                <span className="text-sm">{placement}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {/* Helper Text */}
+                            <div className="bg-gray-50 p-4 rounded-lg text-xs text-gray-500">
+                                <p className="font-bold mb-1">💡 Admin Note:</p>
+                                <p>Only enabled options will be visible to the customer. Ensure you have selected at least one placement and configured pricing.</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Media */}
@@ -220,7 +398,7 @@ export default function AddProductPage() {
                                         onClick={() => handleRemoveImage(idx)}
                                         className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
-                                        <Trash2 size={14} /> {/* Error: Trash2 import might be missing? No, I checked imports in step 2937, it was missing Trash2 */}
+                                        <Trash2 size={14} />
                                     </button>
                                     {idx === 0 && (
                                         <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded font-bold">MAIN</span>
