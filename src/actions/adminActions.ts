@@ -60,14 +60,56 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         }
     );
 
-    const { error } = await supabaseAdmin
+    const { error: updateError } = await supabaseAdmin
         .from('orders')
         .update({ status: newStatus })
         .eq('id', orderId);
 
-    if (error) {
-        console.error("Admin Action Error:", error);
-        return { success: false, error: 'Database Update Failed: ' + error.message };
+    if (updateError) {
+        console.error("Admin Action Error:", updateError);
+        return { success: false, error: 'Database Update Failed: ' + updateError.message };
+    }
+
+    // Auto-Cleanup: Delete personalization images if Order is Finished/Cancelled
+    if (newStatus === 'delivered' || newStatus === 'cancelled') {
+        const { data: items } = await supabaseAdmin
+            .from('order_items')
+            .select('metadata')
+            .eq('order_id', orderId);
+
+        if (items && items.length > 0) {
+            const BUCKET_NAME = 'personalization-uploads';
+            const pathsToDelete: string[] = [];
+
+            items.forEach(item => {
+                // The custom image is stored in metadata.image_url
+                const url = item.metadata?.image_url;
+                if (url && typeof url === 'string' && url.includes(`/${BUCKET_NAME}/`)) {
+                    // Extract relative path from URL
+                    // URL Format: .../storage/v1/object/public/personalization-uploads/folder/filename.png
+                    // Split by bucket name to be safe
+                    const parts = url.split(`/${BUCKET_NAME}/`);
+                    if (parts.length === 2) {
+                        const filePath = decodeURIComponent(parts[1]); // Ensure spaces/special chars are handled
+                        pathsToDelete.push(filePath);
+                    }
+                }
+            });
+
+            if (pathsToDelete.length > 0) {
+                console.log(`[Admin] Cleanup: Deleting ${pathsToDelete.length} images for order ${orderId}`);
+                const { error: storageError } = await supabaseAdmin
+                    .storage
+                    .from(BUCKET_NAME)
+                    .remove(pathsToDelete);
+
+                if (storageError) {
+                    console.error("[Admin] Image Cleanup Failed:", storageError);
+                } else {
+                    console.log("[Admin] Image Cleanup Success");
+                }
+            }
+        }
     }
 
     return { success: true };
