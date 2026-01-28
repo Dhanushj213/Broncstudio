@@ -36,8 +36,9 @@ export default function AddPersonalizationProductPage() {
     const [sections, setSections] = useState({
         identity: true,
         customization: true,
-        printing: true,
         pricing: true
+    });
+
     useEffect(() => {
         const fetchResources = async () => {
             // Fetch Categories
@@ -53,8 +54,6 @@ export default function AddPersonalizationProductPage() {
     const toggleSection = (key: keyof typeof sections) => setSections(prev => ({ ...prev, [key]: !prev[key] }));
 
     const [formData, setFormData] = useState({
-        name: '', // Internal Admin Name
-        product_type: 'T-Shirt',
         name: '', // Internal Admin Name
         product_type: 'T-Shirt',
         description: '', // Optional
