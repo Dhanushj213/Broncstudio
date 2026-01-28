@@ -12,7 +12,7 @@ interface StickyActionBarProps {
 
 export default function StickyActionBar({ price, originalPrice, onAddToCart, onBuyNow }: StickyActionBarProps) {
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[50] bg-white border-t border-gray-100 p-4 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center gap-3">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[1001] bg-white border-t border-gray-100 p-4 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)] flex items-center gap-3">
             <div className="flex flex-col">
                 <span className="text-xs text-gray-500 font-bold uppercase">Total</span>
                 <div className="flex items-center gap-1">
