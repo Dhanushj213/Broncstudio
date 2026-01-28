@@ -14,6 +14,9 @@ interface Product {
     images: string[];
     description: string;
     created_at: string;
+    metadata?: {
+        stock_status?: string;
+    };
 }
 
 export default function AdminProductsPage() {
@@ -153,7 +156,13 @@ export default function AdminProductsPage() {
                                             ₹{product.price}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
-                                            <span className="text-green-600 font-medium">In Stock</span>
+                                            {product.metadata?.stock_status === 'out_of_stock' ? (
+                                                <span className="text-red-500 font-bold bg-red-50 px-2 py-1 rounded text-xs">Out of Stock</span>
+                                            ) : product.metadata?.stock_status === 'low_stock' ? (
+                                                <span className="text-orange-500 font-bold bg-orange-50 px-2 py-1 rounded text-xs">Low Stock</span>
+                                            ) : (
+                                                <span className="text-green-600 font-bold bg-green-50 px-2 py-1 rounded text-xs">In Stock</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">

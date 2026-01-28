@@ -3,8 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
 
+// Fix for ESM __dirname
+const __dirname = path.resolve();
+
 // Load env from root
-dotenv.config({ path: path.resolve(__dirname, '../../.env.local') });
+dotenv.config({ path: path.join(__dirname, '.env.local') });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!; // Using Anon key for simplicity as RLS allows write (or use Service Role if needed)
@@ -17,18 +20,34 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function removeDuplicates() {
     console.log('🔍 Checking for duplicate products...');
 
-    // 1. Fetch all products
-    const { data: products, error } = await supabase
-        .from('products')
-        .select('id, name, created_at')
-        .order('created_at', { ascending: false }); // Newest first
 
-    if (error) {
-        console.error('Error fetching products:', error);
-        return;
+    // 1. Fetch all products with pagination
+    let allProducts: any[] = [];
+    let page = 0;
+    const pageSize = 1000;
+
+    while (true) {
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('id, name, created_at')
+            .order('created_at', { ascending: false })
+            .range(page * pageSize, (page + 1) * pageSize - 1);
+
+        if (error) {
+            console.error('Error fetching products:', error);
+            break;
+        }
+
+        if (!products || products.length === 0) break;
+
+        allProducts = [...allProducts, ...products];
+        console.log(`Fetched ${products.length} products (Total: ${allProducts.length})...`);
+
+        if (products.length < pageSize) break;
+        page++;
     }
 
-    if (!products || products.length === 0) {
+    if (allProducts.length === 0) {
         console.log('No products found.');
         return;
     }
@@ -36,7 +55,7 @@ async function removeDuplicates() {
     const nameMap = new Map<string, any[]>();
 
     // 2. Group by Name
-    products.forEach(p => {
+    allProducts.forEach(p => {
         const name = p.name.trim(); // Normalize
         if (!nameMap.has(name)) {
             nameMap.set(name, []);

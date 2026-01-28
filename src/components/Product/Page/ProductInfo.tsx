@@ -18,16 +18,13 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const sizes = meta.sizes || []; // Array of strings
     const highlights = meta.highlights || []; // Array of strings
 
-    const [selectedSize, setSelectedSize] = useState(sizes[0] || '');
-    const [selectedColor, setSelectedColor] = useState(colors[0]?.name || '');
 
-    // Reset selection if product changes (optional, but good practice)
-    React.useEffect(() => {
-        if (sizes.length > 0) setSelectedSize(sizes[0]);
-        if (colors.length > 0) setSelectedColor(colors[0].name);
-    }, [product]);
+    const stockStatus = meta.stock_status || 'in_stock'; // in_stock, out_of_stock, low_stock
+    const isOutOfStock = stockStatus === 'out_of_stock';
+    const isLowStock = stockStatus === 'low_stock';
 
     const handleAddToCart = () => {
+        if (isOutOfStock) return;
         if (sizes.length > 0 && !selectedSize) {
             alert('Please select a size');
             return;
@@ -53,6 +50,12 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                     {meta.is_featured && (
                         <span className="ml-2 bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Featured</span>
                     )}
+                    {isLowStock && (
+                        <span className="ml-2 bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Only Few Left!</span>
+                    )}
+                    {isOutOfStock && (
+                        <span className="ml-2 bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Out of Stock</span>
+                    )}
                 </div>
 
                 <div className="flex items-baseline gap-3">
@@ -72,63 +75,75 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             <div className="h-px bg-gray-100" />
 
             {/* Variants */}
-            <div className="space-y-6">
-                {/* Colors */}
-                {colors.length > 0 && (
-                    <div>
-                        <span className="text-sm font-bold text-navy-900 block mb-3">Select Color: <span className="text-gray-500 font-normal">{selectedColor}</span></span>
-                        <div className="flex gap-3">
-                            {colors.map((color: any) => (
-                                <button
-                                    key={color.name}
-                                    onClick={() => setSelectedColor(color.name)}
-                                    className={`w-10 h-10 rounded-full border-2 p-1 transition-all ${selectedColor === color.name ? 'border-navy-900' : 'border-transparent hover:border-gray-200'}`}
-                                    title={color.name}
-                                >
-                                    <div className="w-full h-full rounded-full shadow-sm" style={{ backgroundColor: color.code }} />
-                                </button>
-                            ))}
+            {!isOutOfStock && (
+                <div className="space-y-6">
+                    {/* Colors */}
+                    {colors.length > 0 && (
+                        <div>
+                            <span className="text-sm font-bold text-navy-900 block mb-3">Select Color: <span className="text-gray-500 font-normal">{selectedColor}</span></span>
+                            <div className="flex gap-3">
+                                {colors.map((color: any) => (
+                                    <button
+                                        key={color.name}
+                                        onClick={() => setSelectedColor(color.name)}
+                                        className={`w-10 h-10 rounded-full border-2 p-1 transition-all ${selectedColor === color.name ? 'border-navy-900' : 'border-transparent hover:border-gray-200'}`}
+                                        title={color.name}
+                                    >
+                                        <div className="w-full h-full rounded-full shadow-sm" style={{ backgroundColor: color.code }} />
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* Sizes */}
-                {sizes.length > 0 && (
-                    <div>
-                        <div className="flex justify-between items-center mb-3">
-                            <span className="text-sm font-bold text-navy-900">Select Size</span>
-                            <button className="text-xs text-coral-500 font-bold flex items-center gap-1 hover:underline">
-                                <Ruler size={14} /> Size Guide
-                            </button>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {sizes.map((size: string) => (
-                                <button
-                                    key={size}
-                                    onClick={() => setSelectedSize(size)}
-                                    className={`min-w-[4rem] px-3 py-2.5 rounded-xl border text-sm font-bold transition-all ${selectedSize === size
-                                        ? 'bg-navy-900 border-navy-900 text-white shadow-lg shadow-navy-900/20'
-                                        : 'bg-white border-gray-200 text-navy-900 hover:border-navy-900 hover:bg-navy-50'
-                                        }`}
-                                >
-                                    {size}
+                    {/* Sizes */}
+                    {sizes.length > 0 && (
+                        <div>
+                            <div className="flex justify-between items-center mb-3">
+                                <span className="text-sm font-bold text-navy-900">Select Size</span>
+                                <button className="text-xs text-coral-500 font-bold flex items-center gap-1 hover:underline">
+                                    <Ruler size={14} /> Size Guide
                                 </button>
-                            ))}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {sizes.map((size: string) => (
+                                    <button
+                                        key={size}
+                                        onClick={() => setSelectedSize(size)}
+                                        className={`min-w-[4rem] px-3 py-2.5 rounded-xl border text-sm font-bold transition-all ${selectedSize === size
+                                            ? 'bg-navy-900 border-navy-900 text-white shadow-lg shadow-navy-900/20'
+                                            : 'bg-white border-gray-200 text-navy-900 hover:border-navy-900 hover:bg-navy-50'
+                                            }`}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
 
             {/* Actions (Desktop) */}
             <div className="hidden md:flex gap-4 mt-4">
                 <button
                     onClick={handleAddToCart}
-                    className="flex-1 py-4 border-2 border-navy-900 bg-white text-navy-900 font-bold rounded-xl hover:bg-navy-50 transition-colors flex items-center justify-center gap-2"
+                    disabled={isOutOfStock}
+                    className={`flex-1 py-4 border-2 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 ${isOutOfStock
+                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'border-navy-900 bg-white text-navy-900 hover:bg-navy-50'
+                        }`}
                 >
-                    <ShoppingBag size={20} /> Add to Cart
+                    <ShoppingBag size={20} /> {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </button>
-                <button className="flex-1 py-4 bg-navy-900 text-white font-bold rounded-xl hover:bg-coral-500 transition-colors shadow-xl shadow-navy-900/20 flex items-center justify-center gap-2">
-                    <Zap size={20} /> Buy Now
+                <button
+                    disabled={isOutOfStock}
+                    className={`flex-1 py-4 font-bold rounded-xl transition-colors shadow-xl flex items-center justify-center gap-2 ${isOutOfStock
+                        ? 'bg-gray-300 text-white cursor-not-allowed shadow-none'
+                        : 'bg-navy-900 text-white hover:bg-coral-500 shadow-navy-900/20'
+                        }`}
+                >
+                    <Zap size={20} /> {isOutOfStock ? 'Sold Out' : 'Buy Now'}
                 </button>
             </div>
 

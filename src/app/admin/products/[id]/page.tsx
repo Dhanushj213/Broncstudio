@@ -29,8 +29,10 @@ export default function EditProductPage() {
         category_id: '',
         image_url: '',
         is_featured: false,
+
         tags: '',
         // Dynamic Fields
+        stock_status: 'in_stock',
         colors: [] as { name: string; code: string }[],
         sizes: '',
         highlights: '',
@@ -84,6 +86,7 @@ export default function EditProductPage() {
             is_featured: meta.is_featured || false,
             tags: meta.tags?.join(', ') || '',
             // Load Dynamic Fields
+            stock_status: meta.stock_status || 'in_stock',
             colors: meta.colors || [],
             sizes: meta.sizes?.join(', ') || '',
             highlights: meta.highlights?.join('\n') || '',
@@ -128,6 +131,7 @@ export default function EditProductPage() {
             is_featured: formData.is_featured,
             tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
             // Save Dynamic Fields
+            stock_status: formData.stock_status,
             colors: formData.colors,
             sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
             highlights: formData.highlights.split('\n').filter(Boolean),
@@ -376,6 +380,19 @@ export default function EditProductPage() {
                                 {categories.map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
+                            </select>
+                        </div>
+                        {/* Status Field */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Availability</label>
+                            <select
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                value={formData.stock_status}
+                                onChange={(e) => setFormData({ ...formData, stock_status: e.target.value })}
+                            >
+                                <option value="in_stock">In Stock</option>
+                                <option value="low_stock">Only Few Left (Low Stock)</option>
+                                <option value="out_of_stock">Out of Stock</option>
                             </select>
                         </div>
                     </div>
