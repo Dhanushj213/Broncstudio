@@ -3,8 +3,7 @@ insert into storage.buckets (id, name, public)
 values ('personalization-uploads', 'personalization-uploads', true)
 on conflict (id) do nothing;
 
--- Enable RLS
-alter table storage.objects enable row level security;
+
 
 -- Policy: Allow public uploads (for customers to upload designs)
 drop policy if exists "Public Uploads" on storage.objects;
