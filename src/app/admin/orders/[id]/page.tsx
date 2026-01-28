@@ -5,6 +5,7 @@ import { createBrowserClient } from '@supabase/ssr';
 import { ArrowLeft, CheckCircle, XCircle, Truck, Package, CreditCard, User, MapPin, Clock } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { updateOrderStatus } from '@/actions/adminActions';
 
 interface OrderItem {
     id: string;
@@ -81,19 +82,15 @@ export default function OrderDetailPage() {
         if (!order) return;
         if (!confirm(`Are you sure you want to mark this order as ${newStatus}?`)) return;
 
-        setActionLoading(true);
-        const { error } = await supabase
-            .from('orders')
-            .update({ status: newStatus })
-            .eq('id', order.id);
+        const { success, error } = await updateOrderStatus(order.id, newStatus);
 
-        if (error) {
-            alert('Failed to update status');
-            console.error(error);
+        if (!success) {
+            alert('Failed to update status: ' + error);
         } else {
             // Refresh local state
             setOrder({ ...order, status: newStatus });
             alert(`Order ${newStatus} successfully!`);
+            router.refresh(); // Refresh server state
         }
         setActionLoading(false);
     };
