@@ -122,7 +122,25 @@ function ProductSelector({ onSelect }: { onSelect: (p: BaseProduct) => void }) {
 // COMPONENT: BUILDER WIZARD
 // ----------------------------------------------------------------------
 function PersonalizationBuilder({ product, onBack }: { product: BaseProduct; onBack: () => void }) {
-    const { personalization: config } = product.metadata;
+    // Normalization Helper for Backwards Compatibility
+    const normalizeConfig = (rawConfig: any): PersonalizationConfig => {
+        const config = { ...rawConfig };
+
+        // Migrate Print Types (Array -> Record)
+        if (Array.isArray(config.print_types)) {
+            const newTypes: Record<string, PrintTypeConfig> = {};
+            config.print_types.forEach((t: string) => {
+                // Default legacy types to enabled with standard price if not present
+                newTypes[t] = { enabled: true, price: 50 };
+            });
+            config.print_types = newTypes;
+        }
+
+        // Migrate Placements if needed (though admin handles this, read-only might need safety) //
+        return config;
+    };
+
+    const config = normalizeConfig(product.metadata.personalization);
 
     // Derived Data
     const enabledPlacements = Object.entries(config.placements || {})
