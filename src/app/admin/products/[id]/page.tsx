@@ -29,7 +29,14 @@ export default function EditProductPage() {
         category_id: '',
         image_url: '',
         is_featured: false,
-        tags: ''
+        tags: '',
+        // Dynamic Fields
+        colors: [] as { name: string; code: string }[],
+        sizes: '',
+        highlights: '',
+        material_care: '',
+        shipping_returns: '',
+        size_guide: ''
     });
 
     const supabase = createBrowserClient(
@@ -65,6 +72,8 @@ export default function EditProductPage() {
             return;
         }
 
+        const meta = data.metadata || {};
+
         setFormData({
             name: data.name,
             description: data.description || '',
@@ -72,10 +81,36 @@ export default function EditProductPage() {
             compare_at_price: data.compare_at_price ? data.compare_at_price.toString() : '',
             category_id: data.category_id,
             image_url: data.images?.[0] || '',
-            is_featured: data.metadata?.is_featured || false,
-            tags: data.metadata?.tags?.join(', ') || ''
+            is_featured: meta.is_featured || false,
+            tags: meta.tags?.join(', ') || '',
+            // Load Dynamic Fields
+            colors: meta.colors || [],
+            sizes: meta.sizes?.join(', ') || '',
+            highlights: meta.highlights?.join('\n') || '',
+            material_care: meta.material_care || '',
+            shipping_returns: meta.shipping_returns || '',
+            size_guide: meta.size_guide || ''
         });
         setFetching(false);
+    };
+
+    const handleAddColor = () => {
+        setFormData({
+            ...formData,
+            colors: [...formData.colors, { name: 'New Color', code: '#000000' }]
+        });
+    };
+
+    const handleColorChange = (index: number, field: 'name' | 'code', value: string) => {
+        const newColors = [...formData.colors];
+        newColors[index] = { ...newColors[index], [field]: value };
+        setFormData({ ...formData, colors: newColors });
+    };
+
+    const handleRemoveColor = (index: number) => {
+        const newColors = [...formData.colors];
+        newColors.splice(index, 1);
+        setFormData({ ...formData, colors: newColors });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -91,7 +126,14 @@ export default function EditProductPage() {
 
         const metadata = {
             is_featured: formData.is_featured,
-            tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean)
+            tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
+            // Save Dynamic Fields
+            colors: formData.colors,
+            sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
+            highlights: formData.highlights.split('\n').filter(Boolean),
+            material_care: formData.material_care,
+            shipping_returns: formData.shipping_returns,
+            size_guide: formData.size_guide
         };
 
         const { error } = await supabase
@@ -119,7 +161,7 @@ export default function EditProductPage() {
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this product? This cannot be undone.')) return;
-        setLoading(true); // show loading state
+        setLoading(true);
 
         const { error } = await supabase.from('products').delete().eq('id', id);
 
@@ -142,7 +184,7 @@ export default function EditProductPage() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto pb-20">
+        <div className="max-w-4xl mx-auto pb-20">
             {/* Header */}
             <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -197,24 +239,108 @@ export default function EditProductPage() {
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
                     </div>
+                </div>
 
+                {/* Variants (Colors & Sizes) */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Variants</h2>
+
+                    {/* Colors */}
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Tags (Comma separated)</label>
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-bold text-gray-700">Colors</label>
+                            <button
+                                type="button"
+                                onClick={handleAddColor}
+                                className="text-xs bg-navy-50 text-navy-900 px-3 py-1 rounded-full font-bold hover:bg-navy-100"
+                            >
+                                + Add Color
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {formData.colors.map((color, idx) => (
+                                <div key={idx} className="flex gap-2 items-center">
+                                    <input
+                                        type="color"
+                                        className="w-10 h-10 rounded cursor-pointer border-none bg-transparent"
+                                        value={color.code}
+                                        onChange={(e) => handleColorChange(idx, 'code', e.target.value)}
+                                    />
+                                    <input
+                                        type="text"
+                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm"
+                                        placeholder="Color Name (e.g. Navy Blue)"
+                                        value={color.name}
+                                        onChange={(e) => handleColorChange(idx, 'name', e.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveColor(idx)}
+                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            ))}
+                            {formData.colors.length === 0 && <p className="text-sm text-gray-400 italic">No colors added.</p>}
+                        </div>
+                    </div>
+
+                    {/* Sizes */}
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Sizes (Comma separated)</label>
                         <input
                             type="text"
                             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="e.g. new-arrival, summer, curated"
-                            value={formData.tags}
-                            onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                            placeholder="e.g. S, M, L, XL or 2-3Y, 3-4Y"
+                            value={formData.sizes}
+                            onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
                         />
-                        <p className="text-xs text-gray-400 mt-1">Add &quot;new-arrival&quot; to pin to New Arrivals page.</p>
+                    </div>
+                </div>
+
+                {/* Additional Details */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Product Details</h2>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Highlights (One per line)</label>
+                        <textarea
+                            rows={4}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors font-mono text-sm"
+                            placeholder="100% Cotton&#10;Breathable&#10;Machine Wash"
+                            value={formData.highlights}
+                            onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Material & Care</label>
+                        <textarea
+                            rows={3}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            placeholder="Details about material and care instructions..."
+                            value={formData.material_care}
+                            onChange={(e) => setFormData({ ...formData, material_care: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Shipping & Returns</label>
+                        <textarea
+                            rows={3}
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            placeholder="Shipping policy details..."
+                            value={formData.shipping_returns}
+                            onChange={(e) => setFormData({ ...formData, shipping_returns: e.target.value })}
+                        />
                     </div>
                 </div>
 
                 {/* Pricing & Category */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Pricing</h2>
+                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Pricing & Organization</h2>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹) *</label>
                             <input
@@ -237,12 +363,7 @@ export default function EditProductPage() {
                                 value={formData.compare_at_price}
                                 onChange={(e) => setFormData({ ...formData, compare_at_price: e.target.value })}
                             />
-                            <p className="text-xs text-gray-400 mt-1">If set, original price shows crossed out.</p>
                         </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Organization</h2>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Category *</label>
                             <select
@@ -258,37 +379,45 @@ export default function EditProductPage() {
                             </select>
                         </div>
                     </div>
-                </div>
 
-                {/* Media (URL only for now) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Media</h2>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Image URL</label>
-                        <input
-                            type="url"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="https://..."
-                            value={formData.image_url}
-                            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                        />
-                        <p className="text-xs text-gray-400 mt-1">Paste a direct link to an image.</p>
-                    </div>
-
-                    {formData.image_url && (
-                        <div className="mt-4 w-40 h-40 relative rounded-lg overflow-hidden border border-gray-200">
-                            <Image
-                                src={formData.image_url}
-                                alt="Preview"
-                                fill
-                                className="object-cover"
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
+                        <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Media & Tags</h2>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Image URL</label>
+                            <input
+                                type="url"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="https://..."
+                                value={formData.image_url}
+                                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                             />
                         </div>
-                    )}
+
+                        {formData.image_url && (
+                            <div className="w-full h-32 relative rounded-lg overflow-hidden border border-gray-200">
+                                <Image
+                                    src={formData.image_url}
+                                    alt="Preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                        )}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Tags (Comma separated)</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="e.g. new-arrival, summer, curated"
+                                value={formData.tags}
+                                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Footer Actions */}
-                <div className="flex items-center justify-end gap-4 pt-4">
+                <div className="flex items-center justify-end gap-4 pt-4 sticky bottom-0 bg-white/80 backdrop-blur-md p-4 border-t border-gray-100 -mx-4 md:mx-0">
                     <Link href="/admin/products">
                         <button type="button" className="px-6 py-3 font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-colors">
                             Cancel
