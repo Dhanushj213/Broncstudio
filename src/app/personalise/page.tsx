@@ -157,7 +157,7 @@ export default function PersonalisePage() {
     };
 
     const finalPrice = calculatePrice();
-    const canAddToCart = selectedProduct && size && placement && printType && uploadedImage;
+    const canAddToCart = selectedProduct && size && placement && printType;
 
     const handleAddToCart = () => {
         if (!canAddToCart) return;
