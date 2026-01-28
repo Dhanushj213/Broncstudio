@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "share.google" }, // User requested specific host
       { protocol: "https", hostname: "*.google.com" },
       { protocol: "https", hostname: "*.googleusercontent.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "plus.unsplash.com" },
     ],
     dangerouslyAllowSVG: true,
   },
