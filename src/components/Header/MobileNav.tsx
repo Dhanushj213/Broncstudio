@@ -18,7 +18,7 @@ const MobileNav = () => {
         { name: 'Worlds', path: '/worlds', icon: Grid, type: 'link' },
         { name: 'Search', action: openSearch, icon: Search, type: 'button' },
         { name: 'Gifting', path: '/gift-finder', icon: Gift, type: 'link' },
-        { name: 'Customize', path: '/customize', icon: PenTool, type: 'link' },
+        { name: 'Personalise', path: '/personalise', icon: PenTool, type: 'link' },
     ];
 
     return (

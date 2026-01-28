@@ -16,6 +16,8 @@ const NAV_ITEMS = [
     { label: 'Luxuries', href: '/collections/little-luxuries' },
     { label: 'Stories', href: '/collections/space-stories' },
     { label: 'Sale', href: '/collections/sale' },
+    { label: 'Gifting', href: '/gift-finder' },
+    { label: 'Personalise', href: '/personalise' },
 ];
 
 export default function Header() {

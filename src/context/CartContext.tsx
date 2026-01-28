@@ -12,6 +12,7 @@ export interface CartItem {
     size?: string;
     color?: string;
     qty: number;
+    metadata?: any; // For custom orders
 }
 
 interface CartContextType {
@@ -38,10 +39,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             } catch (e) {
                 console.error("Failed to parse cart", e);
             }
-        } else {
-            // Add some mock items for immediate delight (if empty)
-            // Or leave empty. User wants "6 items", let's leave empty so they can build it.
-            // Actually, for testing let's leave it empty.
         }
     }, []);
 
@@ -51,12 +48,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }, [items]);
 
     const addToCart = (product: any, size: string) => {
-        const itemId = `${product.id}-${size}`; // Unique key based on product + size
+        // If it's a custom order, we need a unique ID for every addition (allow multiple configs)
+        // Otherwise, group by product+size
+        const isCustom = size === 'Custom';
+        const itemId = isCustom
+            ? `${product.id}-custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+            : `${product.id}-${size}`;
 
         setItems(prev => {
             const existing = prev.find(i => i.id === itemId);
-            if (existing) {
-                // Increment qty
+            if (existing && !isCustom) {
+                // Increment qty (only for non-custom items)
                 return prev.map(i => i.id === itemId ? { ...i, qty: i.qty + 1 } : i);
             } else {
                 // Add new
@@ -64,11 +66,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     id: itemId,
                     productId: product.id,
                     name: product.name,
-                    image: product.image,
-                    price: product.price, // Ensure this is number
+                    image: product.image || (product.images ? product.images[0] : ''),
+                    price: Number(product.price),
                     size: size,
                     color: product.color || 'Standard',
-                    qty: 1
+                    qty: 1,
+                    metadata: product.metadata || {}
                 }];
             }
         });
