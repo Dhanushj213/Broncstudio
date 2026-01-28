@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Plus, Search, Filter, Trash2, Ticket, Loader2 } from 'lucide-react';
+import { Plus, Search, Filter, Trash2, Tag, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 interface Coupon {
@@ -73,7 +73,7 @@ export default function AdminCouponsPage() {
                 <div className="p-12 flex justify-center"><Loader2 className="animate-spin" /></div>
             ) : coupons.length === 0 ? (
                 <div className="p-12 text-center text-gray-400 bg-white rounded-xl border border-dashed border-gray-200">
-                    <Ticket size={48} className="mx-auto mb-4 opacity-20" />
+                    <Tag size={48} className="mx-auto mb-4 opacity-20" />
                     <p>No coupons found. Run the SQL migration first!</p>
                 </div>
             ) : (

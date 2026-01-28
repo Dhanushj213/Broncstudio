@@ -15,7 +15,8 @@ import {
     LogOut,
     Truck,
     CreditCard,
-    Layers
+    Layers,
+    Tag
 } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
@@ -25,7 +26,7 @@ const SIDEBAR_ITEMS = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingBag },
     { name: 'Products', href: '/admin/products', icon: Package },
-    { name: 'Coupons', href: '/admin/coupons', icon: Ticket },
+    { name: 'Coupons', href: '/admin/coupons', icon: Tag },
     { name: 'Inventory', href: '/admin/inventory', icon: Layers },
     { name: 'Customers', href: '/admin/customers', icon: Users },
     { name: 'Shipping', href: '/admin/shipping', icon: Truck },
