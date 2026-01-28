@@ -148,7 +148,7 @@ export default function OrderDetailPage() {
                             {order.status}
                         </span>
                     </h1>
-                    <p className="text-gray-500 mt-2 flex items-center gap-2">
+                    <p className="text-gray-500 mt-2 flex items-center gap-2" suppressHydrationWarning>
                         <Clock size={16} /> Placed on {new Date(order.created_at).toLocaleString()}
                     </p>
                 </div>
@@ -373,7 +373,7 @@ export default function OrderDetailPage() {
                                     <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${isPending && (!order.status_history || order.status_history.length === 0) ? 'bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.2)]' : 'bg-gray-300'
                                         }`} />
                                     <p className="text-sm font-medium text-gray-900">Order Placed</p>
-                                    <p className="text-xs text-gray-400">{new Date(order.created_at).toLocaleString()}</p>
+                                    <p className="text-xs text-gray-400" suppressHydrationWarning>{new Date(order.created_at).toLocaleString()}</p>
                                 </div>
 
                                 {/* Render History Items */}
@@ -394,7 +394,7 @@ export default function OrderDetailPage() {
                                         <div key={idx} className="relative">
                                             <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${colorClass} ${finalShadow}`} />
                                             <p className="text-sm font-medium text-gray-900 capitalize">{hist.status.replace(/_/g, ' ')}</p>
-                                            <p className="text-xs text-gray-400">
+                                            <p className="text-xs text-gray-400" suppressHydrationWarning>
                                                 {new Date(hist.timestamp).toLocaleString()}
                                                 {hist.updated_by && <span className="block text-[10px] text-gray-300">by {hist.updated_by}</span>}
                                             </p>

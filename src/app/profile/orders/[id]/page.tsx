@@ -98,7 +98,7 @@ export default function OrderDetailsPage() {
                     </Link>
                     <div>
                         <h1 className="text-2xl font-bold text-navy-900 font-heading">Order #{order.id.slice(0, 8)}</h1>
-                        <p className="text-sm text-gray-500">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500" suppressHydrationWarning>Placed on {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@ export default function OrderDetailsPage() {
                         <div className="relative">
                             <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content bg-green-500 shadow-[0_0_0_3px_rgba(34,197,94,0.1)]`} />
                             <p className="text-sm font-bold text-navy-900">Order Placed</p>
-                            <p className="text-xs text-gray-500">{new Date(order.created_at).toLocaleString()}</p>
+                            <p className="text-xs text-gray-500" suppressHydrationWarning>{new Date(order.created_at).toLocaleString()}</p>
                         </div>
 
                         {/* Dynamic History */}
@@ -131,7 +131,7 @@ export default function OrderDetailsPage() {
                                 <div key={idx} className="relative">
                                     <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${dotColor} ${shadow}`} />
                                     <p className="text-sm font-bold text-navy-900 capitalize">{hist.status.replace(/_/g, ' ')}</p>
-                                    <p className="text-xs text-gray-500">{new Date(hist.timestamp).toLocaleString()}</p>
+                                    <p className="text-xs text-gray-500" suppressHydrationWarning>{new Date(hist.timestamp).toLocaleString()}</p>
                                 </div>
                             )
                         })}
