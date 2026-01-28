@@ -125,7 +125,7 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                     className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-navy-600 dark:text-gray-300"
                                 >
                                     <ShoppingBag size={20} />
-                                    <span className="text-xs font-medium">Cart</span>
+                                    <span className="text-xs font-medium">Bag</span>
                                 </Link>
                             </div>
 

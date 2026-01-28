@@ -57,7 +57,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                 color: item.metadata?.colors?.[0]?.name || 'Default'
             });
         });
-        toast.success('Complete look added to your cart!');
+        toast.success('Complete look added to your bag!');
     };
 
     return (

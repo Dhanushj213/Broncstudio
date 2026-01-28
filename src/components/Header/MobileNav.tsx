@@ -20,7 +20,7 @@ const MobileNav = () => {
         { name: 'Worlds', path: '/worlds', icon: Grid, type: 'link' },
         { name: 'Search', action: openSearch, icon: Search, type: 'button' },
         { name: 'Saved', action: toggleWishlist, icon: Heart, type: 'button' },
-        { name: 'Cart', path: '/cart', icon: ShoppingCart, type: 'link', badge: cartCount },
+        { name: 'Bag', path: '/cart', icon: ShoppingCart, type: 'link', badge: cartCount },
     ];
 
     return (

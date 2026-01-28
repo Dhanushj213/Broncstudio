@@ -144,7 +144,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                         : 'border-navy-900 bg-white text-navy-900 hover:bg-navy-50'
                         }`}
                 >
-                    <ShoppingBag size={20} /> {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                    <ShoppingBag size={20} /> {isOutOfStock ? 'Out of Stock' : 'Add to Bag'}
                 </button>
                 <button
                     disabled={isOutOfStock}

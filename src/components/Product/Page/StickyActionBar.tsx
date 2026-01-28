@@ -26,7 +26,7 @@ export default function StickyActionBar({ price, originalPrice, onAddToCart, onB
                     onClick={onAddToCart}
                     className="flex-1 bg-gray-100 text-navy-900 font-bold rounded-xl py-3 flex items-center justify-center gap-2 text-sm hover:bg-gray-200"
                 >
-                    <ShoppingBag size={18} /> Add
+                    <ShoppingBag size={18} /> Add to Bag
                 </button>
                 <button
                     onClick={onBuyNow}
