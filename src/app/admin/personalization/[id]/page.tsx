@@ -14,7 +14,7 @@ const BASE_PRODUCT_TYPES = [
 const PREDEFINED_COLORS = ['White', 'Black', 'Navy', 'Olive', 'Grey', 'Red', 'Blue', 'Yellow', 'Pink', 'Beige', 'Maroon'];
 const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'Standard'];
 const PLACEMENTS = ['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve', 'Wrap Around'];
-const PRINT_TYPES = ['DTG', 'Embroidery', 'Sublimation', 'UV Print'];
+const PRINT_TYPES = ['DTG Printing', 'Embroidery', 'DTF Printing', 'Vinyl Printing'];
 
 interface PlacementConfig {
     enabled: boolean;
