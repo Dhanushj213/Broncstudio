@@ -37,7 +37,7 @@ export default function ProductCard(props: ProductProps) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className="relative aspect-[3/4] bg-gray-50 dark:bg-white/5 overflow-hidden">
+            <div className="relative bg-gray-50 dark:bg-white/5 overflow-hidden" style={{ aspectRatio: '3/4' }}>
                 {badge && (
                     <span className="absolute top-3 left-3 z-10 bg-navy-900 dark:bg-white dark:text-navy-900 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm">
                         {badge}
