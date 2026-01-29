@@ -456,11 +456,11 @@ export default function EditProductPage() {
                         </div>
 
                         {!formData.is_pet && (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-300">
                                 {/* Gender Visibility (Unisex Logic) */}
-                                <div>
+                                <div className="md:col-span-2">
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Gender Visibility</label>
-                                    <div className="flex gap-4">
+                                    <div className="flex gap-4 flex-wrap">
                                         {['men', 'women', 'unisex', 'kids'].map(g => (
                                             <label key={g} className="flex items-center gap-2 cursor-pointer">
                                                 <input
