@@ -1,187 +1,286 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import AmbientBackground from '@/components/UI/AmbientBackground';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Gift, RotateCcw, Baby, Bike, Backpack, Cake, Heart, Palette, Compass, Armchair, ArrowRight, Sparkles, Star } from 'lucide-react';
+import { Gift, RotateCcw, Palette, Loader2 } from 'lucide-react';
 import ProductCard from '@/components/Product/ProductCard';
-import { getProductImage } from '@/utils/sampleImages';
+import { GIFT_MOMENTS, AUDIENCE_OPTIONS, BUDGET_OPTIONS, getMomentById } from '@/data/giftMoments';
 
-type QuizState = {
-    step: number;
-    answers: {
-        who?: string;
-        occasion?: string;
-        vibe?: string;
-    }
-};
-
-const OPTIONS = {
-    who: [
-        { id: 'baby', label: 'Newborn / Baby', icon: Baby, color: 'text-amber-600', bg: 'bg-amber-100', border: 'border-amber-200' },
-        { id: 'toddler', label: 'Toddler', icon: Bike, color: 'text-blue-600', bg: 'bg-blue-100', border: 'border-blue-200' },
-        { id: 'kid', label: 'Big Kid', icon: Backpack, color: 'text-rose-600', bg: 'bg-rose-100', border: 'border-rose-200' },
-    ],
-    occasion: [
-        { id: 'birthday', label: 'Birthday Bash', icon: Cake, color: 'text-pink-600', bg: 'bg-pink-100', border: 'border-pink-200' },
-        { id: 'visit', label: 'Just Visiting', icon: Heart, color: 'text-red-600', bg: 'bg-red-100', border: 'border-red-200' },
-        { id: 'holiday', label: 'Holiday / Festival', icon: Gift, color: 'text-purple-600', bg: 'bg-purple-100', border: 'border-purple-200' },
-    ],
-    vibe: [
-        { id: 'creative', label: 'Creative & Artsy', icon: Palette, color: 'text-emerald-600', bg: 'bg-emerald-100', border: 'border-emerald-200' },
-        { id: 'active', label: 'Active Explorer', icon: Compass, color: 'text-cyan-600', bg: 'bg-cyan-100', border: 'border-cyan-200' },
-        { id: 'cozy', label: 'Cozy & Chill', icon: Armchair, color: 'text-orange-600', bg: 'bg-orange-100', border: 'border-orange-200' },
-    ]
-};
+interface Product {
+    id: string;
+    name: string;
+    price: number;
+    images?: string[];
+    metadata?: {
+        why_gift?: string;
+    };
+}
 
 export default function GiftFinderPage() {
-    const [state, setState] = useState<QuizState>({ step: 1, answers: {} });
+    const [selectedMoment, setSelectedMoment] = useState<string | null>(null);
+    const [audience, setAudience] = useState<string | null>(null);
+    const [budget, setBudget] = useState<number | null>(null);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const handleSelect = (category: keyof QuizState['answers'], value: string) => {
-        setState(prev => ({
-            ...prev,
-            answers: { ...prev.answers, [category]: value }
-        }));
-        setTimeout(() => {
-            setState(prev => ({ ...prev, step: prev.step + 1 }));
-        }, 400);
+    // Fetch products when filters change
+    useEffect(() => {
+        if (!selectedMoment) return;
+
+        const fetchGifts = async () => {
+            setLoading(true);
+            try {
+                const res = await fetch('/api/gift-finder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        moment: selectedMoment,
+                        audience: audience || undefined,
+                        budget: budget || undefined,
+                    }),
+                });
+                const data = await res.json();
+                setProducts(data.products || []);
+            } catch (err) {
+                console.error('Failed to fetch gifts:', err);
+                setProducts([]);
+            }
+            setLoading(false);
+        };
+
+        fetchGifts();
+    }, [selectedMoment, audience, budget]);
+
+    const reset = () => {
+        setSelectedMoment(null);
+        setAudience(null);
+        setBudget(null);
+        setProducts([]);
     };
 
-    const reset = () => setState({ step: 1, answers: {} });
+    const currentMoment = selectedMoment ? getMomentById(selectedMoment) : null;
+
+    // Dynamic helper text
+    const getHelperText = () => {
+        const parts: string[] = [];
+        if (currentMoment) parts.push(currentMoment.label.toLowerCase());
+        if (audience) {
+            const aud = AUDIENCE_OPTIONS.find(a => a.id === audience);
+            if (aud) parts.push(aud.label.toLowerCase());
+        }
+        if (budget) {
+            const bud = BUDGET_OPTIONS.find(b => b.id === budget);
+            if (bud) parts.push(bud.label.toLowerCase());
+        }
+        return parts.length > 0 ? `Based on ${parts.join(', ')}.` : '';
+    };
 
     return (
-        <div className="min-h-screen bg-[#FFF9F2] pt-[var(--header-height)] pb-20 relative overflow-hidden">
-            {/* Background Pattern (Confetti) */}
-            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" style={{
-                backgroundImage: 'radial-gradient(#E5E7EB 2px, transparent 2px)',
-                backgroundSize: '30px 30px'
+        <div className="min-h-screen bg-gradient-to-b from-[#FFF9F2] to-white pt-[var(--header-height)] pb-20">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 z-0 opacity-30 pointer-events-none" style={{
+                backgroundImage: 'radial-gradient(#E5E7EB 1.5px, transparent 1.5px)',
+                backgroundSize: '24px 24px'
             }}></div>
 
-            {/* Decorative Ribbons */}
-            <div className="absolute top-0 right-10 w-24 h-48 bg-red-500 rounded-b-full opacity-10 blur-3xl z-0" />
-            <div className="absolute bottom-0 left-10 w-32 h-64 bg-amber-400 rounded-t-full opacity-10 blur-3xl z-0" />
+            <div className="container-premium max-w-[1100px] mx-auto px-4 md:px-6 py-8 md:py-12 relative z-10">
 
-            <div className="container-premium max-w-[900px] mx-auto px-6 py-12 relative z-10">
-
-                {/* Header */}
-                <div className="text-center mb-16 relative">
+                {/* ===== HEADER ===== */}
+                <div className="text-center mb-10 md:mb-14">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-20 h-20 mx-auto bg-white rounded-2xl shadow-xl flex items-center justify-center mb-6 rotate-3 border-4 border-white"
+                        className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-white rounded-2xl shadow-xl flex items-center justify-center mb-5 rotate-3 border-4 border-white"
                     >
-                        <Gift size={40} className="text-coral-500" />
+                        <Gift size={36} className="text-coral-500" />
                     </motion.div>
-
-                    <AnimatePresence mode="wait">
-                        <motion.h1
-                            key={state.step}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="text-4xl md:text-6xl font-heading font-bold text-navy-900 leading-tight mb-4"
-                        >
-                            {state.step === 1 && "Who plays the main character?"}
-                            {state.step === 2 && "What are we celebrating?"}
-                            {state.step === 3 && "Pick their vibe!"}
-                            {state.step === 4 && "🎁 Unwrapped just for them!"}
-                        </motion.h1>
-                    </AnimatePresence>
-                    <p className="text-gray-500 text-lg">Let's find something they'll unwrap with a smile.</p>
+                    <h1 className="text-3xl md:text-5xl font-heading font-bold text-navy-900 leading-tight mb-3">
+                        🎁 Find the Perfect Gift
+                    </h1>
+                    <p className="text-gray-500 text-base md:text-lg max-w-xl mx-auto">
+                        Tell us the moment — we'll help you find something they'll love.
+                    </p>
                 </div>
 
-                {/* Quiz Content */}
-                <div className="min-h-[250px]">
-                    <AnimatePresence mode="wait">
-                        {state.step < 4 ? (
-                            <motion.div
-                                key={`step-${state.step}`}
-                                initial={{ opacity: 0, x: 50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -50 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                className="grid grid-cols-1 md:grid-cols-3 gap-6"
-                            >
-                                {(state.step === 1 ? OPTIONS.who : state.step === 2 ? OPTIONS.occasion : OPTIONS.vibe).map((opt, idx) => (
-                                    <motion.button
-                                        key={opt.id}
-                                        onClick={() => handleSelect(state.step === 1 ? 'who' : state.step === 2 ? 'occasion' : 'vibe', opt.id)}
-                                        whileHover={{ scale: 1.05, y: -5 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className={`bg-white rounded-3xl p-8 flex flex-col items-center gap-6 text-center shadow-md hover:shadow-xl border-b-4 hover:border-b-8 transition-all duration-200 ${opt.border} border-gray-100`}
-                                    >
-                                        <div className={`w-28 h-28 rounded-full ${opt.bg} ${opt.color} flex items-center justify-center shadow-inner`}>
-                                            <opt.icon size={48} strokeWidth={2} />
-                                        </div>
-                                        <span className="font-bold text-navy-900 text-xl">{opt.label}</span>
-                                    </motion.button>
-                                ))}
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="results"
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="space-y-12"
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-                                    {[1, 2, 3].map((i, idx) => (
-                                        <motion.div
-                                            key={i}
-                                            initial={{ opacity: 0, y: 40 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: idx * 0.15 + 0.3 }}
+                {/* ===== MOMENT SELECTION ===== */}
+                {!selectedMoment && (
+                    <motion.section
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-12"
+                    >
+                        <h2 className="text-lg font-bold text-navy-900 mb-6 text-center md:text-left">
+                            Choose a moment
+                        </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {GIFT_MOMENTS.map((moment, idx) => (
+                                <motion.button
+                                    key={moment.id}
+                                    onClick={() => setSelectedMoment(moment.id)}
+                                    whileHover={{ scale: 1.03, y: -4 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className="bg-white rounded-2xl p-5 md:p-6 text-left shadow-md hover:shadow-xl border border-gray-100 hover:border-coral-200 transition-all group"
+                                >
+                                    <span className="text-3xl md:text-4xl mb-3 block">{moment.emoji}</span>
+                                    <h3 className="font-bold text-navy-900 text-sm md:text-base mb-1 group-hover:text-coral-600 transition-colors">
+                                        {moment.label}
+                                    </h3>
+                                    <p className="text-gray-400 text-xs md:text-sm leading-snug">
+                                        {moment.tagline}
+                                    </p>
+                                </motion.button>
+                            ))}
+                        </div>
+                    </motion.section>
+                )}
+
+                {/* ===== REFINEMENT BAR ===== */}
+                {selectedMoment && (
+                    <motion.section
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8"
+                    >
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                            {/* Selected Moment */}
+                            <div className="flex items-center gap-3">
+                                <span className="text-2xl">{currentMoment?.emoji}</span>
+                                <div>
+                                    <p className="font-bold text-navy-900 text-sm">{currentMoment?.label}</p>
+                                    <button onClick={reset} className="text-coral-500 text-xs font-medium hover:underline flex items-center gap-1">
+                                        <RotateCcw size={12} /> Change moment
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Filters */}
+                            <div className="flex flex-wrap gap-3">
+                                {/* Audience */}
+                                <div className="flex gap-2">
+                                    {AUDIENCE_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => setAudience(audience === opt.id ? null : opt.id)}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${audience === opt.id
+                                                    ? 'bg-navy-900 text-white'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                }`}
                                         >
-                                            <ProductCard
-                                                id={`gift-${i}`}
-                                                name={`Gift Set ${i}`}
-                                                brand="Broncstudio Selection"
-                                                price={1299}
-                                                image={getProductImage(i)}
-                                                badge="Perfect Match"
-                                            />
-                                        </motion.div>
+                                            {opt.label}
+                                        </button>
                                     ))}
                                 </div>
 
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 1 }}
-                                    className="flex flex-col md:flex-row items-center justify-center gap-6 pt-8"
-                                >
-                                    <button
-                                        onClick={reset}
-                                        className="px-8 py-3 text-navy-900 font-bold hover:bg-white hover:shadow-md rounded-full transition-all flex items-center gap-2"
-                                    >
-                                        <RotateCcw size={18} /> Start Over
-                                    </button>
-                                    <Link
-                                        href="/shop/gifts"
-                                        className="px-10 py-4 bg-navy-900 text-white rounded-full font-bold hover:bg-coral-500 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all flex items-center gap-3"
-                                    >
-                                        <Gift size={20} /> Shop All Gifts
-                                    </Link>
-                                </motion.div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                                <div className="w-px h-6 bg-gray-200 hidden md:block" />
 
-                {/* Progress */}
-                {state.step < 4 && (
-                    <div className="mt-8 flex flex-col items-center gap-2">
-                        <div className="flex gap-2">
-                            {[1, 2, 3].map(s => (
-                                <div
-                                    key={s}
-                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${state.step >= s ? 'bg-coral-500 scale-125' : 'bg-gray-200'}`}
-                                />
-                            ))}
+                                {/* Budget */}
+                                <div className="flex gap-2">
+                                    {BUDGET_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => setBudget(budget === opt.id ? null : opt.id)}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${budget === opt.id
+                                                    ? 'bg-coral-500 text-white'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                }`}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Step {state.step} of 3</span>
-                    </div>
+                    </motion.section>
+                )}
+
+                {/* ===== RESULTS SECTION ===== */}
+                {selectedMoment && (
+                    <motion.section
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <div className="mb-6">
+                            <h2 className="text-xl md:text-2xl font-heading font-bold text-navy-900 mb-1">
+                                Gift ideas for this moment
+                            </h2>
+                            <p className="text-gray-500 text-sm">{getHelperText()}</p>
+                        </div>
+
+                        {loading ? (
+                            <div className="flex items-center justify-center py-20">
+                                <Loader2 size={40} className="animate-spin text-coral-500" />
+                                <span className="ml-3 text-gray-500 font-medium">Finding perfect gifts...</span>
+                            </div>
+                        ) : products.length === 0 ? (
+                            <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+                                <Gift size={48} className="mx-auto mb-4 text-gray-300" />
+                                <p className="text-gray-500 font-medium mb-2">No gifts found for these filters</p>
+                                <p className="text-gray-400 text-sm">Try adjusting the audience or budget</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                                {products.map((product, idx) => (
+                                    <motion.div
+                                        key={product.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                    >
+                                        <ProductCard
+                                            id={product.id}
+                                            name={product.name}
+                                            brand="BroncStudio"
+                                            price={product.price}
+                                            image={product.images?.[0] || '/images/placeholder.jpg'}
+                                        />
+                                        {product.metadata?.why_gift && (
+                                            <p className="text-xs text-gray-400 mt-2 px-1 italic">
+                                                "{product.metadata.why_gift}"
+                                            </p>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+                    </motion.section>
+                )}
+
+                {/* ===== PERSONALISATION CTA ===== */}
+                {selectedMoment && products.length > 0 && (
+                    <motion.section
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="mt-16 pt-10 border-t border-gray-200"
+                    >
+                        <div className="text-center max-w-lg mx-auto">
+                            <h3 className="text-xl md:text-2xl font-heading font-bold text-navy-900 mb-3">
+                                ✨ Want to make it truly yours?
+                            </h3>
+                            <p className="text-gray-500 text-sm md:text-base mb-6">
+                                You can personalise our products by printing your own image or design on selected items like tops, bottles, keychains, fridge magnets, and more.
+                            </p>
+                            <Link
+                                href="/personalise"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-coral-500 to-pink-500 text-white rounded-full font-bold shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all"
+                            >
+                                <Palette size={20} />
+                                Personalise a Product
+                            </Link>
+                        </div>
+                    </motion.section>
+                )}
+
+                {/* ===== EMPTY STATE ===== */}
+                {!selectedMoment && (
+                    <p className="text-center text-gray-400 text-sm mt-8">
+                        Select a moment above to see gift ideas.
+                    </p>
                 )}
             </div>
         </div>
