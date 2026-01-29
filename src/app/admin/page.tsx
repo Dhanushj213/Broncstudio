@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { DollarSign, ShoppingBag, Package, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, AlertTriangle } from 'lucide-react';
+import { DollarSign, ShoppingBag, Package, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, AlertTriangle, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -13,6 +13,7 @@ export default function AdminDashboard() {
         lowStock: 0 // Placeholder until we have inventory
     });
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
+    const [health, setHealth] = useState({ latency: 0, status: 'Checking...' });
     const [loading, setLoading] = useState(true);
 
     const supabase = createBrowserClient(
@@ -48,16 +49,24 @@ export default function AdminDashboard() {
                 }));
             }
 
-            // 2. Fetch Recent Orders
+            // 2. Fetch Recent Orders & Measure Latency
+            const start = performance.now();
             const { data: recent, error: recentError } = await supabase
                 .from('orders')
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(5);
+            const end = performance.now();
+            const latency = Math.round(end - start);
 
             if (recent) {
                 setRecentOrders(recent);
             }
+
+            setHealth({
+                latency,
+                status: latency < 300 ? 'Healthy' : latency < 800 ? 'Moderate' : 'Degraded'
+            });
 
             setLoading(false);
         };
@@ -183,8 +192,8 @@ export default function AdminDashboard() {
                     <h2 className="text-lg font-bold text-gray-900 mb-6">Quick Actions</h2>
                     <div className="space-y-4">
                         <Link href="/admin/products/new">
-                            <button className="w-full py-3 px-4 bg-navy-900 text-white font-bold rounded-xl hover:bg-navy-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-navy-900/10">
-                                <Package size={18} /> Add New Product
+                            <button className="w-full py-3 px-4 bg-navy-900 text-white font-bold rounded-xl hover:bg-navy-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-navy-900/20">
+                                <Plus size={20} /> Add Product
                             </button>
                         </Link>
                         <Link href="/admin/orders">
@@ -199,11 +208,16 @@ export default function AdminDashboard() {
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between text-xs font-medium text-gray-500 mb-1">
-                                    <span>Server Load</span>
-                                    <span className="text-green-600">Healthy</span>
+                                    <span>Database Latency</span>
+                                    <span className={`${health.status === 'Healthy' ? 'text-green-600' : health.status === 'Moderate' ? 'text-amber-600' : 'text-red-600'}`}>
+                                        {health.status} ({health.latency}ms)
+                                    </span>
                                 </div>
                                 <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-green-500 w-[95%]" />
+                                    <div
+                                        className={`h-full transition-all duration-500 ${health.status === 'Healthy' ? 'bg-green-500' : health.status === 'Moderate' ? 'bg-amber-500' : 'bg-red-500'}`}
+                                        style={{ width: health.status === 'Checking...' ? '0%' : '100%' }}
+                                    />
                                 </div>
                             </div>
                         </div>

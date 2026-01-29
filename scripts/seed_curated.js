@@ -119,7 +119,7 @@ async function seed() {
 
     const { data, error } = await supabase
         .from('curated_sections')
-        .upsert(records, { onConflict: 'title' }) // Simple conflict res on title for now
+        .insert(records)
         .select();
 
     if (error) {
