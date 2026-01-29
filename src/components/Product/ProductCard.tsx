@@ -18,6 +18,7 @@ interface ProductProps {
     image: string;
     badge?: string;
     colors?: string[];
+    secondaryImage?: string; // New prop for hover effect
 }
 
 export default function ProductCard(props: ProductProps) {
@@ -43,47 +44,101 @@ export default function ProductCard(props: ProductProps) {
                     </span>
                 )}
 
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (isInWishlist(id)) {
-                            removeFromWishlist(id);
-                            addToast(`${name} removed from Wishlist`, 'info');
-                        } else {
-                            addToWishlist({ id, name, price, image: imgSrc, size: 'One Size' });
-                            addToast(`${name} added to Wishlist!`);
-                        }
-                    }}
-                    className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors shadow-sm ${isInWishlist(id) ? 'bg-coral-50 dark:bg-coral-500/20 text-coral-500' : 'bg-white/80 dark:bg-black/40 backdrop-blur-sm text-gray-500 dark:text-white/60 hover:text-coral-500 dark:hover:text-coral-400 hover:bg-white dark:hover:bg-black/60'}`}
-                >
-                    <Heart size={16} fill={isInWishlist(id) ? "currentColor" : "none"} />
-                </button>
+                {/* Vertical Action Stack (Wokiee Style) */}
+                <div className={`absolute top-3 right-3 z-20 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
 
+                    {/* Wishlist */}
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (isInWishlist(id)) {
+                                removeFromWishlist(id);
+                                addToast(`${name} removed from Wishlist`, 'info');
+                            } else {
+                                addToWishlist({ id, name, price, image: imgSrc, size: 'One Size' });
+                                addToast(`${name} added to Wishlist!`);
+                            }
+                        }}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-coral-500 text-white' : 'bg-white text-navy-900 hover:bg-navy-900 hover:text-white'}`}
+                        title="Add to Wishlist"
+                    >
+                        <Heart size={18} fill={isInWishlist(id) ? "currentColor" : "none"} />
+                    </button>
+
+                    {/* Quick View */}
+                    <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); openQuickView(props); }}
+                        className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-75"
+                        title="Quick View"
+                    >
+                        <Eye size={18} />
+                    </button>
+
+                    {/* Add to Cart (Icon Only) */}
+                    <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(props, "One Size"); addToast(`${name} added to Bag!`); }}
+                        className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-100"
+                        title="Add to Cart"
+                    >
+                        <ShoppingBag size={18} />
+                    </button>
+                </div>
+
+                {/* Main Image */}
                 <Link href={`/product/${id}`} className="block w-full h-full relative cursor-pointer">
                     <img
                         src={imgSrc}
                         alt={name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                        className={`w-full h-full object-cover transition-opacity duration-500 ease-out ${props.secondaryImage && isHovered ? 'opacity-0' : 'opacity-100'}`}
                     />
 
-                    {/* Overlay Actions */}
-                    <div className={`absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent flex flex-col gap-2 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                    {/* Secondary Image (Absolute Overlay) */}
+                    {props.secondaryImage && (
+                        <img
+                            src={props.secondaryImage}
+                            alt={`${name} secondary`}
+                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                        />
+                    )}
 
-                        {/* Add to Bag */}
+                    {/* Vertical Action Stack (Top Right) */}
+                    <div className={`absolute top-3 right-3 z-20 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
+                        {/* Wishlist */}
                         <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(props, "One Size"); addToast(`${name} added to Bag!`); }}
-                            className="w-full bg-white text-navy-900 font-bold py-2.5 rounded-full shadow-lg hover:bg-coral-500 hover:text-white transition-colors flex items-center justify-center gap-2 text-sm transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 delay-75"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (isInWishlist(id)) {
+                                    removeFromWishlist(id);
+                                    addToast(`${name} removed from Wishlist`, 'info');
+                                } else {
+                                    addToWishlist({ id, name, price, image: imgSrc, size: 'One Size' });
+                                    addToast(`${name} added to Wishlist!`);
+                                }
+                            }}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-coral-500 text-white' : 'bg-white text-navy-900 hover:bg-navy-900 hover:text-white'}`}
+                            title="Add to Wishlist"
                         >
-                            <ShoppingBag size={16} /> Add to Bag
+                            <Heart size={18} fill={isInWishlist(id) ? "currentColor" : "none"} />
                         </button>
 
-                        {/* Quick View (Secondary) */}
+                        {/* Quick View */}
                         <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); openQuickView(props); }}
-                            className="w-full bg-white/90 backdrop-blur text-navy-900 font-bold py-2.5 rounded-full shadow-lg hover:bg-navy-900 hover:text-white transition-colors flex items-center justify-center gap-2 text-sm transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300"
+                            className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-75"
+                            title="Quick View"
                         >
-                            <Eye size={16} /> Quick View
+                            <Eye size={18} />
+                        </button>
+
+                        {/* Add to Cart (Icon Only) */}
+                        <button
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(props, "One Size"); addToast(`${name} added to Bag!`); }}
+                            className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-100"
+                            title="Add to Cart"
+                        >
+                            <ShoppingBag size={18} />
                         </button>
                     </div>
                 </Link>

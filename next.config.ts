@@ -15,16 +15,19 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "placehold.co" },
-      { protocol: "https", hostname: "share.google" }, // User requested specific host
-      { protocol: "https", hostname: "*.google.com" },
       { protocol: "https", hostname: "*.googleusercontent.com" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      { protocol: "https", hostname: "api.dicebear.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "source.unsplash.com" },
       { protocol: "https", hostname: "plus.unsplash.com" },
+      { protocol: "https", hostname: "share.google" },
+      { protocol: "https", hostname: "placehold.co" },
     ],
     dangerouslyAllowSVG: true,
   },
 };
 
 export default withPWA(nextConfig);
+
 

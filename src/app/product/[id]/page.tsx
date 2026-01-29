@@ -129,6 +129,8 @@ export default function ProductPage() {
             <StickyActionBar
                 price={product.price}
                 originalPrice={product.compare_at_price}
+                productName={product.name}
+                productImage={product.images?.[0] || '/placeholder.png'}
                 onAddToCart={handleAddFromSticky}
                 onBuyNow={handleBuyNow}
             />

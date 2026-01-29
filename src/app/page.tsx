@@ -9,9 +9,11 @@ import GlassCard from '@/components/UI/GlassCard';
 import ProductShowcase from '@/components/Home/ProductShowcase';
 import Link from 'next/link';
 import MobileCategoryRail from '@/components/Home/MobileCategoryRail';
-import MobileCategoriesGrid from '@/components/Home/MobileCategoriesGrid';
+import HeroVideo from '@/components/Home/HeroVideo';
+import MosaicCategoryGrid from '@/components/Home/MosaicCategoryGrid';
 import MobileCuratedGrid from '@/components/Home/MobileCuratedGrid';
 import MobilePillsRail from '@/components/Home/MobilePillsRail';
+import MasonryProductGrid from '@/components/Home/MasonryProductGrid';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/context/ToastContext';
 
@@ -23,6 +25,7 @@ const mapProduct = (p: any) => ({
   price: p.price,
   originalPrice: p.compare_at_price,
   image: p.images?.[0] || '/images/placeholder.jpg',
+  secondaryImage: p.images?.[1], // Pass 2nd image for hover
   badge: undefined, // Logic can be added later
 });
 
@@ -79,8 +82,16 @@ export default function Home() {
 
       {/* Spacer for Header */}
       {/* Spacer removed as Header is sticky */}
-      <MobileCategoryRail />
-      <MobileCategoriesGrid />
+      <HeroVideo />
+      <MosaicCategoryGrid />
+
+      {/* New Arrivals (8 Items) */}
+      <ProductShowcase
+        title="New Arrivals"
+        subtitle="Fresh drops from this week."
+        products={newArrivals}
+      />
+
       <MobileCuratedGrid />
 
       {/* Hero Section - Bento Grid */}
@@ -94,21 +105,12 @@ export default function Home() {
       <MobilePillsRail />
 
       {/* New Arrivals (8 Items) */}
-      <ProductShowcase
-        title="New Arrivals"
-        subtitle="Fresh drops from this week."
-        products={newArrivals}
-      />
+
 
       <DesktopCuratedGrid />
 
-      {/* Featured Products (25 Items) */}
-      <ProductShowcase
-        title="Featured Collection"
-        subtitle="Our most loved pieces, curated just for you."
-        products={featuredProducts}
-        className="bg-gray-50/50 dark:bg-white/5" // Subtle separation
-      />
+      {/* Featured Collection - Masonry Layout */}
+      <MasonryProductGrid products={featuredProducts} />
 
       {/* Premium Features / Trust Signals */}
       <section className="py-16 px-6">

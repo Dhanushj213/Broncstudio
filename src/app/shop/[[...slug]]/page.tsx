@@ -11,6 +11,9 @@ import ProductCard from '@/components/Product/ProductCard';
 import { createClient } from '@/utils/supabase/client';
 import { LayoutGrid } from 'lucide-react';
 import BrandLoader from '@/components/UI/BrandLoader';
+import FilterSidebar from '@/components/Shop/FilterSidebar';
+import FilterDrawer from '@/components/Shop/FilterDrawer';
+import { Filter } from 'lucide-react';
 
 // Strict Taxonomy Source
 import { CATEGORY_TAXONOMY } from '@/data/categories';
@@ -31,6 +34,39 @@ export default function ShopPage() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(false);
+
+    // Filter State
+    const [isdrawerOpen, setIsDrawerOpen] = useState(false);
+    const [activeFilters, setActiveFilters] = useState({
+        minPrice: 0,
+        maxPrice: 10000,
+        colors: [] as string[],
+        sizes: [] as string[],
+        brands: [] as string[]
+    });
+
+    // Derived Filtered Products
+    const filteredProducts = products.filter(product => {
+        // Price
+        if (product.price < activeFilters.minPrice || product.price > activeFilters.maxPrice) return false;
+
+        // Brand
+        if (activeFilters.brands.length > 0 && !activeFilters.brands.includes(product.brand)) return false;
+
+        // Color (Metadata check)
+        if (activeFilters.colors.length > 0) {
+            const productColors = product.metadata?.colors || [];
+            if (!activeFilters.colors.some((c: string) => productColors.includes(c))) return false;
+        }
+
+        // Size (Metadata check)
+        if (activeFilters.sizes.length > 0) {
+            const productSizes = product.metadata?.sizes || [];
+            if (!activeFilters.sizes.some((s: string) => productSizes.includes(s))) return false;
+        }
+
+        return true;
+    });
 
     const supabase = createClient();
 
@@ -270,33 +306,72 @@ export default function ShopPage() {
                                 <BrandLoader text="Fetching Items..." />
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-12">
-                                {products.length > 0 ? products.map((product, idx) => (
-                                    <motion.div
-                                        key={product.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.05 * idx }}
+                            <div className="flex flex-col lg:flex-row gap-8 items-start">
+                                {/* Desktop Sidebar */}
+                                <div className="hidden lg:block w-[280px] flex-shrink-0 sticky top-32">
+                                    <h3 className="text-lg font-heading font-bold text-navy-900 dark:text-white mb-6">Filters</h3>
+                                    <FilterSidebar
+                                        products={products}
+                                        activeFilters={activeFilters}
+                                        onFilterChange={setActiveFilters}
+                                    />
+                                </div>
+
+                                {/* Mobile Filter Toggle */}
+                                <div className="lg:hidden w-full mb-6">
+                                    <button
+                                        onClick={() => setIsDrawerOpen(true)}
+                                        className="w-full flex items-center justify-center space-x-2 py-3 bg-white dark:bg-navy-900 border border-gray-200 dark:border-white/10 rounded-lg shadow-sm font-bold text-navy-900 dark:text-white"
                                     >
-                                        <ProductCard
-                                            id={product.id}
-                                            name={product.name}
-                                            brand="BroncStudio"
-                                            price={product.price}
-                                            originalPrice={product.compare_at_price}
-                                            image={product.images?.[0] || '/images/placeholder.jpg'}
-                                            badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
-                                        />
-                                    </motion.div>
-                                )) : (
-                                    <div className="col-span-full py-32 text-center text-gray-400">
-                                        <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                                            <LayoutGrid size={32} className="opacity-50" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Products Found</h3>
-                                        <p>We couldn't find any items in this collection just yet.</p>
+                                        <Filter size={18} />
+                                        <span>Filter Products</span>
+                                    </button>
+                                </div>
+                                <FilterDrawer
+                                    isOpen={isdrawerOpen}
+                                    onClose={() => setIsDrawerOpen(false)}
+                                    products={products}
+                                    activeFilters={activeFilters}
+                                    onFilterChange={setActiveFilters}
+                                />
+
+                                {/* Product Grid */}
+                                <div className="flex-1 w-full">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+                                        {filteredProducts.length > 0 ? filteredProducts.map((product, idx) => (
+                                            <motion.div
+                                                key={product.id}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.05 * idx }}
+                                            >
+                                                <ProductCard
+                                                    id={product.id}
+                                                    name={product.name}
+                                                    brand={product.brand || "BroncStudio"}
+                                                    price={product.price}
+                                                    originalPrice={product.compare_at_price}
+                                                    image={product.images?.[0] || '/images/placeholder.jpg'}
+                                                    badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
+                                                />
+                                            </motion.div>
+                                        )) : (
+                                            <div className="col-span-full py-32 text-center text-gray-400">
+                                                <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                                                    <Filter size={32} className="opacity-50" />
+                                                </div>
+                                                <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Matches Found</h3>
+                                                <p>Try adjusting your filters.</p>
+                                                <button
+                                                    onClick={() => setActiveFilters({ minPrice: 0, maxPrice: 10000, colors: [], sizes: [], brands: [] })}
+                                                    className="mt-4 text-coral-500 font-bold hover:underline"
+                                                >
+                                                    Clear Filters
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
                             </div>
                         )}
                     </motion.div>
