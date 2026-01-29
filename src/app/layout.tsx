@@ -44,6 +44,7 @@ export const metadata: Metadata = {
 import Header from "@/components/Header/Header";
 import MobileNav from "@/components/Header/MobileNav";
 import PremiumFooter from "@/components/Footer/PremiumFooter";
+import FooterWrapper from "@/components/Footer/FooterWrapper";
 import { UIProvider } from "@/context/UIContext";
 import AnnouncementBar from "@/components/Layout/AnnouncementBar";
 import SplashScreen from "@/components/Layout/SplashScreen";
@@ -74,7 +75,9 @@ export default function RootLayout({
                 <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
                   {children}
                 </main>
-                <PremiumFooter />
+                <FooterWrapper>
+                  <PremiumFooter />
+                </FooterWrapper>
                 <MobileNav />
                 <SearchOverlay />
                 <WishlistDrawer />
