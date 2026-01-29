@@ -47,7 +47,7 @@ export default function DesktopCuratedGrid() {
 
                 </div>
 
-                <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
+                <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar -mx-6 px-6">
                     {sections.map((item) => (
                         <Link
                             key={item.id}
