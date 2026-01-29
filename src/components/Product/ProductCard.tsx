@@ -147,7 +147,7 @@ export default function ProductCard(props: ProductProps) {
             <div className="p-4">
                 {brand && <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">{brand}</p>}
                 <Link href={`/product/${id}`} className="block group-hover:text-coral-500 transition-colors">
-                    <h3 className="text-xs md:text-sm font-bold text-navy-900 dark:text-white leading-tight mb-1 md:mb-2 line-clamp-2 md:min-h-[2.5em]">{name}</h3>
+                    <h3 className="text-xs md:text-sm font-bold text-navy-900 dark:text-white leading-tight mb-1 md:mb-2 line-clamp-2 h-[2.5em] overflow-hidden" title={name}>{name}</h3>
                 </Link>
 
                 <div className="flex flex-wrap items-baseline gap-1.5 md:gap-2">
