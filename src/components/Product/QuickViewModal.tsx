@@ -148,7 +148,7 @@ export default function QuickViewModal() {
                                         Color: <span className="text-gray-500 font-normal capitalize">{selectedColor}</span>
                                     </span>
                                     <div className="flex flex-wrap gap-2">
-                                        {product.colors.map((color: string) => (
+                                        {product.colors?.map((color: string) => (
                                             <button
                                                 key={color}
                                                 onClick={() => setSelectedColor(color)}
