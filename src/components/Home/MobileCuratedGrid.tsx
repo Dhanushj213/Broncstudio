@@ -34,17 +34,22 @@ export default function MobileCuratedGrid() {
                 <div className="h-0.5 w-12 bg-coral-500 mt-1"></div>
             </div>
 
-            {/* Vertical Grid Container */}
-            <div className="grid grid-cols-3 gap-2 px-3 pb-4">
+            {/* Horizontal 2xGrid (2 rows, horizontal scroll) */}
+            <div className="grid grid-rows-2 grid-flow-col gap-3 px-4 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar">
                 {sections.map((item) => (
-                    <Link key={item.id} href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`} className="relative aspect-[3/4] group overflow-hidden rounded-lg shadow-sm">
+                    <Link
+                        key={item.id}
+                        href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
+                        className="relative w-[calc(50vw-20px)] aspect-[4/3] group overflow-hidden rounded-lg shadow-sm snap-start"
+                    >
                         <img
                             src={item.image_url}
                             alt={item.title}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-3 flex items-end justify-center">
-                            <span className="text-white font-bold text-xs tracking-widest uppercase text-shadow text-center leading-tight">
+                        <div className="absolute inset-0 bg-black/20" />
+                        <div className="absolute inset-0 flex items-center justify-center p-2">
+                            <span className="text-white font-serif italic text-lg text-center leading-tight drop-shadow-md">
                                 {item.title}
                             </span>
                         </div>
