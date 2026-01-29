@@ -46,12 +46,12 @@ export default function DesktopCuratedGrid() {
 
                 </div>
 
-                <div className="grid grid-cols-4 gap-6">
+                <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-6 px-6">
                     {sections.map((item) => (
                         <Link
                             key={item.id}
-                            href={`/curated/${item.id}`} // Or logic to map to standard shop page if needed, but lets use /curated/[id] for now or logic from config
-                            className="group relative aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer"
+                            href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
+                            className="group relative min-w-[300px] md:min-w-[350px] lg:min-w-[400px] aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer snap-start shrink-0 shadow-sm hover:shadow-xl transition-all"
                         >
                             <img
                                 src={item.image_url}
@@ -59,11 +59,12 @@ export default function DesktopCuratedGrid() {
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex flex-col justify-end p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                <h3 className="text-white font-heading font-bold text-xl uppercase tracking-wide text-shadow mb-1">
+                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                                <h3 className="text-white font-heading font-bold text-2xl uppercase tracking-widest mb-2 transform transition-transform duration-500">
                                     {item.title}
                                 </h3>
-                                <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                <div className="h-1 w-12 bg-coral-500 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100"></div>
+                                <p className="text-white/90 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0 delay-150">
                                     {item.description}
                                 </p>
                             </div>
