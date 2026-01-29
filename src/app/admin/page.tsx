@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { DollarSign, ShoppingBag, Package, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, AlertTriangle, Plus } from 'lucide-react';
+import { DollarSign, ShoppingBag, Package, TrendingUp, ArrowUpRight, ArrowDownRight, Clock, AlertTriangle, Plus, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -22,57 +22,63 @@ export default function AdminDashboard() {
     );
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-
-            // 1. Fetch Key Stats
-            const { data: orders, error } = await supabase
-                .from('orders')
-                .select('total_amount, status');
-
-            // Fetch Inventory for Low Stock
-            const { count: lowStockCount } = await supabase
-                .from('products')
-                .select('*', { count: 'exact', head: true })
-                .lt('stock_quantity', 10);
-
-            if (orders) {
-                const totalRevenue = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
-                const pending = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
-
-                setStats(prev => ({
-                    ...prev,
-                    revenue: totalRevenue,
-                    totalOrders: orders.length,
-                    pendingOrders: pending,
-                    lowStock: lowStockCount || 0
-                }));
-            }
-
-            // 2. Fetch Recent Orders & Measure Latency
+        const checkDatabaseHealth = async () => {
+            setHealth(prev => ({ ...prev, status: 'Checking...' }));
             const start = performance.now();
-            const { data: recent, error: recentError } = await supabase
-                .from('orders')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5);
+            await supabase.from('orders').select('id').limit(1); // Lightweight check
             const end = performance.now();
             const latency = Math.round(end - start);
-
-            if (recent) {
-                setRecentOrders(recent);
-            }
 
             setHealth({
                 latency,
                 status: latency < 300 ? 'Healthy' : latency < 800 ? 'Moderate' : 'Degraded'
             });
+        };
+
+        const fetchData = async () => {
+            setLoading(true);
+
+            // 1. Fetch Key Stats
+            const { data: orders } = await supabase.from('orders').select('total_amount, status');
+            const { count: lowStockCount } = await supabase.from('products').select('*', { count: 'exact', head: true }).lt('stock_quantity', 10);
+
+            if (orders) {
+                const totalRevenue = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+                const pending = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+                setStats({ revenue: totalRevenue, totalOrders: orders.length, pendingOrders: pending, lowStock: lowStockCount || 0 });
+            }
+
+            // 2. Fetch Recent Orders
+            const { data: recent } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5);
+            if (recent) setRecentOrders(recent);
+
+            // 3. Check Health
+            await checkDatabaseHealth();
 
             setLoading(false);
         };
 
         fetchData();
     }, []);
+
+    // Re-declare for button access (simpler refactor preferred, but let's just duplicate the lightweight function for the button click to avoid massive refactor of useEffect)
+    const refreshHealth = async () => {
+        setHealth(prev => ({ ...prev, status: 'Checking...' }));
+        const supabase = createBrowserClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+        const start = performance.now();
+        await supabase.from('orders').select('id').limit(1);
+        const end = performance.now();
+        const latency = Math.round(end - start);
+
+        setHealth({
+            latency,
+            status: latency < 300 ? 'Healthy' : latency < 800 ? 'Moderate' : 'Degraded'
+        });
+    };
+
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);

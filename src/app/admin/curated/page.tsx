@@ -64,6 +64,25 @@ export default function CuratedSectionsPage() {
         }
     };
 
+    const handleSeed = async () => {
+        setLoading(true);
+        const defaults = [
+            { title: 'Gifts Under ₹499', description: 'Small joys, big smiles.', image_url: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&q=80', display_order: 1, category_slugs: ['keychains', 'badges', 'accessories'] },
+            { title: 'Study Time', description: 'Fun meets focus.', image_url: 'https://images.unsplash.com/photo-1456735190827-d1261f7add50?w=600&q=80', display_order: 2, category_slugs: ['notebooks', 'stationery'] },
+            { title: 'Desk Therapy', description: 'Workspaces that feel like you.', image_url: 'https://images.unsplash.com/photo-1497215842964-222b430dc0a8?w=600&q=80', display_order: 3, category_slugs: ['mouse-pads', 'coasters'] },
+            { title: 'Weekend Fits', description: 'Relaxed. Easy. Effortless.', image_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80', display_order: 4, category_slugs: ['men-hoodies', 'clothing'] },
+            { title: 'Mini Home Makeover', description: 'Small changes, big vibe.', image_url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80', display_order: 5, category_slugs: ['posters', 'home-decor'] },
+            { title: 'Everyday Carry', description: 'What you reach for daily.', image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80', display_order: 6, category_slugs: ['bags', 'wallets'] },
+        ];
+
+        const { error } = await supabase.from('curated_sections').insert(defaults);
+        if (error) {
+            alert('Error seeding: ' + error.message);
+        } else {
+            fetchSections();
+        }
+    };
+
     return (
         <div className="space-y-6 pb-20">
             <div className="flex justify-between items-center">
@@ -85,9 +104,14 @@ export default function CuratedSectionsPage() {
                 <div className="bg-white rounded-2xl p-12 text-center border border-dashed border-gray-300">
                     <h3 className="text-lg font-bold text-gray-900 mb-2">No selections found</h3>
                     <p className="text-gray-500 mb-6">Create your first curated collection to get started.</p>
-                    <Link href="/admin/curated/new">
-                        <button className="px-6 py-2 bg-coral-500 text-white rounded-lg font-bold">Create Selection</button>
-                    </Link>
+                    <div className="flex gap-4 justify-center">
+                        <Link href="/admin/curated/new">
+                            <button className="px-6 py-2 bg-coral-500 text-white rounded-lg font-bold">Create Selection</button>
+                        </Link>
+                        <button onClick={handleSeed} className="px-6 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-bold">
+                            Seed Defaults
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
