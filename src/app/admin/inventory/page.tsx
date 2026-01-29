@@ -10,7 +10,10 @@ interface ProductInventory {
     name: string;
     stock_quantity: number;
     price: number;
-    image_url: string;
+    images: string[];
+    metadata?: {
+        stock_status?: string;
+    };
 }
 
 export default function InventoryPage() {
@@ -32,13 +35,18 @@ export default function InventoryPage() {
         setLoading(true);
         const { data, error } = await supabase
             .from('products')
-            .select('id, name, stock_quantity, price, image_url')
-            .order('stock_quantity', { ascending: true }); // Low stock first
+            .select('id, name, price, images, metadata')
+            .order('name', { ascending: true });
 
         if (error) {
             console.error('Error fetching inventory:', error);
         } else {
-            setProducts(data || []);
+            // Map the data to include a default stock_quantity since the column doesn't exist
+            const mappedData = (data || []).map((p: any) => ({
+                ...p,
+                stock_quantity: 0
+            }));
+            setProducts(mappedData);
         }
         setLoading(false);
     };
@@ -52,16 +60,14 @@ export default function InventoryPage() {
 
     const saveStock = async (id: string, newQuantity: number) => {
         setSavingId(id);
-        const { error } = await supabase
-            .from('products')
-            .update({ stock_quantity: newQuantity })
-            .eq('id', id);
+        // NOTE: stock_quantity column doesn't exist yet in the DB.
+        // We would need to add a migration or use metadata.
+        // For now, we'll simulate a success to not break the UI flow, 
+        // but alert the user that this feature needs backend support.
 
-        if (error) {
-            alert('Failed to update stock');
-        } else {
-            // Success indicator could be added here
-        }
+        await new Promise(resolve => setTimeout(resolve, 500)); // Fake delay
+
+        alert('Stock tracking is not yet enabled in the database schema. This value was not saved.');
         setSavingId(null);
     };
 
@@ -121,7 +127,11 @@ export default function InventoryPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200">
-                                                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                                    {product.images?.[0] ? (
+                                                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">IMG</div>
+                                                    )}
                                                 </div>
                                                 <div className="font-bold text-navy-900">{product.name}</div>
                                             </div>
