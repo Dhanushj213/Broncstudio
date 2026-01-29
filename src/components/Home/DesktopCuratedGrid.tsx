@@ -10,6 +10,7 @@ interface CuratedSection {
     title: string;
     description: string;
     image_url: string;
+    category_slugs?: string[];
 }
 
 export default function DesktopCuratedGrid() {
