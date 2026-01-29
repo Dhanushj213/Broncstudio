@@ -70,7 +70,7 @@ export default function Home() {
       const { data: featProds } = await supabase
         .from('products')
         .select('*')
-        .limit(25);
+        .limit(28);
 
       if (featProds) {
         setFeaturedProducts(featProds.map(mapProduct));
