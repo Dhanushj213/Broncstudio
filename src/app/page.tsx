@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import BentoGridWorld from '@/components/Home/BentoGridWorld';
+import DesktopCuratedGrid from '@/components/Home/DesktopCuratedGrid';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
@@ -104,6 +105,8 @@ export default function Home() {
         subtitle="Fresh drops from this week."
         products={newArrivals}
       />
+
+      <DesktopCuratedGrid />
 
       {/* Featured Products (25 Items) */}
       <ProductShowcase

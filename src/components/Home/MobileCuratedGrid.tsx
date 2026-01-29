@@ -1,17 +1,34 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-import { CURATED_CONFIG, CURATED_GRID_ORDER } from '@/data/curatedConfig';
+import { createClient } from '@/utils/supabase/client';
 
 export default function MobileCuratedGrid() {
-    // Chunk the order into groups of 4 for the 2x2 pages
-    const chunkSize = 4;
-    const chunks = [];
-    for (let i = 0; i < CURATED_GRID_ORDER.length; i += chunkSize) {
-        chunks.push(CURATED_GRID_ORDER.slice(i, i + chunkSize));
-    }
+    const [chunks, setChunks] = useState<any[][]>([]);
+    const supabase = createClient();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const { data } = await supabase
+                .from('curated_sections')
+                .select('*')
+                .eq('is_active', true)
+                .order('display_order', { ascending: true });
+
+            if (data && data.length > 0) {
+                const chunkSize = 4;
+                const newChunks = [];
+                for (let i = 0; i < data.length; i += chunkSize) {
+                    newChunks.push(data.slice(i, i + chunkSize));
+                }
+                setChunks(newChunks);
+            }
+        };
+        fetchData();
+    }, []);
+
+    if (chunks.length === 0) return null;
 
     return (
         <section className="md:hidden py-6 bg-white dark:bg-navy-900 overflow-hidden">
@@ -29,12 +46,11 @@ export default function MobileCuratedGrid() {
                         key={pageIndex}
                         className="flex-none w-[85vw] grid grid-cols-2 gap-3 snap-center"
                     >
-                        {chunk.map((slug) => {
-                            const item = CURATED_CONFIG[slug];
+                        {chunk.map((item) => {
                             return (
                                 <Link key={item.id} href={`/curated/${item.id}`} className="relative aspect-[3/4] group overflow-hidden rounded-lg shadow-sm">
                                     <img
-                                        src={item.image}
+                                        src={item.image_url}
                                         alt={item.title}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
