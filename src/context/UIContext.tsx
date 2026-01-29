@@ -46,7 +46,7 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
     const [cartCount, setCartCount] = useState(2); // Mock initial count
     const [quickViewProduct, setQuickViewProduct] = useState<QuickViewProductData | null>(null);
     const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
-    const [userName, setUserName] = useState<string | null>('Dhanush'); // Mock logged in user
+    const [userName, setUserName] = useState<string | null>(null); // Default to no user logged in
 
     // Cart Actions
     const addToBag = (product: any) => {
