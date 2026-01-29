@@ -52,7 +52,7 @@ export default function Home() {
         .from('products')
         .select('*')
         .contains('metadata', { is_new_arrival: true })
-        .limit(10);
+        .limit(12);
 
       if (newProds) {
         setNewArrivals(newProds.map((p: any) => ({ ...mapProduct(p), badge: 'New' })));

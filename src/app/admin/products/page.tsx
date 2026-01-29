@@ -123,8 +123,8 @@ export default function AdminProductsPage() {
         // If turning ON, check limit first
         if (!currentStatus) {
             const newCount = products.filter(p => p.metadata?.is_new_arrival).length;
-            if (newCount >= 10) {
-                addToast("Limit Reached: Only 10 new arrival products allowed.", 'error');
+            if (newCount >= 12) {
+                addToast("Limit Reached: Only 12 new arrival products allowed.", 'error');
                 return;
             }
         }
