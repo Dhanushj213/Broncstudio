@@ -35,12 +35,12 @@ export default function MobileCuratedGrid() {
             </div>
 
             {/* Horizontal 2xGrid (2 rows, horizontal scroll) */}
-            <div className="grid grid-rows-2 grid-flow-col gap-3 px-4 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar">
+            <div className="grid grid-rows-2 grid-flow-col gap-3 px-4 pb-4 overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-pl-4">
                 {sections.map((item) => (
                     <Link
                         key={item.id}
                         href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
-                        className="relative w-[calc(50vw-20px)] aspect-[4/3] group overflow-hidden rounded-lg shadow-sm snap-start"
+                        className="relative w-[calc(50vw-22px)] aspect-[4/3] group overflow-hidden rounded-lg shadow-sm snap-start"
                     >
                         <img
                             src={item.image_url}
