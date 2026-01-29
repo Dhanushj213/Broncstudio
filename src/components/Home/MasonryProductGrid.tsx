@@ -24,15 +24,16 @@ export default function MasonryProductGrid({ products }: MasonryProductGridProps
                 </div>
 
                 {/* CSS Columns Masonry */}
-                <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+                {/* Standard Grid Layout */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {products.map((product, idx) => (
                         <motion.div
                             key={product.id}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-50px" }}
-                            transition={{ duration: 0.5, delay: 0.05 * (idx % 4) }} // Stagger based on column index approx
-                            className="break-inside-avoid"
+                            transition={{ duration: 0.5, delay: 0.05 * (idx % 4) }}
+                            className="h-full"
                         >
                             <ProductCard
                                 id={product.id}
