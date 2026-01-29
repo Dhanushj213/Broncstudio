@@ -1,6 +1,6 @@
 'use client';
 
-// Vercel Rebuild Trigger: 240px update
+// Vercel Rebuild Trigger: 160px micro update (Forced)
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
