@@ -17,6 +17,7 @@ interface Product {
     metadata?: {
         stock_status?: string;
         is_featured?: boolean;
+        is_new_arrival?: boolean;
         personalization?: {
             enabled: boolean;
         };
@@ -118,6 +119,43 @@ export default function AdminProductsPage() {
         }
     };
 
+    const handleToggleNewArrival = async (product: Product, currentStatus: boolean) => {
+        // If turning ON, check limit first
+        if (!currentStatus) {
+            const newCount = products.filter(p => p.metadata?.is_new_arrival).length;
+            if (newCount >= 10) {
+                addToast("Limit Reached: Only 10 new arrival products allowed.", 'error');
+                return;
+            }
+        }
+
+        // Optimistic Update
+        const updatedProducts = products.map(p =>
+            p.id === product.id
+                ? { ...p, metadata: { ...p.metadata, is_new_arrival: !currentStatus } }
+                : p
+        );
+        setProducts(updatedProducts);
+
+        // API Update
+        const { error } = await supabase
+            .from('products')
+            .update({
+                metadata: {
+                    ...product.metadata,
+                    is_new_arrival: !currentStatus
+                }
+            })
+            .eq('id', product.id);
+
+        if (error) {
+            console.error('Update error:', error);
+            addToast('Failed to update new arrival status', 'error');
+            // Revert on error
+            setProducts(products);
+        }
+    };
+
     const styles = {
         toggleWrapper: "relative inline-flex items-center cursor-pointer",
         toggleInput: "sr-only peer",
@@ -180,6 +218,7 @@ export default function AdminProductsPage() {
                                     <th className="px-6 py-4">Category</th>
                                     <th className="px-6 py-4">Price</th>
                                     <th className="px-6 py-4 text-center">Featured</th>
+                                    <th className="px-6 py-4 text-center">New</th>
                                     <th className="px-6 py-4">Stock</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
@@ -223,6 +262,17 @@ export default function AdminProductsPage() {
                                                     onChange={() => handleToggleFeatured(product, !!product.metadata?.is_featured)}
                                                 />
                                                 <div className={styles.toggleSlider}></div>
+                                            </label>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <label className={styles.toggleWrapper}>
+                                                <input
+                                                    type="checkbox"
+                                                    className={styles.toggleInput}
+                                                    checked={!!product.metadata?.is_new_arrival}
+                                                    onChange={() => handleToggleNewArrival(product, !!product.metadata?.is_new_arrival)}
+                                                />
+                                                <div className={`${styles.toggleSlider} peer-checked:bg-blue-500`}></div>
                                             </label>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
