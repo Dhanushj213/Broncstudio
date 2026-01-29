@@ -19,6 +19,8 @@ interface ProductInventory {
 export default function InventoryPage() {
     const [products, setProducts] = useState<ProductInventory[]>([]);
     const [loading, setLoading] = useState(true);
+    const [debugError, setDebugError] = useState<any>(null); // DEBUG
+    const [fetchCount, setFetchCount] = useState<number>(-1); // DEBUG
     const [searchTerm, setSearchTerm] = useState('');
     const [savingId, setSavingId] = useState<string | null>(null);
 
@@ -40,7 +42,9 @@ export default function InventoryPage() {
 
         if (error) {
             console.error('Error fetching inventory:', error);
+            setDebugError(error); // DEBUG
         } else {
+            setFetchCount(data?.length || 0); // DEBUG
             // Map the data to include a default stock_quantity since the column doesn't exist
             const mappedData = (data || []).map((p: any) => ({
                 ...p,
@@ -170,6 +174,24 @@ export default function InventoryPage() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+            </div>
+
+            {/* DEBUGGER - REMOVE LATER */}
+            <div className="bg-gray-100 p-4 rounded text-xs font-mono break-all border border-gray-300">
+                <h3 className="font-bold text-red-600 mb-2">DEBUG MODE</h3>
+                <p>Loading: {loading ? 'true' : 'false'}</p>
+                <p>Fetch Count: {fetchCount}</p>
+                <p>Products Length: {products.length}</p>
+                {debugError && (
+                    <div className="bg-red-50 p-2 text-red-600 mt-2">
+                        <strong>Error:</strong> {JSON.stringify(debugError, null, 2)}
+                    </div>
+                )}
+                {!loading && products.length === 0 && !debugError && (
+                    <div className="mt-2 text-orange-600">
+                        Fetched 0 items with no error. Table is empty?
                     </div>
                 )}
             </div>
