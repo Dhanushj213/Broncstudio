@@ -110,7 +110,7 @@ export default function GiftFinderPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="mb-12"
                     >
-                        <h2 className="text-lg font-bold text-navy-900 mb-6 text-center md:text-left">
+                        <h2 className="text-lg font-bold text-navy-900 mb-6 text-center md:text-left uppercase tracking-widest text-xs opacity-70">
                             Choose a moment
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -118,18 +118,23 @@ export default function GiftFinderPage() {
                                 <motion.button
                                     key={moment.id}
                                     onClick={() => setSelectedMoment(moment.id)}
-                                    whileHover={{ scale: 1.03, y: -4 }}
-                                    whileTap={{ scale: 0.97 }}
+                                    whileHover={{ scale: 1.02, y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05 }}
-                                    className="bg-white rounded-2xl p-5 md:p-6 text-left shadow-md hover:shadow-xl border border-gray-100 hover:border-coral-200 transition-all group"
+                                    className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-left shadow-sm hover:shadow-xl border border-gray-100 hover:border-navy-900 transition-all group relative overflow-hidden"
                                 >
-                                    <span className="text-3xl md:text-4xl mb-3 block">{moment.emoji}</span>
-                                    <h3 className="font-bold text-navy-900 text-sm md:text-base mb-1 group-hover:text-coral-600 transition-colors">
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110">
+                                        <moment.icon size={64} strokeWidth={1} />
+                                    </div>
+                                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-4 group-hover:bg-navy-900 group-hover:text-white transition-colors duration-300">
+                                        <moment.icon size={24} strokeWidth={1.5} />
+                                    </div>
+                                    <h3 className="font-bold text-navy-900 text-sm md:text-base mb-2 group-hover:text-navy-900 transition-colors">
                                         {moment.label}
                                     </h3>
-                                    <p className="text-gray-400 text-xs md:text-sm leading-snug">
+                                    <p className="text-gray-400 text-xs leading-relaxed group-hover:text-gray-500">
                                         {moment.tagline}
                                     </p>
                                 </motion.button>
@@ -139,20 +144,22 @@ export default function GiftFinderPage() {
                 )}
 
                 {/* ===== REFINEMENT BAR ===== */}
-                {selectedMoment && (
+                {selectedMoment && currentMoment && (
                     <motion.section
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="mb-8"
                     >
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-xl shadow-gray-100 border border-gray-100">
                             {/* Selected Moment */}
-                            <div className="flex items-center gap-3">
-                                <span className="text-2xl">{currentMoment?.emoji}</span>
-                                <div>
-                                    <p className="font-bold text-navy-900 text-sm">{currentMoment?.label}</p>
-                                    <button onClick={reset} className="text-coral-500 text-xs font-medium hover:underline flex items-center gap-1">
-                                        <RotateCcw size={12} /> Change moment
+                            <div className="flex items-center gap-4 w-full md:w-auto">
+                                <div className="w-12 h-12 rounded-full bg-navy-50 text-navy-900 flex items-center justify-center">
+                                    <currentMoment.icon size={24} strokeWidth={1.5} />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-bold text-navy-900 text-lg leading-none mb-1">{currentMoment.label}</p>
+                                    <button onClick={reset} className="text-coral-500 text-xs font-bold hover:underline flex items-center gap-1 uppercase tracking-wider">
+                                        <RotateCcw size={10} /> Change moment
                                     </button>
                                 </div>
                             </div>
@@ -166,8 +173,8 @@ export default function GiftFinderPage() {
                                             key={opt.id}
                                             onClick={() => setAudience(audience === opt.id ? null : opt.id)}
                                             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${audience === opt.id
-                                                    ? 'bg-navy-900 text-white'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                ? 'bg-navy-900 text-white'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                 }`}
                                         >
                                             {opt.label}
@@ -184,8 +191,8 @@ export default function GiftFinderPage() {
                                             key={opt.id}
                                             onClick={() => setBudget(budget === opt.id ? null : opt.id)}
                                             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${budget === opt.id
-                                                    ? 'bg-coral-500 text-white'
-                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                ? 'bg-coral-500 text-white'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                 }`}
                                         >
                                             {opt.label}
@@ -251,7 +258,7 @@ export default function GiftFinderPage() {
                 )}
 
                 {/* ===== PERSONALISATION CTA ===== */}
-                {selectedMoment && products.length > 0 && (
+                {selectedMoment && (
                     <motion.section
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

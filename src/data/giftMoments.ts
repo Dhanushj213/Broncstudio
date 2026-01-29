@@ -1,10 +1,9 @@
-// Gift Finder Moment Configurations
-// Each moment defines filtering and scoring rules for product selection
+import { Cake, Home, Shirt, Brain, Coffee, Dog, Sparkles } from 'lucide-react';
 
 export interface GiftMoment {
     id: string;
     label: string;
-    emoji: string;
+    icon: any;
     tagline: string;
     preferredCategories: string[];
     giftTypes: string[];
@@ -15,7 +14,7 @@ export const GIFT_MOMENTS: GiftMoment[] = [
     {
         id: 'forgot_birthday',
         label: 'Forgot the Birthday',
-        emoji: '🎂',
+        icon: Cake,
         tagline: 'Easy gifts that always work',
         preferredCategories: ['accessories', 'drinkware', 'tech_desk', 'gifts_stationery'],
         giftTypes: ['quick', 'safe', 'impulse'],
@@ -23,7 +22,7 @@ export const GIFT_MOMENTS: GiftMoment[] = [
     {
         id: 'new_home',
         label: 'New Home, New Beginnings',
-        emoji: '🏡',
+        icon: Home,
         tagline: 'Thoughtful pieces for a fresh start',
         preferredCategories: ['home_decor', 'drinkware'],
         giftTypes: ['safe', 'premium'],
@@ -31,15 +30,15 @@ export const GIFT_MOMENTS: GiftMoment[] = [
     {
         id: 'everyday_upgrade',
         label: 'Everyday Upgrade',
-        emoji: '👕',
-        tagline: 'Useful, stylish gifts they'll use daily',
+        icon: Shirt,
+        tagline: 'Useful, stylish gifts they\'ll use daily',
         preferredCategories: ['clothing', 'accessories', 'bags'],
         giftTypes: ['safe'],
     },
     {
         id: 'learning_play',
         label: 'Learning & Play Time',
-        emoji: '🧠',
+        icon: Brain,
         tagline: 'Fun gifts that spark curiosity',
         preferredCategories: ['toys', 'gifts_stationery'],
         giftTypes: ['quick', 'safe'],
@@ -47,7 +46,7 @@ export const GIFT_MOMENTS: GiftMoment[] = [
     {
         id: 'desk_glowup',
         label: 'Desk Glow-Up',
-        emoji: '☕',
+        icon: Coffee,
         tagline: 'Small upgrades for work & study',
         preferredCategories: ['tech_desk', 'drinkware', 'gifts_stationery'],
         giftTypes: ['quick', 'impulse'],
@@ -55,7 +54,7 @@ export const GIFT_MOMENTS: GiftMoment[] = [
     {
         id: 'for_pet',
         label: 'For My Pet',
-        emoji: '🐶',
+        icon: Dog,
         tagline: 'Something special for furry friends',
         preferredCategories: ['pets'],
         giftTypes: ['safe'],
@@ -63,7 +62,7 @@ export const GIFT_MOMENTS: GiftMoment[] = [
     {
         id: 'just_because',
         label: 'Just Because',
-        emoji: '🎉',
+        icon: Sparkles,
         tagline: 'No reason needed — just joy',
         preferredCategories: [], // All categories allowed
         giftTypes: ['quick', 'impulse'],
