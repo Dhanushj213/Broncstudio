@@ -53,7 +53,7 @@ export default function DesktopCuratedGrid() {
                         <Link
                             key={item.id}
                             href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
-                            className="group relative min-w-[160px] md:min-w-[200px] lg:min-w-[220px] aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer snap-start shrink-0 shadow-sm hover:shadow-xl transition-all"
+                            className="group relative min-w-[130px] md:min-w-[160px] lg:min-w-[180px] aspect-[2/3] overflow-hidden rounded-xl cursor-pointer snap-start shrink-0 shadow-sm hover:shadow-lg transition-all"
                         >
                             <img
                                 src={item.image_url}
@@ -61,12 +61,12 @@ export default function DesktopCuratedGrid() {
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                                <h3 className="text-white font-heading font-bold text-2xl uppercase tracking-widest mb-2 transform transition-transform duration-500">
+                            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end p-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                                <h3 className="text-white font-heading font-bold text-sm md:text-base uppercase tracking-wider mb-1 transform transition-transform duration-500 leading-tight">
                                     {item.title}
                                 </h3>
-                                <div className="h-1 w-12 bg-coral-500 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100"></div>
-                                <p className="text-white/90 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0 delay-150">
+                                <div className="h-0.5 w-8 bg-coral-500 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100"></div>
+                                <p className="text-white/80 text-[10px] md:text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0 delay-150 line-clamp-2">
                                     {item.description}
                                 </p>
                             </div>
