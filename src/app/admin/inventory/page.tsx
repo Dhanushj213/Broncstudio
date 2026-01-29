@@ -35,7 +35,7 @@ export default function InventoryPage() {
         setLoading(true);
         const { data, error } = await supabase
             .from('products')
-            .select('id, name, price, images, metadata')
+            .select('*')
             .order('name', { ascending: true });
 
         if (error) {
