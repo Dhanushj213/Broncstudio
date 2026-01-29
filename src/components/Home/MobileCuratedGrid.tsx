@@ -35,7 +35,7 @@ export default function MobileCuratedGrid() {
             </div>
 
             {/* Vertical Grid Container */}
-            <div className="grid grid-cols-2 gap-3 px-4 pb-4">
+            <div className="grid grid-cols-3 gap-2 px-3 pb-4">
                 {sections.map((item) => (
                     <Link key={item.id} href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`} className="relative aspect-[3/4] group overflow-hidden rounded-lg shadow-sm">
                         <img
