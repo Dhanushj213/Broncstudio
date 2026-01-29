@@ -48,12 +48,12 @@ export default function DesktopCuratedGrid() {
 
                 </div>
 
-                <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar -mx-6 px-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {sections.map((item) => (
                         <Link
                             key={item.id}
                             href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
-                            className="group relative min-w-[220px] md:min-w-[calc(33.33%-16px)] lg:min-w-[calc(25%-18px)] aspect-square overflow-hidden rounded-[32px] cursor-pointer snap-start shrink-0 shadow-md hover:shadow-2xl transition-all duration-500"
+                            className="group relative w-full aspect-square overflow-hidden rounded-[32px] cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500"
                         >
                             <img
                                 src={item.image_url}
