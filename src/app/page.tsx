@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import BentoGridWorld from '@/components/Home/BentoGridWorld';
-import DesktopCuratedGrid from '@/components/Home/DesktopCuratedGrid';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Sparkles, Heart, ShieldCheck } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
@@ -11,7 +10,7 @@ import Link from 'next/link';
 import MobileCategoryRail from '@/components/Home/MobileCategoryRail';
 import HeroVideo from '@/components/Home/HeroVideo';
 import MosaicCategoryGrid from '@/components/Home/MosaicCategoryGrid';
-import MobileCuratedGrid from '@/components/Home/MobileCuratedGrid';
+import CuratedGrid from '@/components/Home/CuratedGrid';
 import MobilePillsRail from '@/components/Home/MobilePillsRail';
 import MasonryProductGrid from '@/components/Home/MasonryProductGrid';
 import { createClient } from '@/utils/supabase/client';
@@ -92,8 +91,6 @@ export default function Home() {
         products={newArrivals}
       />
 
-      <MobileCuratedGrid />
-
       {/* Hero Section - Bento Grid */}
       <div id="worlds" className="relative pt-2 pb-4 text-center scroll-mt-[var(--header-height)]">
         <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-2 animate-fade-in-up md:block hidden">
@@ -107,10 +104,11 @@ export default function Home() {
       {/* New Arrivals (8 Items) */}
 
 
-      <DesktopCuratedGrid />
-
       {/* Featured Collection - Masonry Layout */}
       <MasonryProductGrid products={featuredProducts} />
+
+      {/* Unified Curated Grid (Mobile & Desktop) */}
+      <CuratedGrid />
 
       {/* Premium Features / Trust Signals */}
       <section className="py-16 px-6">
