@@ -23,10 +23,13 @@ interface Product {
     };
 }
 
+import { useToast } from '@/context/ToastContext';
+
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const { addToast } = useToast();
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -46,6 +49,7 @@ export default function AdminProductsPage() {
 
         if (error) {
             console.error('Error fetching products:', error);
+            addToast('Failed to load products', 'error');
         } else {
             // Filter: EXCLUDE products with personalization.enabled = true
             const standard = (data || []).filter((p: Product) =>
@@ -63,9 +67,10 @@ export default function AdminProductsPage() {
 
         if (error) {
             console.error('Delete error:', error);
-            alert(`Failed to delete product: ${error.message} (Code: ${error.code})`);
+            addToast(`Failed to delete product: ${error.message}`, 'error');
         } else {
             setProducts(products.filter(p => p.id !== id));
+            addToast('Product deleted successfully', 'success');
         }
     };
 
@@ -78,7 +83,7 @@ export default function AdminProductsPage() {
         if (!currentStatus) {
             const featuredCount = products.filter(p => p.metadata?.is_featured).length;
             if (featuredCount >= 28) {
-                alert("Limit Reached: You can only have 28 featured products. Please uncheck one first.");
+                addToast("Limit Reached: Only 28 featured products allowed.", 'error');
                 return;
             }
         }
@@ -104,9 +109,12 @@ export default function AdminProductsPage() {
 
         if (error) {
             console.error('Update error:', error);
-            alert('Failed to update featured status');
+            addToast('Failed to update featured status', 'error');
             // Revert on error
             setProducts(products);
+        } else {
+            // Optional success toast
+            // addToast(currentStatus ? 'Removed from Featured' : 'Added to Featured', 'success');
         }
     };
 
