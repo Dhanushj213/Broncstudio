@@ -8,7 +8,6 @@ import Link from 'next/link';
 interface ProductInventory {
     id: string;
     name: string;
-    stock_quantity: number;
     price: number;
     images: string[];
     metadata?: {
@@ -19,8 +18,6 @@ interface ProductInventory {
 export default function InventoryPage() {
     const [products, setProducts] = useState<ProductInventory[]>([]);
     const [loading, setLoading] = useState(true);
-    const [debugError, setDebugError] = useState<any>(null); // DEBUG
-    const [fetchCount, setFetchCount] = useState<number>(-1); // DEBUG
     const [searchTerm, setSearchTerm] = useState('');
     const [savingId, setSavingId] = useState<string | null>(null);
 
@@ -42,36 +39,41 @@ export default function InventoryPage() {
 
         if (error) {
             console.error('Error fetching inventory:', error);
-            setDebugError(error); // DEBUG
         } else {
-            setFetchCount(data?.length || 0); // DEBUG
-            // Map the data to include a default stock_quantity since the column doesn't exist
-            const mappedData = (data || []).map((p: any) => ({
-                ...p,
-                stock_quantity: 0
-            }));
-            setProducts(mappedData);
+            setProducts(data || []);
         }
         setLoading(false);
     };
 
-    const handleStockUpdate = async (id: string, newQuantity: string) => {
-        const qty = parseInt(newQuantity);
-        if (isNaN(qty)) return;
-
-        setProducts(products.map(p => p.id === id ? { ...p, stock_quantity: qty } : p));
+    const handleStatusUpdate = (id: string, newStatus: string) => {
+        setProducts(products.map(p =>
+            p.id === id
+                ? { ...p, metadata: { ...p.metadata, stock_status: newStatus } }
+                : p
+        ));
     };
 
-    const saveStock = async (id: string, newQuantity: number) => {
+    const saveStock = async (id: string, currentStatus: string) => {
         setSavingId(id);
-        // NOTE: stock_quantity column doesn't exist yet in the DB.
-        // We would need to add a migration or use metadata.
-        // For now, we'll simulate a success to not break the UI flow, 
-        // but alert the user that this feature needs backend support.
 
-        await new Promise(resolve => setTimeout(resolve, 500)); // Fake delay
+        // 1. Get current metadata to avoid overwriting other fields
+        const product = products.find(p => p.id === id);
+        if (!product) return;
 
-        alert('Stock tracking is not yet enabled in the database schema. This value was not saved.');
+        const updatedMetadata = {
+            ...(product.metadata || {}),
+            stock_status: currentStatus
+        };
+
+        const { error } = await supabase
+            .from('products')
+            .update({ metadata: updatedMetadata })
+            .eq('id', id);
+
+        if (error) {
+            alert('Failed to update stock status');
+            console.error(error);
+        }
         setSavingId(null);
     };
 
@@ -120,9 +122,9 @@ export default function InventoryPage() {
                             <thead className="bg-[#FAF9F7] text-gray-500 font-bold uppercase text-xs border-b border-gray-100">
                                 <tr>
                                     <th className="px-6 py-4">Product</th>
-                                    <th className="px-6 py-4">Current Stock</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Update</th>
+                                    <th className="px-6 py-4">Stock Status</th>
+                                    <th className="px-6 py-4">Visual Indicator</th>
+                                    <th className="px-6 py-4 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
@@ -137,35 +139,44 @@ export default function InventoryPage() {
                                                         <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">IMG</div>
                                                     )}
                                                 </div>
-                                                <div className="font-bold text-navy-900">{product.name}</div>
+                                                <div>
+                                                    <div className="font-bold text-navy-900">{product.name}</div>
+                                                    <div className="text-xs text-gray-400">₹{product.price}</div>
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                value={product.stock_quantity}
-                                                onChange={(e) => handleStockUpdate(product.id, e.target.value)}
-                                                className="w-24 px-3 py-1.5 border border-gray-200 rounded-lg font-bold text-navy-900 focus:outline-none focus:border-navy-900 transition-all text-center"
-                                            />
+                                            <select
+                                                value={product.metadata?.stock_status || 'in_stock'}
+                                                onChange={(e) => handleStatusUpdate(product.id, e.target.value)}
+                                                className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm text-navy-900 focus:outline-none focus:border-navy-900 bg-white cursor-pointer"
+                                            >
+                                                <option value="in_stock">In Stock</option>
+                                                <option value="low_stock">Low Stock</option>
+                                                <option value="out_of_stock">Out of Stock</option>
+                                            </select>
                                         </td>
                                         <td className="px-6 py-4">
-                                            {product.stock_quantity <= 10 ? (
+                                            {product.metadata?.stock_status === 'out_of_stock' ? (
                                                 <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full">
+                                                    <AlertTriangle size={12} /> Out of Stock
+                                                </span>
+                                            ) : product.metadata?.stock_status === 'low_stock' ? (
+                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
                                                     <AlertTriangle size={12} /> Low Stock
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                                                    In Stock
+                                                    <Check size={12} className="mr-1" /> In Stock
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <button
-                                                onClick={() => saveStock(product.id, product.stock_quantity)}
+                                                onClick={() => saveStock(product.id, product.metadata?.stock_status || 'in_stock')}
                                                 disabled={savingId === product.id}
                                                 className="p-2 hover:bg-navy-50 text-navy-900 rounded-lg transition-colors"
-                                                title="Save Stock"
+                                                title="Save Status"
                                             >
                                                 {savingId === product.id ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                                             </button>
@@ -174,24 +185,6 @@ export default function InventoryPage() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
-                )}
-            </div>
-
-            {/* DEBUGGER - REMOVE LATER */}
-            <div className="bg-gray-100 p-4 rounded text-xs font-mono break-all border border-gray-300">
-                <h3 className="font-bold text-red-600 mb-2">DEBUG MODE</h3>
-                <p>Loading: {loading ? 'true' : 'false'}</p>
-                <p>Fetch Count: {fetchCount}</p>
-                <p>Products Length: {products.length}</p>
-                {debugError && (
-                    <div className="bg-red-50 p-2 text-red-600 mt-2">
-                        <strong>Error:</strong> {JSON.stringify(debugError, null, 2)}
-                    </div>
-                )}
-                {!loading && products.length === 0 && !debugError && (
-                    <div className="mt-2 text-orange-600">
-                        Fetched 0 items with no error. Table is empty?
                     </div>
                 )}
             </div>
