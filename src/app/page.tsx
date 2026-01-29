@@ -70,6 +70,7 @@ export default function Home() {
       const { data: featProds } = await supabase
         .from('products')
         .select('*')
+        .contains('metadata', { is_featured: true })
         .limit(28);
 
       if (featProds) {

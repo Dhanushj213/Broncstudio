@@ -16,6 +16,7 @@ interface Product {
     created_at: string;
     metadata?: {
         stock_status?: string;
+        is_featured?: boolean;
         personalization?: {
             enabled: boolean;
         };
@@ -72,6 +73,49 @@ export default function AdminProductsPage() {
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const handleToggleFeatured = async (product: Product, currentStatus: boolean) => {
+        // If turning ON, check limit first
+        if (!currentStatus) {
+            const featuredCount = products.filter(p => p.metadata?.is_featured).length;
+            if (featuredCount >= 28) {
+                alert("Limit Reached: You can only have 28 featured products. Please uncheck one first.");
+                return;
+            }
+        }
+
+        // Optimistic Update
+        const updatedProducts = products.map(p =>
+            p.id === product.id
+                ? { ...p, metadata: { ...p.metadata, is_featured: !currentStatus } }
+                : p
+        );
+        setProducts(updatedProducts);
+
+        // API Update
+        const { error } = await supabase
+            .from('products')
+            .update({
+                metadata: {
+                    ...product.metadata,
+                    is_featured: !currentStatus
+                }
+            })
+            .eq('id', product.id);
+
+        if (error) {
+            console.error('Update error:', error);
+            alert('Failed to update featured status');
+            // Revert on error
+            setProducts(products);
+        }
+    };
+
+    const styles = {
+        toggleWrapper: "relative inline-flex items-center cursor-pointer",
+        toggleInput: "sr-only peer",
+        toggleSlider: "w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-coral-500"
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -127,6 +171,7 @@ export default function AdminProductsPage() {
                                     <th className="px-6 py-4">Product</th>
                                     <th className="px-6 py-4">Category</th>
                                     <th className="px-6 py-4">Price</th>
+                                    <th className="px-6 py-4 text-center">Featured</th>
                                     <th className="px-6 py-4">Stock</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
@@ -154,13 +199,23 @@ export default function AdminProductsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
-                                            {/* Would need a join to show category name properly */}
                                             <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
                                                 Category
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 font-bold text-navy-900">
                                             ₹{product.price}
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <label className={styles.toggleWrapper}>
+                                                <input
+                                                    type="checkbox"
+                                                    className={styles.toggleInput}
+                                                    checked={!!product.metadata?.is_featured}
+                                                    onChange={() => handleToggleFeatured(product, !!product.metadata?.is_featured)}
+                                                />
+                                                <div className={styles.toggleSlider}></div>
+                                            </label>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
                                             {product.metadata?.stock_status === 'out_of_stock' ? (
