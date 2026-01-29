@@ -52,7 +52,7 @@ export default function DesktopCuratedGrid() {
                         <Link
                             key={item.id}
                             href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
-                            className="group relative min-w-[240px] md:min-w-[280px] lg:min-w-[320px] aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer snap-start shrink-0 shadow-sm hover:shadow-xl transition-all"
+                            className="group relative min-w-[200px] md:min-w-[240px] lg:min-w-[260px] aspect-[3/4] overflow-hidden rounded-2xl cursor-pointer snap-start shrink-0 shadow-sm hover:shadow-xl transition-all"
                         >
                             <img
                                 src={item.image_url}
