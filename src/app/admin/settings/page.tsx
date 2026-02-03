@@ -10,6 +10,9 @@ interface StoreSettings {
     support_email: string;
     currency: string;
     tax_rate: number;
+    announcement_text?: string;
+    announcement_link?: string;
+    announcement_active?: boolean;
 }
 
 export default function SettingsPage() {
@@ -20,7 +23,10 @@ export default function SettingsPage() {
         store_name: '',
         support_email: '',
         currency: 'INR',
-        tax_rate: 18
+        tax_rate: 18,
+        announcement_text: '',
+        announcement_link: '',
+        announcement_active: true
     });
 
     const supabase = createBrowserClient(
@@ -45,7 +51,10 @@ export default function SettingsPage() {
                 store_name: data.store_name,
                 support_email: data.support_email,
                 currency: data.currency,
-                tax_rate: data.tax_rate
+                tax_rate: data.tax_rate,
+                announcement_text: data.announcement_text || '',
+                announcement_link: data.announcement_link || '',
+                announcement_active: data.announcement_active ?? true
             });
         } else if (!data) {
             // Fallback if seed didn't run, though SQL should have handled it
@@ -63,6 +72,9 @@ export default function SettingsPage() {
             support_email: formData.support_email,
             currency: formData.currency,
             tax_rate: formData.tax_rate,
+            announcement_text: formData.announcement_text,
+            announcement_link: formData.announcement_link,
+            announcement_active: formData.announcement_active,
             updated_at: new Date().toISOString()
         };
 
@@ -125,6 +137,48 @@ export default function SettingsPage() {
                                     className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 />
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Announcement Bar Settings */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <span className="text-xl">📢</span>
+                            Announcement Bar
+                        </h2>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={formData.announcement_active}
+                                onChange={(e) => setFormData({ ...formData, announcement_active: e.target.checked })}
+                                className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-navy-900"></div>
+                        </label>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Announcement Text</label>
+                            <input
+                                type="text"
+                                value={formData.announcement_text}
+                                onChange={(e) => setFormData({ ...formData, announcement_text: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="e.g. Free Shipping on all orders above ₹999 • New Collection Dropped"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Link URL (Optional)</label>
+                            <input
+                                type="text"
+                                value={formData.announcement_link}
+                                onChange={(e) => setFormData({ ...formData, announcement_link: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="e.g. /shop/new-arrivals"
+                            />
                         </div>
                     </div>
                 </div>

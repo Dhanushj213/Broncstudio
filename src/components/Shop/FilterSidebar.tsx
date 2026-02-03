@@ -20,11 +20,11 @@ interface FilterSidebarProps {
 
 export default function FilterSidebar({ products, activeFilters, onFilterChange, className }: FilterSidebarProps) {
     // 1. Extract Available Options (Memoize in real app, but fast enough here)
-    const brands = Array.from(new Set(products.map(p => p.brand).filter(Boolean))).sort();
+    const brands = Array.from(new Set(products.map(p => p.brand).filter((b): b is string => typeof b === 'string' && b.length > 0))).sort();
 
     // Extract colors/sizes from metadata
-    const colors = Array.from(new Set(products.flatMap(p => p.metadata?.colors || []))).sort();
-    const sizes = Array.from(new Set(products.flatMap(p => p.metadata?.sizes || []))).sort();
+    const colors = Array.from(new Set(products.flatMap(p => p.metadata?.colors || []).filter((c): c is string => typeof c === 'string'))).sort();
+    const sizes = Array.from(new Set(products.flatMap(p => p.metadata?.sizes || []).filter((s): s is string => typeof s === 'string'))).sort();
 
     // Price Bounds
     const prices = products.map(p => p.price);

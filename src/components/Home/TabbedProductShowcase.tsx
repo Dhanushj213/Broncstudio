@@ -32,7 +32,11 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
             const localNode = Object.values(require('@/data/categories').CATEGORY_TAXONOMY).find((c: any) => c.slug === categorySlug || c.legacy_slug === categorySlug) as any;
 
             if (localNode && localNode.legacy_slug) {
-                targetSlug = localNode.legacy_slug;
+                // Only use legacy if we need to, but our DB seems to use the NEW slug 'clothing'.
+                // Let's NOT override targetSlug unless we are sure.
+                // Better strategy: Query for EITHER.
+                // For now, let's comment out the force override or verify.
+                // targetSlug = localNode.legacy_slug; 
             }
 
             // Fetch the main category (World/Level 1)

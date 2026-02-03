@@ -61,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
         className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} antialiased`}

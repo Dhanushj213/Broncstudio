@@ -36,6 +36,12 @@ export default function ShopPage() {
     const [products, setProducts] = useState<any[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(false);
 
+    // Derived State for Client-Side Category Filtering (Subcategory View)
+    const [activeCategory, setActiveCategory] = useState<string>('all');
+
+    // We need a map of Slug -> UUID for filtering.
+    const [categoryMap, setCategoryMap] = useState<Record<string, string>>({}); // Slug -> UUID
+
     // Filter State
     const [isdrawerOpen, setIsDrawerOpen] = useState(false);
     const [activeFilters, setActiveFilters] = useState({
@@ -46,30 +52,12 @@ export default function ShopPage() {
         brands: [] as string[]
     });
 
-    // Derived Filtered Products
-    const filteredProducts = products.filter(product => {
-        // Price
-        if (product.price < activeFilters.minPrice || product.price > activeFilters.maxPrice) return false;
-
-        // Brand
-        if (activeFilters.brands.length > 0 && !activeFilters.brands.includes(product.brand)) return false;
-
-        // Color (Metadata check)
-        if (activeFilters.colors.length > 0) {
-            const productColors = product.metadata?.colors || [];
-            if (!activeFilters.colors.some((c: string) => productColors.includes(c))) return false;
-        }
-
-        // Size (Metadata check)
-        if (activeFilters.sizes.length > 0) {
-            const productSizes = product.metadata?.sizes || [];
-            if (!activeFilters.sizes.some((s: string) => productSizes.includes(s))) return false;
-        }
-
-        return true;
-    });
-
     const supabase = createClient();
+
+    // Reset active category when view changes
+    useEffect(() => {
+        setActiveCategory('all');
+    }, [currentView?.type, currentView?.data?.slug]);
 
     // 1. Resolve Taxonomy on Slug Change
     useEffect(() => {
@@ -158,30 +146,45 @@ export default function ShopPage() {
         const fetchProducts = async () => {
             setLoadingProducts(true);
 
+            let targetSlugs: string[] = [];
+
             if (currentView?.type === 'item') {
-                const target = currentView.data.slug; // e.g. 'story-books'
-                const { data, error } = await supabase
-                    .from('products')
-                    .select('*')
-                    .or(`subcategory_slug.eq.${target},category_slug.eq.${target}`);
-
-                if (error) console.error('Fetch Error:', error);
-                setProducts(data || []);
+                targetSlugs = [currentView.data.slug];
+            } else if (currentView?.type === 'subcategory') {
+                targetSlugs = currentView.children.map((c: any) => c.id);
+            } else {
+                setLoadingProducts(false);
+                setProducts([]);
+                return;
             }
-            else if (currentView?.type === 'subcategory') {
-                // Fetch ALL products from the children subcategories
-                // Children are like: [{ slug: 'women/women-tops-tees' ... }] - wait, those slugs are full paths?
-                // data/categories.ts defines sub.slug as just 'women-tops-tees'.
-                // Let's check how 'children' are constructed in useEffect [1].
-                // Line 123: id: item.slug (which is simple slug).
 
-                const targets = currentView.children.map((c: any) => c.id); // Simple slugs
+            if (targetSlugs.length > 0) {
+                // 1. Resolve Slugs to Category IDs AND Build Map
+                const { data: categories, error: catError } = await supabase
+                    .from('categories')
+                    .select('id, slug')
+                    .in('slug', targetSlugs);
 
-                if (targets.length > 0) {
+                if (catError) {
+                    console.error('Category Fetch Error:', catError);
+                    setLoadingProducts(false);
+                    return;
+                }
+
+                const newMap: Record<string, string> = {};
+                const categoryIds: string[] = [];
+
+                categories?.forEach((c: any) => {
+                    newMap[c.slug] = c.id;
+                    categoryIds.push(c.id);
+                });
+                setCategoryMap(newMap);
+
+                if (categoryIds.length > 0) {
                     const { data, error } = await supabase
                         .from('products')
                         .select('*')
-                        .in('subcategory_slug', targets);
+                        .in('category_id', categoryIds);
 
                     if (error) console.error('Fetch Error:', error);
                     setProducts(data || []);
@@ -197,6 +200,40 @@ export default function ShopPage() {
         fetchProducts();
     }, [currentView]);
 
+    // Enhanced Derived Filtered Products
+    const filteredProducts = products.filter(product => {
+        // 1. Active Category Filter
+        if (activeCategory !== 'all') {
+            // activeCategory is a slug (e.g. 'men-classic-crew')
+            // product.category_id is UUID
+            const targetId = categoryMap[activeCategory];
+            if (!targetId || product.category_id !== targetId) return false;
+        }
+
+        // 2. Price
+        if (product.price < activeFilters.minPrice || product.price > activeFilters.maxPrice) return false;
+
+        // 3. Brand
+        if (activeFilters.brands.length > 0 && !activeFilters.brands.includes(product.brand)) return false;
+
+        // 4. Color
+        if (activeFilters.colors.length > 0) {
+            const productColors = product.metadata?.colors || [];
+            // Safety check for non-string
+            if (Array.isArray(productColors)) {
+                if (!activeFilters.colors.some(c => productColors.includes(c))) return false;
+            }
+        }
+
+        // 5. Size
+        if (activeFilters.sizes.length > 0) {
+            const productSizes = product.metadata?.sizes || [];
+            if (Array.isArray(productSizes)) {
+                if (!activeFilters.sizes.some(s => productSizes.includes(s))) return false;
+            }
+        }
+        return true;
+    });
 
     if (currentView?.type === '404') {
         return (
@@ -341,14 +378,32 @@ export default function ShopPage() {
                                                 <div className="bg-white/40 dark:bg-navy-900/40 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/5">
                                                     <h3 className="text-sm font-bold uppercase tracking-wider text-navy-500 dark:text-gray-400 mb-4">Categories</h3>
                                                     <div className="flex flex-col space-y-2">
+                                                        {/* All Products Option */}
+                                                        <button
+                                                            onClick={() => {
+                                                                setActiveCategory('all');
+                                                                // Shuffle products randomly
+                                                                setProducts(prev => [...prev].sort(() => Math.random() - 0.5));
+                                                            }}
+                                                            className={`text-left text-lg font-heading font-bold transition-colors ${activeCategory === 'all'
+                                                                ? 'text-coral-500'
+                                                                : 'text-navy-900 dark:text-white hover:text-coral-500'
+                                                                }`}
+                                                        >
+                                                            All Products
+                                                        </button>
+
                                                         {currentView.children.map((child: any, idx: number) => (
-                                                            <Link
+                                                            <button
                                                                 key={idx}
-                                                                href={`/shop/${child.slug}`}
-                                                                className="text-lg font-heading font-bold text-navy-900 dark:text-white hover:text-coral-500 transition-colors"
+                                                                onClick={() => setActiveCategory(child.id)}
+                                                                className={`text-left text-lg font-heading font-bold transition-colors ${activeCategory === child.id
+                                                                    ? 'text-coral-500'
+                                                                    : 'text-navy-900 dark:text-white hover:text-coral-500'
+                                                                    }`}
                                                             >
                                                                 {child.name}
-                                                            </Link>
+                                                            </button>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -406,12 +461,15 @@ export default function ShopPage() {
                                                             <Filter size={32} className="opacity-50" />
                                                         </div>
                                                         <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Matches Found</h3>
-                                                        <p>Try adjusting your filters.</p>
+                                                        <p>Try adjusting your filters or category.</p>
                                                         <button
-                                                            onClick={() => setActiveFilters({ minPrice: 0, maxPrice: 10000, colors: [], sizes: [], brands: [] })}
+                                                            onClick={() => {
+                                                                setActiveFilters({ minPrice: 0, maxPrice: 10000, colors: [], sizes: [], brands: [] });
+                                                                setActiveCategory('all');
+                                                            }}
                                                             className="mt-4 text-coral-500 font-bold hover:underline"
                                                         >
-                                                            Clear Filters
+                                                            Clear All Filters
                                                         </button>
                                                     </div>
                                                 )}
