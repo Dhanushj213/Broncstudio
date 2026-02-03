@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { X, ChevronRight, User, Heart, ShoppingBag, Globe, Sparkles, Home as HomeIcon, Tag, LayoutGrid, Gift, Monitor, Shirt, Pencil } from 'lucide-react';
+import { X, ChevronRight, User, Heart, ShoppingBag, Globe, Sparkles, Home as HomeIcon, Tag, LayoutGrid, Gift, Monitor, Shirt, Pencil, PawPrint } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { DEPARTMENT_TAXONOMY } from '@/data/categories';
 
@@ -32,6 +32,7 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
         if (href.includes('kids')) return Pencil; // Stationery
         if (href.includes('home')) return Monitor; // Home & Tech
         if (href.includes('gifts')) return Gift;
+        if (href.includes('pets')) return PawPrint;
         return LayoutGrid;
     };
 

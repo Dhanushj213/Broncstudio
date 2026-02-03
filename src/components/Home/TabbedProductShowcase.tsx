@@ -240,7 +240,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                 <div className="text-center mt-12">
                     <Link
                         href={`/collections/${activeTab}`}
-                        className="btn-primary inline-flex items-center gap-2"
+                        className="inline-flex items-center gap-2 px-8 py-3 bg-navy-900 text-white rounded-full font-bold hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                     >
                         View All {tabs.find(t => t.slug === activeTab)?.label}
                     </Link>

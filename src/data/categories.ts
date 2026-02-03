@@ -89,7 +89,7 @@ export const CATEGORY_TAXONOMY = {
     },
     'gifts': {
         id: 'little-luxuries',
-        name: 'Gifts & Pets', // RENAMED to match header
+        name: 'Gifts', // RENAMED to match header
         slug: 'gifts', // RENAMED
         legacy_slug: 'little-luxuries',
         description: 'Small Joys & Gifting.',
@@ -363,7 +363,7 @@ export const DEPARTMENT_TAXONOMY = {
         ]
     },
     'gifts': {
-        label: 'Gifts & Pets',
+        label: 'Gifts',
         href: '/shop/gifts',
         color: 'pink',
         groups: [
@@ -376,7 +376,14 @@ export const DEPARTMENT_TAXONOMY = {
                     { label: 'Luggage Tags', href: '/shop/gifts/gifts/luggage-tags' },
                     { label: 'Patches', href: '/shop/gifts/gifts/patches' }
                 ]
-            },
+            }
+        ]
+    },
+    'pets': {
+        label: 'Pets',
+        href: '/shop/pets',
+        color: 'amber',
+        groups: [
             {
                 title: 'Pets',
                 items: [

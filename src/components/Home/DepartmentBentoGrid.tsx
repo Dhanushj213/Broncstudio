@@ -73,14 +73,14 @@ const DEPARTMENT_TILES = [
         textColor: 'text-stone-900',
     },
     {
-        title: 'Home',
-        subtitle: 'Decor',
-        href: '/shop/home',
-        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+        title: 'Pets',
+        subtitle: 'Furry Friends',
+        href: '/shop/pets',
+        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
-        color: 'bg-indigo-100',
-        textColor: 'text-indigo-900',
+        color: 'bg-amber-100',
+        textColor: 'text-amber-900',
     },
     {
         title: 'Gifts',
@@ -94,14 +94,14 @@ const DEPARTMENT_TILES = [
     },
     // ROW 3
     {
-        title: 'Pets',
-        subtitle: 'Furry Friends',
-        href: '/shop/pets',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80',
+        title: 'Home',
+        subtitle: 'Decor',
+        href: '/shop/home',
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80', // Increased width for banner
         colSpan: 'col-span-12', // Full width
         rowSpan: 'row-span-1',
-        color: 'bg-amber-100',
-        textColor: 'text-amber-900',
+        color: 'bg-indigo-100',
+        textColor: 'text-indigo-900',
     }
 ];
 
