@@ -287,15 +287,7 @@ export default function ShopPage() {
 
 
 
-            {/* Hero Background Image - Starts below Breadcrumbs */}
-            <div className="absolute top-[240px] left-0 right-0 h-[500px] overflow-hidden pointer-events-none">
-                <div className="absolute inset-0 bg-white/60 dark:bg-navy-950/70 z-10" />
-                <div
-                    className="absolute inset-0 bg-center bg-cover opacity-30 grayscale"
-                    style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2670&auto=format&fit=crop")' }}
-                />
-                <div className={`absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-gray-50 dark:to-navy-950 z-10`} />
-            </div>
+
 
             {/* Background Blob */}
             <div className={`absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br ${heroGradient} blur-3xl opacity-40 pointer-events-none z-0`} />
