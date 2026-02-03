@@ -311,15 +311,8 @@ export default function CollectionPage() {
                 </div>
             ) : (
                 <>
-                    {/* STANDARD HERO TITLE */}
-                    <div className="relative z-30 container-premium mx-auto px-6 py-8 md:py-12 text-center border-b border-gray-100 dark:border-white/5 mb-8">
-                        <h1 className="text-4xl md:text-5xl font-heading font-black text-navy-900 dark:text-white mb-4">
-                            {node.data.name}
-                        </h1>
-                        {node.data.description && (
-                            <p className="text-gray-500 max-w-2xl mx-auto">{node.data.description}</p>
-                        )}
-                    </div>
+                    {/* STANDARD HERO TITLE REMOVED - Visualizing only Breadcrumbs */}
+                    <div className="mb-4"></div>
 
                     {/* STANDARD CONTENT AREA */}
                     <div className="container-premium mx-auto px-4 md:px-6">

@@ -322,8 +322,8 @@ export default function ShopPage() {
                 </div>
             ) : (
                 <>
-                    {/* HERO */}
-                    <div className="relative z-30 max-w-[1400px] mx-auto px-6 py-16 md:py-24 text-center">
+                    {/* HERO TITLE REMOVED */}
+                    <div className="relative z-30 max-w-[1400px] mx-auto px-6 pt-16 md:pt-24 pb-8 text-center">
                         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
                             <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/60 dark:bg-white/10 border border-white/40 dark:border-white/5 backdrop-blur-md">
                                 <span className="text-xs font-bold tracking-[0.2em] uppercase text-navy-900 dark:text-white/90">
