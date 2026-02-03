@@ -224,8 +224,27 @@ export const CATEGORY_TAXONOMY = {
 
 export const MAIN_NAV_LINKS = [];
 
+
+interface TaxonomyItem {
+    label: string;
+    href: string;
+    badge?: string;
+}
+
+interface TaxonomyGroup {
+    title: string;
+    items: TaxonomyItem[];
+}
+
+interface Department {
+    label: string;
+    href: string;
+    color: string;
+    groups: TaxonomyGroup[];
+}
+
 // New Functional Department Taxonomy (Maps to updated CATEGORY_TAXONOMY)
-export const DEPARTMENT_TAXONOMY = {
+export const DEPARTMENT_TAXONOMY: Record<string, Department> = {
     'clothing': {
         label: 'Clothing',
         href: '/shop/clothing',
