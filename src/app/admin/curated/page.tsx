@@ -2,21 +2,25 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Plus, Edit2, Trash2, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, ExternalLink, Loader2, Sparkles, LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useToast } from '@/context/ToastContext';
+import GlassCard from '@/components/UI/GlassCard';
 
 interface CuratedSection {
     id: string;
     title: string;
     description: string;
     image_url: string;
-    display_order: number;
     is_active: boolean;
+    display_order: number;
 }
 
-export default function CuratedSectionsPage() {
+export default function AdminCuratedPage() {
     const [sections, setSections] = useState<CuratedSection[]>([]);
     const [loading, setLoading] = useState(true);
+    const { addToast } = useToast();
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,6 +40,7 @@ export default function CuratedSectionsPage() {
 
         if (error) {
             console.error('Error fetching sections:', error);
+            addToast('Failed to load collections', 'error');
         } else {
             setSections(data || []);
         }
@@ -43,111 +48,121 @@ export default function CuratedSectionsPage() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this section?')) return;
+        if (!confirm('Are you sure you want to delete this collection?')) return;
 
         const { error } = await supabase.from('curated_sections').delete().eq('id', id);
+
         if (error) {
-            alert('Failed to delete');
+            addToast(`Failed to delete: ${error.message}`, 'error');
         } else {
-            fetchSections();
+            setSections(sections.filter(s => s.id !== id));
+            addToast('Collection deleted', 'success');
         }
     };
 
-    const toggleStatus = async (id: string, currentStatus: boolean) => {
+    const handleToggleActive = async (section: CuratedSection) => {
         const { error } = await supabase
             .from('curated_sections')
-            .update({ is_active: !currentStatus })
-            .eq('id', id);
+            .update({ is_active: !section.is_active })
+            .eq('id', section.id);
 
-        if (!error) {
-            setSections(sections.map(s => s.id === id ? { ...s, is_active: !currentStatus } : s));
-        }
-    };
-
-    const handleSeed = async () => {
-        setLoading(true);
-        const defaults = [
-            { title: 'Gifts Under ₹499', description: 'Small joys, big smiles.', image_url: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&q=80', display_order: 1, category_slugs: ['keychains', 'badges', 'accessories'] },
-            { title: 'Study Time', description: 'Fun meets focus.', image_url: 'https://images.unsplash.com/photo-1456735190827-d1261f7add50?w=600&q=80', display_order: 2, category_slugs: ['notebooks', 'stationery'] },
-            { title: 'Desk Therapy', description: 'Workspaces that feel like you.', image_url: 'https://images.unsplash.com/photo-1497215842964-222b430dc0a8?w=600&q=80', display_order: 3, category_slugs: ['mouse-pads', 'coasters'] },
-            { title: 'Weekend Fits', description: 'Relaxed. Easy. Effortless.', image_url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80', display_order: 4, category_slugs: ['men-hoodies', 'clothing'] },
-            { title: 'Mini Home Makeover', description: 'Small changes, big vibe.', image_url: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80', display_order: 5, category_slugs: ['posters', 'home-decor'] },
-            { title: 'Everyday Carry', description: 'What you reach for daily.', image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80', display_order: 6, category_slugs: ['bags', 'wallets'] },
-        ];
-
-        const { error } = await supabase.from('curated_sections').insert(defaults);
         if (error) {
-            alert('Error seeding: ' + error.message);
+            addToast('Failed to update status', 'error');
         } else {
-            fetchSections();
+            setSections(sections.map(s => s.id === section.id ? { ...s, is_active: !s.is_active } : s));
+            addToast(`Collection ${!section.is_active ? 'Activated' : 'Deactivated'}`, 'success');
         }
     };
 
     return (
-        <div className="space-y-6 pb-20">
-            <div className="flex justify-between items-center">
+        <div className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Curated Collections</h1>
-                    <p className="text-gray-500">Manage 'Curated For You' sections on desktop and mobile.</p>
+                    <h1 className="text-3xl font-heading font-bold text-navy-900">Curated Collections</h1>
+                    <p className="text-gray-500">Manage your special product showcases.</p>
                 </div>
                 <Link href="/admin/curated/new">
-                    <button className="flex items-center gap-2 bg-navy-900 text-white px-4 py-2 rounded-xl font-bold hover:bg-navy-800 transition-colors">
+                    <button className="bg-coral-500 hover:bg-coral-600 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-coral-500/20 transition-all">
                         <Plus size={20} />
-                        Add New Selection
+                        Create Collection
                     </button>
                 </Link>
             </div>
 
             {loading ? (
-                <div className="text-center py-20 text-gray-500">Loading selections...</div>
+                <div className="flex justify-center py-20">
+                    <Loader2 className="animate-spin text-navy-900" size={40} />
+                </div>
             ) : sections.length === 0 ? (
-                <div className="bg-white rounded-2xl p-12 text-center border border-dashed border-gray-300">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">No selections found</h3>
-                    <p className="text-gray-500 mb-6">Create your first curated collection to get started.</p>
-                    <div className="flex gap-4 justify-center">
-                        <Link href="/admin/curated/new">
-                            <button className="px-6 py-2 bg-coral-500 text-white rounded-lg font-bold">Create Selection</button>
-                        </Link>
-                        <button onClick={handleSeed} className="px-6 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg font-bold">
-                            Seed Defaults
-                        </button>
+                <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                        <Sparkles size={32} />
                     </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">No collections yet</h3>
+                    <p className="text-gray-500 max-w-md mx-auto mb-6">Create themed collections like "Summer Vibes" or "Gift Guide" to showcase products on the homepage.</p>
+                    <Link href="/admin/curated/new">
+                        <button className="text-coral-500 font-bold hover:underline">Create your first collection</button>
+                    </Link>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {sections.map((section) => (
-                        <div key={section.id} className={`bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-all group ${!section.is_active ? 'opacity-75' : ''}`}>
-                            <div className="relative aspect-[4/3] bg-gray-100">
-                                <img src={section.image_url} alt={section.title} className="w-full h-full object-cover" />
-                                <div className="absolute top-2 right-2 flex gap-2">
-                                    <button
-                                        onClick={() => toggleStatus(section.id, section.is_active)}
-                                        className="bg-white/90 p-2 rounded-lg text-gray-700 hover:text-navy-900 shadow-sm backdrop-blur-sm"
-                                        title={section.is_active ? "Hide" : "Show"}
-                                    >
-                                        {section.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
-                                    </button>
-                                </div>
-                                <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm font-mono">
-                                    Order: {section.display_order}
+                        <div key={section.id} className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+                            {/* Card Image Header */}
+                            <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
+                                {section.image_url ? (
+                                    <Image
+                                        src={section.image_url}
+                                        alt={section.title}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                        <LayoutGrid size={32} />
+                                    </div>
+                                )}
+                                <div className="absolute top-4 right-4">
+                                    <span className={`px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${section.is_active
+                                            ? 'bg-green-500/90 text-white'
+                                            : 'bg-gray-500/90 text-white'
+                                        }`}>
+                                        {section.is_active ? 'Active' : 'Draft'}
+                                    </span>
                                 </div>
                             </div>
-                            <div className="p-4">
-                                <h3 className="font-bold text-navy-900 truncate">{section.title}</h3>
-                                <p className="text-sm text-gray-500 line-clamp-1 mb-4">{section.description || 'No description'}</p>
 
-                                <div className="flex gap-2">
-                                    <Link href={`/admin/curated/${section.id}`} className="flex-1">
-                                        <button className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 text-navy-900 text-sm font-bold rounded-lg transition-colors">
-                                            <Edit2 size={14} /> Edit
+                            {/* Content */}
+                            <div className="p-6">
+                                <h3 className="text-xl font-bold text-navy-900 mb-1">{section.title}</h3>
+                                <p className="text-gray-500 text-sm line-clamp-2 mb-6 min-h-[40px]">
+                                    {section.description || "No description provided."}
+                                </p>
+
+                                <div className="flex items-center justify-between border-t border-gray-50 pt-4 mt-auto">
+                                    <div className="flex gap-2">
+                                        <Link href={`/admin/curated/${section.id}`}>
+                                            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-navy-50 text-navy-700 hover:bg-navy-100 font-bold text-xs transition-colors">
+                                                <Edit size={16} />
+                                                Manage
+                                            </button>
+                                        </Link>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => handleToggleActive(section)}
+                                            className={`p-2 rounded-lg transition-colors ${section.is_active ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-50'}`}
+                                            title="Toggle Visibility"
+                                        >
+                                            <div className={`w-3 h-3 rounded-full ${section.is_active ? 'bg-green-500' : 'bg-gray-300'}`} />
                                         </button>
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete(section.id)}
-                                        className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
+                                        <button
+                                            onClick={() => handleDelete(section.id)}
+                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

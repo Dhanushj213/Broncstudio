@@ -6,9 +6,11 @@ import { motion } from 'framer-motion';
 
 interface MasonryProductGridProps {
     products: any[];
+    title?: string;
+    subtitle?: string;
 }
 
-export default function MasonryProductGrid({ products }: MasonryProductGridProps) {
+export default function MasonryProductGrid({ products, title = "Featured Collection", subtitle = "Our most loved pieces, curated just for you." }: MasonryProductGridProps) {
     if (!products || products.length === 0) return null;
 
     return (
@@ -16,10 +18,10 @@ export default function MasonryProductGrid({ products }: MasonryProductGridProps
             <div className="container-premium max-w-[1440px] mx-auto">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-5xl font-heading font-black text-navy-900 dark:text-white mb-4">
-                        Featured Collection
+                        {title}
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
-                        Our most loved pieces, curated just for you.
+                        {subtitle}
                     </p>
                 </div>
 

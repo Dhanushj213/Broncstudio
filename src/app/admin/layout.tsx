@@ -18,7 +18,8 @@ import {
     CreditCard,
     Layers,
     Tag,
-    Palette
+    Palette,
+    LayoutTemplate
 } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
@@ -36,6 +37,7 @@ const SIDEBAR_ITEMS = [
     { name: 'Shipping', href: '/admin/shipping', icon: Truck },
     { name: 'Payments', href: '/admin/payments', icon: CreditCard },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+    { name: 'Storefront', href: '/admin/storefront', icon: LayoutTemplate },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

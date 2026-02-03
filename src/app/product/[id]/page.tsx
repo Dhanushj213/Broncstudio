@@ -7,7 +7,7 @@ import StickyActionBar from '@/components/Product/Page/StickyActionBar';
 import MiniTrustStrip from '@/components/Product/Page/MiniTrustStrip';
 import ShopTheLook from '@/components/Product/ShopTheLook';
 import ProductShowcase from '@/components/Home/ProductShowcase';
-import { SAMPLE_IMAGES, getProductImage } from '@/utils/sampleImages';
+import { getProductImage } from '@/utils/sampleImages';
 
 import { createBrowserClient } from '@supabase/ssr';
 import { useParams, useRouter } from 'next/navigation';
@@ -16,17 +16,6 @@ import { useToast } from '@/context/ToastContext';
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 
-// Dummy Similar Products (Keep for now or fetch real later)
-const SIMILAR_PRODUCTS = Array.from({ length: 4 }).map((_, i) => ({
-    id: `sim-${i}`,
-    name: ['Urban Denim Joggers', 'Cosmic Dreamer Pajama', 'Dino Hoodie', 'Space Backpack'][i],
-    brand: 'BRONC KIDS',
-    price: 499 + (i * 50),
-    originalPrice: 999 + (i * 100),
-    image: getProductImage(i),
-    badge: i % 2 === 0 ? 'Trending' : undefined
-}));
-
 export default function ProductPage() {
     const params = useParams(); // params.id may be undefined initially
     const id = params?.id as string;
@@ -34,6 +23,7 @@ export default function ProductPage() {
     const { addToCart } = useCart();
     const { addToast } = useToast();
     const [product, setProduct] = useState<any>(null);
+    const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const supabase = createBrowserClient(
@@ -44,24 +34,50 @@ export default function ProductPage() {
     useEffect(() => {
         if (!id) return;
 
-        const fetchProduct = async () => {
+        const fetchProductAndRelated = async () => {
             setLoading(true);
-            const { data, error } = await supabase
+
+            // 1. Fetch Main Product
+            const { data: mainProduct, error } = await supabase
                 .from('products')
                 .select('*')
                 .eq('id', id)
                 .single();
 
-            if (error || !data) {
+            if (error || !mainProduct) {
                 console.error('Error fetching product:', error);
                 setProduct(null);
-            } else {
-                setProduct(data);
+                setLoading(false);
+                return;
             }
+
+            setProduct(mainProduct);
+
+            // 2. Fetch Related Products (Same Category)
+            if (mainProduct.category_id) {
+                const { data: related } = await supabase
+                    .from('products')
+                    .select('*')
+                    .eq('category_id', mainProduct.category_id)
+                    .neq('id', id) // Exclude current
+                    .limit(8);
+
+                if (related) {
+                    // Map to ensure valid image format if needed
+                    const mappedRelated = related.map((p: any) => ({
+                        ...p,
+                        image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
+                        secondaryImage: p.images?.[1],
+                        originalPrice: p.compare_at_price
+                    }));
+                    setRelatedProducts(mappedRelated);
+                }
+            }
+
             setLoading(false);
         };
 
-        fetchProduct();
+        fetchProductAndRelated();
     }, [id]);
 
     const handleAddFromSticky = () => {
@@ -94,13 +110,13 @@ export default function ProductPage() {
     }
 
     return (
-        <main className="bg-white min-h-screen pb-8 md:pb-0">
+        <main className="bg-white min-h-screen pb-8 md:pb-0 pt-[var(--header-height)]">
             {/* Main Product Section */}
-            <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-0 md:pt-12 mb-16">
+            <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-6 md:pt-12 mb-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
                     {/* Left: Gallery */}
                     <div className="w-full">
-                        <ProductGallery images={product.images || []} />
+                        <ProductGallery images={product.images || [product.image_url || '/images/placeholder.jpg']} />
                     </div>
 
                     {/* Right: Info (Sticky) */}
@@ -114,13 +130,15 @@ export default function ProductPage() {
             <ShopTheLook product={product} />
 
             {/* Similar Products */}
-            <ProductShowcase
-                title="You May Also Like"
-                subtitle="Customers who bought this also checked out these styles."
-                products={SIMILAR_PRODUCTS}
-                className="bg-gray-50/30"
-                layout="carousel"
-            />
+            {relatedProducts.length > 0 && (
+                <ProductShowcase
+                    title="You May Also Like"
+                    subtitle="Customers who bought this also checked out these styles."
+                    products={relatedProducts}
+                    className="bg-gray-50/30"
+                    layout="carousel"
+                />
+            )}
 
             {/* Trust Strip */}
             <MiniTrustStrip />
@@ -130,7 +148,7 @@ export default function ProductPage() {
                 price={product.price}
                 originalPrice={product.compare_at_price}
                 productName={product.name}
-                productImage={product.images?.[0] || '/placeholder.png'}
+                productImage={product.images?.[0] || product.image_url || '/images/placeholder.jpg'}
                 onAddToCart={handleAddFromSticky}
                 onBuyNow={handleBuyNow}
             />

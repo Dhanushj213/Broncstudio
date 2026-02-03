@@ -2,27 +2,43 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Save, Loader2, Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Save, Loader2, Image as ImageIcon, Search, Plus, X, Check } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/context/ToastContext';
+import Image from 'next/image';
 
-export default function EditCuratedPage() {
-    const router = useRouter();
+interface Product {
+    id: string;
+    name: string;
+    images: string[];
+    price: number;
+    metadata?: {
+        curated_section_ids?: string[];
+    };
+}
+
+export default function EditCollectionPage() {
     const params = useParams();
+    const router = useRouter();
+    const { addToast } = useToast();
     const id = params.id as string;
 
-    const [loading, setLoading] = useState(false);
-    const [fetching, setFetching] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
+    // Collection Data
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         image_url: '',
-        category_slugs: '',
-        price_max: '',
-        display_order: 0,
-        is_active: true
+        is_active: true,
+        display_order: 0
     });
+
+    // Product Management
+    const [allProducts, setAllProducts] = useState<Product[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,167 +46,324 @@ export default function EditCuratedPage() {
     );
 
     useEffect(() => {
-        const fetchData = async () => {
-            const { data, error } = await supabase
-                .from('curated_sections')
-                .select('*')
-                .eq('id', id)
-                .single();
-
-            if (error || !data) {
-                alert('Not found');
-                router.push('/admin/curated');
-                return;
-            }
-
-            setFormData({
-                title: data.title,
-                description: data.description || '',
-                image_url: data.image_url,
-                category_slugs: (data.category_slugs || []).join(', '),
-                price_max: data.price_max ? data.price_max.toString() : '',
-                display_order: data.display_order || 0,
-                is_active: data.is_active
-            });
-            setFetching(false);
-        };
         fetchData();
-    }, [id, router]);
+    }, [id]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const fetchData = async () => {
         setLoading(true);
 
-        const payload = {
-            title: formData.title,
-            description: formData.description,
-            image_url: formData.image_url,
-            category_slugs: formData.category_slugs.split(',').map(s => s.trim()).filter(Boolean),
-            price_max: formData.price_max ? parseFloat(formData.price_max) : null,
-            display_order: Number(formData.display_order),
-            is_active: formData.is_active,
-            updated_at: new Date().toISOString()
-        };
+        // 1. Fetch Collection
+        const { data: collection, error: collError } = await supabase
+            .from('curated_sections')
+            .select('*')
+            .eq('id', id)
+            .single();
 
-        const { error } = await supabase.from('curated_sections').update(payload).eq('id', id);
-
-        if (error) {
-            console.error('Error updating:', error);
-            alert('Failed to update: ' + error.message);
-        } else {
+        if (collError) {
+            addToast('Error loading collection', 'error');
             router.push('/admin/curated');
-            router.refresh();
+            return;
         }
+
+        setFormData(collection);
+
+        // 2. Fetch All Products (for selection)
+        // Optimization: In a real large app, you'd search server-side. 
+        // For < 1000 products, client-side filtering is instant and better UX.
+        const { data: products } = await supabase
+            .from('products')
+            .select('id, name, images, price, metadata');
+
+        if (products) {
+            setAllProducts(products);
+        }
+
         setLoading(false);
     };
 
-    if (fetching) return <div className="flex justify-center py-20"><Loader2 className="animate-spin" /></div>;
+    const handleSaveDetails = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+
+        const { error } = await supabase
+            .from('curated_sections')
+            .update(formData)
+            .eq('id', id);
+
+        if (error) {
+            addToast(`Error: ${error.message}`, 'error');
+        } else {
+            addToast('Collection details saved', 'success');
+        }
+        setSaving(false);
+    };
+
+    // --- Product Assignment Logic ---
+
+    // Derived state: Products currently in this collection
+    const assignedProducts = allProducts.filter(p =>
+        p.metadata?.curated_section_ids?.includes(id)
+    );
+
+    // Derived state: Products NOT in this collection (filtered by search)
+    const availableProducts = allProducts.filter(p =>
+        !p.metadata?.curated_section_ids?.includes(id) &&
+        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 10); // Show top 10 matches
+
+
+    const addProductToCollection = async (product: Product) => {
+        const currentIds = product.metadata?.curated_section_ids || [];
+        if (currentIds.includes(id)) return;
+
+        const newIds = [...currentIds, id];
+
+        // Optimistic Update
+        updateLocalProduct(product.id, newIds);
+
+        const { error } = await supabase
+            .from('products')
+            .update({
+                metadata: {
+                    ...product.metadata,
+                    curated_section_ids: newIds
+                }
+            })
+            .eq('id', product.id);
+
+        if (error) {
+            addToast('Failed to add product', 'error');
+            updateLocalProduct(product.id, currentIds); // Revert
+        } else {
+            addToast('Product added to collection', 'success');
+        }
+    };
+
+    const removeProductFromCollection = async (product: Product) => {
+        const currentIds = product.metadata?.curated_section_ids || [];
+        const newIds = currentIds.filter(cid => cid !== id);
+
+        // Optimistic Update
+        updateLocalProduct(product.id, newIds);
+
+        const { error } = await supabase
+            .from('products')
+            .update({
+                metadata: {
+                    ...product.metadata,
+                    curated_section_ids: newIds
+                }
+            })
+            .eq('id', product.id);
+
+        if (error) {
+            addToast('Failed to remove product', 'error');
+            updateLocalProduct(product.id, currentIds); // Revert
+        } else {
+            addToast('Product removed', 'success');
+        }
+    };
+
+    const updateLocalProduct = (pid: string, newIds: string[]) => {
+        setAllProducts(prev => prev.map(p =>
+            p.id === pid
+                ? { ...p, metadata: { ...p.metadata, curated_section_ids: newIds } }
+                : p
+        ));
+    };
+
+    if (loading) return <div className="flex justify-center py-20"><Loader2 className="animate-spin" /></div>;
 
     return (
-        <div className="max-w-2xl mx-auto pb-20">
-            <Link href="/admin/curated" className="text-gray-500 hover:text-navy-900 flex items-center gap-2 mb-6">
-                <ArrowLeft size={18} /> Back to List
-            </Link>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <div className="flex justify-between items-start mb-8">
+        <div className="max-w-6xl mx-auto space-y-8">
+            {/* Header */}
+            <div className="flex items-center gap-4">
+                <Link href="/admin/curated">
+                    <button className="p-2 hover:bg-white rounded-full transition-colors text-gray-500">
+                        <ArrowLeft size={24} />
+                    </button>
+                </Link>
+                <div>
                     <h1 className="text-2xl font-bold text-navy-900">Edit Collection</h1>
+                    <p className="text-gray-500 text-sm">Update details and manage products.</p>
                 </div>
+            </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Title *</label>
-                        <input
-                            type="text"
-                            required
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        />
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* LEFT: Details Form */}
+                <div className="lg:col-span-1 space-y-6">
+                    <form onSubmit={handleSaveDetails} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4 sticky top-6">
+                        <h3 className="font-bold text-lg text-navy-900 border-b border-gray-100 pb-2">Details</h3>
 
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
-                        <input
-                            type="text"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        />
-                    </div>
+                        {/* Title */}
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Title</label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 font-bold text-navy-900"
+                            />
+                        </div>
 
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Image URL *</label>
-                        <input
-                            type="url"
-                            required
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                            value={formData.image_url}
-                            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                        />
-                        {formData.image_url && (
-                            <div className="mt-4 relative aspect-video rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                                <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                        {/* Subtitle */}
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Subtitle</label>
+                            <input
+                                type="text"
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
+                            />
+                        </div>
+
+                        {/* Image */}
+                        <div>
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Image URL</label>
+                            <div className="space-y-2">
+                                <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
+                                    {formData.image_url ? (
+                                        <Image src={formData.image_url} alt="Preview" fill className="object-cover" />
+                                    ) : (
+                                        <div className="flex items-center justify-center w-full h-full text-gray-300">
+                                            <ImageIcon size={32} />
+                                        </div>
+                                    )}
+                                </div>
+                                <input
+                                    type="text"
+                                    value={formData.image_url}
+                                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs"
+                                    placeholder="https://..."
+                                />
                             </div>
-                        )}
-                    </div>
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Display Order</label>
-                            <input
-                                type="number"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                                value={formData.display_order}
-                                onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Max Price Filter</label>
-                            <input
-                                type="number"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                                value={formData.price_max}
-                                onChange={(e) => setFormData({ ...formData, price_max: e.target.value })}
-                            />
-                        </div>
-                        <div className="flex items-center pt-6">
+                        {/* Toggles */}
+                        <div className="flex items-center justify-between py-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={formData.is_active}
-                                    onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
-                                    className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                                    className="rounded text-coral-500 focus:ring-coral-500"
                                 />
-                                <span className="font-bold text-navy-900">Active</span>
+                                <span className="text-sm font-medium">Active</span>
                             </label>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-gray-500 uppercase">Order</span>
+                                <input
+                                    type="number"
+                                    value={formData.display_order}
+                                    onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+                                    className="w-16 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm text-center"
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={saving}
+                            className="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+                        >
+                            {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                            Save Details
+                        </button>
+                    </form>
+                </div>
+
+                {/* RIGHT: Product Management */}
+                <div className="lg:col-span-2 space-y-6">
+
+                    {/* Assigned Products List */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
+                        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                            <h3 className="font-bold text-lg text-navy-900">
+                                Assigned Products
+                                <span className="ml-2 bg-coral-100 text-coral-600 px-2 py-0.5 rounded-full text-xs align-middle">
+                                    {assignedProducts.length}
+                                </span>
+                            </h3>
+                        </div>
+
+                        {assignedProducts.length === 0 ? (
+                            <div className="p-8 text-center text-gray-400 bg-gray-50/50">
+                                <p>No products in this collection yet.</p>
+                                <p className="text-sm">Search and add products below.</p>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-gray-50">
+                                {assignedProducts.map(product => (
+                                    <div key={product.id} className="p-3 flex items-center justify-between hover:bg-gray-50 group transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
+                                                {product.images?.[0] && (
+                                                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-navy-900 text-sm">{product.name}</div>
+                                                <div className="text-gray-500 text-xs">₹{product.price}</div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => removeProductFromCollection(product)}
+                                            className="p-2 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Remove from collection"
+                                        >
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Add Products */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
+                        <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+                            <h3 className="font-bold text-navy-900 mb-3">Add Products</h3>
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="text"
+                                    placeholder="Search products by name..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
+                            {searchQuery.length > 0 && availableProducts.length === 0 ? (
+                                <div className="p-4 text-center text-gray-400">No matching products found.</div>
+                            ) : availableProducts.length === 0 && searchQuery.length === 0 ? (
+                                <div className="p-4 text-center text-gray-400 text-sm">Start typing to search products...</div>
+                            ) : (
+                                availableProducts.map(product => (
+                                    <div key={product.id} className="p-3 flex items-center justify-between hover:bg-blue-50/50 group transition-colors cursor-pointer" onClick={() => addProductToCollection(product)}>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
+                                                {product.images?.[0] && (
+                                                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                                                )}
+                                            </div>
+                                            <div className="font-medium text-navy-900 text-sm">{product.name}</div>
+                                        </div>
+                                        <button
+                                            className="p-1.5 bg-blue-100 text-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Plus size={16} />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Target Slugs</label>
-                        <textarea
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                            rows={3}
-                            value={formData.category_slugs}
-                            onChange={(e) => setFormData({ ...formData, category_slugs: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-4">
-                        <Link href="/admin/curated">
-                            <button type="button" className="px-6 py-2 font-bold text-gray-500 hover:bg-gray-50 rounded-lg">Cancel</button>
-                        </Link>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="bg-navy-900 text-white px-8 py-2 rounded-xl font-bold hover:bg-navy-800 transition-all flex items-center gap-2"
-                        >
-                            {loading && <Loader2 size={18} className="animate-spin" />}
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     );

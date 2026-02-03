@@ -10,6 +10,7 @@ import Image from 'next/image';
 interface Category {
     id: string;
     name: string;
+    parent_id?: string | null;
 }
 
 export default function EditProductPage() {
@@ -19,7 +20,10 @@ export default function EditProductPage() {
 
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [allCategories, setAllCategories] = useState<Category[]>([]);
+
+    // UI Helper for Taxonomy
+    const [selectedParentId, setSelectedParentId] = useState('');
 
     const [imageInput, setImageInput] = useState('');
     const [formData, setFormData] = useState({
@@ -65,8 +69,8 @@ export default function EditProductPage() {
     }, [id]);
 
     const fetchCategories = async () => {
-        const { data } = await supabase.from('categories').select('id, name');
-        if (data) setCategories(data);
+        const { data } = await supabase.from('categories').select('id, name, parent_id');
+        if (data) setAllCategories(data);
     };
 
     const fetchProduct = async (productId: string) => {
@@ -82,6 +86,29 @@ export default function EditProductPage() {
             alert('Product not found or error loading data.');
             router.push('/admin/products');
             return;
+        }
+
+        // Logic to pre-fill the Parent Dropdown
+        // Find the category object for this product
+        // If it has a parent_id, that's our Department.
+        // If it DOESN'T (it is a root category), then use its own ID.
+        // But usually products are assigned to subcategories.
+        // We'll trust the 'allCategories' - BUT we need to wait for categories to load first? 
+        // We are chaining await in useEffect, so categories should be loaded in state? 
+        // Actually state might not update immediately in the closure. 
+        // We will do a direct fetch here to be safe or rely on the fact that fetchCategories ran before.
+
+        // Let's re-fetch categories inside here to be safe or just use a helper. 
+        // Actually we can just do a lookup if we have the list. 
+        // Better: We see in useEffect we await fetchCategories THEN fetchProduct.
+        // Accessing 'categories' state here directly is risky because of closures if we defined it outside.
+        // But let's assume we can lookup. 
+        // Actually, let's just fetch the category details for this product ID to get its parent_id.
+        const { data: catData } = await supabase.from('categories').select('parent_id').eq('id', data.category_id).single();
+        if (catData && catData.parent_id) {
+            setSelectedParentId(catData.parent_id);
+        } else {
+            // It might be a top level category or data missing.
         }
 
         const meta = data.metadata || {};
@@ -411,16 +438,35 @@ export default function EditProductPage() {
                                 onChange={(e) => setFormData({ ...formData, compare_at_price: e.target.value })}
                             />
                         </div>
+                        {/* Category Selection Logic */}
                         <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-1">Category *</label>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Department (Parent)</label>
+                            <select
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                value={selectedParentId}
+                                onChange={(e) => {
+                                    setSelectedParentId(e.target.value);
+                                    setFormData({ ...formData, category_id: '' }); // Reset Subcat
+                                }}
+                            >
+                                <option value="">Select Department</option>
+                                {allCategories.filter(c => !c.parent_id).map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Subcategory *</label>
                             <select
                                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
                                 value={formData.category_id}
                                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                                disabled={!selectedParentId}
                                 required
                             >
-                                <option value="">Select Category</option>
-                                {categories.map(cat => (
+                                <option value="">Select Subcategory</option>
+                                {allCategories.filter(c => c.parent_id === selectedParentId).map(cat => (
                                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                                 ))}
                             </select>

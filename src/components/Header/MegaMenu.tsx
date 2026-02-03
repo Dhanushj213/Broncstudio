@@ -1,73 +1,85 @@
+'use client';
+
 import React from 'react';
-import styles from './MegaMenu.module.css';
 import Link from 'next/link';
-import { CATEGORY_TAXONOMY, MAIN_NAV_LINKS } from '@/data/categories';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
+import { DEPARTMENT_TAXONOMY } from '@/data/categories';
 
-const MegaMenu = () => {
+interface MegaMenuProps {
+    activeDepartment: string | null;
+    onClose: () => void;
+}
+
+export default function MegaMenu({ activeDepartment, onClose }: MegaMenuProps) {
+    if (!activeDepartment) return null;
+
+    const department = DEPARTMENT_TAXONOMY[activeDepartment as keyof typeof DEPARTMENT_TAXONOMY];
+    if (!department) return null;
+
     return (
-        <nav className={styles.nav}>
-            <ul className={styles.menuList}>
-                {MAIN_NAV_LINKS.map((link) => {
-                    const category = Object.values(CATEGORY_TAXONOMY).find(c => c.id === link.categoryId);
-                    if (!category) return null;
-
-                    return (
-                        <li key={link.categoryId} className={styles.menuItem}>
-                            <Link href={link.href} className={styles.menuLink}>
-                                {link.label}
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute left-0 top-full w-full bg-white dark:bg-navy-900 border-b border-gray-100 dark:border-white/10 shadow-xl z-50 pt-8 pb-12"
+                onMouseLeave={onClose}
+            >
+                <div className="container-premium max-w-[1400px] mx-auto px-6">
+                    <div className="flex gap-12">
+                        {/* Featured / Introduction Column */}
+                        <div className="w-64 flex-shrink-0">
+                            <h3 className={`text-2xl font-heading font-bold text-${department.color}-500 mb-4`}>
+                                {department.label}
+                            </h3>
+                            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                                Explore our curated collection of {department.label.toLowerCase()}.
+                            </p>
+                            <Link
+                                href={department.href}
+                                className={`inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-navy-900 dark:text-white hover:text-${department.color}-500 transition-colors`}
+                                onClick={onClose}
+                            >
+                                View All <ChevronRight size={14} />
                             </Link>
+                        </div>
 
-                            <div className={styles.megaMenuOverlay}>
-                                <div className={styles.megaMenuContent}>
-                                    <div className={styles.introColumn}>
-                                        <h4>{category.name}</h4>
-                                        <p>{category.description || `Explore our ${category.name} collection`}</p>
-                                        <Link href={link.href} className={styles.shopAllBtn}>Shop All</Link>
-                                    </div>
-
-                                    {/* Render Subcategories or Groups */}
-                                    {'subcategories' in category && category.subcategories?.map(sub => (
-                                        <div key={sub.id} className={styles.column}>
-                                            <h4>{sub.name}</h4>
-                                            <ul className={styles.linkList}>
-                                                {sub.items.map((item: any) => (
-                                                    <li key={item.slug}>
-                                                        <Link href={`/shop/${category.slug}/${sub.slug}/${item.slug}`}>
-                                                            {item.name}
-                                                        </Link>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-
-                                    {'groups' in category && Array.isArray(category.groups) && category.groups.map(group => (
-                                        <div key={group.id} className={styles.column}>
-                                            <h4>{group.name}</h4>
-                                            {group.subcategories.map((sub: any) => (
-                                                <div key={sub.id} className="mb-4">
-                                                    <h5 className={styles.subHeading}>{sub.name}</h5>
-                                                    <ul className={styles.linkList}>
-                                                        {sub.items.map((item: any) => (
-                                                            <li key={item.slug}>
-                                                                <Link href={`/shop/${category.slug}/${group.slug}/${sub.slug}/${item.slug}`}>
-                                                                    {item.name}
-                                                                </Link>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ))}
+                        {/* Grid of Groups */}
+                        <div className="flex-1 grid grid-cols-3 gap-8 border-l border-gray-100 dark:border-white/5 pl-12">
+                            {department.groups.map((group, idx) => (
+                                <div key={idx}>
+                                    <h4 className="text-sm font-bold uppercase tracking-widest text-navy-900 dark:text-gray-200 mb-6 border-l-2 border-coral-500 pl-3">
+                                        {group.title}
+                                    </h4>
+                                    <ul className="space-y-3">
+                                        {group.items.map((item, itemIdx) => (
+                                            <li key={itemIdx}>
+                                                <Link
+                                                    href={item.href}
+                                                    onClick={onClose}
+                                                    className="group flex items-center justify-between text-base text-gray-500 hover:text-navy-900 dark:hover:text-white transition-colors"
+                                                >
+                                                    <span>{item.label}</span>
+                                                    {item.badge && (
+                                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded text-white ${item.badge === 'New' ? 'bg-green-500' :
+                                                                item.badge === 'Sale' ? 'bg-red-500' :
+                                                                    'bg-blue-500'
+                                                            }`}>
+                                                            {item.badge}
+                                                        </span>
+                                                    )}
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
-        </nav>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+        </AnimatePresence>
     );
-};
-
-export default MegaMenu;
+}

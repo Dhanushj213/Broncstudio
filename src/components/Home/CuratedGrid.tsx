@@ -45,7 +45,7 @@ export default function CuratedGrid() {
                     {sections.map((item) => (
                         <Link
                             key={item.id}
-                            href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
+                            href={`/collections/${item.id}`}
                             className="group relative w-full md:w-[320px] md:flex-shrink-0 md:snap-center aspect-[4/5] overflow-hidden rounded-[24px] md:rounded-[32px] shadow-sm hover:shadow-2xl transition-all duration-500"
                         >
                             {/* Image with Zoom Effect */}

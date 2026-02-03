@@ -14,6 +14,7 @@ import BrandLoader from '@/components/UI/BrandLoader';
 import FilterSidebar from '@/components/Shop/FilterSidebar';
 import FilterDrawer from '@/components/Shop/FilterDrawer';
 import { Filter } from 'lucide-react';
+import TabbedProductShowcase from '@/components/Home/TabbedProductShowcase';
 
 // Strict Taxonomy Source
 import { CATEGORY_TAXONOMY } from '@/data/categories';
@@ -152,28 +153,45 @@ export default function ShopPage() {
 
     }, [params]); // Recalculate when URL matches
 
-    // 2. Fetch Products if Leaf
+    // 2. Fetch Products if Leaf or Subcategory (Mixed View)
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoadingProducts(true);
+
             if (currentView?.type === 'item') {
-                setLoadingProducts(true);
-                // Use the Leaf Slug (e.g. 'story-books') to match DB 'subcategory_slug' or similar
-                // Assuming DB has updated matching slugs. If not, this might be empty.
-                // Using 'ilike' for partial match or exact match on tags if schema is different.
-
                 const target = currentView.data.slug; // e.g. 'story-books'
-
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
-                    .or(`tags.cs.{${target}}, category_slug.eq.${target}, subcategory_slug.eq.${target}`);
+                    .or(`subcategory_slug.eq.${target},category_slug.eq.${target}`);
 
-                if (error) console.error(error);
+                if (error) console.error('Fetch Error:', error);
                 setProducts(data || []);
-                setLoadingProducts(false);
+            }
+            else if (currentView?.type === 'subcategory') {
+                // Fetch ALL products from the children subcategories
+                // Children are like: [{ slug: 'women/women-tops-tees' ... }] - wait, those slugs are full paths?
+                // data/categories.ts defines sub.slug as just 'women-tops-tees'.
+                // Let's check how 'children' are constructed in useEffect [1].
+                // Line 123: id: item.slug (which is simple slug).
+
+                const targets = currentView.children.map((c: any) => c.id); // Simple slugs
+
+                if (targets.length > 0) {
+                    const { data, error } = await supabase
+                        .from('products')
+                        .select('*')
+                        .in('subcategory_slug', targets);
+
+                    if (error) console.error('Fetch Error:', error);
+                    setProducts(data || []);
+                } else {
+                    setProducts([]);
+                }
             } else {
                 setProducts([]);
             }
+            setLoadingProducts(false);
         };
 
         fetchProducts();
@@ -196,8 +214,9 @@ export default function ShopPage() {
 
     if (!currentView) return <BrandLoader text="Curating Collection..." />;
 
-    const showChildren = currentView.children.length > 0;
-    const showProducts = currentView.type === 'item';
+    // ONLY Show "Cards" for Root. Subcategory now shows Products.
+    const showChildren = currentView.type === 'root';
+    const showProducts = currentView.type === 'item' || currentView.type === 'subcategory';
 
     // Dynamic Gradient based on type
     const heroGradient = currentView.type === 'root'
@@ -228,155 +247,183 @@ export default function ShopPage() {
                 </div>
             </div>
 
-            {/* HERO */}
-            <div className="relative z-10 max-w-[1400px] mx-auto px-6 py-16 md:py-24 text-center">
-                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                    <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/60 dark:bg-white/10 border border-white/40 dark:border-white/5 backdrop-blur-md">
-                        <span className="text-xs font-bold tracking-[0.2em] uppercase text-navy-900 dark:text-white/90">
-                            {currentView.type === 'root' ? 'Explore Collections' : currentView.type}
-                        </span>
+            {/* Conditional Layout: Tabbed for Category (Level 1), Standard for others */}
+            {currentView.type === 'category' ? (
+                <div className="-mt-12">
+                    <TabbedProductShowcase categorySlug={currentView.data.slug} />
+                </div>
+            ) : (
+                <>
+                    {/* HERO */}
+                    <div className="relative z-10 max-w-[1400px] mx-auto px-6 py-16 md:py-24 text-center">
+                        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+                            <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/60 dark:bg-white/10 border border-white/40 dark:border-white/5 backdrop-blur-md">
+                                <span className="text-xs font-bold tracking-[0.2em] uppercase text-navy-900 dark:text-white/90">
+                                    {currentView.type === 'root' ? 'Explore Collections' : 'Collection'}
+                                </span>
+                            </div>
+
+                            <h1 className="text-5xl md:text-7xl font-heading font-black text-navy-900 dark:text-white mb-6 leading-tight tracking-tight">
+                                {currentView.data?.name}
+                            </h1>
+
+                            {currentView.data?.description && (
+                                <p className="text-lg md:text-xl text-navy-800/70 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed font-medium">
+                                    {currentView.data.description}
+                                </p>
+                            )}
+                        </motion.div>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-heading font-black text-navy-900 dark:text-white mb-6 leading-tight tracking-tight">
-                        {currentView.data?.name}
-                    </h1>
+                    {/* CONTENT */}
+                    <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8">
 
-                    {currentView.data?.description && (
-                        <p className="text-lg md:text-xl text-navy-800/70 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed font-medium">
-                            {currentView.data.description}
-                        </p>
-                    )}
-                </motion.div>
-            </div>
+                        {/* 1. Category/Subcategory Cards (Root Only) */}
+                        {showChildren && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2, duration: 0.6 }}
+                                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-20"
+                            >
+                                {currentView.children.map((child: any, idx: number) => (
+                                    <Link key={idx} href={`/shop/${child.slug}`} className="group relative">
+                                        <div className="absolute inset-0 bg-coral-500/20 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                        <GlassCard
+                                            className="relative h-full min-h-[280px] flex flex-col justify-end p-8 overflow-hidden rounded-[2rem] border-white/40 dark:border-white/5 bg-white/40 dark:bg-navy-900/40 hover:bg-white/60 dark:hover:bg-navy-800/60 transition-all duration-500 transform group-hover:-translate-y-2"
+                                            disableTilt
+                                        >
+                                            {/* Abstract Decor */}
+                                            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/40 to-transparent opacity-20 dark:opacity-5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
 
-            {/* CONTENT */}
-            <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8">
-
-                {/* 1. Category/Subcategory Cards */}
-                {showChildren && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.6 }}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-20"
-                    >
-                        {currentView.children.map((child: any, idx: number) => (
-                            <Link key={idx} href={`/shop/${child.slug}`} className="group relative">
-                                <div className="absolute inset-0 bg-coral-500/20 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                <GlassCard
-                                    className="relative h-full min-h-[280px] flex flex-col justify-end p-8 overflow-hidden rounded-[2rem] border-white/40 dark:border-white/5 bg-white/40 dark:bg-navy-900/40 hover:bg-white/60 dark:hover:bg-navy-800/60 transition-all duration-500 transform group-hover:-translate-y-2"
-                                    disableTilt
-                                >
-                                    {/* Abstract Decor */}
-                                    <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/40 to-transparent opacity-20 dark:opacity-5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
-
-                                    <div className="relative z-10">
-                                        <div className="w-12 h-12 mb-6 rounded-full bg-white dark:bg-navy-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                                            <LayoutGrid size={20} className="text-coral-500" />
-                                        </div>
-
-                                        <h3 className="text-3xl font-heading font-bold text-navy-900 dark:text-white mb-2 leading-none group-hover:text-coral-500 transition-colors">
-                                            {child.name}
-                                        </h3>
-
-                                        <div className="flex items-center justify-between mt-4 border-t border-navy-900/5 dark:border-white/5 pt-4">
-                                            <p className="text-xs font-bold uppercase tracking-widest text-navy-500 dark:text-gray-400 opacity-80">
-                                                {child.description || 'Collection'}
-                                            </p>
-                                            <span className="w-8 h-8 rounded-full bg-navy-900 dark:bg-white text-white dark:text-navy-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                                                &rarr;
-                                            </span>
-                                        </div>
-                                    </div>
-                                </GlassCard>
-                            </Link>
-                        ))}
-                    </motion.div>
-                )}
-
-                {/* 2. Products */}
-                {showProducts && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        {loadingProducts ? (
-                            <div className="min-h-[40vh] flex items-center justify-center">
-                                <BrandLoader text="Fetching Items..." />
-                            </div>
-                        ) : (
-                            <div className="flex flex-col lg:flex-row gap-8 items-start">
-                                {/* Desktop Sidebar */}
-                                <div className="hidden lg:block w-[280px] flex-shrink-0 sticky top-32">
-                                    <h3 className="text-lg font-heading font-bold text-navy-900 dark:text-white mb-6">Filters</h3>
-                                    <FilterSidebar
-                                        products={products}
-                                        activeFilters={activeFilters}
-                                        onFilterChange={setActiveFilters}
-                                    />
-                                </div>
-
-                                {/* Mobile Filter Toggle */}
-                                <div className="lg:hidden w-full mb-6">
-                                    <button
-                                        onClick={() => setIsDrawerOpen(true)}
-                                        className="w-full flex items-center justify-center space-x-2 py-3 bg-white dark:bg-navy-900 border border-gray-200 dark:border-white/10 rounded-lg shadow-sm font-bold text-navy-900 dark:text-white"
-                                    >
-                                        <Filter size={18} />
-                                        <span>Filter Products</span>
-                                    </button>
-                                </div>
-                                <FilterDrawer
-                                    isOpen={isdrawerOpen}
-                                    onClose={() => setIsDrawerOpen(false)}
-                                    products={products}
-                                    activeFilters={activeFilters}
-                                    onFilterChange={setActiveFilters}
-                                />
-
-                                {/* Product Grid */}
-                                <div className="flex-1 w-full">
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
-                                        {filteredProducts.length > 0 ? filteredProducts.map((product, idx) => (
-                                            <motion.div
-                                                key={product.id}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.05 * idx }}
-                                            >
-                                                <ProductCard
-                                                    id={product.id}
-                                                    name={product.name}
-                                                    brand={product.brand || "BroncStudio"}
-                                                    price={product.price}
-                                                    originalPrice={product.compare_at_price}
-                                                    image={product.images?.[0] || '/images/placeholder.jpg'}
-                                                    badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
-                                                />
-                                            </motion.div>
-                                        )) : (
-                                            <div className="col-span-full py-32 text-center text-gray-400">
-                                                <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                                                    <Filter size={32} className="opacity-50" />
+                                            <div className="relative z-10">
+                                                <div className="w-12 h-12 mb-6 rounded-full bg-white dark:bg-navy-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                                    <LayoutGrid size={20} className="text-coral-500" />
                                                 </div>
-                                                <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Matches Found</h3>
-                                                <p>Try adjusting your filters.</p>
-                                                <button
-                                                    onClick={() => setActiveFilters({ minPrice: 0, maxPrice: 10000, colors: [], sizes: [], brands: [] })}
-                                                    className="mt-4 text-coral-500 font-bold hover:underline"
-                                                >
-                                                    Clear Filters
-                                                </button>
+
+                                                <h3 className="text-3xl font-heading font-bold text-navy-900 dark:text-white mb-2 leading-none group-hover:text-coral-500 transition-colors">
+                                                    {child.name}
+                                                </h3>
+
+                                                <div className="flex items-center justify-between mt-4 border-t border-navy-900/5 dark:border-white/5 pt-4">
+                                                    <p className="text-xs font-bold uppercase tracking-widest text-navy-500 dark:text-gray-400 opacity-80">
+                                                        {child.description || 'Collection'}
+                                                    </p>
+                                                    <span className="w-8 h-8 rounded-full bg-navy-900 dark:bg-white text-white dark:text-navy-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                                        &rarr;
+                                                    </span>
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
+                                        </GlassCard>
+                                    </Link>
+                                ))}
+                            </motion.div>
                         )}
-                    </motion.div>
-                )}
-            </div>
+
+                        {/* 2. Products (Item OR Subcategory) */}
+                        {showProducts && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                            >
+                                {loadingProducts ? (
+                                    <div className="min-h-[40vh] flex items-center justify-center">
+                                        <BrandLoader text="Fetching Items..." />
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col lg:flex-row gap-8 items-start">
+                                        {/* Desktop Sidebar */}
+                                        <div className="hidden lg:block w-[280px] flex-shrink-0 sticky top-32 space-y-8">
+
+                                            {/* Subcategory Navigation Sidebar */}
+                                            {currentView.type === 'subcategory' && (
+                                                <div className="bg-white/40 dark:bg-navy-900/40 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/5">
+                                                    <h3 className="text-sm font-bold uppercase tracking-wider text-navy-500 dark:text-gray-400 mb-4">Categories</h3>
+                                                    <div className="flex flex-col space-y-2">
+                                                        {currentView.children.map((child: any, idx: number) => (
+                                                            <Link
+                                                                key={idx}
+                                                                href={`/shop/${child.slug}`}
+                                                                className="text-lg font-heading font-bold text-navy-900 dark:text-white hover:text-coral-500 transition-colors"
+                                                            >
+                                                                {child.name}
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <h3 className="text-lg font-heading font-bold text-navy-900 dark:text-white mb-6">Filters</h3>
+                                            <FilterSidebar
+                                                products={products}
+                                                activeFilters={activeFilters}
+                                                onFilterChange={setActiveFilters}
+                                            />
+                                        </div>
+
+                                        {/* Mobile Filter Toggle */}
+                                        <div className="lg:hidden w-full mb-6">
+                                            <button
+                                                onClick={() => setIsDrawerOpen(true)}
+                                                className="w-full flex items-center justify-center space-x-2 py-3 bg-white dark:bg-navy-900 border border-gray-200 dark:border-white/10 rounded-lg shadow-sm font-bold text-navy-900 dark:text-white"
+                                            >
+                                                <Filter size={18} />
+                                                <span>Filter Products</span>
+                                            </button>
+                                        </div>
+                                        <FilterDrawer
+                                            isOpen={isdrawerOpen}
+                                            onClose={() => setIsDrawerOpen(false)}
+                                            products={products}
+                                            activeFilters={activeFilters}
+                                            onFilterChange={setActiveFilters}
+                                        />
+
+                                        {/* Product Grid */}
+                                        <div className="flex-1 w-full">
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+                                                {filteredProducts.length > 0 ? filteredProducts.map((product, idx) => (
+                                                    <motion.div
+                                                        key={product.id}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.05 * idx }}
+                                                    >
+                                                        <ProductCard
+                                                            id={product.id}
+                                                            name={product.name}
+                                                            brand={product.brand || "BroncStudio"}
+                                                            price={product.price}
+                                                            originalPrice={product.compare_at_price}
+                                                            image={product.images?.[0] || '/images/placeholder.jpg'}
+                                                            badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
+                                                        />
+                                                    </motion.div>
+                                                )) : (
+                                                    <div className="col-span-full py-32 text-center text-gray-400">
+                                                        <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                                                            <Filter size={32} className="opacity-50" />
+                                                        </div>
+                                                        <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Matches Found</h3>
+                                                        <p>Try adjusting your filters.</p>
+                                                        <button
+                                                            onClick={() => setActiveFilters({ minPrice: 0, maxPrice: 10000, colors: [], sizes: [], brands: [] })}
+                                                            className="mt-4 text-coral-500 font-bold hover:underline"
+                                                        >
+                                                            Clear Filters
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </motion.div>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

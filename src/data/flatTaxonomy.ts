@@ -1,7 +1,7 @@
 import { CATEGORY_TAXONOMY } from './categories';
 
 export interface FlatNode {
-    type: 'world' | 'category' | 'item';
+    type: 'world' | 'category' | 'item' | 'curated';
     data: any;
     // Parent info for breadcrumbs
     parent?: { name: string; slug: string };
