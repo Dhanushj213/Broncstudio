@@ -273,7 +273,7 @@ export default function CollectionPage() {
         : 'from-emerald-500/10 via-teal-500/5 to-blue-500/10';
 
     return (
-        <div className="relative min-h-screen bg-white dark:bg-navy-950 pt-[var(--header-height)] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-white dark:bg-navy-950 pt-[var(--header-height)] -mt-[var(--header-height)] pb-20 overflow-hidden">
             <AmbientBackground />
 
 
