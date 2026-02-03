@@ -52,7 +52,7 @@ export default function Header() {
     return (
         <>
             <header
-                className={`sticky top-0 z-[100] w-full bg-[#FAF9F7] dark:bg-navy-900 transition-all duration-300 border-b border-black/5 dark:border-white/10 ${isScrolled ? 'h-[60px] shadow-sm' : 'h-[72px]'}`}
+                className={`sticky top-0 z-[100] w-full bg-white/80 dark:bg-navy-900/80 backdrop-blur-md transition-all duration-300 border-b border-black/5 dark:border-white/10 ${isScrolled ? 'h-[60px] shadow-sm' : 'h-[72px]'}`}
                 onMouseLeave={() => setActiveDepartment(null)}
             >
                 <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between relative">
