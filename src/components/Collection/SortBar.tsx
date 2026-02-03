@@ -90,7 +90,7 @@ export default function SortBar({
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: 10 }}
                                 transition={{ duration: 0.15 }}
-                                className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-navy-800 rounded-xl shadow-xl border border-gray-100 dark:border-white/5 z-50 overflow-hidden"
+                                className="absolute left-0 sm:right-0 top-full mt-2 w-48 bg-white dark:bg-navy-800 rounded-xl shadow-xl border border-gray-100 dark:border-white/5 z-50 overflow-hidden"
                             >
                                 <ul className="py-2">
                                     {SORT_OPTIONS.map((opt) => (

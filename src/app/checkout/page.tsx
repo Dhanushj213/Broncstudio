@@ -245,6 +245,22 @@ export default function CheckoutPage() {
                                 <span className="text-sm text-gray-500 font-bold">Total</span>
                             </div>
 
+                            {/* Items Preview */}
+                            <div className="mb-6 space-y-3 max-h-48 overflow-y-auto pr-1 cart-scroll">
+                                {items.map((item) => (
+                                    <div key={item.id} className="flex gap-3 items-center">
+                                        <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-bold text-navy-900 truncate">{item.name}</p>
+                                            <p className="text-xs text-gray-500">Qty: {item.qty} {item.size && `• ${item.size}`}</p>
+                                        </div>
+                                        <p className="text-sm font-bold text-navy-900">₹{item.price * item.qty}</p>
+                                    </div>
+                                ))}
+                            </div>
+
                             <div className="space-y-3 mb-6 bg-gray-50/50 p-4 rounded-xl">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Subtotal</span>
