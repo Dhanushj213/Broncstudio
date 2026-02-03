@@ -285,8 +285,8 @@ export default function ShopPage() {
         <div className="relative min-h-screen bg-gray-50 dark:bg-navy-950 pt-[var(--header-height)] pb-20 overflow-hidden">
             <AmbientBackground />
 
-            {/* Hero Background Image */}
-            <div className="absolute top-0 left-0 right-0 h-[500px] overflow-hidden pointer-events-none">
+            {/* Hero Background Image - Starts below Breadcrumbs */}
+            <div className="absolute top-[240px] left-0 right-0 h-[500px] overflow-hidden pointer-events-none">
                 <div className="absolute inset-0 bg-white/60 dark:bg-navy-950/70 z-10" />
                 <div
                     className="absolute inset-0 bg-center bg-cover opacity-30 grayscale"
