@@ -91,7 +91,7 @@ export default function CollectionPage() {
                 // Fetch ALL products (optimized select) then filter in memory/JS for reliability with JSON arrays
                 const { data, error } = await supabase
                     .from('products')
-                    .select('id, name, price, compare_at_price, images, image_url, stock_status, brand, created_at, category_id, metadata');
+                    .select('id, name, price, compare_at_price, images, stock_status, created_at, category_id, metadata');
 
                 if (error) {
                     console.error("Error fetching products:", error);
@@ -122,7 +122,7 @@ export default function CollectionPage() {
                     return;
                 }
 
-                let productQuery = supabase.from('products').select('id, name, price, compare_at_price, images, image_url, stock_status, brand, created_at, category_id');
+                let productQuery = supabase.from('products').select('id, name, price, compare_at_price, images, stock_status, created_at, category_id');
 
                 if (node.type === 'item') {
                     // Leaf: Direct match
