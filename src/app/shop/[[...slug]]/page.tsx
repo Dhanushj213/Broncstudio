@@ -324,23 +324,7 @@ export default function ShopPage() {
                 <>
                     {/* HERO TITLE REMOVED */}
                     <div className="relative z-30 max-w-[1400px] mx-auto px-6 pt-16 md:pt-24 pb-8 text-center">
-                        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                            <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/60 dark:bg-white/10 border border-white/40 dark:border-white/5 backdrop-blur-md">
-                                <span className="text-xs font-bold tracking-[0.2em] uppercase text-navy-900 dark:text-white/90">
-                                    {currentView.type === 'root' ? 'Explore Collections' : 'Collection'}
-                                </span>
-                            </div>
-
-                            <h1 className="text-5xl md:text-7xl font-heading font-black text-navy-900 dark:text-white mb-6 leading-tight tracking-tight">
-                                {currentView.data?.name}
-                            </h1>
-
-                            {currentView.data?.description && (
-                                <p className="text-lg md:text-xl text-navy-800/70 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed font-medium">
-                                    {currentView.data.description}
-                                </p>
-                            )}
-                        </motion.div>
+                        <div className="mb-4"></div>
                     </div>
 
                     {/* CONTENT */}
