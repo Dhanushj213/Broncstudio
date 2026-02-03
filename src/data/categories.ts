@@ -215,7 +215,7 @@ export const CATEGORY_TAXONOMY = {
                 slug: 'pet-essentials',
                 items: [
                     { name: 'Dog Tees', slug: 'dog-tees' },
-                    { name: 'Pet Tags', slug: 'pet-tags' }
+                    { name: 'Dog Tags', slug: 'pet-tags' }
                 ]
             }
         ]

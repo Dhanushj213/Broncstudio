@@ -86,6 +86,26 @@ export default function ShopPage() {
             if (!l1Node) return { type: '404' as const, data: null, children: [], breadcrumbs: [] };
 
             if (slugArray.length === 1) {
+                // Special Case: Pets (Flattened Item Toggle)
+                if (l1Node.slug === 'pets') {
+                    const flattenedItems = l1Node.subcategories?.flatMap((sc: any) =>
+                        sc.items?.map((item: any) => ({
+                            id: item.slug,
+                            name: item.name,
+                            slug: `${l1Slug}/${sc.slug}/${item.slug}`,
+                            description: item.name // Simple desc
+                        })) || []
+                    ) || [];
+
+                    return {
+                        type: 'category' as const,
+                        data: l1Node,
+                        children: flattenedItems,
+                        breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }]
+                    };
+                }
+
+                // Standard Category View
                 return {
                     type: 'category' as const,
                     data: l1Node,
@@ -150,7 +170,8 @@ export default function ShopPage() {
 
             if (currentView?.type === 'item') {
                 targetSlugs = [currentView.data.slug];
-            } else if (currentView?.type === 'subcategory') {
+            } else if (currentView?.type === 'subcategory' || (currentView?.type === 'category' && currentView.data.slug === 'pets')) {
+                // For Pets (and standard Subcategories), use children IDs as targets
                 targetSlugs = currentView.children.map((c: any) => c.id);
             } else {
                 setLoadingProducts(false);
@@ -183,7 +204,7 @@ export default function ShopPage() {
                 if (categoryIds.length > 0) {
                     const { data, error } = await supabase
                         .from('products')
-                        .select('*')
+                        .select('id, name, price, compare_at_price, images, image_url, stock_status, brand, created_at, category_id')
                         .in('category_id', categoryIds);
 
                     if (error) console.error('Fetch Error:', error);
@@ -251,9 +272,9 @@ export default function ShopPage() {
 
     if (!currentView) return <BrandLoader text="Curating Collection..." />;
 
-    // ONLY Show "Cards" for Root. Subcategory now shows Products.
+    // ONLY Show "Cards" for Root. Subcategory (and Pets) now shows Products.
     const showChildren = currentView.type === 'root';
-    const showProducts = currentView.type === 'item' || currentView.type === 'subcategory';
+    const showProducts = currentView.type === 'item' || currentView.type === 'subcategory' || (currentView.type === 'category' && currentView.data.slug === 'pets');
 
     // Dynamic Gradient based on type
     const heroGradient = currentView.type === 'root'
@@ -284,8 +305,8 @@ export default function ShopPage() {
                 </div>
             </div>
 
-            {/* Conditional Layout: Tabbed for Category (Level 1), Standard for others */}
-            {currentView.type === 'category' ? (
+            {/* Conditional Layout: Tabbed for Category (Level 1) EXCEPT Pets, Standard for others */}
+            {currentView.type === 'category' && currentView.data.slug !== 'pets' ? (
                 <div className="-mt-12">
                     <TabbedProductShowcase categorySlug={currentView.data.slug} />
                 </div>
@@ -374,7 +395,7 @@ export default function ShopPage() {
                                         <div className="hidden lg:block w-[280px] flex-shrink-0 sticky top-32 space-y-8">
 
                                             {/* Subcategory Navigation Sidebar */}
-                                            {currentView.type === 'subcategory' && (
+                                            {(currentView.type === 'subcategory' || currentView.type === 'category') && (
                                                 <div className="bg-white/40 dark:bg-navy-900/40 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/5">
                                                     <h3 className="text-sm font-bold uppercase tracking-wider text-navy-500 dark:text-gray-400 mb-4">Categories</h3>
                                                     <div className="flex flex-col space-y-2">
@@ -409,31 +430,8 @@ export default function ShopPage() {
                                                 </div>
                                             )}
 
-                                            <h3 className="text-lg font-heading font-bold text-navy-900 dark:text-white mb-6">Filters</h3>
-                                            <FilterSidebar
-                                                products={products}
-                                                activeFilters={activeFilters}
-                                                onFilterChange={setActiveFilters}
-                                            />
+                                            {/* Filters removed by request */}
                                         </div>
-
-                                        {/* Mobile Filter Toggle */}
-                                        <div className="lg:hidden w-full mb-6">
-                                            <button
-                                                onClick={() => setIsDrawerOpen(true)}
-                                                className="w-full flex items-center justify-center space-x-2 py-3 bg-white dark:bg-navy-900 border border-gray-200 dark:border-white/10 rounded-lg shadow-sm font-bold text-navy-900 dark:text-white"
-                                            >
-                                                <Filter size={18} />
-                                                <span>Filter Products</span>
-                                            </button>
-                                        </div>
-                                        <FilterDrawer
-                                            isOpen={isdrawerOpen}
-                                            onClose={() => setIsDrawerOpen(false)}
-                                            products={products}
-                                            activeFilters={activeFilters}
-                                            onFilterChange={setActiveFilters}
-                                        />
 
                                         {/* Product Grid */}
                                         <div className="flex-1 w-full">

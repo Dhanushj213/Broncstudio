@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, ShoppingBag, Eye } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
@@ -17,7 +18,6 @@ interface ProductProps {
     originalPrice?: number;
     image: string;
     badge?: string;
-    colors?: string[];
     secondaryImage?: string; // New prop for hover effect
 }
 
@@ -87,60 +87,24 @@ export default function ProductCard(props: ProductProps) {
 
                 {/* Main Image */}
                 <Link href={`/product/${id}`} className="block w-full h-full relative cursor-pointer">
-                    <img
+                    <Image
                         src={imgSrc}
                         alt={name}
-                        className={`w-full h-full object-cover transition-opacity duration-500 ease-out ${props.secondaryImage && isHovered ? 'opacity-0' : 'opacity-100'}`}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        className={`object-cover transition-opacity duration-500 ease-out ${props.secondaryImage && isHovered ? 'opacity-0' : 'opacity-100'}`}
                     />
 
                     {/* Secondary Image (Absolute Overlay) */}
                     {props.secondaryImage && (
-                        <img
+                        <Image
                             src={props.secondaryImage}
                             alt={`${name} secondary`}
-                            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                            fill
+                            sizes="(max-width: 768px) 50vw, 33vw"
+                            className={`absolute inset-0 object-cover transition-opacity duration-500 ease-in ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                         />
                     )}
-
-                    {/* Vertical Action Stack (Top Right) */}
-                    <div className={`absolute top-3 right-3 z-20 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
-                        {/* Wishlist */}
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (isInWishlist(id)) {
-                                    removeFromWishlist(id);
-                                    addToast(`${name} removed from Wishlist`, 'info');
-                                } else {
-                                    addToWishlist({ id, name, price, image: imgSrc, size: 'One Size' });
-                                    addToast(`${name} added to Wishlist!`);
-                                }
-                            }}
-                            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-coral-500 text-white' : 'bg-white text-navy-900 hover:bg-navy-900 hover:text-white'}`}
-                            title="Add to Wishlist"
-                        >
-                            <Heart size={18} fill={isInWishlist(id) ? "currentColor" : "none"} />
-                        </button>
-
-                        {/* Quick View */}
-                        <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); openQuickView(props); }}
-                            className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-75"
-                            title="Quick View"
-                        >
-                            <Eye size={18} />
-                        </button>
-
-                        {/* Add to Cart (Icon Only) */}
-                        <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(props, "One Size"); addToast(`${name} added to Bag!`); }}
-                            className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-100"
-                            title="Add to Cart"
-                        >
-                            <ShoppingBag size={18} />
-                        </button>
-                    </div>
                 </Link>
             </div>
 

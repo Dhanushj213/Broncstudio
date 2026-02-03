@@ -91,7 +91,7 @@ export default function CollectionPage() {
                 // Fetch ALL products (optimized select) then filter in memory/JS for reliability with JSON arrays
                 const { data, error } = await supabase
                     .from('products')
-                    .select('*');
+                    .select('id, name, price, compare_at_price, images, image_url, stock_status, brand, created_at, category_id, metadata');
 
                 if (error) {
                     console.error("Error fetching products:", error);
@@ -122,7 +122,7 @@ export default function CollectionPage() {
                     return;
                 }
 
-                let productQuery = supabase.from('products').select('*');
+                let productQuery = supabase.from('products').select('id, name, price, compare_at_price, images, image_url, stock_status, brand, created_at, category_id');
 
                 if (node.type === 'item') {
                     // Leaf: Direct match
@@ -336,61 +336,69 @@ export default function CollectionPage() {
                         {/* 2. Products with Sidebar */}
                         {showProducts && (
                             <div className="flex gap-8 lg:gap-12 relative items-start">
-
-                                {/* Sidebar (Desktop) */}
+                                {/* Category Sidebar (Restored) */}
                                 <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24">
-                                    <FilterSidebar
-                                        filters={filters}
-                                        onFilterChange={handleFilterChange}
-                                    />
+                                    <div className="border-r border-gray-100 dark:border-white/5 pr-6 min-h-[50vh]">
+                                        <h3 className="font-bold mb-6 uppercase text-xs tracking-wider text-gray-400">
+                                            {node.type === 'item' ? node.parent?.name || 'More in this collection' : 'Categories'}
+                                        </h3>
+                                        <div className="space-y-1">
+                                            {(() => {
+                                                // Determine Sidebar Items
+                                                let sidebarItems: any[] = [];
+                                                let parentSlug = slug;
+
+                                                if (node.type === 'category') {
+                                                    sidebarItems = node.data.items || [];
+                                                    parentSlug = slug;
+                                                } else if (node.type === 'item' && node.parent?.slug) {
+                                                    const parentNode = FLAT_TAXONOMY[node.parent.slug];
+                                                    sidebarItems = parentNode?.data?.items || [];
+                                                    parentSlug = node.parent.slug;
+                                                }
+
+                                                return (
+                                                    <>
+                                                        <Link
+                                                            href={`/collections/${parentSlug}`}
+                                                            className={`block py-2 text-sm font-medium transition-colors ${slug === parentSlug
+                                                                ? 'text-coral-500 translate-x-1 font-bold'
+                                                                : 'text-navy-900 dark:text-gray-300 hover:text-coral-500 hover:translate-x-1'
+                                                                }`}
+                                                        >
+                                                            All Products
+                                                        </Link>
+
+                                                        {sidebarItems.map((item) => {
+                                                            const isActive = slug === item.slug;
+                                                            return (
+                                                                <Link
+                                                                    key={item.slug}
+                                                                    href={`/collections/${item.slug}`}
+                                                                    className={`block py-2 text-sm font-medium transition-colors ${isActive
+                                                                        ? 'text-coral-500 translate-x-1'
+                                                                        : 'text-navy-900 dark:text-gray-300 hover:text-coral-500 hover:translate-x-1'
+                                                                        }`}
+                                                                >
+                                                                    {item.name}
+                                                                </Link>
+                                                            );
+                                                        })}
+                                                    </>
+                                                );
+                                            })()}
+                                        </div>
+                                    </div>
                                 </aside>
 
-                                {/* Mobile Filter Toggle */}
-                                <div className="lg:hidden w-full mb-6">
-                                    <button
-                                        onClick={() => setMobileFiltersOpen(true)}
-                                        className="w-full py-3 border border-gray-200 rounded-lg flex items-center justify-center gap-2 font-bold text-navy-900 hover:bg-gray-50"
-                                    >
-                                        <SlidersHorizontal size={18} /> Filter & Sort
-                                    </button>
-                                </div>
-
-                                {/* Mobile Drawer */}
-                                <AnimatePresence>
-                                    {mobileFiltersOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm lg:hidden"
-                                            onClick={() => setMobileFiltersOpen(false)}
-                                        >
-                                            <motion.div
-                                                initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-                                                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                                                className="absolute right-0 top-0 bottom-0 w-[300px] bg-white dark:bg-navy-900 p-6 overflow-y-auto"
-                                                onClick={e => e.stopPropagation()}
-                                            >
-                                                <div className="flex justify-between items-center mb-6">
-                                                    <h3 className="text-xl font-bold text-navy-900 dark:text-white">Filters</h3>
-                                                    <button onClick={() => setMobileFiltersOpen(false)} className="p-2 bg-gray-100 rounded-full">
-                                                        <X size={20} />
-                                                    </button>
-                                                </div>
-                                                <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
-                                            </motion.div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-
-
-                                {/* Product Grid Area */}
+                                {/* Sort Bar & Grid Only (Filters Removed) */}
                                 <div className="flex-1 w-full">
                                     <SortBar
                                         totalProducts={filteredProducts.length}
                                         sortOption={sortOption}
                                         onSortChange={setSortOption}
                                     />
-
-                                    <ActiveFilters filters={filters} onRemove={removeFilter} onClearAll={clearAllFilters} />
+                                    {/* ActiveFilters removed as there are no filters */}
 
                                     {filteredProducts.length > 0 ? (
                                         <motion.div
@@ -414,8 +422,6 @@ export default function CollectionPage() {
                                     ) : (
                                         <div className="py-20 text-center text-gray-400">
                                             <h3 className="text-xl font-bold">No products found</h3>
-                                            <p>Try adjusting your filters.</p>
-                                            <button onClick={clearAllFilters} className="text-coral-500 font-bold mt-4 underline">Clear all values</button>
                                         </div>
                                     )}
                                 </div>
