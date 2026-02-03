@@ -276,16 +276,6 @@ export default function CollectionPage() {
         <div className="relative min-h-screen bg-white dark:bg-navy-950 pt-[var(--header-height)] pb-20 overflow-hidden">
             <AmbientBackground />
 
-            {/* Hero Background Image */}
-            <div className="absolute top-0 left-0 right-0 h-[500px] overflow-hidden pointer-events-none">
-
-                <div
-                    className="absolute inset-0 bg-center bg-cover opacity-50 grayscale"
-                    style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2670&auto=format&fit=crop")' }}
-                />
-                <div className={`absolute inset-0 bg-gradient-to-b from-transparent to-white dark:to-navy-950 z-10`} />
-            </div>
-
             {/* Background Blob (Retained for color tint) */}
             <div className={`absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br ${heroGradient} blur-3xl opacity-40 pointer-events-none z-0`} />
 
