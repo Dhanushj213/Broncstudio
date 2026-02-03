@@ -28,7 +28,7 @@ export default function Header() {
         };
         checkUser();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
             setCurrentUser(session?.user ?? null);
         });
 

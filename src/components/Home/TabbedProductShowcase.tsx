@@ -110,7 +110,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                     .in('slug', itemSlugs);
 
                 if (childCats && childCats.length > 0) {
-                    targetIds = childCats.map(c => c.id);
+                    targetIds = childCats.map((c: any) => c.id);
                 }
             } else {
                 // Standard DB Logic (activeTab is a slug of a real category)
