@@ -77,8 +77,8 @@ export default function AdminCategoriesPage() {
                                 <CategoryNode
                                     key={node.id}
                                     node={node}
-                                    onEdit={(n) => { setIsCreating(false); setEditingNode(n); }}
-                                    onAddChild={(pid) => { setEditingNode(null); setParentIdForCreate(pid); setIsCreating(true); }}
+                                    onEdit={(n: Category) => { setIsCreating(false); setEditingNode(n); }}
+                                    onAddChild={(pid: string) => { setEditingNode(null); setParentIdForCreate(pid); setIsCreating(true); }}
                                     onDelete={handleDelete}
                                 />
                             ))}
@@ -200,7 +200,7 @@ function CategoryForm({ initialData, isCreating, onCancel, onSuccess }: any) {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setForm(prev => ({
+        setForm((prev: any) => ({
             ...prev,
             [name]: value,
             // Auto-generate slug from name if creating and slug is empty
