@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { ArrowRight, Mail, Lock, User, Github, AlertCircle, CheckCircle, Loader2, Phone, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Mail, Lock, User, Github, AlertCircle, CheckCircle, Loader2, Phone, KeyRound, Eye, EyeOff, Sparkles } from 'lucide-react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { createClient } from '@/utils/supabase/client';
 
@@ -37,7 +38,6 @@ export default function LoginPage() {
         const checkExistingSession = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                // Already logged in, redirect to home
                 window.location.href = '/?login=success';
             } else {
                 setCheckingAuth(false);
@@ -55,7 +55,6 @@ export default function LoginPage() {
         try {
             if (authMethod === 'phone') {
                 if (!otpSent) {
-                    // 1. Send OTP
                     const { error } = await supabase.auth.signInWithOtp({
                         phone: phone,
                     });
@@ -63,7 +62,6 @@ export default function LoginPage() {
                     setOtpSent(true);
                     setMessage('OTP sent! Please check your mobile.');
                 } else {
-                    // 2. Verify OTP
                     const { error } = await supabase.auth.verifyOtp({
                         phone: phone,
                         token: otp,
@@ -73,18 +71,14 @@ export default function LoginPage() {
                     window.location.href = '/?login=success';
                 }
             } else {
-                // Email Auth
                 if (isLogin) {
-                    // SIGN IN
                     const { error } = await supabase.auth.signInWithPassword({
                         email,
                         password,
                     });
                     if (error) throw error;
-                    // Use full page navigation to ensure cookies are properly read by middleware
                     window.location.href = '/?login=success';
                 } else {
-                    // SIGN UP
                     const { error } = await supabase.auth.signUp({
                         email,
                         password,
@@ -119,226 +113,301 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-background grid grid-cols-1 md:grid-cols-2">
+        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#020617] text-white p-4">
             <AmbientBackground />
 
-            {/* Left: Brand Visual (Visible on Desktop) */}
-            <div className="hidden md:flex flex-col justify-between p-12 bg-navy-900 relative overflow-hidden text-white">
-                <div className="relative z-10">
-                    <Link href="/" className="flex items-center gap-2 mb-12">
-                        <img src="/BroncStudio-Light.png" alt="Broncstudio" className="h-8 w-auto brightness-0 invert" />
-                        <span className="font-heading font-bold text-xl">Broncstudio.</span>
-                    </Link>
-                    <h1 className="text-5xl font-heading font-bold leading-tight mb-6">
-                        {isLogin ? "Welcome back, Legend." : "Join the Adventure."}
-                    </h1>
-                    <p className="text-white/70 max-w-md text-lg">
-                        {isLogin
-                            ? "Sign in to track your orders, manage your wishlist, and access exclusive drops."
-                            : "Create an account to start your journey with Broncstudio. Rewards await!"}
-                    </p>
-                </div>
+            {/* Vivid Cinematic Background Gradients */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/40 via-purple-900/20 to-coral-900/20 pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-coral-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-slow delay-700" />
 
-                <div className="relative z-10">
-                    <div className="flex -space-x-4 mb-4">
-                        {[1, 2, 3, 4].map(i => (
-                            <div key={i} className="w-10 h-10 rounded-full border-2 border-navy-900 bg-gray-200 overflow-hidden">
-                                <img src={`https://source.unsplash.com/random/100x100?face,child,${i}`} alt="User" />
-                            </div>
-                        ))}
-                        <div className="w-10 h-10 rounded-full border-2 border-navy-900 bg-coral-500 text-white flex items-center justify-center text-xs font-bold">+2k</div>
-                    </div>
-                    <p className="text-sm text-white/60">Join 2,000+ parents crafting memories.</p>
-                </div>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full max-w-5xl relative z-10"
+            >
+                {/* Premium Wide Glass Card */}
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 rounded-[30px] border border-white/30 bg-gradient-to-br from-white/25 to-white/10 backdrop-blur-3xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5),inset_0_0_30px_rgba(255,255,255,0.15)] overflow-hidden">
 
-                {/* Abstract Circles */}
-                <div className="absolute -top-20 -right-20 w-96 h-96 bg-coral-500/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent" />
-            </div>
+                    {/* LEFT SIDE: Brand & Visuals */}
+                    <div className="relative p-8 md:p-12 hidden md:flex flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-600/20 to-purple-800/20 md:min-h-[600px]">
+                        {/* Decorative Background for Left Panel */}
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                        <div className="absolute -top-20 -left-20 w-64 h-64 bg-cyan-500/30 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 right-0 w-80 h-80 bg-pink-500/20 rounded-full blur-3xl"></div>
 
-            {/* Right: Form */}
-            <div className="flex flex-col items-center justify-center p-6 md:p-12 relative z-10">
-                <div className="w-full max-w-md">
-                    {/* Mobile Logo */}
-                    <Link href="/" className="md:hidden flex items-center gap-2 mb-8 justify-center">
-                        <span className="font-heading font-bold text-2xl text-navy-900">Broncstudio.</span>
-                    </Link>
+                        <div className="relative z-10">
+                            <Link href="/">
+                                <div className="relative h-12 w-auto aspect-[4/1] mb-8 transition-transform hover:scale-105 duration-300 origin-left">
+                                    <Image
+                                        src="/broncnamey.png"
+                                        alt="Broncstudio"
+                                        fill
+                                        className="object-contain object-left"
+                                        priority
+                                    />
+                                </div>
+                            </Link>
 
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-heading font-bold text-navy-900 mb-2">
-                            {isLogin ? 'Sign In' : 'Create Account'}
-                        </h2>
-                        <p className="text-gray-500">
-                            {isLogin ? "New here? " : "Already have an account? "}
-                            <button
-                                onClick={() => {
-                                    setIsLogin(!isLogin);
-                                    setError(null);
-                                    setMessage(null);
-                                    setAuthMethod('email');
-                                }}
-                                className="text-coral-500 font-bold hover:underline"
+                            <motion.div
+                                key={isLogin ? 'login-text' : 'signup-text'}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 20 }}
+                                transition={{ duration: 0.5 }}
+                                className="mt-8"
                             >
-                                {isLogin ? "Create an account" : "Log in"}
+                                <h1 className="text-4xl md:text-5xl font-heading font-bold leading-tight mb-6">
+                                    {isLogin ? (
+                                        <>
+                                            The Archive <br />
+                                            <span className="text-coral-400">Awaits.</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            Don't Miss <br />
+                                            <span className="text-cyan-400">the Drop.</span>
+                                        </>
+                                    )}
+                                </h1>
+                                <p className="text-lg text-white/70 max-w-sm leading-relaxed">
+                                    {isLogin
+                                        ? 'Sign in to access your saved styles and exclusive drops. High-demand items are moving fast—secure yours now.'
+                                        : 'Join the inner circle for priority access. Our limited collections sell out in minutes—be the first to shop.'}
+                                </p>
+                            </motion.div>
+                        </div>
+                    </div>
+
+                    {/* RIGHT SIDE: Form */}
+                    <div className="p-8 md:p-12 bg-black/20 flex flex-col justify-center">
+
+                        <div className="text-center mb-8 md:hidden">
+                            <Link href="/">
+                                <div className="relative h-8 w-32 mx-auto mb-4">
+                                    <Image
+                                        src="/broncnamey.png"
+                                        alt="Broncstudio"
+                                        fill
+                                        className="object-contain"
+                                        priority
+                                    />
+                                </div>
+                            </Link>
+                            <h2 className="text-2xl font-bold">{isLogin ? 'Sign In' : 'Create Account'}</h2>
+                        </div>
+
+                        {/* Auth Method Selector (Glass Tabs) */}
+                        <div className="flex p-1 bg-white/5 rounded-xl mb-8 border border-white/5 relative">
+                            <motion.div
+                                className="absolute top-1 bottom-1 rounded-lg bg-indigo-500/40 border border-white/10 shadow-sm"
+                                initial={false}
+                                animate={{
+                                    left: authMethod === 'email' ? '4px' : '50%',
+                                    width: 'calc(50% - 4px)',
+                                    x: authMethod === 'email' ? 0 : 0
+                                }}
+                                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+
+                            <button
+                                className={`flex-1 py-2.5 rounded-lg text-sm font-bold relative z-10 transition-colors ${authMethod === 'email' ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
+                                onClick={() => { setAuthMethod('email'); setError(null); }}
+                            >
+                                Email
                             </button>
-                        </p>
-                    </div>
+                            <button
+                                className={`flex-1 py-2.5 rounded-lg text-sm font-bold relative z-10 transition-colors ${authMethod === 'phone' ? 'text-white' : 'text-white/40 hover:text-white/70'}`}
+                                onClick={() => { setAuthMethod('phone'); setError(null); }}
+                            >
+                                Phone
+                            </button>
+                        </div>
 
-                    {/* Auth Method Toggle */}
-                    <div className="flex p-1 bg-gray-100 rounded-xl mb-6">
-                        <button
-                            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${authMethod === 'email' ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-500 hover:text-navy-700'}`}
-                            onClick={() => { setAuthMethod('email'); setError(null); }}
-                        >
-                            Email
-                        </button>
-                        <button
-                            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${authMethod === 'phone' ? 'bg-white text-navy-900 shadow-sm' : 'text-gray-500 hover:text-navy-700'}`}
-                            onClick={() => { setAuthMethod('phone'); setError(null); }}
-                        >
-                            Phone
-                        </button>
-                    </div>
-
-                    <form className="space-y-4" onSubmit={handleAuth}>
-                        {/* Messages */}
-                        {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg flex items-center gap-2 text-sm">
-                                <AlertCircle size={16} />
-                                {error}
-                            </div>
-                        )}
-                        {message && (
-                            <div className="bg-green-50 text-green-600 p-3 rounded-lg flex items-center gap-2 text-sm">
-                                <CheckCircle size={16} />
-                                {message}
-                            </div>
-                        )}
-
-                        {authMethod === 'email' ? (
-                            <>
-                                {!isLogin && (
-                                    <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                                        <input
-                                            type="text"
-                                            placeholder="Full Name"
-                                            value={fullName}
-                                            onChange={(e) => setFullName(e.target.value)}
-                                            required={!isLogin}
-                                            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                                        />
-                                    </div>
-                                )}
-
-                                <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                                    <input
-                                        type="email"
-                                        placeholder="Email Address"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                                    />
-                                </div>
-
-                                <div className="relative">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                        minLength={6}
-                                        className="w-full pl-12 pr-12 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-900 transition-colors"
+                        {/* Form Area */}
+                        <form className="space-y-5" onSubmit={handleAuth}>
+                            <AnimatePresence mode="wait">
+                                {error && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="bg-red-500/10 border border-red-500/20 text-red-200 p-3 rounded-xl flex items-center gap-2 text-xs font-medium overflow-hidden mb-4"
                                     >
-                                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <div className="relative">
-                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                                    <input
-                                        type="tel"
-                                        placeholder="Phone Number (e.g. +91 9999999999)"
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
-                                        required
-                                        disabled={otpSent}
-                                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all disabled:bg-gray-50"
-                                    />
-                                </div>
-                                {otpSent && (
-                                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                                        <div className="relative mt-4">
-                                            <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                                            <input
-                                                type="text"
-                                                placeholder="Enter OTP"
-                                                value={otp}
-                                                onChange={(e) => setOtp(e.target.value)}
-                                                required
-                                                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 focus:ring-1 focus:ring-navy-900 transition-all"
-                                            />
-                                        </div>
+                                        <AlertCircle size={14} className="shrink-0" />
+                                        {error}
                                     </motion.div>
                                 )}
-                            </>
-                        )}
+                                {message && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 p-3 rounded-xl flex items-center gap-2 text-xs font-medium overflow-hidden mb-4"
+                                    >
+                                        <CheckCircle size={14} className="shrink-0" />
+                                        {message}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
-                        {isLogin && authMethod === 'email' && (
-                            <div className="text-right">
-                                <a href="#" className="text-sm text-gray-500 hover:text-navy-900">Forgot Password?</a>
-                            </div>
-                        )}
-
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full bg-navy-900 text-white font-bold py-3 rounded-xl hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
-                        >
-                            {loading ? (
-                                <Loader2 size={20} className="animate-spin" />
-                            ) : (
-                                <>
-                                    {authMethod === 'phone'
-                                        ? (otpSent ? 'Verify OTP' : 'Send OTP')
-                                        : (isLogin ? 'Sign In' : 'Get Started')
-                                    } <ArrowRight size={18} />
-                                </>
+                            {/* Email Auth Fields */}
+                            {authMethod === 'email' && (
+                                <div className="space-y-4">
+                                    {!isLogin && (
+                                        <div className="relative group">
+                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-purple-400 transition-colors" size={18} />
+                                            <input
+                                                type="text"
+                                                placeholder="Full Name"
+                                                value={fullName}
+                                                onChange={(e) => setFullName(e.target.value)}
+                                                required={!isLogin}
+                                                className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="relative group">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-purple-400 transition-colors" size={18} />
+                                        <input
+                                            type="email"
+                                            placeholder="Email Address"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
+                                        />
+                                    </div>
+                                    <div className="relative group">
+                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-purple-400 transition-colors" size={18} />
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                            minLength={6}
+                                            className="w-full pl-11 pr-11 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
+                                </div>
                             )}
-                        </button>
-                    </form>
 
-                    <div className="mt-8 relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-[#FAF9F7] text-gray-500">Or continue with</span>
-                        </div>
-                    </div>
+                            {/* Phone Auth Fields */}
+                            {authMethod === 'phone' && (
+                                <div className="space-y-4">
+                                    <div className="relative group">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-purple-400 transition-colors" size={18} />
+                                        <input
+                                            type="tel"
+                                            placeholder="Phone Number (e.g. +91 ...)"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            required
+                                            disabled={otpSent}
+                                            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm disabled:opacity-50"
+                                        />
+                                    </div>
+                                    {otpSent && (
+                                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                                            <div className="relative group mt-4">
+                                                <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-purple-400 transition-colors" size={18} />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter OTP"
+                                                    value={otp}
+                                                    onChange={(e) => setOtp(e.target.value)}
+                                                    required
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </div>
+                            )}
 
-                    <div className="mt-6">
+                            {isLogin && authMethod === 'email' && (
+                                <div className="text-right">
+                                    <a href="#" className="text-xs text-white/40 hover:text-white transition-colors">Forgot Password?</a>
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-gradient-to-r from-coral-500 to-pink-600 text-white font-bold py-3.5 rounded-xl hover:shadow-[0_0_20px_rgba(255,100,100,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:hover:scale-100 disabled:hover:shadow-none"
+                            >
+                                {loading ? (
+                                    <Loader2 size={18} className="animate-spin" />
+                                ) : (
+                                    <>
+                                        {authMethod === 'phone'
+                                            ? (otpSent ? 'Verify OTP' : 'Send Code')
+                                            : (isLogin ? 'Sign In' : 'Get Started')
+                                        }
+                                        {!loading && <ArrowRight size={18} />}
+                                    </>
+                                )}
+                            </button>
+                        </form>
+
+                        {/* Divider */}
+                        <div className="my-6 relative flex items-center justify-center">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-white/10"></div>
+                            </div>
+                            <div className="relative bg-transparent px-4">
+                                <span className="text-xs text-white/30 bg-[#0A101D]/0 backdrop-blur-md px-2 rounded">Or continue with</span>
+                            </div>
+                        </div>
+
+                        {/* Social Auth */}
                         <button
                             onClick={() => handleOAuth('google')}
-                            className="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-white transition-all bg-white/50"
+                            className="w-full flex items-center justify-center gap-2 py-3 border border-white/10 rounded-xl hover:bg-white/5 hover:border-white/20 transition-all bg-white/5 group"
                         >
-                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                            <span className="font-bold text-navy-900 text-sm">Google</span>
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 opacity-90 group-hover:opacity-100 transition-opacity" alt="Google" />
+                            <span className="font-bold text-white/90 text-sm group-hover:text-white">Google</span>
                         </button>
+
+                        {/* Toggle Login/Signup */}
+                        <div className="mt-6 text-center">
+                            <p className="text-white/40 text-sm">
+                                {isLogin ? "New to Broncstudio? " : "Already have an account? "}
+                                <button
+                                    onClick={() => {
+                                        setIsLogin(!isLogin);
+                                        setError(null);
+                                        setMessage(null);
+                                        setAuthMethod('email');
+                                    }}
+                                    className="text-white font-bold hover:underline hover:text-coral-400 transition-colors ml-1"
+                                >
+                                    {isLogin ? "Create Account" : "Sign In"}
+                                </button>
+                            </p>
+                        </div>
+
                     </div>
+
+                    {/* Decorative Bottom Glow */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent opacity-50" />
                 </div>
-            </div>
+
+                {/* Copyright / Footer */}
+                <p className="text-center text-white/20 text-xs mt-8">
+                    &copy; {new Date().getFullYear()} Broncstudio. All rights reserved.
+                </p>
+
+            </motion.div>
         </div>
     );
 }

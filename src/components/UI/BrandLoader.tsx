@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 interface BrandLoaderProps {
@@ -65,18 +66,34 @@ export default function BrandLoader({ text = 'Just a moment...', size = 'md' }: 
                 </motion.div>
 
                 {/* Static Center Branding with Real Logo */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 bg-navy-900 rounded-full flex items-center justify-center shadow-2xl z-20 border-4 border-white dark:border-navy-800">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
+                    <div className="w-20 h-20 bg-navy-900 rounded-full flex items-center justify-center shadow-2xl z-20 border-4 border-white dark:border-navy-800 p-3 relative">
                         <img
-                            src="/BroncStudio-Light.png"
+                            src="/whitelogo.png"
                             alt="Broncstudio"
-                            className="w-12 h-12 object-contain"
+                            className="w-full h-full object-contain"
                         />
                     </div>
-                    {/* Decorative Rings */}
-                    <div className="absolute w-32 h-32 border border-navy-100 dark:border-navy-700 rounded-full" />
-                    <div className="absolute w-40 h-40 border border-dashed border-coral-200 dark:border-coral-800 rounded-full animate-spin-slow" />
+                    <div className="relative h-12 md:h-16 w-auto aspect-[4/1] animate-pulse">
+                        <Image
+                            src="/broncname.png"
+                            alt="Broncstudio"
+                            fill
+                            className="object-contain dark:hidden"
+                            priority
+                        />
+                        <Image
+                            src="/broncnamey.png"
+                            alt="Broncstudio"
+                            fill
+                            className="object-contain hidden dark:block"
+                            priority
+                        />
+                    </div>
                 </div>
+                {/* Decorative Rings */}
+                <div className="absolute w-32 h-32 border border-navy-100 dark:border-navy-700 rounded-full" />
+                <div className="absolute w-40 h-40 border border-dashed border-coral-200 dark:border-coral-800 rounded-full animate-spin-slow" />
             </div>
 
             {/* Text */}

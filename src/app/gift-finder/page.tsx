@@ -96,7 +96,7 @@ export default function GiftFinderPage() {
                         <Gift size={36} className="text-coral-500" />
                     </motion.div>
                     <h1 className="text-3xl md:text-5xl font-heading font-bold text-navy-900 leading-tight mb-3">
-                        🎁 Find the Perfect Gift
+                        Find the Perfect Gift
                     </h1>
                     <p className="text-gray-500 text-base md:text-lg max-w-xl mx-auto">
                         Tell us the moment — we'll help you find something they'll love.

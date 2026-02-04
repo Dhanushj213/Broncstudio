@@ -9,14 +9,29 @@ const Footer = () => {
             <div className={styles.container}>
                 <div className={styles.grid}>
                     <div className={styles.brandColumn}>
-                        <Link href="/" style={{ display: 'block', marginBottom: '16px' }}>
-                            <Image
-                                src="/BroncStudio-Light.png"
-                                alt="Broncstudio"
-                                width={180}
-                                height={50}
-                                style={{ objectFit: 'contain' }}
-                            />
+                        <Link href="/" className="flex flex-col items-center gap-2 mb-6 group w-fit mx-auto md:mx-0">
+                            <div className="relative h-14 w-14 md:h-20 md:w-20 flex-shrink-0">
+                                <Image
+                                    src="/blacklogo.png"
+                                    alt="Broncstudio"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="relative h-10 md:h-14 w-auto aspect-[4/1]">
+                                <Image
+                                    src="/broncname.png"
+                                    alt="Broncstudio"
+                                    fill
+                                    className="object-contain dark:hidden"
+                                />
+                                <Image
+                                    src="/broncnamey.png"
+                                    alt="Broncstudio"
+                                    fill
+                                    className="object-contain hidden dark:block"
+                                />
+                            </div>
                         </Link>
                         <p className={styles.brandDescription}>
                             Making childhood magical with our curated collection of books, fashion, and gifts. Designed with love for parents and kids.

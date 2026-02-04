@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
     Lock, Truck, RotateCcw, MapPin,
@@ -56,9 +57,16 @@ export default function PremiumFooter() {
                     {/* 1. BRAND BLOCK (Left - 4 cols) */}
                     <div className="md:col-span-4 space-y-6">
                         <div>
-                            <a href="/" className="flex items-center gap-3 mb-4 cursor-pointer hover:opacity-80 transition-opacity">
-                                <img src="/BroncStudio-Light.png" alt="Broncstudio" className="h-10 w-auto object-contain" />
-                                <h2 className="text-2xl font-heading font-bold text-white tracking-tight">Broncstudio.</h2>
+                            <a href="/" className="flex flex-col items-center gap-2 mb-6 cursor-pointer group w-fit mx-auto md:mx-0">
+                                <img src="/whitelogo.png" alt="Broncstudio" className="h-20 w-auto object-contain" />
+                                <div className="relative h-10 md:h-14 w-auto aspect-[4/1]">
+                                    <Image
+                                        src="/broncnamey.png"
+                                        alt="Broncstudio"
+                                        fill
+                                        className="object-contain"
+                                    />
+                                </div>
                             </a>
                             <p className="text-white/80 italic font-medium">Stories, style, and little things that matter.</p>
                         </div>

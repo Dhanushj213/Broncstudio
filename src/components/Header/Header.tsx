@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, ShoppingBag, Heart, Menu, User, ChevronDown } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
@@ -68,10 +69,41 @@ export default function Header() {
                     </div>
 
                     {/* Center: Logo */}
-                    <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
-                        <img src="/BroncStudio(2).png" alt="Broncstudio" className="h-8 md:h-10 w-auto object-contain block dark:hidden" />
-                        <img src="/BroncStudio(2).png" alt="Broncstudio" className="h-8 md:h-10 w-auto object-contain hidden dark:block" />
-                        <span className="font-heading text-xl md:text-2xl font-bold text-navy-900 dark:text-white tracking-tight">Broncstudio.</span>
+                    <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 md:gap-4 group">
+                        <div className="relative h-12 md:h-16 w-auto aspect-[1/1] -mr-3 md:-mr-4">
+                            <Image
+                                src="/blacklogo.png"
+                                alt="Broncstudio"
+                                width={160}
+                                height={160}
+                                className="object-contain h-full w-auto dark:hidden"
+                                priority
+                            />
+                            <Image
+                                src="/whitelogo.png"
+                                alt="Broncstudio"
+                                width={160}
+                                height={160}
+                                className="object-contain h-full w-auto hidden dark:block"
+                                priority
+                            />
+                        </div>
+                        <div className="relative h-8 md:h-12 w-auto aspect-[4/1]">
+                            <Image
+                                src="/broncname.png"
+                                alt="Broncstudio"
+                                fill
+                                className="object-contain dark:hidden"
+                                priority
+                            />
+                            <Image
+                                src="/broncnamey.png"
+                                alt="Broncstudio"
+                                fill
+                                className="object-contain hidden dark:block"
+                                priority
+                            />
+                        </div>
                     </Link>
 
                     {/* Desktop Navigation - Center */}
