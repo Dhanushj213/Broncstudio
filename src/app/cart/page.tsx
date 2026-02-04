@@ -16,12 +16,12 @@ const CartPage = () => {
 
     if (items.length === 0) {
         const WORLDS = [
-            { name: 'Little Legends', href: '/shop/little-legends', icon: '🧸', color: '#FFD966', image: 'https://images.unsplash.com/photo-1519457431-44d59405d6e6?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Everyday Icons', href: '/shop/everyday-icons', icon: '🧢', color: '#5BC0EB', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Little Luxuries', href: '/shop/little-luxuries', icon: '✨', color: '#B392AC', image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Space Stories', href: '/shop/space-stories', icon: '🚀', color: '#1B263B', image: 'https://images.unsplash.com/photo-1532339142463-fd0a8d79797a?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Style Extras', href: '/shop/style-extras', icon: '🎒', color: '#9BC53D', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Sale', href: '/shop/sale', icon: '🏷️', color: '#FF6B6B', image: 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids', icon: '🎨', color: '#FFD966', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing', icon: '👕', color: '#5BC0EB', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle', icon: '🎁', color: '#B392AC', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home', icon: '🏠', color: '#1B263B', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories', icon: '🧢', color: '#9BC53D', image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets', icon: '🐾', color: '#FF6B6B', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=400&q=80' },
         ];
 
         return (
@@ -45,21 +45,25 @@ const CartPage = () => {
                 </GlassCard>
 
                 {/* Worlds Navigation */}
-                <div className="mt-12 md:mt-16 w-full max-w-4xl relative z-10">
+                <div className="mt-12 md:mt-16 w-full max-w-5xl relative z-10">
                     <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Or Jump Straight Into</p>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 justify-items-center">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 justify-items-center">
                         {WORLDS.map((world) => (
-                            <Link key={world.name} href={world.href} className="group flex flex-col items-center gap-3">
+                            <Link key={world.name} href={world.href} className="group flex flex-col items-center gap-3 w-full">
                                 <div
-                                    className="w-20 h-20 md:w-24 md:h-24 rounded-full relative overflow-hidden bg-white shadow-sm flex items-center justify-center text-3xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl group-hover:-translate-y-1 border-2 border-white"
+                                    className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden bg-white shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1 border border-white/50"
                                 >
                                     <img src={world.image} alt={world.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                                    <span className="relative z-10 group-hover:animate-shake drop-shadow-md">{world.icon}</span>
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                                 </div>
-                                <span className="text-[10px] md:text-xs font-bold text-navy-800 text-center uppercase tracking-wide group-hover:text-coral-500 transition-colors">
-                                    {world.name}
-                                </span>
+                                <div className="flex flex-col items-center text-center">
+                                    <span className="text-[10px] md:text-xs font-bold text-navy-800 uppercase tracking-wide group-hover:text-coral-500 transition-colors">
+                                        {world.name}
+                                    </span>
+                                    <span className="text-[9px] text-gray-400 font-medium mt-0.5 group-hover:text-gray-600 transition-colors">
+                                        {world.subtitle}
+                                    </span>
+                                </div>
                             </Link>
                         ))}
                     </div>
