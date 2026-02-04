@@ -31,6 +31,7 @@ export default function ShopPage() {
         data: any;
         children: any[]; // The next level cards to show
         breadcrumbs: { label: string; href: string }[];
+        heroImage?: string; // New: For Hero Banner
     } | null>(null);
 
     const [products, setProducts] = useState<any[]>([]);
@@ -75,7 +76,8 @@ export default function ShopPage() {
                         slug: c.slug,
                         description: c.description
                     })),
-                    breadcrumbs: []
+                    breadcrumbs: [],
+                    heroImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80' // Default Root Image
                 };
             }
 
@@ -101,7 +103,8 @@ export default function ShopPage() {
                         type: 'category' as const,
                         data: l1Node,
                         children: flattenedItems,
-                        breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }]
+                        breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
+                        heroImage: l1Node.image
                     };
                 }
 
@@ -115,7 +118,8 @@ export default function ShopPage() {
                         slug: `${l1Slug}/${sc.slug}`, // Construct nested href
                         description: sc.description || `Browse ${sc.name}`
                     })) || [],
-                    breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }]
+                    breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
+                    heroImage: l1Node.image
                 };
             }
 
@@ -136,7 +140,8 @@ export default function ShopPage() {
                     breadcrumbs: [
                         { label: l1Node.name, href: `/shop/${l1Node.slug}` },
                         { label: l2Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}` }
-                    ]
+                    ],
+                    heroImage: l1Node.image // Inherit Parent Image
                 };
             }
 
@@ -152,7 +157,8 @@ export default function ShopPage() {
                     { label: l1Node.name, href: `/shop/${l1Node.slug}` },
                     { label: l2Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}` },
                     { label: l3Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}/${l3Node.slug}` }
-                ]
+                ],
+                heroImage: l1Node.image // Inherit Parent Image
             };
         };
 
@@ -204,10 +210,13 @@ export default function ShopPage() {
                 if (categoryIds.length > 0) {
                     const { data, error } = await supabase
                         .from('products')
-                        .select('id, name, price, compare_at_price, images, image_url, stock_status, brand, created_at, category_id')
+                        .select('*')
                         .in('category_id', categoryIds);
 
-                    if (error) console.error('Fetch Error:', error);
+                    if (error) {
+                        console.error('Fetch Error:', error);
+                        console.error('Fetch Error Details:', JSON.stringify(error, null, 2));
+                    }
                     setProducts(data || []);
                 } else {
                     setProducts([]);
@@ -282,18 +291,28 @@ export default function ShopPage() {
         : 'from-emerald-500/10 via-teal-500/5 to-blue-500/10';
 
     return (
-        <div className="relative min-h-screen bg-gray-50 dark:bg-navy-950 pt-[var(--header-height)] -mt-[var(--header-height)] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-gray-50 dark:bg-navy-950 pt-[120px] -mt-[120px] pb-20 overflow-hidden">
             <AmbientBackground />
 
+            {/* HERO BANNER IMAGE (If Available) */}
+            {currentView.heroImage && (
+                <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
+                    <div className="absolute inset-0 bg-black/40 z-10" /> {/* Overlay for text readability */}
+                    <img
+                        src={currentView.heroImage}
+                        alt="Collection Hero"
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-navy-950 to-transparent z-20" /> {/* Fade to content */}
+                </div>
+            )}
 
 
-
-
-            {/* Background Blob */}
-            <div className={`absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br ${heroGradient} blur-3xl opacity-40 pointer-events-none z-0`} />
+            {/* Background Blob - Reduce Opacity if Image is present */}
+            <div className={`absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br ${heroGradient} ${currentView.heroImage ? 'opacity-20' : 'opacity-40'} blur-3xl pointer-events-none z-0`} />
 
             {/* Breadcrumbs */}
-            <div className="relative z-40 px-6 py-4">
+            <div className="relative z-40 px-6 py-4 mt-8">
                 <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-navy-900/50 backdrop-blur-xl rounded-full border border-white/20 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-navy-700 dark:text-gray-300 shadow-sm">
                     <Link href="/" className="hover:text-coral-500 transition-colors">Home</Link>
                     <span className="opacity-40">/</span>
@@ -309,6 +328,25 @@ export default function ShopPage() {
                 </div>
             </div>
 
+            {/* Hero Title & Tagline */}
+            <div className="relative z-30 max-w-[1400px] mx-auto px-6 pt-4 pb-12 text-center">
+                <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-4xl md:text-6xl font-heading font-bold text-white mb-4 drop-shadow-lg"
+                >
+                    {currentView.data.name}
+                </motion.h1>
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto drop-shadow-md"
+                >
+                    {currentView.data.description}
+                </motion.p>
+            </div>
+
             {/* Conditional Layout: Tabbed for Category (Level 1) EXCEPT Pets, Standard for others */}
             {currentView.type === 'category' && currentView.data.slug !== 'pets' ? (
                 <div className="-mt-12">
@@ -316,10 +354,6 @@ export default function ShopPage() {
                 </div>
             ) : (
                 <>
-                    {/* HERO TITLE REMOVED */}
-                    <div className="relative z-30 max-w-[1400px] mx-auto px-6 pt-16 md:pt-24 pb-8 text-center">
-                        <div className="mb-4"></div>
-                    </div>
 
                     {/* CONTENT */}
                     <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-8">

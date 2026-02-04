@@ -87,10 +87,11 @@ export const CATEGORY_TAXONOMY = {
             }
         ]
     },
-    'gifts': {
+    'lifestyle': {
         id: 'little-luxuries',
-        name: 'Gifts', // RENAMED to match header
-        slug: 'gifts', // RENAMED
+        name: 'Lifestyle', // RENAMED to match header
+        slug: 'lifestyle', // RENAMED
+        db_slug: 'gifts', // DB Mapping
         legacy_slug: 'little-luxuries',
         description: 'Small Joys & Gifting.',
         image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
@@ -373,27 +374,27 @@ export const DEPARTMENT_TAXONOMY: Record<string, Department> = {
             {
                 title: 'Drinkware',
                 items: [
-                    { label: 'Coffee Mugs', href: '/shop/gifts/drinkware/coffee-mugs' },
-                    { label: 'Magic Mugs', href: '/shop/gifts/drinkware/magic-mugs' },
-                    { label: 'Steel Bottles', href: '/shop/gifts/drinkware/steel-bottles' },
-                    { label: 'Sippers', href: '/shop/gifts/drinkware/sippers' }
+                    { label: 'Coffee Mugs', href: '/shop/lifestyle/drinkware/coffee-mugs' },
+                    { label: 'Magic Mugs', href: '/shop/lifestyle/drinkware/magic-mugs' },
+                    { label: 'Steel Bottles', href: '/shop/lifestyle/drinkware/steel-bottles' },
+                    { label: 'Sippers', href: '/shop/lifestyle/drinkware/sippers' }
                 ]
             }
         ]
     },
-    'gifts': {
-        label: 'Gifts',
-        href: '/shop/gifts',
+    'lifestyle': {
+        label: 'Lifestyle',
+        href: '/shop/lifestyle',
         color: 'pink',
         groups: [
             {
-                title: 'Gifts',
+                title: 'Lifestyle',
                 items: [
-                    { label: 'Trinkets', href: '/shop/gifts/gifts/trinkets' },
-                    { label: 'Keychains', href: '/shop/gifts/gifts/keychains' },
-                    { label: 'Badges', href: '/shop/gifts/gifts/badges' },
-                    { label: 'Luggage Tags', href: '/shop/gifts/gifts/luggage-tags' },
-                    { label: 'Patches', href: '/shop/gifts/gifts/patches' }
+                    { label: 'Trinkets', href: '/shop/lifestyle/gifts/trinkets' },
+                    { label: 'Keychains', href: '/shop/lifestyle/gifts/keychains' },
+                    { label: 'Badges', href: '/shop/lifestyle/gifts/badges' },
+                    { label: 'Luggage Tags', href: '/shop/lifestyle/gifts/luggage-tags' },
+                    { label: 'Patches', href: '/shop/lifestyle/gifts/patches' }
                 ]
             }
         ]

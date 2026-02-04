@@ -83,9 +83,9 @@ const DEPARTMENT_TILES = [
         textColor: 'text-amber-900',
     },
     {
-        title: 'Gifts',
+        title: 'Lifestyle',
         subtitle: 'Small Joys',
-        href: '/shop/gifts',
+        href: '/shop/lifestyle',
         image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',

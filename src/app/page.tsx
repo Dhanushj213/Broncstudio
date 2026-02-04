@@ -13,6 +13,7 @@ import HeroVideo from '@/components/Home/HeroVideo';
 import CuratedGrid from '@/components/Home/CuratedGrid';
 
 import MasonryProductGrid from '@/components/Home/MasonryProductGrid';
+import DiscoverMore from '@/components/Home/DiscoverMore';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/context/ToastContext';
 
@@ -76,7 +77,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="min-h-screen bg-gray-50 dark:bg-navy-900 pt-[120px] -mt-[120px] overflow-x-hidden">
       <AmbientBackground />
 
       <HeroVideo />
@@ -103,6 +104,9 @@ export default function Home() {
 
       {/* Unified Curated Grid (Mobile & Desktop) */}
       <CuratedGrid />
+
+      {/* Discover More / Random Feed */}
+      <DiscoverMore />
 
       {/* Premium Features / Trust Signals */}
       <section className="py-16 px-6">

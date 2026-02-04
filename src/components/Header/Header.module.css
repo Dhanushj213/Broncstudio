@@ -5,8 +5,7 @@
     background-color: var(--bg-header);
     transition: all 0.3s ease;
     width: 100%;
-    /* Subtle border for separation, mostly useful when scrolled */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100%;
 }
 
 .header.scrolled {
@@ -15,7 +14,7 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {

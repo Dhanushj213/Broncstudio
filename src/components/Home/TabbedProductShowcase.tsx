@@ -31,7 +31,9 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
             // But usually categorySlug matches the key.
             const localNode = Object.values(require('@/data/categories').CATEGORY_TAXONOMY).find((c: any) => c.slug === categorySlug || c.legacy_slug === categorySlug) as any;
 
-            if (localNode && localNode.legacy_slug) {
+            if (localNode && localNode.db_slug) {
+                targetSlug = localNode.db_slug;
+            } else if (localNode && localNode.legacy_slug) {
                 // Only use legacy if we need to, but our DB seems to use the NEW slug 'clothing'.
                 // Let's NOT override targetSlug unless we are sure.
                 // Better strategy: Query for EITHER.
@@ -173,12 +175,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
         <section className="py-16 md:py-24 bg-white dark:bg-black/5">
             <div className="container-premium max-w-[1400px] mx-auto px-6">
 
-                {/* Header */}
-                <div className="text-center mb-10">
-                    <span className="inline-block py-1 px-3 rounded-full bg-gray-100 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">Category</span>
-                    <h2 className="text-4xl md:text-5xl font-heading font-black text-navy-900 dark:text-white mb-4">{categoryNode.name}</h2>
-                    <p className="text-gray-500 text-lg">{categoryNode.description}</p>
-                </div>
+
 
                 {/* Tabs */}
                 {tabs.length > 0 && (

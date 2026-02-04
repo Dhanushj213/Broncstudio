@@ -14,7 +14,7 @@ const RAIL_ITEMS = [
     { label: 'Stationery', href: '/collections/stationery', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&q=80' },
     { label: 'Toys', href: '/collections/toys-activities', img: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&q=80' },
     { label: 'Drinkware', href: '/collections/drinkware', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&q=80' },
-    { label: 'Gifts', href: '/collections/gifts', img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&q=80' },
+    { label: 'Lifestyle', href: '/shop/lifestyle', img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&q=80' },
     { label: 'Desk', href: '/collections/desk-essentials', img: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=500&q=80' },
     { label: 'Decor', href: '/collections/home-decor', img: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=500&q=80' },
     { label: 'Magnets', href: '/collections/magnets', img: 'https://images.unsplash.com/photo-1596495370355-467332247aa6?w=500&q=80' },

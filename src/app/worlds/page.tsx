@@ -223,7 +223,7 @@ const CATALOG: Category[] = [
         ]
     },
     {
-        title: "GIFTS",
+        title: "LIFESTYLE",
         colSpan: "md:col-span-4",
         gradient: "from-pink-500 to-rose-600",
         description: "Small Joys",
