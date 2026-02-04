@@ -69,8 +69,8 @@ export default function Header() {
 
                     {/* Center: Logo */}
                     <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
-                        <img src="/BroncStudio (2).png" alt="Broncstudio" className="h-8 md:h-10 w-auto object-contain block dark:hidden" />
-                        <img src="/BroncStudio-Light.png" alt="Broncstudio" className="h-8 md:h-10 w-auto object-contain hidden dark:block" />
+                        <img src="/BroncStudio(2).png" alt="Broncstudio" className="h-8 md:h-10 w-auto object-contain block dark:hidden" />
+                        <img src="/BroncStudio(2).png" alt="Broncstudio" className="h-8 md:h-10 w-auto object-contain hidden dark:block" />
                         <span className="font-heading text-xl md:text-2xl font-bold text-navy-900 dark:text-white tracking-tight">Broncstudio.</span>
                     </Link>
 
