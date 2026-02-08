@@ -6,12 +6,17 @@ import { ArrowLeft, Package, Clock, MapPin, CreditCard, ChevronRight, Truck, Che
 import { useUI } from '@/context/UIContext';
 import { useParams } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
+import InvoiceDownloadButton from '@/components/Invoice/InvoiceDownloadButton';
+
 
 interface OrderItem {
+    id?: string;
+    product_id?: string;
     name: string;
     price: number;
     quantity: number;
     image_url: string;
+    size?: string;
     metadata?: any;
 }
 
@@ -28,6 +33,7 @@ interface Order {
     shipping_address: any;
     payment_method: string;
     payment_status: string;
+    user_id: string;
     items?: OrderItem[];
     status_history?: StatusHistory[];
 }
@@ -96,10 +102,11 @@ export default function OrderDetailsPage() {
                     <Link href="/profile/orders" className="p-2 rounded-full bg-white hover:bg-gray-50 transition-colors shadow-sm">
                         <ArrowLeft size={20} className="text-navy-900" />
                     </Link>
-                    <div>
+                    <div className="flex-1">
                         <h1 className="text-2xl font-bold text-navy-900 font-heading">Order #{order.id.slice(0, 8)}</h1>
                         <p className="text-sm text-gray-500" suppressHydrationWarning>Placed on {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
+                    <InvoiceDownloadButton order={order} variant="outline" />
                 </div>
 
                 {/* Status Timeline Card */}

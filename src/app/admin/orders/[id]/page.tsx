@@ -7,6 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { updateOrderStatus, updatePaymentStatus, undoLastStatusUpdate } from '@/actions/adminActions';
 import { useToast } from '@/context/ToastContext';
+import InvoiceDownloadButton from '@/components/Invoice/InvoiceDownloadButton';
+
 
 
 interface OrderItem {
@@ -178,6 +180,8 @@ export default function OrderDetailPage() {
 
                 {/* ACTION BUTTONS */}
                 <div className="flex items-center gap-3">
+                    <InvoiceDownloadButton order={order} variant="outline" />
+
                     {/* Undo Button - Only show if history exists or status is not pending */}
                     {(order.status !== 'pending' || (order.status_history && order.status_history.length > 0)) && (
                         <button
