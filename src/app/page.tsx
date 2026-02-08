@@ -84,7 +84,7 @@ export default function Home() {
 
       {/* Department Bento Grid */}
       <div id="worlds" className="relative pt-6 pb-4 text-center scroll-mt-[var(--header-height)]">
-        <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-4 animate-fade-in-up md:block hidden">
+        <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-4 animate-fade-in-up">
           Shop By Department
         </h1>
         <DepartmentBentoGrid />

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ShoppingBag, Heart, Menu, User, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, User, ChevronDown, Home } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import MobileMenu from './MobileMenu';
@@ -53,7 +53,7 @@ export default function Header() {
     return (
         <>
             <header
-                className={`sticky top-0 z-[100] w-full bg-background/80 backdrop-blur-md transition-all duration-300 ${isScrolled ? 'h-[60px] shadow-sm' : 'h-[72px]'}`}
+                className={`sticky top-0 z-[100] w-full transition-all duration-300 ${isScrolled ? 'h-[60px] shadow-sm bg-black/80 backdrop-blur-md' : 'h-[72px] bg-black'}`}
                 onMouseLeave={() => setActiveDepartment(null)}
             >
                 <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between relative">
@@ -61,46 +61,59 @@ export default function Header() {
                     {/* Left: Hamburger */}
                     <div className="flex items-center gap-4">
                         <button
-                            className="p-2 -ml-2 text-navy-900 dark:text-white hover:text-coral-500 transition-colors"
+                            className="p-2 -ml-2 text-white hover:text-coral-500 transition-colors"
                             onClick={() => setIsMobileMenuOpen(true)}
                         >
                             <Menu size={24} strokeWidth={1.5} />
                         </button>
+                        <Link href="/" className="p-2 text-white hover:text-coral-500 transition-colors hidden md:block">
+                            <Home size={24} strokeWidth={1.5} />
+                        </Link>
                     </div>
 
                     {/* Center: Logo */}
-                    <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 md:gap-4 group">
-                        <div className="relative h-12 md:h-16 w-auto aspect-[1/1] -mr-3 md:-mr-4">
+                    <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-0 pr-8 md:gap-4 md:pr-0 group">
+                        <div className="relative h-14 md:h-14 w-auto aspect-[2.5/1] md:aspect-[4/1] -mr-4 md:mr-0 md:order-2">
+                            {/* Desktop Light */}
                             <Image
-                                src="/blacklogo.png"
+                                src="/broncname.png"
                                 alt="Broncstudio"
-                                width={160}
-                                height={160}
-                                className="object-contain h-full w-auto dark:hidden"
+                                fill
+                                className="object-contain hidden md:block dark:hidden"
                                 priority
                             />
+                            {/* Desktop Dark */}
+                            <Image
+                                src="/broncnamey.png"
+                                alt="Broncstudio"
+                                fill
+                                className="object-contain hidden dark:md:block"
+                                priority
+                            />
+                            {/* Mobile Light */}
+                            <Image
+                                src="/broncstudioredname.png"
+                                alt="Broncstudio"
+                                fill
+                                className="object-contain md:hidden dark:hidden"
+                                priority
+                            />
+                            {/* Mobile Dark */}
+                            <Image
+                                src="/broncstudioyellowname.png"
+                                alt="Broncstudio"
+                                fill
+                                className="object-contain hidden dark:block dark:md:hidden"
+                                priority
+                            />
+                        </div>
+                        <div className="relative h-12 md:h-16 w-auto aspect-[1/1] -ml-6 md:ml-0 md:order-1">
                             <Image
                                 src="/whitelogo.png"
                                 alt="Broncstudio"
                                 width={160}
                                 height={160}
-                                className="object-contain h-full w-auto hidden dark:block"
-                                priority
-                            />
-                        </div>
-                        <div className="relative h-8 md:h-12 w-auto aspect-[4/1]">
-                            <Image
-                                src="/broncname.png"
-                                alt="Broncstudio"
-                                fill
-                                className="object-contain dark:hidden"
-                                priority
-                            />
-                            <Image
-                                src="/broncnamey.png"
-                                alt="Broncstudio"
-                                fill
-                                className="object-contain hidden dark:block"
+                                className="object-contain h-full w-auto"
                                 priority
                             />
                         </div>
@@ -110,7 +123,7 @@ export default function Header() {
 
 
                     {/* Actions - Right */}
-                    <div className="flex items-center gap-5 text-navy-900 dark:text-white ml-auto">
+                    <div className="flex items-center gap-5 text-white ml-auto">
                         <button onClick={openSearch} className="hover:text-coral-500 transition-colors hidden md:block">
                             <Search size={22} strokeWidth={1.5} />
                         </button>

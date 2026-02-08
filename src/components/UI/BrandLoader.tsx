@@ -74,19 +74,33 @@ export default function BrandLoader({ text = 'Just a moment...', size = 'md' }: 
                             className="w-full h-full object-contain"
                         />
                     </div>
-                    <div className="relative h-12 md:h-16 w-auto aspect-[4/1] animate-pulse">
+                    <div className="relative h-16 md:h-16 w-auto aspect-[6/1] md:aspect-[4/1] animate-pulse">
                         <Image
                             src="/broncname.png"
                             alt="Broncstudio"
                             fill
-                            className="object-contain dark:hidden"
+                            className="object-contain hidden md:block dark:hidden"
                             priority
                         />
                         <Image
                             src="/broncnamey.png"
                             alt="Broncstudio"
                             fill
-                            className="object-contain hidden dark:block"
+                            className="object-contain hidden dark:md:block"
+                            priority
+                        />
+                        <Image
+                            src="/broncstudioredname.png"
+                            alt="Broncstudio"
+                            fill
+                            className="object-contain md:hidden dark:hidden"
+                            priority
+                        />
+                        <Image
+                            src="/broncstudioyellowname.png"
+                            alt="Broncstudio"
+                            fill
+                            className="object-contain hidden dark:block dark:md:hidden"
                             priority
                         />
                     </div>

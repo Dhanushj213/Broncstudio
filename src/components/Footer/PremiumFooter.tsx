@@ -58,18 +58,26 @@ export default function PremiumFooter() {
                         <div>
                             <a href="/" className="flex flex-col items-center gap-2 mb-6 cursor-pointer group w-fit mx-auto md:mx-0">
                                 <img src="/whitelogo.png" alt="Broncstudio" className="h-20 w-auto object-contain" />
-                                <div className="relative h-10 md:h-14 w-auto aspect-[4/1]">
+                                <div className="relative h-20 md:h-14 w-auto aspect-[4/1]">
+                                    {/* Light Mode */}
+                                    <Image
+                                        src="/broncname.png"
+                                        alt="Broncstudio"
+                                        fill
+                                        className="object-contain dark:hidden"
+                                    />
+                                    {/* Dark Mode */}
                                     <Image
                                         src="/broncnamey.png"
                                         alt="Broncstudio"
                                         fill
-                                        className="object-contain"
+                                        className="object-contain hidden dark:block"
                                     />
                                 </div>
                             </a>
-                            <p className="text-white/80 italic font-medium">Stories, style, and little things that matter.</p>
+                            <p className="text-white/80 italic font-medium text-center md:text-left">Stories, style, and little things that matter.</p>
                         </div>
-                        <p className="text-secondary text-sm leading-relaxed max-w-sm">
+                        <p className="text-secondary text-sm leading-relaxed max-w-sm text-center md:text-left mx-auto md:mx-0">
                             A thoughtfully curated lifestyle brand bringing together kids’ books, fashion, gifts, and everyday essentials — designed to spark joy, trust, and creativity for all ages.
                         </p>
 

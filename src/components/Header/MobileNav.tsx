@@ -24,7 +24,7 @@ const MobileNav = () => {
     return (
         <div className="fixed bottom-0 left-0 right-0 z-[1000] md:hidden">
             {/* Glass Container */}
-            <div className="absolute inset-0 bg-[#0B1220]/90 backdrop-blur-[24px] border-t border-white/5 shadow-[0_-8px_32px_rgba(0,0,0,0.4)]" />
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-[24px] border-t border-white/5 shadow-[0_-8px_32px_rgba(0,0,0,0.4)]" />
 
             {/* Content Container - Strict Flex Row */}
             <div className="relative flex w-full h-[64px] pb-[env(safe-area-inset-bottom)] box-content">
@@ -52,7 +52,7 @@ const MobileNav = () => {
                                     strokeWidth={isItemActive ? 2.5 : 1.5}
                                     className={`transition-all duration-200 ${isItemActive
                                         ? 'text-coral-500 drop-shadow-[0_0_12px_rgba(255,100,100,0.5)]'
-                                        : 'text-gray-400'
+                                        : 'text-white'
                                         }`}
                                 />
 

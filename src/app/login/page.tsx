@@ -185,9 +185,9 @@ export default function LoginPage() {
 
                         <div className="text-center mb-8 md:hidden">
                             <Link href="/">
-                                <div className="relative h-8 w-32 mx-auto mb-4">
+                                <div className="relative h-12 w-48 mx-auto mb-6">
                                     <Image
-                                        src="/broncnamey.png"
+                                        src="/broncstudioyellowname.png"
                                         alt="Broncstudio"
                                         fill
                                         className="object-contain"
