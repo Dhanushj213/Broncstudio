@@ -105,7 +105,7 @@ export default function FilterSidebar({
                             onClick={() => onFilterChange('size', size)}
                             className={`min-w-[40px] h-10 px-2 rounded-lg border text-xs font-bold transition-all ${isActive('size', size)
                                 ? 'bg-navy-900 text-white border-navy-900'
-                                : 'bg-white text-navy-900 border-gray-200 hover:border-navy-500'
+                                : 'bg-white text-black border-gray-200 hover:border-navy-500'
                                 }`}
                         >
                             {size}

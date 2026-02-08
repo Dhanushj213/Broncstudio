@@ -41,12 +41,12 @@ export default function CuratedGrid() {
                     <div className="h-1 w-16 bg-coral-500 mx-auto mt-4 rounded-full" />
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 md:gap-6 md:flex md:overflow-x-auto md:snap-x md:pb-8 md:snap-mandatory no-scrollbar">
+                <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 md:gap-6 no-scrollbar">
                     {sections.map((item) => (
                         <Link
                             key={item.id}
                             href={`/collections/${item.id}`}
-                            className="group relative w-full md:w-[320px] md:flex-shrink-0 md:snap-center aspect-[4/5] overflow-hidden rounded-[24px] md:rounded-[32px] shadow-sm hover:shadow-2xl transition-all duration-500"
+                            className="group relative flex-shrink-0 w-[45vw] md:w-[320px] snap-start aspect-[4/5] overflow-hidden rounded-[20px] md:rounded-[32px] shadow-sm hover:shadow-2xl transition-all duration-500"
                         >
                             {/* Image with Zoom Effect */}
                             <img

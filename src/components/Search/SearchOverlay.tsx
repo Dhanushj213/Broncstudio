@@ -52,7 +52,7 @@ export default function SearchOverlay() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[1100] bg-white/95 backdrop-blur-xl flex items-start justify-center pt-20 md:pt-32"
+                    className="fixed inset-0 z-[1100] bg-white/95 dark:bg-black/95 backdrop-blur-xl flex items-start justify-center pt-20 md:pt-32"
                     onClick={closeSearch} // Close on backdrop click
                 >
                     <motion.div
@@ -63,35 +63,35 @@ export default function SearchOverlay() {
                         className="w-full max-w-2xl px-6"
                     >
                         <div className="relative mb-8">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-navy-900" size={24} />
+                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-navy-900 dark:text-white" size={24} />
                             <input
                                 ref={inputRef}
                                 type="text"
                                 placeholder="Search for products, brands, or stories..."
-                                className="w-full bg-gray-100 border border-transparent rounded-2xl py-6 pl-16 pr-16 text-xl text-navy-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-gray-200 focus:ring-1 focus:ring-gray-200 shadow-sm focus:shadow-xl transition-all"
+                                className="w-full bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl py-6 pl-16 pr-16 text-xl text-navy-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:bg-white dark:focus:bg-black focus:border-gray-300 dark:focus:border-white/30 focus:ring-1 focus:ring-gray-200 dark:focus:ring-white/20 shadow-sm focus:shadow-xl transition-all"
                                 onKeyDown={handleKeyDown}
                             />
                             <button
                                 onClick={closeSearch}
-                                className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-900 transition-colors"
+                                className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-900 dark:hover:text-white transition-colors"
                             >
-                                <span className="text-xs uppercase font-bold border border-gray-300 px-2 py-1 rounded hidden md:inline-block">ESC</span>
+                                <span className="text-xs uppercase font-bold border border-gray-300 dark:border-gray-600 px-2 py-1 rounded hidden md:inline-block">ESC</span>
                                 <X size={24} className="md:hidden" />
                             </button>
                         </div>
 
                         {/* Trending Section */}
-                        <div className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm">
+                        <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm">
                             <div className="flex items-center gap-2 mb-4">
                                 <TrendingUp size={18} className="text-coral-500" />
-                                <h3 className="text-sm font-bold uppercase tracking-widest text-navy-900">Trending Now</h3>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-navy-900 dark:text-white">Trending Now</h3>
                             </div>
                             <div className="flex flex-wrap gap-3">
                                 {['Little Legends', 'Sustainable', 'Gift Sets', 'Space Decor', 'Dinosaur Tee', 'Party Wear'].map((tag) => (
                                     <button
                                         key={tag}
                                         onClick={() => handleSearch(tag)}
-                                        className="text-navy-900 hover:text-white bg-gray-100 hover:bg-navy-900 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-lg"
+                                        className="text-navy-900 dark:text-white hover:text-white bg-gray-100 dark:bg-white/10 hover:bg-navy-900 dark:hover:bg-white/20 px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-lg"
                                     >
                                         {tag}
                                     </button>

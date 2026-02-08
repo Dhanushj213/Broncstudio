@@ -81,9 +81,9 @@ export default function DiscoverMore() {
                 </div>
 
                 <div className="mt-16 text-center">
-                    <Link href="/shop" className="inline-flex items-center gap-2 px-8 py-3 bg-navy-900 dark:bg-white text-white dark:text-navy-900 rounded-full font-bold hover:bg-coral-500 hover:text-white transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 uppercase tracking-widest text-sm group">
-                        View All Collections
-                        <ArrowRight size={16} className="transform group-hover:translate-x-1 transition-transform" />
+                    <Link href="/shop/all" className="inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-bold uppercase tracking-widest hover:bg-white/90 transition-transform hover:scale-105 shadow-lg group">
+                        View all collections
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </div>

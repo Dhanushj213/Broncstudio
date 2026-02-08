@@ -48,12 +48,11 @@ export default function PremiumFooter() {
     };
 
     return (
-        <footer className="bg-[#0B1220] text-gray-300 pt-16 pb-24 md:pb-0">
+        <footer className="bg-[#0B1220] dark:bg-black text-secondary pt-16 pb-24 md:pb-0 border-t border-subtle">
             <div className="container-premium max-w-[1200px] mx-auto">
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 pb-12 mb-12 border-b border-white/5">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 pb-12 mb-12">
 
-                    {/* 1. BRAND BLOCK (Left - 4 cols) */}
                     {/* 1. BRAND BLOCK (Left - 4 cols) */}
                     <div className="md:col-span-4 space-y-6">
                         <div>
@@ -70,23 +69,23 @@ export default function PremiumFooter() {
                             </a>
                             <p className="text-white/80 italic font-medium">Stories, style, and little things that matter.</p>
                         </div>
-                        <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        <p className="text-secondary text-sm leading-relaxed max-w-sm">
                             A thoughtfully curated lifestyle brand bringing together kids’ books, fashion, gifts, and everyday essentials — designed to spark joy, trust, and creativity for all ages.
                         </p>
 
                         {/* Trust Badges */}
                         <div className="flex flex-wrap gap-4 pt-2">
-                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)] hover:border-white/30 transition-all duration-300 cursor-default">
-                                <Lock size={14} className="text-success-mint" /> Secure
+                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
+                                <Lock size={14} className="text-emerald-400" /> Secure
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)] hover:border-white/30 transition-all duration-300 cursor-default">
-                                <Truck size={14} className="text-success-mint" /> Fast Delivery
+                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
+                                <Truck size={14} className="text-emerald-400" /> Fast Delivery
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)] hover:border-white/30 transition-all duration-300 cursor-default">
-                                <RotateCcw size={14} className="text-success-mint" /> Returns
+                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
+                                <RotateCcw size={14} className="text-emerald-400" /> Returns
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:shadow-[0_0_12px_rgba(255,255,255,0.15)] hover:border-white/30 transition-all duration-300 cursor-default">
-                                <MapPin size={14} className="text-success-mint" /> India
+                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
+                                <MapPin size={14} className="text-emerald-400" /> India
                             </div>
                         </div>
                     </div>
@@ -97,15 +96,16 @@ export default function PremiumFooter() {
                     {/* 2. COLLECTIONS */}
                     <div className="md:col-span-2 hidden md:block">
                         <h3 className="text-white font-bold mb-6">Collections</h3>
-                        <ul className="space-y-3 text-sm text-gray-400">
+                        <ul className="space-y-3 text-sm text-secondary">
                             <li><Link href="/shop/new-arrivals" className="hover:text-white transition-colors">New Arrivals</Link></li>
                             <li><Link href="/shop/bestsellers" className="hover:text-white transition-colors">Bestsellers</Link></li>
                             <li className="pt-2 border-t border-white/10 mt-2"></li>
-                            <li><Link href="/shop/little-legends" className="hover:text-white transition-colors">Little Legends</Link></li>
-                            <li><Link href="/shop/everyday-icons" className="hover:text-white transition-colors">Everyday Icons</Link></li>
-                            <li><Link href="/shop/little-luxuries" className="hover:text-white transition-colors">Little Luxuries</Link></li>
-                            <li><Link href="/shop/space-stories" className="hover:text-white transition-colors">Space Stories</Link></li>
-                            <li><Link href="/shop/pawfect-picks" className="hover:text-white transition-colors">Pawfect Picks</Link></li>
+                            <li><Link href="/shop/stationery-play" className="hover:text-white transition-colors">Stationery & Play</Link></li>
+                            <li><Link href="/shop/clothing" className="hover:text-white transition-colors">Clothing</Link></li>
+                            <li><Link href="/shop/lifestyle" className="hover:text-white transition-colors">Lifestyle</Link></li>
+                            <li><Link href="/shop/home-tech" className="hover:text-white transition-colors">Home & Tech</Link></li>
+                            <li><Link href="/shop/accessories" className="hover:text-white transition-colors">Accessories</Link></li>
+                            <li><Link href="/shop/pets" className="hover:text-white transition-colors">Pets</Link></li>
                         </ul>
                     </div>
 
@@ -132,8 +132,8 @@ export default function PremiumFooter() {
                                 </Link>
                             </li>
                             <li className="pt-2 border-t border-white/10 mt-2"></li>
-                            <li><Link href="/lookbook" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"><BookOpen size={14} /> Lookbook</Link></li>
-                            <li><Link href="/press" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"><Newspaper size={14} /> Press</Link></li>
+                            <li><Link href="/lookbook" className="flex items-center gap-2 text-secondary hover:text-white transition-colors"><BookOpen size={14} /> Lookbook</Link></li>
+                            <li><Link href="/press" className="flex items-center gap-2 text-secondary hover:text-white transition-colors"><Newspaper size={14} /> Press</Link></li>
                             <li><Link href="/shop/sale" className="flex items-center gap-2 text-red-500 hover:text-red-400 transition-colors font-bold"><Percent size={14} /> Sale</Link></li>
                         </ul>
                     </div>
@@ -141,7 +141,7 @@ export default function PremiumFooter() {
                     {/* 4. SUPPORT */}
                     <div className="md:col-span-2 hidden md:block">
                         <h3 className="text-white font-bold mb-6">Support</h3>
-                        <ul className="space-y-3 text-sm text-gray-400">
+                        <ul className="space-y-3 text-sm text-secondary">
                             <li><Link href="/help/track" className="hover:text-white transition-colors">Order Tracking</Link></li>
                             <li><Link href="/help/returns" className="hover:text-white transition-colors">Returns & Refunds</Link></li>
                             <li><Link href="/help/shipping" className="hover:text-white transition-colors">Shipping Info</Link></li>
@@ -158,7 +158,7 @@ export default function PremiumFooter() {
                     <div className="md:col-span-2 space-y-6">
                         <div>
                             <h3 className="text-white font-bold mb-2">Get early access</h3>
-                            <p className="text-sm text-gray-400 mb-4">Be the first to know about new launches and stories.</p>
+                            <p className="text-sm text-secondary mb-4">Be the first to know about new launches and stories.</p>
                             <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
                                 <input
                                     type="email"
@@ -166,17 +166,17 @@ export default function PremiumFooter() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     disabled={isSubscribing}
-                                    className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cta-primary focus:ring-1 focus:ring-cta-primary transition-colors w-full disabled:opacity-50"
+                                    className="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/30 transition-colors w-full disabled:opacity-50"
                                     required
                                 />
                                 <button
                                     type="submit"
                                     disabled={isSubscribing}
-                                    className={`bg-red-600 hover:bg-[#800000] text-white font-bold py-3 rounded-lg transition-colors w-full text-sm flex items-center justify-center ${isSubscribing ? 'opacity-70 cursor-wait' : ''}`}
+                                    className={`bg-white text-black hover:bg-gray-200 font-bold py-3 rounded-lg transition-colors w-full text-sm flex items-center justify-center ${isSubscribing ? 'opacity-70 cursor-wait' : ''}`}
                                 >
                                     {isSubscribing ? (
                                         <span className="flex items-center gap-2">
-                                            <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            <span className="w-3 h-3 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                                             Subscribing...
                                         </span>
                                     ) : (
@@ -190,7 +190,7 @@ export default function PremiumFooter() {
                         <div className="pt-4">
                             <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Follow the world</h4>
                             <div className="flex gap-4">
-                                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Instagram size={16} /></a>
+                                <a href="https://www.instagram.com/broncstudio?igsh=dWNkZXFjaXdvMDMz" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Instagram size={16} /></a>
                                 <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Facebook size={16} /></a>
                                 <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Youtube size={16} /></a>
                                 <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Twitter size={16} /></a>
@@ -203,12 +203,15 @@ export default function PremiumFooter() {
                 <div className="md:hidden space-y-0 mb-12">
                     <FooterAccordion title="Explore Our Worlds">
                         <ul className="space-y-3 pb-2 pl-2">
-                            <li><Link href="/shop/little-legends" className="block py-1">Little Legends</Link></li>
-                            <li><Link href="/shop/everyday-icons" className="block py-1">Everyday Icons</Link></li>
-                            <li><Link href="/shop/little-luxuries" className="block py-1">Little Luxuries</Link></li>
-                            <li><Link href="/shop/space-stories" className="block py-1">Space Stories</Link></li>
+                            <li><Link href="/shop/stationery-play" className="block py-1">Stationery & Play</Link></li>
+                            <li><Link href="/shop/clothing" className="block py-1">Clothing</Link></li>
+                            <li><Link href="/shop/lifestyle" className="block py-1">Lifestyle</Link></li>
+                            <li><Link href="/shop/home-tech" className="block py-1">Home & Tech</Link></li>
+                            <li><Link href="/shop/accessories" className="block py-1">Accessories</Link></li>
+                            <li><Link href="/shop/pets" className="block py-1">Pets</Link></li>
                         </ul>
                     </FooterAccordion>
+
                     <FooterAccordion title="Quick Shop">
                         <ul className="space-y-3 pb-2 pl-2">
                             <li><Link href="/shop/new-arrivals" className="block py-1">New Arrivals</Link></li>

@@ -42,7 +42,7 @@ export default function AnnouncementBar() {
     );
 
     return (
-        <div className="bg-[#0B1220] text-white text-[10px] md:text-xs font-medium tracking-wide py-2 text-center relative z-[101]">
+        <div className="bg-black text-white dark:bg-white dark:text-black text-[10px] md:text-xs font-medium tracking-wide py-2 text-center relative z-[101]">
             {link ? (
                 <Link href={link} className="hover:opacity-80 transition-opacity block w-full">
                     <Content />

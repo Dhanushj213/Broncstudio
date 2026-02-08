@@ -14,7 +14,7 @@ interface GlassCardProps {
 export default function GlassCard({
     children,
     className = "",
-    glowColor = "rgba(255, 255, 255, 0.8)",
+    glowColor = "rgba(255, 255, 255, 0.1)", // Subtler glow
     disableTilt = false
 }: GlassCardProps) {
     const mouseX = useMotionValue(0);
@@ -32,14 +32,14 @@ export default function GlassCard({
 
     const cardStyles = `
     group relative 
-    bg-white/72 dark:bg-navy-900/60
+    bg-white/72 dark:bg-white/[0.03]
     backdrop-blur-[18px] 
-    border border-white/12 dark:border-white/5
-    shadow-[0_20px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4)]
+    border border-white/12 dark:border-white/10
+    shadow-[0_20px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.6)]
     rounded-[24px]
     overflow-hidden
-    hover:-translate-y-[6px] hover:scale-[1.02]
-    transition-all duration-[220ms] ease-premium
+    hover:-translate-y-[6px] hover:scale-[1.02] dark:hover:border-white/30 dark:hover:bg-white/[0.06]
+    transition-all duration-[400ms] ease-premium
     ${className}
   `;
 
@@ -51,7 +51,7 @@ export default function GlassCard({
         >
             {/* Spotlight Effect */}
             <motion.div
-                className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-[220ms]"
+                className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-[500ms]"
                 style={{
                     background: useMotionTemplate`
             radial-gradient(

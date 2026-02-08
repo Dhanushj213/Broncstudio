@@ -245,10 +245,10 @@ export default function CollectionPage() {
 
     if (!node) {
         return (
-            <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-gray-50 dark:bg-navy-950">
+            <div className="min-h-screen pt-[var(--header-height)] flex items-center justify-center bg-background">
                 <div className="text-center">
-                    <h2 className="text-3xl font-heading font-bold text-navy-900 dark:text-white mb-2">Collection Not Found</h2>
-                    <Link href="/" className="px-6 py-3 bg-navy-900 text-white rounded-full font-bold hover:bg-coral-500 transition-all inline-block mt-4">
+                    <h2 className="text-3xl font-heading font-bold text-primary mb-2">Collection Not Found</h2>
+                    <Link href="/" className="px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-bold hover:bg-coral-500 transition-all inline-block mt-4">
                         Return Home
                     </Link>
                 </div>
@@ -273,7 +273,7 @@ export default function CollectionPage() {
         : 'from-emerald-500/10 via-teal-500/5 to-blue-500/10';
 
     return (
-        <div className="relative min-h-screen bg-white dark:bg-navy-950 pt-[120px] -mt-[120px] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-background pt-[120px] -mt-[120px] pb-20 overflow-hidden">
             <AmbientBackground />
 
 
@@ -283,7 +283,7 @@ export default function CollectionPage() {
 
             {/* Breadcrumbs */}
             <div className="relative z-40 px-6 py-4 container-premium mx-auto">
-                <div className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+                <div className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-2">
                     <Link href="/" className="hover:text-coral-500 transition-colors">Home</Link>
                     <span>/</span>
                     {node.parent && (
@@ -292,7 +292,7 @@ export default function CollectionPage() {
                             <span>/</span>
                         </>
                     )}
-                    <span className="text-navy-900 dark:text-white">{node.data.name}</span>
+                    <span className="text-primary">{node.data.name}</span>
                 </div>
             </div>
 
@@ -320,8 +320,8 @@ export default function CollectionPage() {
                                     <Link key={idx} href={`/collections/${child.slug}`}>
                                         <GlassCard className="p-8 h-full flex flex-col items-center justify-center text-center hover:border-coral-500/30 transition-colors">
                                             <LayoutGrid size={32} className="text-coral-500 mb-4" />
-                                            <h3 className="text-xl font-bold text-navy-900 dark:text-white">{child.name}</h3>
-                                            <p className="text-sm text-gray-500 mt-2">{child.description}</p>
+                                            <h3 className="text-xl font-bold text-primary">{child.name}</h3>
+                                            <p className="text-sm text-secondary mt-2">{child.description}</p>
                                         </GlassCard>
                                     </Link>
                                 ))}
@@ -333,8 +333,8 @@ export default function CollectionPage() {
                             <div className="flex gap-8 lg:gap-12 relative items-start">
                                 {/* Category Sidebar (Restored) */}
                                 <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24">
-                                    <div className="border-r border-gray-100 dark:border-white/5 pr-6 min-h-[50vh]">
-                                        <h3 className="font-bold mb-6 uppercase text-xs tracking-wider text-gray-400">
+                                    <div className="border-r border-subtle pr-6 min-h-[50vh]">
+                                        <h3 className="font-bold mb-6 uppercase text-xs tracking-wider text-secondary">
                                             {node.type === 'item' ? node.parent?.name || 'More in this collection' : 'Categories'}
                                         </h3>
                                         <div className="space-y-1">
@@ -358,7 +358,7 @@ export default function CollectionPage() {
                                                             href={`/collections/${parentSlug}`}
                                                             className={`block py-2 text-sm font-medium transition-colors ${slug === parentSlug
                                                                 ? 'text-coral-500 translate-x-1 font-bold'
-                                                                : 'text-navy-900 dark:text-gray-300 hover:text-coral-500 hover:translate-x-1'
+                                                                : 'text-secondary hover:text-coral-500 hover:translate-x-1'
                                                                 }`}
                                                         >
                                                             All Products
@@ -372,7 +372,7 @@ export default function CollectionPage() {
                                                                     href={`/collections/${item.slug}`}
                                                                     className={`block py-2 text-sm font-medium transition-colors ${isActive
                                                                         ? 'text-coral-500 translate-x-1'
-                                                                        : 'text-navy-900 dark:text-gray-300 hover:text-coral-500 hover:translate-x-1'
+                                                                        : 'text-secondary hover:text-coral-500 hover:translate-x-1'
                                                                         }`}
                                                                 >
                                                                     {item.name}
@@ -415,7 +415,7 @@ export default function CollectionPage() {
                                             ))}
                                         </motion.div>
                                     ) : (
-                                        <div className="py-20 text-center text-gray-400">
+                                        <div className="py-20 text-center text-secondary">
                                             <h3 className="text-xl font-bold">No products found</h3>
                                         </div>
                                     )}

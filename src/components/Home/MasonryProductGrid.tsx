@@ -14,7 +14,7 @@ export default function MasonryProductGrid({ products, title = "Featured Collect
     if (!products || products.length === 0) return null;
 
     return (
-        <section className="py-16 md:py-24 px-4 bg-gray-50 dark:bg-white/5">
+        <section className="pt-8 pb-16 md:pt-12 md:pb-24 px-4 bg-gray-50 dark:bg-black">
             <div className="container-premium max-w-[1440px] mx-auto">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl md:text-5xl font-heading font-black text-navy-900 dark:text-white mb-4">

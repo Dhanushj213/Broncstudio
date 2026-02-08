@@ -4,33 +4,136 @@
 
 @layer base {
   :root {
-    /* Color Tokens (Light Mode) */
-    --bg-main: #FAF9F7;
-    --brand-primary: #0F2A44;
-    --brand-secondary: #4B5563;
-    /* Replaced navy-800 mostly */
-    --cta-primary: #FF5C5C;
-    --accent-gold: #E6B65C;
-    --success-mint: #1FBF8F;
+    /* -------------------------------------------------------------------------
+     * LIGHT MODE DEFAULTS (Pre-existing/Inferred match)
+     * ------------------------------------------------------------------------- */
+    --bg-page: #FAF9F7;
+    --bg-section: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+
     --text-primary: #111827;
     --text-secondary: #4B5563;
+    --text-muted: #9CA3AF;
+    --text-disabled: #D1D5DB;
 
-    /* Layout Tokens */
+    --border-subtle: #E5E7EB;
+    --border-default: #D1D5DB;
+    --divider: #F3F4F6;
+
+    --header-bg: rgba(255, 255, 255, 0.8);
+    --nav-bg: #FFFFFF;
+    --menu-bg: #FFFFFF;
+
+    /* Accents (Shared) */
+    --accent-orange: #F97316;
+    --accent-orange-soft: rgba(249, 115, 22, 0.1);
+    --accent-orange-border: rgba(249, 115, 22, 0.2);
+
+    --success: #10B981;
+    --warning: #F59E0B;
+    --error: #EF4444;
+    --info: #3B82F6;
+
+    /* Layout & Animation Tokens */
     --header-height: 72px;
     --max-content-width: 1200px;
     --border-radius-card: 24px;
-
-    /* Animation Tokens */
     --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Dark Mode Overrides (if class 'dark' is applied) */
+  /* -------------------------------------------------------------------------
+   * DARK MODE (FLAGSHIP SYSTEM)
+   * ------------------------------------------------------------------------- */
   .dark {
-    --bg-main: #0B1220;
-    --brand-primary: #1E3A5F;
-    --text-primary: #F9FAFB;
-    --text-secondary: #CBD5E1;
-    --success-mint: #34D399;
+    /* 🖤 CORE BACKGROUNDS (BLACK / DARK ONLY) */
+    --bg-black-true: #000000;
+    /* deepest black (nav, footer) */
+    --bg-black-main: #000000;
+    /* main app background */
+    --bg-surface-1: #050505;
+    /* sections */
+    --bg-surface-2: #1A2230;
+    /* cards */
+    --bg-surface-3: #202938;
+    /* elevated (menu, modal) */
+
+    /* ✍️ TEXT COLORS */
+    --text-primary: #F1F5F9;
+    /* headings, product titles */
+    --text-secondary: #9AA4B2;
+    /* descriptions */
+    --text-muted: #6B7280;
+    /* labels */
+    --text-disabled: #4B5563;
+
+    /* 🧱 BORDERS / DIVIDERS */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.10);
+    --divider: rgba(255, 255, 255, 0.05);
+
+    /* 🟧 ACCENT (USE ONLY FOR HIGHLIGHTS) */
+    --accent-orange: #F97316;
+    --accent-orange-soft: rgba(249, 115, 22, 0.15);
+    --accent-orange-border: rgba(249, 115, 22, 0.35);
+
+    /* 🛍️ PRODUCT CARDS (Specific overrides if needed, else mapped to semantic) */
+    --card-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+
+    /* 🏷️ BADGES (NEW / SALE) */
+    --badge-bg: rgba(255, 255, 255, 0.06);
+    --badge-text: #F97316;
+    --badge-border: rgba(255, 255, 255, 0.08);
+
+    /* compass HEADER / NAVBAR */
+    --header-bg: rgba(14, 17, 22, 0.85);
+    --header-icon: #E5E7EB;
+    --header-icon-muted: #9AA4B2;
+
+    /* mobile BOTTOM NAVIGATION */
+    --nav-bg: #0B0D10;
+    /* Mapped to bg-black-true */
+    --nav-active: #F97316;
+    --nav-inactive: #6B7280;
+
+    /* burger HAMBURGER MENU */
+    --menu-bg: #0E1116;
+    --menu-header-bg-start: #1A2230;
+    --menu-header-bg-end: #0E1116;
+    --menu-item-bg: #1A2230;
+    --menu-item-hover: #202938;
+
+    /* buttons BUTTONS */
+    --btn-primary-bg: #1A2230;
+    --btn-primary-text: #F1F5F9;
+    --btn-accent-border: #F97316;
+
+    /* heart WISHLIST / BAG / ACTION TILES */
+    --action-bg: #1A2230;
+    --action-hover: #202938;
+    --action-icon: #F1F5F9;
+
+    /* ⚠️ STATUS COLORS */
+    --success: #22C55E;
+    --warning: #FACC15;
+    --error: #EF4444;
+    --info: #38BDF8;
+
+    /* -------------------------------------------------------------------------
+     * SEMANTIC MAPPINGS (Logic Table)
+     * ------------------------------------------------------------------------- */
+    --bg-page: var(--bg-black-main);
+    --bg-section: var(--bg-surface-1);
+    --bg-card: var(--bg-surface-2);
+    --bg-elevated: var(--bg-surface-3);
+  }
+
+  /* Extended Dark Mode Utilities */
+  .dark .glass-premium {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   html {
@@ -38,8 +141,37 @@
   }
 
   body {
-    background-color: var(--bg-main);
+    background-color: var(--bg-page);
     color: var(--text-primary);
+  }
+
+  /* Granite Noise Texture Removed for Pure Black Look */
+
+  /* -------------------------------------------------------------------------
+   * GLOBAL SCROLLBARS & SELECTION
+   * ------------------------------------------------------------------------- */
+  ::selection {
+    background: var(--accent-orange);
+    color: #FFFFFF;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-page);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-surface-3);
+    border-radius: 4px;
+    border: 2px solid var(--bg-page);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
   }
 }
 

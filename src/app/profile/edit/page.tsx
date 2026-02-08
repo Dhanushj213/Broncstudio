@@ -79,20 +79,20 @@ export default function EditProfilePage() {
     }
 
     return (
-        <main className="bg-[#FAF9F7] min-h-screen py-8 pb-24 md:pb-12">
+        <main className="bg-[#FAF9F7] dark:bg-black min-h-screen py-8 pb-24 md:pb-12">
             <div className="max-w-[600px] mx-auto px-4 md:px-0">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
-                    <Link href="/profile" className="p-2 rounded-full bg-white hover:bg-gray-50 transition-colors shadow-sm">
-                        <ArrowLeft size={20} className="text-navy-900" />
+                    <Link href="/profile" className="p-2 rounded-full bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/20 transition-colors shadow-sm">
+                        <ArrowLeft size={20} className="text-navy-900 dark:text-white" />
                     </Link>
-                    <h1 className="text-2xl font-bold text-navy-900 font-heading">Edit Profile</h1>
+                    <h1 className="text-2xl font-bold text-navy-900 dark:text-white font-heading">Edit Profile</h1>
                 </div>
 
-                <form onSubmit={handleSave} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                <form onSubmit={handleSave} className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm space-y-4">
                     {/* Success Message */}
                     {success && (
-                        <div className="bg-green-50 text-green-700 p-3 rounded-lg flex items-center gap-2 text-sm">
+                        <div className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-lg flex items-center gap-2 text-sm">
                             <CheckCircle size={16} />
                             Profile updated successfully!
                         </div>
@@ -100,46 +100,46 @@ export default function EditProfilePage() {
 
                     {/* Error Message */}
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+                        <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm">
                             {error}
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-bold text-navy-900 mb-1">Full Name</label>
+                        <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Full Name</label>
                         <input
                             type="text"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             placeholder="Enter your full name"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-900 focus:ring-0 outline-none transition-colors"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 text-navy-900 dark:text-white focus:border-navy-900 dark:focus:border-white focus:ring-0 outline-none transition-colors"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-navy-900 mb-1">Email</label>
+                        <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Email</label>
                         <input
                             type="email"
                             value={email}
                             disabled
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                         />
-                        <p className="text-xs text-gray-400 mt-1">Email cannot be changed here</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Email cannot be changed here</p>
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-navy-900 mb-1">Phone Number</label>
+                        <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Phone Number</label>
                         <input
                             type="tel"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             placeholder="+91 XXXXX XXXXX"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-navy-900 focus:ring-0 outline-none transition-colors"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 text-navy-900 dark:text-white focus:border-navy-900 dark:focus:border-white focus:ring-0 outline-none transition-colors"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={saving || success}
-                        className="w-full bg-navy-900 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-coral-500 transition-colors mt-4 disabled:opacity-70"
+                        className="w-full bg-navy-900 dark:bg-white text-white dark:text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-coral-500 dark:hover:bg-gray-200 transition-colors mt-4 disabled:opacity-70"
                     >
                         {saving ? (
                             <Loader2 size={18} className="animate-spin" />

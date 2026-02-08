@@ -77,7 +77,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-navy-900 pt-[120px] -mt-[120px] overflow-x-hidden">
+    <main className="min-h-screen bg-gray-50 dark:bg-black pt-[120px] -mt-[120px] overflow-x-hidden">
       <AmbientBackground />
 
       <HeroVideo />

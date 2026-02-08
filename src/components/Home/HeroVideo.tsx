@@ -155,7 +155,7 @@ export default function HeroVideo() {
                 </h2>
                 <Link
                     href={content.button_link}
-                    className="bg-white text-navy-900 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all transform hover:scale-105 shadow-lg animate-fade-in-up delay-200"
+                    className="bg-white text-black px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all transform hover:scale-105 shadow-lg animate-fade-in-up delay-200"
                 >
                     {content.button_text}
                 </Link>

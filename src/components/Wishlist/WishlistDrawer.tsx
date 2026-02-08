@@ -35,13 +35,13 @@ export default function WishlistDrawer() {
                     <motion.div
                         initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed inset-y-0 right-0 z-[1101] w-full max-w-md bg-white shadow-2xl flex flex-col"
+                        className="fixed inset-y-0 right-0 z-[1101] w-full max-w-md bg-white dark:bg-black shadow-2xl flex flex-col border-l border-gray-100 dark:border-white/10"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                            <h2 className="text-xl font-heading font-bold text-navy-900">Your Wishlist ({wishlistItems.length})</h2>
-                            <button onClick={closeWishlist} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                <X size={24} className="text-gray-500" />
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/10">
+                            <h2 className="text-xl font-heading font-bold text-navy-900 dark:text-white">Your Wishlist ({wishlistItems.length})</h2>
+                            <button onClick={closeWishlist} className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+                                <X size={24} className="text-gray-500 dark:text-gray-400" />
                             </button>
                         </div>
 
@@ -50,8 +50,8 @@ export default function WishlistDrawer() {
                             {wishlistItems.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center">
                                     <span className="text-4xl mb-4">💔</span>
-                                    <p className="text-gray-500 font-medium">Your wishlist is empty.</p>
-                                    <button onClick={closeWishlist} className="mt-4 text-navy-900 font-bold underline">Start Exploring</button>
+                                    <p className="text-gray-500 dark:text-gray-400 font-medium">Your wishlist is empty.</p>
+                                    <button onClick={closeWishlist} className="mt-4 text-navy-900 dark:text-white font-bold underline">Start Exploring</button>
                                 </div>
                             ) : (
                                 wishlistItems.map(item => (
@@ -91,10 +91,10 @@ export default function WishlistDrawer() {
                         </div>
 
                         {/* Footer */}
-                        <div className="p-6 border-t border-gray-100 bg-gray-50">
+                        <div className="p-6 border-t border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/5">
                             <button
                                 onClick={closeWishlist}
-                                className="w-full py-3 border border-navy-900 text-navy-900 font-bold rounded-xl hover:bg-navy-900 hover:text-white transition-colors"
+                                className="w-full py-3 border border-navy-900 dark:border-white/30 text-navy-900 dark:text-white font-bold rounded-xl hover:bg-navy-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
                             >
                                 Continue Shopping
                             </button>

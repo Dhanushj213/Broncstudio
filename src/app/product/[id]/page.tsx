@@ -94,23 +94,23 @@ export default function ProductPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-white">
-                <Loader2 className="animate-spin text-navy-900" size={32} />
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <Loader2 className="animate-spin text-primary" size={32} />
             </div>
         );
     }
 
     if (!product) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-white">
-                <h1 className="text-2xl font-bold text-navy-900 mb-4">Product Not Found</h1>
-                <p className="text-gray-500">The product you are looking for does not exist.</p>
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+                <h1 className="text-2xl font-bold text-primary mb-4">Product Not Found</h1>
+                <p className="text-secondary">The product you are looking for does not exist.</p>
             </div>
         );
     }
 
     return (
-        <main className="bg-white min-h-screen pb-8 md:pb-0 pt-[var(--header-height)]">
+        <main className="bg-background min-h-screen pb-8 md:pb-0 pt-[var(--header-height)]">
             {/* Main Product Section */}
             <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-6 md:pt-12 mb-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
@@ -135,7 +135,7 @@ export default function ProductPage() {
                     title="You May Also Like"
                     subtitle="Customers who bought this also checked out these styles."
                     products={relatedProducts}
-                    className="bg-gray-50/30"
+                    className="bg-surface-2/30"
                     layout="carousel"
                 />
             )}

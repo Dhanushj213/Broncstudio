@@ -6,12 +6,12 @@ import InfoPage from '@/components/Layout/InfoPage';
 export default function ReturnsPage() {
     return (
         <InfoPage title="Returns & Refunds">
-            <div className="space-y-8 text-gray-700">
-                <div className="p-6 bg-coral-50 border border-coral-100 rounded-xl text-coral-800 text-sm font-medium mb-8">
+            <div className="space-y-8 text-gray-700 dark:text-gray-300">
+                <div className="p-6 bg-coral-50 dark:bg-coral-900/10 border border-coral-100 dark:border-coral-500/20 rounded-xl text-coral-800 dark:text-coral-300 text-sm font-medium mb-8">
                     <strong>Note:</strong> We have a 7-day hassle-free return policy for most items.
                 </div>
 
-                <h3 className="text-xl font-bold text-navy-900">How do I return an item?</h3>
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white">How do I return an item?</h3>
                 <ol className="list-decimal pl-5 space-y-3">
                     <li>Visit the <strong>Order History</strong> section in your profile.</li>
                     <li>Select the order and item you wish to return.</li>
@@ -19,7 +19,7 @@ export default function ReturnsPage() {
                     <li>Our courier partner will pick up the item within 2–3 business days.</li>
                 </ol>
 
-                <h3 className="text-xl font-bold text-navy-900 mt-8">Refund Process</h3>
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white mt-8">Refund Process</h3>
                 <p>
                     Once the item is picked up and verified at our warehouse, the refund will be initiated.
                 </p>
@@ -28,7 +28,7 @@ export default function ReturnsPage() {
                     <li><strong>COD Orders:</strong> Refunded to your bank account via link/UPI or Store Credit (instant).</li>
                 </ul>
 
-                <h3 className="text-xl font-bold text-navy-900 mt-8">Non-Returnable Items</h3>
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white mt-8">Non-Returnable Items</h3>
                 <p>
                     For hygiene reasons, innerwear, socks, and personalized items are not eligible for return unless defective.
                 </p>

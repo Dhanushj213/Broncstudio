@@ -39,7 +39,7 @@ export default function ProductCard(props: ProductProps) {
         >
             <div className="relative bg-gray-50 dark:bg-white/5 overflow-hidden" style={{ aspectRatio: '3/4' }}>
                 {badge && (
-                    <span className="absolute top-3 left-3 z-10 bg-navy-900 dark:bg-white dark:text-navy-900 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm">
+                    <span className="absolute top-3 left-3 z-10 bg-black text-white border border-white/10 text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm shadow-sm">
                         {badge}
                     </span>
                 )}
@@ -60,7 +60,7 @@ export default function ProductCard(props: ProductProps) {
                                 addToast(`${name} added to Wishlist!`);
                             }
                         }}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-coral-500 text-white' : 'bg-white text-navy-900 hover:bg-navy-900 hover:text-white'}`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-coral-500 text-white' : 'bg-black text-white hover:bg-white hover:text-black border border-white/10'}`}
                         title="Add to Wishlist"
                     >
                         <Heart size={18} fill={isInWishlist(id) ? "currentColor" : "none"} />
@@ -69,7 +69,7 @@ export default function ProductCard(props: ProductProps) {
                     {/* Quick View */}
                     <button
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); openQuickView(props); }}
-                        className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-75"
+                        className="w-10 h-10 rounded-full bg-black text-white border border-white/10 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-white hover:text-black delay-75"
                         title="Quick View"
                     >
                         <Eye size={18} />
@@ -78,7 +78,7 @@ export default function ProductCard(props: ProductProps) {
                     {/* Add to Cart (Icon Only) */}
                     <button
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(props, "One Size"); addToast(`${name} added to Bag!`); }}
-                        className="w-10 h-10 rounded-full bg-white text-navy-900 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-navy-900 hover:text-white delay-100"
+                        className="w-10 h-10 rounded-full bg-black text-white border border-white/10 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-white hover:text-black delay-100"
                         title="Add to Cart"
                     >
                         <ShoppingBag size={18} />

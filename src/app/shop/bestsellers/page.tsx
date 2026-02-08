@@ -43,43 +43,33 @@ export default function BestsellersPage() {
     if (loading) return <BrandLoader text="Rounding up the favorites..." />;
 
     return (
-        <div className="relative min-h-screen bg-gray-50 dark:bg-navy-950 pt-[var(--header-height)] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-gray-50 dark:bg-black pb-20 overflow-hidden">
             <AmbientBackground />
             {/* Background Blob */}
             <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-red-500/10 blur-3xl opacity-50 pointer-events-none" />
 
-            {/* Header */}
-            <div className="sticky top-[72px] z-30 bg-white/80 dark:bg-navy-900/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 py-4 px-6 md:px-12 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => router.back()}
-                        className="p-2 -ml-2 hover:bg-black/5 rounded-full transition-colors"
-                    >
-                        <ArrowLeft size={20} className="text-navy-900 dark:text-white" />
-                    </button>
-                    <div>
-                        <h1 className="text-xl font-bold font-heading text-navy-900 dark:text-white leading-none flex items-center gap-2">
-                            Bestsellers
-                            <TrendingUp size={18} className="text-amber-500" />
-                        </h1>
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mt-1">Our most loved pieces</p>
-                    </div>
-                </div>
-            </div>
+            {/* Hero Section */}
+            <div className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center text-center">
+                <img
+                    src="https://images.unsplash.com/photo-1529139574466-a302d2052505?q=80&w=2070&auto=format&fit=crop"
+                    alt="Bestsellers"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-10" />
 
-            {/* Hero Banner */}
-            <div className="relative z-10 max-w-[1400px] mx-auto px-6 py-12 text-center">
-                <div className="inline-block px-4 py-1.5 mb-4 rounded-full bg-amber-500/10 border border-amber-500/20 backdrop-blur-md">
-                    <span className="text-xs font-bold tracking-[0.2em] uppercase text-amber-600 dark:text-amber-400">
-                        Top Rated
-                    </span>
+                <div className="relative z-10 px-6 max-w-4xl mx-auto text-white">
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30 mb-6 shadow-lg">
+                        <TrendingUp size={16} className="text-amber-400" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-white">Top Rated</span>
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6">
+                        Crowd Favorites.
+                    </h1>
+                    <p className="text-xl text-white/90 leading-relaxed max-w-2xl mx-auto">
+                        The pieces everyone’s talking about. Validated by thousands of happy customers.
+                    </p>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-heading font-black text-navy-900 dark:text-white mb-4">
-                    Crowd Favorites.
-                </h2>
-                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-                    The pieces everyone’s talking about. Don’t miss out.
-                </p>
             </div>
 
             {/* Grid */}

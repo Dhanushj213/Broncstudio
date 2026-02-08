@@ -68,7 +68,7 @@ export default function SalePage() {
     ];
 
     return (
-        <main className="bg-white min-h-screen">
+        <main className="bg-white dark:bg-black min-h-screen">
             {/* Hero Section */}
             <div className="bg-navy-900 text-white pt-10 pb-20 px-4 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-coral-500 rounded-full blur-[100px] opacity-20" />
@@ -95,12 +95,12 @@ export default function SalePage() {
                     ))}
                 </div>
 
-                <div className="mt-20 flex flex-col items-center justify-center bg-gray-50 rounded-3xl p-12 text-center border border-gray-100">
-                    <h2 className="text-2xl font-bold text-navy-900 mb-2">Don't miss out on future sales</h2>
-                    <p className="text-gray-500 mb-6 max-w-md">Join our newsletter and be the first to know about flash sales and new drops.</p>
+                <div className="mt-20 flex flex-col items-center justify-center bg-gray-50 dark:bg-white/5 rounded-3xl p-12 text-center border border-gray-100 dark:border-white/10">
+                    <h2 className="text-2xl font-bold text-navy-900 dark:text-white mb-2">Don't miss out on future sales</h2>
+                    <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">Join our newsletter and be the first to know about flash sales and new drops.</p>
                     <div className="flex w-full max-w-md gap-2">
-                        <input type="email" placeholder="Enter your email" className="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-navy-900 transition-colors" />
-                        <button className="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-coral-500 transition-colors">
+                        <input type="email" placeholder="Enter your email" className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/50 dark:text-white outline-none focus:border-navy-900 dark:focus:border-white transition-colors" />
+                        <button className="bg-navy-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-bold hover:bg-coral-500 transition-colors">
                             Subscribe
                         </button>
                     </div>

@@ -66,25 +66,25 @@ export default function AddressCard() {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mt-6">
+            <div className="bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 p-5 shadow-sm mt-6">
                 <div className="py-8 flex justify-center">
-                    <Loader2 className="animate-spin text-gray-400" size={24} />
+                    <Loader2 className="animate-spin text-gray-400 dark:text-gray-500" size={24} />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mt-6">
+        <div className="bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 p-5 shadow-sm mt-6 transition-colors">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-navy-900">Saved Addresses</h3>
+                <h3 className="text-lg font-bold text-navy-900 dark:text-white">Saved Addresses</h3>
                 <Link href="/profile/addresses" className="text-sm font-bold text-coral-500 hover:underline">+ Add New</Link>
             </div>
 
             {addresses.length === 0 ? (
-                <div className="py-8 text-center border-2 border-dashed border-gray-200 rounded-xl">
-                    <MapPin className="mx-auto text-gray-300 mb-3" size={32} />
-                    <p className="text-gray-400 text-sm mb-3">No saved addresses</p>
+                <div className="py-8 text-center border-2 border-dashed border-gray-200 dark:border-white/10 rounded-xl">
+                    <MapPin className="mx-auto text-gray-400 dark:text-gray-500 mb-3" size={32} />
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-3">No saved addresses</p>
                     <Link
                         href="/profile/addresses"
                         className="inline-flex items-center gap-1 text-sm font-bold text-coral-500 hover:underline"
@@ -97,23 +97,23 @@ export default function AddressCard() {
                     {addresses.map((address) => (
                         <div
                             key={address.id}
-                            className={`min-w-[280px] md:w-full border rounded-xl p-4 relative ${address.isDefault
-                                ? 'border-green-200 bg-green-50/30'
-                                : 'border-gray-100 hover:border-gray-200'
+                            className={`min-w-[280px] md:w-full border rounded-xl p-4 relative transition-colors ${address.isDefault
+                                ? 'border-green-200 bg-green-50/30 dark:border-green-900/30 dark:bg-green-900/10'
+                                : 'border-gray-100 dark:border-white/10 hover:border-gray-200 dark:hover:border-white/20'
                                 }`}
                         >
                             {address.isDefault && (
-                                <span className="absolute top-4 right-4 text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                                <span className="absolute top-4 right-4 text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 px-2 py-0.5 rounded-full">
                                     DEFAULT
                                 </span>
                             )}
                             <div className="flex items-center gap-2 mb-2">
-                                <MapPin size={16} className={address.isDefault ? 'text-navy-900' : 'text-gray-400'} />
-                                <span className={`font-bold text-sm ${address.isDefault ? 'text-navy-900' : 'text-gray-500'}`}>
+                                <MapPin size={16} className={address.isDefault ? 'text-navy-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'} />
+                                <span className={`font-bold text-sm ${address.isDefault ? 'text-navy-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}>
                                     {address.label}
                                 </span>
                             </div>
-                            <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-3">
                                 {address.firstName} {address.lastName}<br />
                                 {address.addressLine1}<br />
                                 {address.city} - {address.pincode}

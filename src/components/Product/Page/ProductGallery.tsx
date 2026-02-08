@@ -74,7 +74,7 @@ export function ProductGalleryOptimized({ images }: ProductGalleryProps) {
         <div className="relative">
             {/* Desktop: Grid / Stack */}
             <div className="hidden md:flex flex-row-reverse gap-4 sticky top-24">
-                <div className="flex-1 aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden relative group">
+                <div className="flex-1 aspect-[4/5] bg-surface-2 rounded-2xl overflow-hidden relative group">
                     <img src={images[activeImage]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125 origin-center" />
                 </div>
                 {/* Left side thumbnails */}
@@ -83,7 +83,7 @@ export function ProductGalleryOptimized({ images }: ProductGalleryProps) {
                         <button
                             key={idx}
                             onMouseEnter={() => setActiveImage(idx)}
-                            className={`aspect-square rounded-lg overflow-hidden border transition-all ${activeImage === idx ? 'border-navy-900 ring-1 ring-navy-900' : 'border-gray-200'
+                            className={`aspect-square rounded-lg overflow-hidden border transition-all ${activeImage === idx ? 'border-black dark:border-white ring-1 ring-black dark:ring-white' : 'border-subtle'
                                 }`}
                         >
                             <img src={img} className="w-full h-full object-cover" />
@@ -97,7 +97,7 @@ export function ProductGalleryOptimized({ images }: ProductGalleryProps) {
                 <div className="flex overflow-x-auto snap-x snap-mandatory no-scrollbar pb-4 gap-4">
                     {images.map((img, idx) => (
                         <div key={idx} className="w-full flex-shrink-0 snap-center">
-                            <div className="aspect-[4/5] bg-gray-50 rounded-2xl overflow-hidden relative">
+                            <div className="aspect-[4/5] bg-surface-2 rounded-2xl overflow-hidden relative">
                                 <img src={img} className="w-full h-full object-cover" />
                                 {idx === 0 && <span className="absolute bottom-3 right-3 bg-black/60 text-white text-[10px] px-2 py-1 rounded backdrop-blur">1/{images.length}</span>}
                             </div>

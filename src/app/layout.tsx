@@ -15,6 +15,7 @@ import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
+import { ThemeProvider } from "@/context/ThemeProvider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -66,30 +67,37 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} antialiased`}
       >
-        <StoreSettingsProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <ToastProvider>
-                <UIProvider>
-                  <SplashScreen />
-                  <AnnouncementBar />
-                  <Header />
-                  <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
-                    {children}
-                  </main>
-                  <FooterWrapper>
-                    <PremiumFooter />
-                  </FooterWrapper>
-                  <MobileNav />
-                  <SearchOverlay />
-                  <WishlistDrawer />
-                  <QuickViewModal />
-                  {/* Global Overlays will be injected here later */}
-                </UIProvider>
-              </ToastProvider>
-            </WishlistProvider>
-          </CartProvider>
-        </StoreSettingsProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <StoreSettingsProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <ToastProvider>
+                  <UIProvider>
+                    <SplashScreen />
+                    <AnnouncementBar />
+                    <Header />
+                    <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
+                      {children}
+                    </main>
+                    <FooterWrapper>
+                      <PremiumFooter />
+                    </FooterWrapper>
+                    <MobileNav />
+                    <SearchOverlay />
+                    <WishlistDrawer />
+                    <QuickViewModal />
+                    {/* Global Overlays will be injected here later */}
+                  </UIProvider>
+                </ToastProvider>
+              </WishlistProvider>
+            </CartProvider>
+          </StoreSettingsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

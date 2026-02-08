@@ -72,29 +72,29 @@ export default function AddressesPage() {
     }
 
     return (
-        <main className="bg-[#FAF9F7] min-h-screen py-8 pb-24 md:pb-12">
+        <main className="bg-[#FAF9F7] dark:bg-black min-h-screen py-8 pb-24 md:pb-12">
             <div className="max-w-[800px] mx-auto px-4 md:px-0">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                        <Link href="/profile" className="p-2 rounded-full bg-white hover:bg-gray-50 transition-colors shadow-sm">
-                            <ArrowLeft size={20} className="text-navy-900" />
+                        <Link href="/profile" className="p-2 rounded-full bg-white dark:bg-white/10 hover:bg-gray-50 dark:hover:bg-white/20 transition-colors shadow-sm">
+                            <ArrowLeft size={20} className="text-navy-900 dark:text-white" />
                         </Link>
-                        <h1 className="text-2xl font-bold text-navy-900 font-heading">Addresses</h1>
+                        <h1 className="text-2xl font-bold text-navy-900 dark:text-white font-heading">Addresses</h1>
                     </div>
                 </div>
 
                 {/* Empty State */}
                 {addresses.length === 0 ? (
-                    <div className="bg-white p-12 rounded-2xl border border-gray-100 shadow-sm text-center">
-                        <MapPin className="mx-auto text-gray-300 mb-4" size={48} />
-                        <h2 className="text-xl font-bold text-navy-900 mb-2">No saved addresses</h2>
-                        <p className="text-gray-500 mb-6">
+                    <div className="bg-white dark:bg-white/5 p-12 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm text-center">
+                        <MapPin className="mx-auto text-gray-300 dark:text-gray-600 mb-4" size={48} />
+                        <h2 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No saved addresses</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">
                             Your shipping addresses from orders will appear here.
                         </p>
                         <Link
                             href="/shop"
-                            className="inline-block bg-navy-900 text-white font-bold py-3 px-8 rounded-xl hover:bg-coral-500 transition-colors"
+                            className="inline-block bg-navy-900 dark:bg-white text-white dark:text-black font-bold py-3 px-8 rounded-xl hover:bg-coral-500 dark:hover:bg-gray-200 transition-colors"
                         >
                             Start Shopping
                         </Link>
@@ -103,25 +103,25 @@ export default function AddressesPage() {
                     /* Address List */
                     <div className="space-y-4">
                         {addresses.map((addr) => (
-                            <div key={addr.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm relative group">
+                            <div key={addr.id} className="bg-white dark:bg-white/5 p-6 rounded-2xl border border-gray-100 dark:border-white/10 shadow-sm relative group">
                                 {addr.isDefault && (
-                                    <span className="absolute top-4 right-4 bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase">
+                                    <span className="absolute top-4 right-4 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] font-bold px-2 py-1 rounded-full uppercase">
                                         Default
                                     </span>
                                 )}
 
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-navy-900 flex-shrink-0">
+                                    <div className="mt-1 w-10 h-10 rounded-full bg-gray-50 dark:bg-white/10 flex items-center justify-center text-navy-900 dark:text-white flex-shrink-0">
                                         <MapPin size={20} />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-bold text-navy-900 text-lg mb-1">{addr.type}</h3>
-                                        <p className="text-sm text-gray-900 font-medium mb-1">{addr.name}</p>
-                                        <p className="text-sm text-gray-500 leading-relaxed max-w-sm">
+                                        <h3 className="font-bold text-navy-900 dark:text-white text-lg mb-1">{addr.type}</h3>
+                                        <p className="text-sm text-gray-900 dark:text-gray-200 font-medium mb-1">{addr.name}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm">
                                             {addr.address}<br />
                                             {addr.city}
                                         </p>
-                                        <p className="text-sm text-gray-500 mt-2">Phone: {addr.phone}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Phone: {addr.phone}</p>
                                     </div>
                                 </div>
                             </div>

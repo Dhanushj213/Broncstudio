@@ -43,7 +43,7 @@ export default function BentoGridWorld() {
                             <div className="relative z-20 h-full flex flex-col justify-end p-8 md:p-10 text-white">
                                 <div className="flex justify-between items-end">
                                     <div className="space-y-3">
-                                        <span className="inline-block px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] uppercase bg-white text-navy-900 rounded-full shadow-lg">
+                                        <span className="inline-block px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] uppercase bg-white text-black rounded-full shadow-lg">
                                             Kids & Play
                                         </span>
                                         <h2 className="text-4xl md:text-6xl font-heading font-medium leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
@@ -53,7 +53,7 @@ export default function BentoGridWorld() {
                                             Where curiosity begins.
                                         </p>
                                     </div>
-                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white text-navy-900 flex items-center justify-center transform group-hover:-rotate-45 transition-all duration-500 shadow-xl group-hover:scale-110">
+                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white text-black flex items-center justify-center transform group-hover:-rotate-45 transition-all duration-500 shadow-xl group-hover:scale-110">
                                         <ArrowUpRight size={24} strokeWidth={1.5} />
                                     </div>
                                 </div>

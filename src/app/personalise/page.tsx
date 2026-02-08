@@ -185,15 +185,15 @@ export default function PersonalisePage() {
     const subCategories = selectedCategory ? (PERSONALIZATION_TAXONOMY[selectedCategory]?.subcategories || []) : [];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl w-full bg-white rounded-3xl shadow-xl overflow-hidden min-h-[800px] flex flex-col md:flex-row">
+        <div className="min-h-screen bg-background flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 mt-[var(--header-height)]">
+            <div className="max-w-7xl w-full bg-card rounded-3xl shadow-xl overflow-hidden min-h-[800px] flex flex-col md:flex-row border border-subtle">
 
                 {/* ------------------------------------------------------------- */}
                 {/* LEFT: VISUALIZER (Only if product selected) or WELCOME GRAPHIC */}
                 {/* ------------------------------------------------------------- */}
-                <div className="w-full md:w-1/2 bg-gray-100 relative flex items-center justify-center p-8">
+                <div className="w-full md:w-1/2 bg-surface-2 relative flex items-center justify-center p-8">
                     {selectedProduct ? (
-                        <div className="relative w-full max-w-md aspect-[4/5] bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden group">
+                        <div className="relative w-full max-w-md aspect-[4/5] bg-white rounded-2xl shadow-lg border border-subtle overflow-hidden group">
                             <Image
                                 src={selectedProduct.images[0]}
                                 alt={selectedProduct.name}
@@ -210,11 +210,11 @@ export default function PersonalisePage() {
                             )}
                         </div>
                     ) : (
-                        <div className="text-center text-gray-400">
-                            <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
-                                <ShieldCheck size={40} className="opacity-20" />
+                        <div className="text-center text-secondary">
+                            <div className="w-24 h-24 bg-surface-3 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
+                                <ShieldCheck size={40} className="opacity-20 text-primary" />
                             </div>
-                            <p className="font-bold text-lg">Select a product to start designing</p>
+                            <p className="font-bold text-lg text-primary">Select a product to start designing</p>
                         </div>
                     )}
                 </div>
@@ -224,17 +224,17 @@ export default function PersonalisePage() {
                 {/* RIGHT: CONTROLS */}
                 {/* ------------------------------------------------------------- */}
                 <div className="w-full md:w-1/2 p-8 lg:p-12 overflow-y-auto max-h-[100vh]">
-                    <h1 className="text-3xl font-black text-navy-900 mb-2">Personalize Your Gear</h1>
-                    <p className="text-gray-500 mb-8">Choose a product, upload your art, and we'll handle the rest.</p>
+                    <h1 className="text-3xl font-black text-primary mb-2">Personalize Your Gear</h1>
+                    <p className="text-secondary mb-8">Choose a product, upload your art, and we'll handle the rest.</p>
 
                     {/* 1. SELECTION DROPDOWNS */}
                     <div className="space-y-6 mb-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-bold text-gray-900 mb-2">Category</label>
+                                <label className="block text-sm font-bold text-primary mb-2">Category</label>
                                 <div className="relative">
                                     <select
-                                        className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-navy-900 font-bold"
+                                        className="w-full appearance-none bg-surface-2 border border-subtle text-primary py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-surface-3 focus:border-primary font-bold"
                                         value={selectedCategory}
                                         onChange={(e) => {
                                             setSelectedCategory(e.target.value);
@@ -247,7 +247,7 @@ export default function PersonalisePage() {
                                             <option key={cat} value={cat}>{cat}</option>
                                         ))}
                                     </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
                                         <ChevronDown size={16} />
                                     </div>
                                 </div>
@@ -255,10 +255,10 @@ export default function PersonalisePage() {
 
                             {subCategories.length > 0 && (
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-900 mb-2">Collection</label>
+                                    <label className="block text-sm font-bold text-primary mb-2">Collection</label>
                                     <div className="relative">
                                         <select
-                                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-navy-900 font-bold"
+                                            className="w-full appearance-none bg-surface-2 border border-subtle text-primary py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-surface-3 focus:border-primary font-bold"
                                             value={selectedSubCategory}
                                             onChange={(e) => {
                                                 setSelectedSubCategory(e.target.value);
@@ -270,7 +270,7 @@ export default function PersonalisePage() {
                                                 <option key={sub} value={sub}>{sub}</option>
                                             ))}
                                         </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
                                             <ChevronDown size={16} />
                                         </div>
                                     </div>
@@ -281,13 +281,13 @@ export default function PersonalisePage() {
                         {/* PRODUCT SELECTOR */}
                         {(selectedCategory && (!subCategories.length || selectedSubCategory)) && (
                             <div className="animate-in fade-in slide-in-from-top-4">
-                                <label className="block text-sm font-bold text-gray-900 mb-2">Select Product</label>
+                                <label className="block text-sm font-bold text-primary mb-2">Select Product</label>
                                 {loadingProducts ? (
-                                    <div className="flex items-center gap-2 text-gray-400 py-2"><Loader2 className="animate-spin" size={16} /> Loading products...</div>
+                                    <div className="flex items-center gap-2 text-secondary py-2"><Loader2 className="animate-spin" size={16} /> Loading products...</div>
                                 ) : (
                                     <div className="relative">
                                         <select
-                                            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-navy-900 font-bold"
+                                            className="w-full appearance-none bg-surface-2 border border-subtle text-primary py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-surface-3 focus:border-primary font-bold"
                                             value={selectedProduct?.id || ''}
                                             onChange={(e) => {
                                                 const prod = availableProducts.find(p => p.id === e.target.value);
@@ -304,7 +304,7 @@ export default function PersonalisePage() {
                                                 <option key={product.id} value={product.id}>{product.name} - ₹{product.price}</option>
                                             ))}
                                         </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
                                             <ChevronDown size={16} />
                                         </div>
                                     </div>
@@ -316,22 +316,22 @@ export default function PersonalisePage() {
                     {/* 2. CUSTOMIZATION FORM */}
                     {selectedProduct && (
                         <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
-                            <div className="h-px bg-gray-100" />
+                            <div className="h-px bg-border" />
 
-                            <h2 className="text-xl font-black text-navy-900">Customize It</h2>
+                            <h2 className="text-xl font-black text-primary">Customize It</h2>
 
                             {/* SIZE */}
                             {selectedProduct.metadata.personalization.sizes?.length > 0 && (
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-900 mb-3">Size</label>
+                                    <label className="block text-sm font-bold text-primary mb-3">Size</label>
                                     <div className="flex flex-wrap gap-2">
                                         {selectedProduct.metadata.personalization.sizes.map(s => (
                                             <button
                                                 key={s}
                                                 onClick={() => setSize(s)}
                                                 className={`px-4 py-2 rounded-lg border font-bold text-sm transition-all ${size === s
-                                                    ? 'bg-navy-900 text-white border-navy-900 shadow-md transform scale-105'
-                                                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                                    ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-md transform scale-105'
+                                                    : 'bg-transparent text-secondary border-subtle hover:border-primary'
                                                     }`}
                                             >
                                                 {s}
@@ -344,7 +344,7 @@ export default function PersonalisePage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 {/* PRINT PLACEMENT */}
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-900 mb-3">Placement</label>
+                                    <label className="block text-sm font-bold text-primary mb-3">Placement</label>
                                     <div className="space-y-2">
                                         {Object.entries(selectedProduct.metadata.personalization.placements)
                                             .filter(([_, conf]) => conf.enabled)
@@ -353,12 +353,12 @@ export default function PersonalisePage() {
                                                     key={key}
                                                     onClick={() => setPlacement(key)}
                                                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm ${placement === key
-                                                        ? 'border-navy-900 bg-navy-50 text-navy-900 font-bold ring-1 ring-navy-900'
-                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                        ? 'border-black dark:border-white bg-surface-2 text-primary font-bold ring-1 ring-black dark:ring-white'
+                                                        : 'border-subtle text-secondary hover:bg-surface-2'
                                                         }`}
                                                 >
                                                     <span>{key}</span>
-                                                    <span className="text-xs bg-white px-2 py-1 rounded border border-gray-100 shadow-sm">+₹{conf.price}</span>
+                                                    <span className="text-xs bg-card px-2 py-1 rounded border border-subtle shadow-sm">+₹{conf.price}</span>
                                                 </button>
                                             ))}
                                     </div>
@@ -366,7 +366,7 @@ export default function PersonalisePage() {
 
                                 {/* PRINT TYPE */}
                                 <div>
-                                    <label className="block text-sm font-bold text-gray-900 mb-3">Print Type</label>
+                                    <label className="block text-sm font-bold text-primary mb-3">Print Type</label>
                                     <div className="space-y-2">
                                         {Object.entries(selectedProduct.metadata.personalization.print_types)
                                             .filter(([_, conf]) => conf.enabled)
@@ -375,12 +375,12 @@ export default function PersonalisePage() {
                                                     key={key}
                                                     onClick={() => setPrintType(key)}
                                                     className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm ${printType === key
-                                                        ? 'border-navy-900 bg-navy-50 text-navy-900 font-bold ring-1 ring-navy-900'
-                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                        ? 'border-black dark:border-white bg-surface-2 text-primary font-bold ring-1 ring-black dark:ring-white'
+                                                        : 'border-subtle text-secondary hover:bg-surface-2'
                                                         }`}
                                                 >
                                                     <span>{key}</span>
-                                                    <span className="text-xs bg-white px-2 py-1 rounded border border-gray-100 shadow-sm">+₹{conf.price}</span>
+                                                    <span className="text-xs bg-card px-2 py-1 rounded border border-subtle shadow-sm">+₹{conf.price}</span>
                                                 </button>
                                             ))}
                                     </div>
@@ -389,8 +389,8 @@ export default function PersonalisePage() {
 
                             {/* UPLOAD */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-900 mb-3">Upload Design</label>
-                                <div className={`border-2 border-dashed rounded-xl p-6 transition-all text-center ${uploadedImage ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-navy-900 hover:bg-gray-50'}`}>
+                                <label className="block text-sm font-bold text-primary mb-3">Upload Design</label>
+                                <div className={`border-2 border-dashed rounded-xl p-6 transition-all text-center ${uploadedImage ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-subtle hover:border-primary hover:bg-surface-2'}`}>
                                     {uploadedImage ? (
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
@@ -398,11 +398,11 @@ export default function PersonalisePage() {
                                                     <Check size={20} />
                                                 </div>
                                                 <div className="text-left">
-                                                    <p className="font-bold text-green-800 text-sm">Image uploaded successfully</p>
-                                                    <p className="text-xs text-green-600">Ready for print</p>
+                                                    <p className="font-bold text-green-800 dark:text-green-300 text-sm">Image uploaded successfully</p>
+                                                    <p className="text-xs text-green-600 dark:text-green-400">Ready for print</p>
                                                 </div>
                                             </div>
-                                            <button onClick={() => setUploadedImage(null)} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-red-500">
+                                            <button onClick={() => setUploadedImage(null)} className="p-2 hover:bg-surface-2 rounded-full transition-colors text-secondary hover:text-red-500">
                                                 <X size={18} />
                                             </button>
                                         </div>
@@ -411,14 +411,14 @@ export default function PersonalisePage() {
                                             <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
                                             {uploading ? (
                                                 <div className="flex flex-col items-center gap-2">
-                                                    <Loader2 className="animate-spin text-navy-900" />
-                                                    <span className="text-sm font-bold text-gray-500">Uploading...</span>
+                                                    <Loader2 className="animate-spin text-primary" />
+                                                    <span className="text-sm font-bold text-secondary">Uploading...</span>
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <Upload className="mx-auto text-gray-400 mb-2" />
-                                                    <span className="block text-sm font-bold text-navy-900">Click to Upload Image</span>
-                                                    <span className="block text-xs text-gray-400 mt-1">PNG, JPG (Max 10MB)</span>
+                                                    <Upload className="mx-auto text-secondary mb-2" />
+                                                    <span className="block text-sm font-bold text-primary">Click to Upload Image</span>
+                                                    <span className="block text-xs text-secondary mt-1">PNG, JPG (Max 10MB)</span>
                                                 </>
                                             )}
                                         </label>
@@ -428,9 +428,9 @@ export default function PersonalisePage() {
 
                             {/* NOTE */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-900 mb-3">Special Instructions (Optional)</label>
+                                <label className="block text-sm font-bold text-primary mb-3">Special Instructions (Optional)</label>
                                 <textarea
-                                    className="w-full border border-gray-200 rounded-xl p-3 focus:outline-none focus:border-navy-900 text-sm"
+                                    className="w-full border border-subtle rounded-xl p-3 focus:outline-none focus:border-primary bg-surface-2 text-primary text-sm"
                                     rows={3}
                                     placeholder="Any specific requirements for printing..."
                                     value={note}
@@ -439,17 +439,17 @@ export default function PersonalisePage() {
                             </div>
 
                             {/* PRICE & ACTION */}
-                            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mt-8">
+                            <div className="bg-surface-2 p-6 rounded-2xl border border-subtle mt-8">
                                 <div className="flex justify-between items-center mb-6">
-                                    <span className="text-gray-500 font-medium">Total Price</span>
-                                    <span className="text-3xl font-black text-navy-900">₹{finalPrice.toFixed(2)}</span>
+                                    <span className="text-secondary font-medium">Total Price</span>
+                                    <span className="text-3xl font-black text-primary">₹{finalPrice.toFixed(2)}</span>
                                 </div>
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={!canAddToCart}
                                     className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${canAddToCart
-                                        ? 'bg-navy-900 text-white hover:bg-navy-800 hover:scale-[1.02]'
-                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        ? 'bg-black dark:bg-white text-white dark:text-black hover:scale-[1.02]'
+                                        : 'bg-surface-3 text-secondary cursor-not-allowed'
                                         }`}
                                 >
                                     <ShoppingBag size={20} />

@@ -291,7 +291,7 @@ export default function ShopPage() {
         : 'from-emerald-500/10 via-teal-500/5 to-blue-500/10';
 
     return (
-        <div className="relative min-h-screen bg-gray-50 dark:bg-navy-950 pt-[120px] -mt-[120px] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-background pt-[120px] -mt-[120px] pb-20 overflow-hidden">
             <AmbientBackground />
 
             {/* HERO BANNER IMAGE (If Available) */}
@@ -303,7 +303,7 @@ export default function ShopPage() {
                         alt="Collection Hero"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-navy-950 to-transparent z-20" /> {/* Fade to content */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-20" /> {/* Fade to content */}
                 </div>
             )}
 
@@ -313,7 +313,7 @@ export default function ShopPage() {
 
             {/* Breadcrumbs */}
             <div className="relative z-40 px-6 py-4 mt-8">
-                <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-navy-900/50 backdrop-blur-xl rounded-full border border-white/20 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-navy-700 dark:text-gray-300 shadow-sm">
+                <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-full border border-white/20 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-secondary shadow-sm">
                     <Link href="/" className="hover:text-coral-500 transition-colors">Home</Link>
                     <span className="opacity-40">/</span>
                     <Link href="/shop" className="hover:text-coral-500 transition-colors">Shop</Link>
@@ -367,29 +367,37 @@ export default function ShopPage() {
                                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-20"
                             >
                                 {currentView.children.map((child: any, idx: number) => (
-                                    <Link key={idx} href={`/shop/${child.slug}`} className="group relative">
-                                        <div className="absolute inset-0 bg-coral-500/20 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                    <Link key={idx} href={`/shop/${child.slug}`} className="group relative block h-full">
                                         <GlassCard
-                                            className="relative h-full min-h-[280px] flex flex-col justify-end p-8 overflow-hidden rounded-[2rem] border-white/40 dark:border-white/5 bg-white/40 dark:bg-navy-900/40 hover:bg-white/60 dark:hover:bg-navy-800/60 transition-all duration-500 transform group-hover:-translate-y-2"
+                                            className="relative h-full min-h-[400px] flex flex-col justify-end overflow-hidden rounded-[2rem] border-white/20 dark:border-white/10 bg-transparent hover:border-white/50 transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_25px_50px_-12px_rgba(255,255,255,0.15)]"
                                             disableTilt
                                         >
-                                            {/* Abstract Decor */}
-                                            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-white/40 to-transparent opacity-20 dark:opacity-5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none" />
+                                            {/* Background Image */}
+                                            <div
+                                                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                                                style={{ backgroundImage: `url(${child.image || '/images/placeholder.jpg'})` }}
+                                            />
 
-                                            <div className="relative z-10">
-                                                <div className="w-12 h-12 mb-6 rounded-full bg-white dark:bg-navy-800 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
-                                                    <LayoutGrid size={20} className="text-coral-500" />
+                                            {/* Gradient Overlay - darker at bottom for text */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
+
+                                            {/* Content */}
+                                            <div className="relative z-10 p-8">
+                                                <div className="w-12 h-12 mb-4 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                                    <LayoutGrid size={20} />
                                                 </div>
 
-                                                <h3 className="text-3xl font-heading font-bold text-navy-900 dark:text-white mb-2 leading-none group-hover:text-coral-500 transition-colors">
+                                                <h3 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2 leading-none drop-shadow-lg">
                                                     {child.name}
                                                 </h3>
 
-                                                <div className="flex items-center justify-between mt-4 border-t border-navy-900/5 dark:border-white/5 pt-4">
-                                                    <p className="text-xs font-bold uppercase tracking-widest text-navy-500 dark:text-gray-400 opacity-80">
-                                                        {child.description || 'Collection'}
-                                                    </p>
-                                                    <span className="w-8 h-8 rounded-full bg-navy-900 dark:bg-white text-white dark:text-navy-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                                <p className="text-sm font-medium text-white/80 line-clamp-2 mb-6 drop-shadow-md">
+                                                    {child.description || 'Explore Collection'}
+                                                </p>
+
+                                                <div className="flex items-center gap-3 text-white/90 font-bold uppercase tracking-widest text-xs group-hover:gap-5 transition-all duration-300">
+                                                    <span>Explore World</span>
+                                                    <span className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
                                                         &rarr;
                                                     </span>
                                                 </div>
@@ -418,8 +426,8 @@ export default function ShopPage() {
 
                                             {/* Subcategory Navigation Sidebar */}
                                             {(currentView.type === 'subcategory' || currentView.type === 'category') && (
-                                                <div className="bg-white/40 dark:bg-navy-900/40 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/5">
-                                                    <h3 className="text-sm font-bold uppercase tracking-wider text-navy-500 dark:text-gray-400 mb-4">Categories</h3>
+                                                <div className="bg-white/40 dark:bg-card/40 backdrop-blur-md rounded-2xl p-6 border border-white/20 dark:border-white/5">
+                                                    <h3 className="text-sm font-bold uppercase tracking-wider text-secondary mb-4">Categories</h3>
                                                     <div className="flex flex-col space-y-2">
                                                         {/* All Products Option */}
                                                         <button
@@ -430,7 +438,7 @@ export default function ShopPage() {
                                                             }}
                                                             className={`text-left text-lg font-heading font-bold transition-colors ${activeCategory === 'all'
                                                                 ? 'text-coral-500'
-                                                                : 'text-navy-900 dark:text-white hover:text-coral-500'
+                                                                : 'text-primary hover:text-coral-500'
                                                                 }`}
                                                         >
                                                             All Products
@@ -442,7 +450,7 @@ export default function ShopPage() {
                                                                 onClick={() => setActiveCategory(child.id)}
                                                                 className={`text-left text-lg font-heading font-bold transition-colors ${activeCategory === child.id
                                                                     ? 'text-coral-500'
-                                                                    : 'text-navy-900 dark:text-white hover:text-coral-500'
+                                                                    : 'text-primary hover:text-coral-500'
                                                                     }`}
                                                             >
                                                                 {child.name}
@@ -476,11 +484,11 @@ export default function ShopPage() {
                                                         />
                                                     </motion.div>
                                                 )) : (
-                                                    <div className="col-span-full py-32 text-center text-gray-400">
-                                                        <div className="w-20 h-20 bg-gray-100 dark:bg-navy-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                                                    <div className="col-span-full py-32 text-center text-secondary">
+                                                        <div className="w-20 h-20 bg-gray-100 dark:bg-surface-2 rounded-full flex items-center justify-center mx-auto mb-6">
                                                             <Filter size={32} className="opacity-50" />
                                                         </div>
-                                                        <h3 className="text-xl font-bold text-navy-900 dark:text-white mb-2">No Matches Found</h3>
+                                                        <h3 className="text-xl font-bold text-primary mb-2">No Matches Found</h3>
                                                         <p>Try adjusting your filters or category.</p>
                                                         <button
                                                             onClick={() => {

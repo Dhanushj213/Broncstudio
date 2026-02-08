@@ -41,8 +41,8 @@ export default function SizeGuidePage() {
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-8 py-3 rounded-full text-sm font-bold transition-all ${activeTab === tab
-                                        ? 'bg-white text-navy-900 shadow-sm'
-                                        : 'text-gray-500 hover:text-navy-900'
+                                    ? 'bg-white text-black shadow-sm'
+                                    : 'text-gray-500 hover:text-navy-900'
                                     } capitalize`}
                             >
                                 {tab}

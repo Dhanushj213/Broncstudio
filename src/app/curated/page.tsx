@@ -9,7 +9,7 @@ import { Sparkles, Gift, Coffee, Home, Rocket, ChevronRight, Heart, ArrowRight }
 
 export default function CuratedPage() {
     return (
-        <main className="relative min-h-screen pt-[var(--header-height)] pb-24 bg-[#FFF9F2] dark:bg-navy-950 overflow-hidden">
+        <main className="relative min-h-screen pt-[var(--header-height)] pb-24 bg-[#FFF9F2] dark:bg-black overflow-hidden">
             <AmbientBackground />
 
             {/* Header */}

@@ -77,7 +77,7 @@ export default function GiftFinderPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-[#FFF9F2] to-white pt-[var(--header-height)] pb-20">
+        <div className="min-h-screen bg-gradient-to-b from-[#FFF9F2] to-white dark:from-black dark:to-black pt-[var(--header-height)] pb-20">
             {/* Background Pattern */}
             <div className="absolute inset-0 z-0 opacity-30 pointer-events-none" style={{
                 backgroundImage: 'radial-gradient(#E5E7EB 1.5px, transparent 1.5px)',
@@ -91,14 +91,14 @@ export default function GiftFinderPage() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-white rounded-2xl shadow-xl flex items-center justify-center mb-5 rotate-3 border-4 border-white"
+                        className="w-16 h-16 md:w-20 md:h-20 mx-auto bg-white dark:bg-white/10 rounded-2xl shadow-xl flex items-center justify-center mb-5 rotate-3 border-4 border-white dark:border-white/10"
                     >
                         <Gift size={36} className="text-coral-500" />
                     </motion.div>
-                    <h1 className="text-3xl md:text-5xl font-heading font-bold text-navy-900 leading-tight mb-3">
+                    <h1 className="text-3xl md:text-5xl font-heading font-bold text-navy-900 dark:text-white leading-tight mb-3">
                         Find the Perfect Gift
                     </h1>
-                    <p className="text-gray-500 text-base md:text-lg max-w-xl mx-auto">
+                    <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-xl mx-auto">
                         Tell us the moment — we'll help you find something they'll love.
                     </p>
                 </div>
@@ -110,7 +110,7 @@ export default function GiftFinderPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="mb-12"
                     >
-                        <h2 className="text-lg font-bold text-navy-900 mb-6 text-center md:text-left uppercase tracking-widest text-xs opacity-70">
+                        <h2 className="text-lg font-bold text-navy-900 dark:text-white mb-6 text-center md:text-left uppercase tracking-widest text-xs opacity-70">
                             Choose a moment
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -123,18 +123,18 @@ export default function GiftFinderPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.05 }}
-                                    className="bg-white/80 backdrop-blur-sm rounded-xl p-6 text-left shadow-sm hover:shadow-xl border border-gray-100 hover:border-navy-900 transition-all group relative overflow-hidden"
+                                    className="bg-white/80 dark:bg-white/5 backdrop-blur-sm rounded-xl p-6 text-left shadow-sm hover:shadow-xl border border-gray-100 dark:border-white/10 hover:border-navy-900 dark:hover:border-white/30 transition-all group relative overflow-hidden"
                                 >
                                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110">
-                                        <moment.icon size={64} strokeWidth={1} />
+                                        <moment.icon size={64} strokeWidth={1} className="dark:text-white" />
                                     </div>
-                                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-4 group-hover:bg-navy-900 group-hover:text-white transition-colors duration-300">
-                                        <moment.icon size={24} strokeWidth={1.5} />
+                                    <div className="w-12 h-12 rounded-full bg-gray-50 dark:bg-white/10 flex items-center justify-center mb-4 group-hover:bg-navy-900 group-hover:text-white transition-colors duration-300">
+                                        <moment.icon size={24} strokeWidth={1.5} className="dark:text-white group-hover:text-white" />
                                     </div>
-                                    <h3 className="font-bold text-navy-900 text-sm md:text-base mb-2 group-hover:text-navy-900 transition-colors">
+                                    <h3 className="font-bold text-navy-900 dark:text-white text-sm md:text-base mb-2 group-hover:text-navy-900 dark:group-hover:text-white transition-colors">
                                         {moment.label}
                                     </h3>
-                                    <p className="text-gray-400 text-xs leading-relaxed group-hover:text-gray-500">
+                                    <p className="text-gray-400 text-xs leading-relaxed group-hover:text-gray-500 dark:group-hover:text-gray-300">
                                         {moment.tagline}
                                     </p>
                                 </motion.button>
@@ -150,14 +150,14 @@ export default function GiftFinderPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="mb-8"
                     >
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-6 rounded-2xl shadow-xl shadow-gray-100 border border-gray-100">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white dark:bg-white/5 p-6 rounded-2xl shadow-xl shadow-gray-100 dark:shadow-none border border-gray-100 dark:border-white/10">
                             {/* Selected Moment */}
                             <div className="flex items-center gap-4 w-full md:w-auto">
-                                <div className="w-12 h-12 rounded-full bg-navy-50 text-navy-900 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-full bg-navy-50 dark:bg-white/10 text-navy-900 dark:text-white flex items-center justify-center">
                                     <currentMoment.icon size={24} strokeWidth={1.5} />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-bold text-navy-900 text-lg leading-none mb-1">{currentMoment.label}</p>
+                                    <p className="font-bold text-navy-900 dark:text-white text-lg leading-none mb-1">{currentMoment.label}</p>
                                     <button onClick={reset} className="text-coral-500 text-xs font-bold hover:underline flex items-center gap-1 uppercase tracking-wider">
                                         <RotateCcw size={10} /> Change moment
                                     </button>
@@ -173,8 +173,8 @@ export default function GiftFinderPage() {
                                             key={opt.id}
                                             onClick={() => setAudience(audience === opt.id ? null : opt.id)}
                                             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${audience === opt.id
-                                                ? 'bg-navy-900 text-white'
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                ? 'bg-navy-900 text-white dark:bg-white dark:text-black'
+                                                : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20'
                                                 }`}
                                         >
                                             {opt.label}
@@ -182,7 +182,7 @@ export default function GiftFinderPage() {
                                     ))}
                                 </div>
 
-                                <div className="w-px h-6 bg-gray-200 hidden md:block" />
+                                <div className="w-px h-6 bg-gray-200 dark:bg-white/10 hidden md:block" />
 
                                 {/* Budget */}
                                 <div className="flex gap-2">
@@ -192,7 +192,7 @@ export default function GiftFinderPage() {
                                             onClick={() => setBudget(budget === opt.id ? null : opt.id)}
                                             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${budget === opt.id
                                                 ? 'bg-coral-500 text-white'
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20'
                                                 }`}
                                         >
                                             {opt.label}
@@ -212,22 +212,22 @@ export default function GiftFinderPage() {
                         transition={{ delay: 0.2 }}
                     >
                         <div className="mb-6">
-                            <h2 className="text-xl md:text-2xl font-heading font-bold text-navy-900 mb-1">
+                            <h2 className="text-xl md:text-2xl font-heading font-bold text-navy-900 dark:text-white mb-1">
                                 Gift ideas for this moment
                             </h2>
-                            <p className="text-gray-500 text-sm">{getHelperText()}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">{getHelperText()}</p>
                         </div>
 
                         {loading ? (
                             <div className="flex items-center justify-center py-20">
                                 <Loader2 size={40} className="animate-spin text-coral-500" />
-                                <span className="ml-3 text-gray-500 font-medium">Finding perfect gifts...</span>
+                                <span className="ml-3 text-gray-500 dark:text-gray-400 font-medium">Finding perfect gifts...</span>
                             </div>
                         ) : products.length === 0 ? (
-                            <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-                                <Gift size={48} className="mx-auto mb-4 text-gray-300" />
-                                <p className="text-gray-500 font-medium mb-2">No gifts found for these filters</p>
-                                <p className="text-gray-400 text-sm">Try adjusting the audience or budget</p>
+                            <div className="text-center py-16 bg-white dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10">
+                                <Gift size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                                <p className="text-gray-500 dark:text-gray-400 font-medium mb-2">No gifts found for these filters</p>
+                                <p className="text-gray-400 dark:text-gray-500 text-sm">Try adjusting the audience or budget</p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
@@ -263,13 +263,13 @@ export default function GiftFinderPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
-                        className="mt-16 pt-10 border-t border-gray-200"
+                        className="mt-16 pt-10 border-t border-gray-200 dark:border-white/10"
                     >
                         <div className="text-center max-w-lg mx-auto">
-                            <h3 className="text-xl md:text-2xl font-heading font-bold text-navy-900 mb-3">
+                            <h3 className="text-xl md:text-2xl font-heading font-bold text-navy-900 dark:text-white mb-3">
                                 ✨ Want to make it truly yours?
                             </h3>
-                            <p className="text-gray-500 text-sm md:text-base mb-6">
+                            <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base mb-6">
                                 You can personalise our products by printing your own image or design on selected items like tops, bottles, keychains, fridge magnets, and more.
                             </p>
                             <Link
