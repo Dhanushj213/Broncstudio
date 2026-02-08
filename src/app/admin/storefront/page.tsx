@@ -112,7 +112,7 @@ export default function StorefrontPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-20">
             <div>
-                <h1 className="text-3xl font-bold text-navy-900">Storefront Customization</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Storefront Customization</h1>
                 <p className="text-gray-500">Manage the look and feel of your homepage headers and banners.</p>
             </div>
 
@@ -121,7 +121,7 @@ export default function StorefrontPage() {
                 {/* Hero Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 className="text-lg font-bold text-navy-900 flex items-center gap-2">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                             <LayoutTemplate size={20} className="text-coral-500" />
                             Hero Section
                         </h2>
@@ -136,7 +136,7 @@ export default function StorefrontPage() {
                                 <button
                                     type="button"
                                     onClick={() => setHeroContent({ ...heroContent, type: 'video' })}
-                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'video' ? 'border-coral-500 bg-coral-50 text-coral-700' : 'border-gray-200 hover:border-gray-300'}`}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'video' ? 'border-coral-500 bg-coral-50 text-orange-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'}`}
                                 >
                                     <Play size={20} />
                                     <span className="font-bold">Video Background</span>
@@ -144,7 +144,7 @@ export default function StorefrontPage() {
                                 <button
                                     type="button"
                                     onClick={() => setHeroContent({ ...heroContent, type: 'images' })}
-                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'images' ? 'border-coral-500 bg-coral-50 text-coral-700' : 'border-gray-200 hover:border-gray-300'}`}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'images' ? 'border-coral-500 bg-coral-50 text-orange-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'}`}
                                 >
                                     <ImageIcon size={20} />
                                     <span className="font-bold">Rolling Images (5)</span>
@@ -167,7 +167,7 @@ export default function StorefrontPage() {
                                             type="url"
                                             value={heroContent.video_url}
                                             onChange={e => setHeroContent({ ...heroContent, video_url: e.target.value })}
-                                            className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                            className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
                                             placeholder="https://..."
                                         />
                                     </div>
@@ -186,7 +186,7 @@ export default function StorefrontPage() {
                                             type="url"
                                             value={heroContent.poster_url}
                                             onChange={e => setHeroContent({ ...heroContent, poster_url: e.target.value })}
-                                            className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                            className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
                                             placeholder="https://..."
                                         />
                                     </div>
@@ -212,7 +212,7 @@ export default function StorefrontPage() {
                                                 type="url"
                                                 value={url}
                                                 onChange={e => handleImageChange(index, e.target.value)}
-                                                className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                                className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
                                                 placeholder={`Image URL #${index + 1}`}
                                             />
                                         </div>
@@ -231,7 +231,7 @@ export default function StorefrontPage() {
                                     type="text"
                                     value={heroContent.heading}
                                     onChange={e => setHeroContent({ ...heroContent, heading: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
+                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
                                 />
                             </div>
                             <div>
@@ -240,7 +240,7 @@ export default function StorefrontPage() {
                                     type="text"
                                     value={heroContent.subheading}
                                     onChange={e => setHeroContent({ ...heroContent, subheading: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
+                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
                                 />
                             </div>
                             <div>
@@ -249,7 +249,7 @@ export default function StorefrontPage() {
                                     type="text"
                                     value={heroContent.button_text}
                                     onChange={e => setHeroContent({ ...heroContent, button_text: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
+                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
                                 />
                             </div>
                             <div>
@@ -258,7 +258,7 @@ export default function StorefrontPage() {
                                     type="text"
                                     value={heroContent.button_link}
                                     onChange={e => setHeroContent({ ...heroContent, button_link: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
+                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
                                 />
                             </div>
                         </div>
