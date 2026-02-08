@@ -246,7 +246,7 @@ export default function EditPersonalizationProductPage() {
 
     const isApparel = (() => {
         // @ts-ignore
-        const clothingTypes = Object.values(PERSONALIZATION_TAXONOMY.Clothing.types).flat();
+        const clothingTypes = Object.values(PERSONALIZATION_TAXONOMY.Apparel.types).flat();
         return clothingTypes.includes(formData.product_type) || ['T-Shirt', 'Hoodie', 'Sweatshirt'].includes(formData.product_type);
     })();
 
