@@ -72,14 +72,14 @@ export default function SplashScreen() {
                             x: 0,
                             transition: { delay: 0.3, duration: 0.8 }
                         }}
-                        className="relative h-20 md:h-24 w-auto aspect-[6/1] md:aspect-[4/1]"
+                        className="relative h-20 md:h-24 w-auto aspect-[4/1]"
                     >
                         <Image
                             src="/broncname.png"
                             alt="Broncstudio"
                             fill
                             sizes="(max-width: 768px) 256px, 384px"
-                            className="object-contain hidden md:block dark:hidden"
+                            className="object-contain dark:hidden"
                             priority
                         />
                         <Image
@@ -87,7 +87,7 @@ export default function SplashScreen() {
                             alt="Broncstudio"
                             fill
                             sizes="(max-width: 768px) 256px, 384px"
-                            className="object-contain hidden dark:md:block"
+                            className="object-contain hidden dark:block"
                             priority
                         />
                         <Image
@@ -95,7 +95,7 @@ export default function SplashScreen() {
                             alt="Broncstudio"
                             fill
                             sizes="(max-width: 768px) 256px, 384px"
-                            className="object-contain md:hidden dark:hidden"
+                            className="hidden"
                             priority
                         />
                         <Image
@@ -103,7 +103,7 @@ export default function SplashScreen() {
                             alt="Broncstudio"
                             fill
                             sizes="(max-width: 768px) 256px, 384px"
-                            className="object-contain hidden dark:block dark:md:hidden"
+                            className="hidden"
                             priority
                         />
                     </motion.div>
