@@ -25,6 +25,10 @@
     --nav-bg: #FFFFFF;
     --menu-bg: #FFFFFF;
 
+    /* Brand Variables (Crucial for Admin Buttons) */
+    --brand-primary: #111827;
+    --brand-secondary: #1F2937;
+
     /* Accents (Shared) */
     --accent-orange: #F97316;
     --accent-orange-soft: rgba(249, 115, 22, 0.1);
