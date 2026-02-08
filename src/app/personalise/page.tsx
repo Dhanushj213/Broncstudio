@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Loader2, Upload, ShoppingBag, ArrowRight, ArrowLeft, Check, X, ShieldCheck, ChevronDown, Info } from 'lucide-react';
+import { Loader2, Search, Filter, ChevronRight, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import { PERSONALIZATION_TAXONOMY, PrintTypeConfig, PlacementConfig, PersonalizationConfig } from '@/lib/personalization';
-import { toast } from 'sonner';
-import { useCart } from '@/context/CartContext';
+import Link from 'next/link';
+import { PERSONALIZATION_TAXONOMY } from '@/lib/personalization';
 
 // ----------------------------------------------------------------------
 // TYPES
@@ -14,456 +13,285 @@ import { useCart } from '@/context/CartContext';
 interface BaseProduct {
     id: string;
     name: string;
+    slug: string;
     price: number;
     images: string[];
     description: string;
     metadata: {
         product_type: string;
-        personalization: PersonalizationConfig;
+        personalization: any;
     };
 }
 
 // ----------------------------------------------------------------------
+// COMPONENTS
+// ----------------------------------------------------------------------
+
+const ProductCard = ({ product }: { product: BaseProduct }) => (
+    <Link href={`/personalise/${product.id}`} className="group block bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
+        <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
+            <Image
+                src={product.images[0] || 'https://placehold.co/600x800/png?text=No+Image'}
+                alt={product.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
+            <div className="absolute bottom-4 left-4 right-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <button className="w-full py-3 bg-white text-black font-bold rounded-xl shadow-lg hover:bg-neutral-50 flex items-center justify-center gap-2">
+                    Customize <ChevronRight size={16} />
+                </button>
+            </div>
+        </div>
+        <div className="p-4">
+            <h3 className="font-bold text-neutral-900 dark:text-white truncate" title={product.name}>{product.name}</h3>
+            <p className="text-neutral-500 text-sm mt-1">{product.metadata.product_type}</p>
+            <div className="mt-3 flex items-center justify-between">
+                <span className="font-bold text-lg">₹{product.price}</span>
+                <span className="text-xs font-medium bg-blue-50 text-blue-600 px-2 py-1 rounded-lg">Base Price</span>
+            </div>
+        </div>
+    </Link>
+);
+
+// ----------------------------------------------------------------------
 // MAIN PAGE
 // ----------------------------------------------------------------------
-export default function PersonalisePage() {
-    const { addToCart } = useCart();
-    // State: Selection
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
-    const [availableProducts, setAvailableProducts] = useState<BaseProduct[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<BaseProduct | null>(null);
-    const [loadingProducts, setLoadingProducts] = useState(false);
+export default function PersonaliseListingPage() {
+    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState<BaseProduct[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<BaseProduct[]>([]);
 
-    // State: Customization
-    const [size, setSize] = useState<string>('');
-    const [placement, setPlacement] = useState<string>('');
-    const [printType, setPrintType] = useState<string>('');
-    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-    const [uploading, setUploading] = useState(false);
-    const [note, setNote] = useState('');
+    // Filters
+    const [selectedCategory, setSelectedCategory] = useState<string>('All');
+    const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    // 1. Fetch Products when criteria change
+    // 1. Fetch Products
     useEffect(() => {
-        if (!selectedCategory) return;
-
         const fetchProducts = async () => {
-            setLoadingProducts(true);
-            setAvailableProducts([]);
-
-            // Fetch all base products
+            setLoading(true);
             const { data } = await supabase
                 .from('products')
                 .select('*')
-                .eq('metadata->>type', 'personalization_base');
+                .eq('metadata->>type', 'personalization_base')
+                .order('created_at', { ascending: false });
 
             if (data) {
-                // Client-side filtering based on taxonomy + gender visibility
-                const filtered = data.filter((p: BaseProduct) => {
-                    const pMeta = p.metadata?.personalization;
-                    const pType = p.metadata?.product_type;
-                    if (!pType || !pMeta) return false;
-
-                    // 1. Check if Category matches (Taxonomy)
-                    // @ts-ignore
-                    const categoryConfig = PERSONALIZATION_TAXONOMY[selectedCategory];
-                    if (!categoryConfig) return false;
-
-                    // 2. Handle Subcategories (Clothing)
-                    if (categoryConfig.subcategories) {
-                        if (!selectedSubCategory) return false;
-
-                        const targetGender = selectedSubCategory.toLowerCase();
-                        const pGenders = pMeta.gender_supported || [];
-
-                        // Rule: Product must support the selected gender (e.g. 'Men' selected -> Product supports 'men')
-                        // Unisex products support ['men', 'women', 'unisex'] so they will pass.
-                        // Standard products supports ['men'] so they will pass.
-                        // We do NOT strictly check if the type is listed in the taxonomy for *that specific* subcategory if it's a cross-listed unisex item?
-                        // Actually, let's rely on the gender_supported flag as the primary truth for "Visibility" as per request.
-
-                        return pGenders.includes(targetGender as any);
-                    } else {
-                        // Direct types (Non-Clothing)
-                        // @ts-ignore
-                        const allowedTypes = categoryConfig.types || [];
-                        return allowedTypes.includes(pType);
-                    }
-                });
-                setAvailableProducts(filtered);
+                setProducts(data);
+                setFilteredProducts(data);
             }
-            setLoadingProducts(false);
+            setLoading(false);
         };
 
         fetchProducts();
-    }, [selectedCategory, selectedSubCategory]);
+    }, []);
 
-    // 2. Handle File Upload
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files?.[0]) return;
+    // 2. Filter Logic
+    useEffect(() => {
+        let result = products;
 
-        const file = e.target.files[0];
-        setUploading(true);
+        // Category Filter
+        if (selectedCategory !== 'All') {
+            result = result.filter(p => {
+                // Determine category based on Taxonomy reverse lookup or metadata logic
+                // For simplicity, we check if the product type exists in the selected category's definition
+                // OR we can rely on the user confirming category_group in admin.
+                // admin saves 'category_group' in taxonomy checks but not directly in metadata root usually.
+                // Let's rely on checking if the product_type belongs to the category.
 
-        try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-            const filePath = `${fileName}`;
+                const catConfig = PERSONALIZATION_TAXONOMY[selectedCategory as keyof typeof PERSONALIZATION_TAXONOMY];
+                if (!catConfig) return false;
 
-            const { error: uploadError } = await supabase.storage
-                .from('personalization-uploads')
-                .upload(filePath, file);
+                // @ts-ignore
+                if (catConfig.types && Array.isArray(catConfig.types)) {
+                    // Direct types
+                    // @ts-ignore
+                    return catConfig.types.includes(p.metadata.product_type);
+                }
 
-            if (uploadError) throw uploadError;
+                // Subcategories (Clothing)
+                // @ts-ignore
+                if (catConfig.subcategories) {
+                    // Check if product type is in any subcategory of this group
+                    // @ts-ignore
+                    const allTypes = Object.values(catConfig.types).flat();
+                    return allTypes.includes(p.metadata.product_type);
+                }
 
-            // Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('personalization-uploads')
-                .getPublicUrl(filePath);
-
-            setUploadedImage(publicUrl);
-            toast.success('Image uploaded successfully');
-        } catch (error: any) {
-            console.error('Upload error:', error);
-            toast.error('Failed to upload image. Please try again.');
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    // 3. Price Calculation
-    const calculatePrice = () => {
-        if (!selectedProduct) return 0;
-        let total = selectedProduct.price;
-
-        const config = selectedProduct.metadata.personalization;
-
-        // Add Print Type Price
-        if (printType && config.print_types[printType]) {
-            total += config.print_types[printType].price;
+                return false;
+            });
         }
 
-        // Add Placement Price
-        if (placement && config.placements[placement]) {
-            total += config.placements[placement].price;
+        // Subcategory Filter (e.g. Men, Women)
+        if (selectedSubCategory) {
+            result = result.filter(p => {
+                const pGenders = p.metadata.personalization?.gender_supported || [];
+                const target = selectedSubCategory.toLowerCase();
+                return pGenders.includes(target) || pGenders.includes('unisex');
+            });
         }
 
-        return total;
-    };
+        // Search Filter
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            result = result.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                p.metadata.product_type.toLowerCase().includes(q)
+            );
+        }
 
-    const finalPrice = calculatePrice();
-    const hasSizes = (selectedProduct?.metadata.personalization.sizes?.length || 0) > 0;
-    const canAddToCart = selectedProduct && (!hasSizes || size) && placement && printType;
+        setFilteredProducts(result);
+    }, [selectedCategory, selectedSubCategory, searchQuery, products]);
 
-    const handleAddToCart = () => {
-        if (!canAddToCart) return;
-
-        addToCart({
-            ...selectedProduct,
-            price: finalPrice, // Override base price with calculated price
-            metadata: {
-                is_custom: true,
-                size,
-                placement,
-                print_type: printType,
-                image_url: uploadedImage,
-                note
-            }
-        }, size);
-
-        toast.success("Added to cart!");
-        // Reset or redirect? For now, we keep them there to maybe add another.
-    };
-
-    // Derived Lists
-    // @ts-ignore
-    const subCategories = selectedCategory ? (PERSONALIZATION_TAXONOMY[selectedCategory]?.subcategories || []) : [];
+    const categories = ['All', ...Object.keys(PERSONALIZATION_TAXONOMY)];
 
     return (
-        <div className="min-h-screen bg-background flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 mt-[var(--header-height)]">
-            <div className="max-w-7xl w-full bg-card rounded-3xl shadow-xl overflow-hidden min-h-[800px] flex flex-col md:flex-row border border-subtle">
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-[var(--header-height)]">
 
-                {/* ------------------------------------------------------------- */}
-                {/* LEFT: VISUALIZER (Only if product selected) or WELCOME GRAPHIC */}
-                {/* ------------------------------------------------------------- */}
-                <div className="w-full md:w-1/2 bg-surface-2 relative flex items-center justify-center p-8">
-                    {selectedProduct ? (
-                        <div className="relative w-full max-w-md aspect-[4/5] bg-white rounded-2xl shadow-lg border border-subtle overflow-hidden group">
-                            <Image
-                                src={selectedProduct.images[0]}
-                                alt={selectedProduct.name}
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                            />
-                            {uploadedImage && (
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <div className="w-1/2 aspect-square relative opacity-90 mix-blend-multiply border-2 border-dashed border-blue-400 bg-blue-50/20">
-                                        {/* Simple overlay simulation */}
-                                        <Image src={uploadedImage} alt="Print Preview" fill className="object-contain p-2" />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="text-center text-secondary">
-                            <div className="w-24 h-24 bg-surface-3 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse">
-                                <ShieldCheck size={40} className="opacity-20 text-primary" />
-                            </div>
-                            <p className="font-bold text-lg text-primary">Select a product to start designing</p>
-                        </div>
-                    )}
+            {/* HEROBANNER */}
+            <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-12 px-6">
+                <div className="max-w-7xl mx-auto text-center">
+                    <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">Create Your Own</h1>
+                    <p className="text-lg text-neutral-500 max-w-2xl mx-auto">
+                        Premium custom apparel and accessories. Select a base product and make it uniquely yours with our design studio.
+                    </p>
                 </div>
+            </div>
 
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="flex flex-col lg:flex-row gap-12">
 
-                {/* ------------------------------------------------------------- */}
-                {/* RIGHT: CONTROLS */}
-                {/* ------------------------------------------------------------- */}
-                <div className="w-full md:w-1/2 p-8 lg:p-12 overflow-y-auto max-h-[100vh]">
-                    <h1 className="text-3xl font-black text-primary mb-2">Personalize Your Gear</h1>
-                    <p className="text-secondary mb-8">Choose a product, upload your art, and we'll handle the rest.</p>
-
-                    {/* 1. SELECTION DROPDOWNS */}
-                    <div className="space-y-6 mb-12">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-bold text-primary mb-2">Category</label>
-                                <div className="relative">
-                                    <select
-                                        className="w-full appearance-none bg-surface-2 border border-subtle text-primary py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-surface-3 focus:border-primary font-bold"
-                                        value={selectedCategory}
-                                        onChange={(e) => {
-                                            setSelectedCategory(e.target.value);
-                                            setSelectedSubCategory('');
-                                            setSelectedProduct(null);
+                    {/* SIDEBAR (Desktop) */}
+                    <div className="hidden lg:block w-64 flex-shrink-0 space-y-8">
+                        <div>
+                            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                                <Filter size={18} /> Categories
+                            </h3>
+                            <div className="space-y-2">
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => {
+                                            setSelectedCategory(cat);
+                                            setSelectedSubCategory(''); // Reset sub on main change
                                         }}
+                                        className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === cat
+                                                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                                                : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+                                            }`}
                                     >
-                                        <option value="">Select Category</option>
-                                        {Object.keys(PERSONALIZATION_TAXONOMY).map(cat => (
-                                            <option key={cat} value={cat}>{cat}</option>
-                                        ))}
-                                    </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
-                                        <ChevronDown size={16} />
-                                    </div>
-                                </div>
+                                        {cat}
+                                    </button>
+                                ))}
                             </div>
-
-                            {subCategories.length > 0 && (
-                                <div>
-                                    <label className="block text-sm font-bold text-primary mb-2">Collection</label>
-                                    <div className="relative">
-                                        <select
-                                            className="w-full appearance-none bg-surface-2 border border-subtle text-primary py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-surface-3 focus:border-primary font-bold"
-                                            value={selectedSubCategory}
-                                            onChange={(e) => {
-                                                setSelectedSubCategory(e.target.value);
-                                                setSelectedProduct(null); // Reset product on subcat change
-                                            }}
-                                        >
-                                            <option value="">Select Collection</option>
-                                            {subCategories.map((sub: string) => (
-                                                <option key={sub} value={sub}>{sub}</option>
-                                            ))}
-                                        </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
-                                            <ChevronDown size={16} />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
-                        {/* PRODUCT SELECTOR */}
-                        {(selectedCategory && (!subCategories.length || selectedSubCategory)) && (
-                            <div className="animate-in fade-in slide-in-from-top-4">
-                                <label className="block text-sm font-bold text-primary mb-2">Select Product</label>
-                                {loadingProducts ? (
-                                    <div className="flex items-center gap-2 text-secondary py-2"><Loader2 className="animate-spin" size={16} /> Loading products...</div>
-                                ) : (
-                                    <div className="relative">
-                                        <select
-                                            className="w-full appearance-none bg-surface-2 border border-subtle text-primary py-3 px-4 pr-8 rounded-xl leading-tight focus:outline-none focus:bg-surface-3 focus:border-primary font-bold"
-                                            value={selectedProduct?.id || ''}
-                                            onChange={(e) => {
-                                                const prod = availableProducts.find(p => p.id === e.target.value);
-                                                setSelectedProduct(prod || null);
-                                                // Reset configs
-                                                setSize('');
-                                                setPlacement('');
-                                                setPrintType('');
-                                                setUploadedImage(null);
-                                            }}
+                        {/* Subcategories (Conditional) */}
+                        {/* @ts-ignore */}
+                        {selectedCategory !== 'All' && PERSONALIZATION_TAXONOMY[selectedCategory]?.subcategories && (
+                            <div className="animate-in slide-in-from-left-2">
+                                <h3 className="font-bold text-sm text-neutral-400 uppercase tracking-wider mb-3">Collection</h3>
+                                <div className="space-y-2">
+                                    <button
+                                        onClick={() => setSelectedSubCategory('')}
+                                        className={`w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${!selectedSubCategory ? 'font-bold text-neutral-900' : 'text-neutral-500'
+                                            }`}
+                                    >
+                                        View All
+                                    </button>
+                                    {/* @ts-ignore */}
+                                    {PERSONALIZATION_TAXONOMY[selectedCategory].subcategories.map((sub: string) => (
+                                        <button
+                                            key={sub}
+                                            onClick={() => setSelectedSubCategory(sub)}
+                                            className={`w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${selectedSubCategory === sub
+                                                    ? 'bg-neutral-100 text-neutral-900 font-bold'
+                                                    : 'text-neutral-600 hover:text-neutral-900'
+                                                }`}
                                         >
-                                            <option value="">Choose a Base Product...</option>
-                                            {availableProducts.map(product => (
-                                                <option key={product.id} value={product.id}>{product.name} - ₹{product.price}</option>
-                                            ))}
-                                        </select>
-                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
-                                            <ChevronDown size={16} />
-                                        </div>
-                                    </div>
-                                )}
+                                            {sub}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    {/* 2. CUSTOMIZATION FORM */}
-                    {selectedProduct && (
-                        <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
-                            <div className="h-px bg-border" />
+                    {/* MAIN CONTENT */}
+                    <div className="flex-1">
 
-                            <h2 className="text-xl font-black text-primary">Customize It</h2>
-
-                            {/* SIZE */}
-                            {selectedProduct.metadata.personalization.sizes?.length > 0 && (
-                                <div>
-                                    <label className="block text-sm font-bold text-primary mb-3">Size</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {selectedProduct.metadata.personalization.sizes.map(s => (
-                                            <button
-                                                key={s}
-                                                onClick={() => setSize(s)}
-                                                className={`px-4 py-2 rounded-lg border font-bold text-sm transition-all ${size === s
-                                                    ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-md transform scale-105'
-                                                    : 'bg-transparent text-secondary border-subtle hover:border-primary'
-                                                    }`}
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {/* PRINT PLACEMENT */}
-                                <div>
-                                    <label className="block text-sm font-bold text-primary mb-3">Placement</label>
-                                    <div className="space-y-2">
-                                        {Object.entries(selectedProduct.metadata.personalization.placements)
-                                            .filter(([_, conf]) => conf.enabled)
-                                            .map(([key, conf]) => (
-                                                <button
-                                                    key={key}
-                                                    onClick={() => setPlacement(key)}
-                                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm ${placement === key
-                                                        ? 'border-black dark:border-white bg-surface-2 text-primary font-bold ring-1 ring-black dark:ring-white'
-                                                        : 'border-subtle text-secondary hover:bg-surface-2'
-                                                        }`}
-                                                >
-                                                    <span>{key}</span>
-                                                    <span className="text-xs bg-card px-2 py-1 rounded border border-subtle shadow-sm">+₹{conf.price}</span>
-                                                </button>
-                                            ))}
-                                    </div>
-                                </div>
-
-                                {/* PRINT TYPE */}
-                                <div>
-                                    <label className="block text-sm font-bold text-primary mb-3">Print Type</label>
-                                    <div className="space-y-2">
-                                        {Object.entries(selectedProduct.metadata.personalization.print_types)
-                                            .filter(([_, conf]) => conf.enabled)
-                                            .map(([key, conf]) => (
-                                                <button
-                                                    key={key}
-                                                    onClick={() => setPrintType(key)}
-                                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm ${printType === key
-                                                        ? 'border-black dark:border-white bg-surface-2 text-primary font-bold ring-1 ring-black dark:ring-white'
-                                                        : 'border-subtle text-secondary hover:bg-surface-2'
-                                                        }`}
-                                                >
-                                                    <span>{key}</span>
-                                                    <span className="text-xs bg-card px-2 py-1 rounded border border-subtle shadow-sm">+₹{conf.price}</span>
-                                                </button>
-                                            ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* UPLOAD */}
-                            <div>
-                                <label className="block text-sm font-bold text-primary mb-3">Upload Design</label>
-                                <div className={`border-2 border-dashed rounded-xl p-6 transition-all text-center ${uploadedImage ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-subtle hover:border-primary hover:bg-surface-2'}`}>
-                                    {uploadedImage ? (
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-green-200 text-green-700 rounded-lg flex items-center justify-center">
-                                                    <Check size={20} />
-                                                </div>
-                                                <div className="text-left">
-                                                    <p className="font-bold text-green-800 dark:text-green-300 text-sm">Image uploaded successfully</p>
-                                                    <p className="text-xs text-green-600 dark:text-green-400">Ready for print</p>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => setUploadedImage(null)} className="p-2 hover:bg-surface-2 rounded-full transition-colors text-secondary hover:text-red-500">
-                                                <X size={18} />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <label className="cursor-pointer block">
-                                            <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
-                                            {uploading ? (
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <Loader2 className="animate-spin text-primary" />
-                                                    <span className="text-sm font-bold text-secondary">Uploading...</span>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <Upload className="mx-auto text-secondary mb-2" />
-                                                    <span className="block text-sm font-bold text-primary">Click to Upload Image</span>
-                                                    <span className="block text-xs text-secondary mt-1">PNG, JPG (Max 10MB)</span>
-                                                </>
-                                            )}
-                                        </label>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* NOTE */}
-                            <div>
-                                <label className="block text-sm font-bold text-primary mb-3">Special Instructions (Optional)</label>
-                                <textarea
-                                    className="w-full border border-subtle rounded-xl p-3 focus:outline-none focus:border-primary bg-surface-2 text-primary text-sm"
-                                    rows={3}
-                                    placeholder="Any specific requirements for printing..."
-                                    value={note}
-                                    onChange={(e) => setNote(e.target.value)}
+                        {/* SEARCH & MOBILE FILTER TOGGLE */}
+                        <div className="flex gap-4 mb-8">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
+                                <input
+                                    type="text"
+                                    placeholder="Search products..."
+                                    className="w-full pl-12 pr-4 py-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-
-                            {/* PRICE & ACTION */}
-                            <div className="bg-surface-2 p-6 rounded-2xl border border-subtle mt-8">
-                                <div className="flex justify-between items-center mb-6">
-                                    <span className="text-secondary font-medium">Total Price</span>
-                                    <span className="text-3xl font-black text-primary">₹{finalPrice.toFixed(2)}</span>
-                                </div>
-                                <button
-                                    onClick={handleAddToCart}
-                                    disabled={!canAddToCart}
-                                    className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg ${canAddToCart
-                                        ? 'bg-black dark:bg-white text-white dark:text-black hover:scale-[1.02]'
-                                        : 'bg-surface-3 text-secondary cursor-not-allowed'
-                                        }`}
-                                >
-                                    <ShoppingBag size={20} />
-                                    Add to Bag
-                                </button>
-                                {!canAddToCart && (
-                                    <p className="text-center text-xs text-red-400 mt-3 font-medium flex items-center justify-center gap-1">
-                                        <Info size={12} /> Please complete all selections
-                                    </p>
-                                )}
-                            </div>
-
+                            <button
+                                className="lg:hidden px-4 py-3 bg-white border border-neutral-200 rounded-xl flex items-center gap-2 font-bold"
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            >
+                                <Filter size={20} /> Filters
+                            </button>
                         </div>
-                    )}
+
+                        {/* MOBILE FILTERS (Expandable) */}
+                        {mobileMenuOpen && (
+                            <div className="lg:hidden mb-8 p-4 bg-white rounded-xl border border-neutral-200 space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Category</label>
+                                    <select
+                                        className="w-full p-2 border rounded-lg"
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                    >
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PRODUCT GRID */}
+                        {loading ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {[1, 2, 3, 4, 5, 6].map(i => (
+                                    <div key={i} className="aspect-[4/5] bg-neutral-200 dark:bg-neutral-900 rounded-2xl animate-pulse" />
+                                ))}
+                            </div>
+                        ) : filteredProducts.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                                {filteredProducts.map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20">
+                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-neutral-100 mb-4">
+                                    <Search size={32} className="text-neutral-400" />
+                                </div>
+                                <h3 className="text-xl font-bold text-neutral-900">No products found</h3>
+                                <p className="text-neutral-500">Try adjusting your filters or search terms.</p>
+                                <button
+                                    onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
+                                    className="mt-4 text-blue-600 font-bold hover:underline"
+                                >
+                                    Clear all filters
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
