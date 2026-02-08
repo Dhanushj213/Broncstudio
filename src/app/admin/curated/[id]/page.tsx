@@ -184,7 +184,7 @@ export default function EditCollectionPage() {
                     </button>
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Edit Collection</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Edit Collection</h1>
                     <p className="text-gray-500 text-sm">Update details and manage products.</p>
                 </div>
             </div>
@@ -197,29 +197,29 @@ export default function EditCollectionPage() {
 
                         {/* Title */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Title</label>
+                            <label className="block text-xs font-bold text-gray-900 uppercase mb-1">Title</label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 font-bold text-navy-900"
+                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 font-bold text-gray-900"
                             />
                         </div>
 
                         {/* Subtitle */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Subtitle</label>
+                            <label className="block text-xs font-bold text-gray-900 uppercase mb-1">Subtitle</label>
                             <input
                                 type="text"
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
+                                className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
                             />
                         </div>
 
                         {/* Image */}
                         <div>
-                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Image URL</label>
+                            <label className="block text-xs font-bold text-gray-900 uppercase mb-1">Image URL</label>
                             <div className="space-y-2">
                                 <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
                                     {formData.image_url ? (
@@ -234,7 +234,7 @@ export default function EditCollectionPage() {
                                     type="text"
                                     value={formData.image_url}
                                     onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs"
+                                    className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg text-xs"
                                     placeholder="https://..."
                                 />
                             </div>
@@ -252,12 +252,12 @@ export default function EditCollectionPage() {
                                 <span className="text-sm font-medium">Active</span>
                             </label>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-gray-500 uppercase">Order</span>
+                                <span className="text-xs font-bold text-gray-900 uppercase">Order</span>
                                 <input
                                     type="number"
                                     value={formData.display_order}
                                     onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                                    className="w-16 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm text-center"
+                                    className="w-16 px-2 py-1 bg-white text-gray-900 border border-gray-200 rounded text-sm text-center"
                                 />
                             </div>
                         </div>

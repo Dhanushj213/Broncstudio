@@ -261,7 +261,7 @@ export default function EditPersonalizationProductPage() {
                 </Link>
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-black text-navy-900 tracking-tight">Edit Base Product</h1>
+                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Edit Base Product</h1>
                         <p className="text-gray-500 mt-1">Update configuration rules.</p>
                     </div>
                     <button onClick={handleDelete} className="text-red-500 font-bold text-sm bg-red-50 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors">
@@ -288,7 +288,7 @@ export default function EditPersonalizationProductPage() {
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Base Product Type *</label>
                                     <select
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all bg-white text-gray-900"
                                         value={formData.product_type}
                                         onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
                                     >
@@ -300,7 +300,7 @@ export default function EditPersonalizationProductPage() {
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Internal Name *</label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all bg-white text-gray-900"
                                         placeholder="e.g. Plain Classic Crew T-Shirt (Base)"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -312,7 +312,7 @@ export default function EditPersonalizationProductPage() {
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Description (Optional)</label>
                                 <textarea
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all"
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 focus:ring-1 focus:ring-navy-900 outline-none transition-all bg-white text-gray-900"
                                     rows={3}
                                     placeholder="Details about material, fit, etc."
                                     value={formData.description}
@@ -390,7 +390,7 @@ export default function EditPersonalizationProductPage() {
                                 <div className="flex items-center gap-2 max-w-sm">
                                     <input
                                         type="text"
-                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 text-sm"
+                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 text-sm bg-white text-gray-900"
                                         placeholder="Add Custom Color (e.g. Teal)"
                                         value={customColor}
                                         onChange={(e) => setCustomColor(e.target.value)}
@@ -587,7 +587,7 @@ export default function EditPersonalizationProductPage() {
                                                             <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Max Width (in)</label>
                                                             <input
                                                                 type="number"
-                                                                className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900"
+                                                                className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900 bg-white"
                                                                 value={config.max_width}
                                                                 onChange={(e) => updatePlacement(placement, 'max_width', parseFloat(e.target.value))}
                                                             />
@@ -596,7 +596,7 @@ export default function EditPersonalizationProductPage() {
                                                             <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Max Height (in)</label>
                                                             <input
                                                                 type="number"
-                                                                className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900"
+                                                                className="w-full px-2 py-1.5 border border-gray-200 rounded text-sm font-bold text-gray-900 bg-white"
                                                                 value={config.max_height}
                                                                 onChange={(e) => updatePlacement(placement, 'max_height', parseFloat(e.target.value))}
                                                             />
@@ -645,7 +645,7 @@ export default function EditPersonalizationProductPage() {
                                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
                                         <input
                                             type="number"
-                                            className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 outline-none font-bold text-lg text-navy-900"
+                                            className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 outline-none font-bold text-lg text-gray-900 bg-white"
                                             placeholder="0.00"
                                             value={formData.price}
                                             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -668,7 +668,7 @@ export default function EditPersonalizationProductPage() {
                                 <div className="flex gap-2">
                                     <input
                                         type="url"
-                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white text-gray-900"
                                         placeholder="https://... (Paste Image URL)"
                                         value={imageInput}
                                         onChange={(e) => setImageInput(e.target.value)}

@@ -160,7 +160,7 @@ export default function OrderDetailPage() {
             {/* Title & Actions Header */}
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-navy-900 flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
                         Order #{order.id.slice(0, 8)}
                         <span className={`text-base px-3 py-1 rounded-full border uppercase tracking-wider ${order.status === 'pending' ? 'bg-amber-50 border-amber-200 text-amber-700' :
                             order.status === 'processing' ? 'bg-purple-50 border-purple-200 text-purple-700' :

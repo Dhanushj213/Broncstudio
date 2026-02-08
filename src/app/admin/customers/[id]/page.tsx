@@ -98,7 +98,7 @@ export default function CustomerDetailPage() {
                     {customer.name[0]}
                 </div>
                 <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-navy-900 mb-2">{customer.name}</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{customer.name}</h1>
                     <div className="flex flex-wrap gap-4 text-gray-500 text-sm">
                         <div className="flex items-center gap-1">
                             <Phone size={16} /> {customer.phone || 'N/A'}
@@ -121,7 +121,7 @@ export default function CustomerDetailPage() {
             </div>
 
             {/* Order History */}
-            <h2 className="text-xl font-bold text-navy-900 mt-8">Order History</h2>
+            <h2 className="text-xl font-bold text-gray-900 mt-8">Order History</h2>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-[#FAF9F7] text-gray-500 font-bold uppercase text-xs border-b border-gray-100">
@@ -136,19 +136,19 @@ export default function CustomerDetailPage() {
                     <tbody className="divide-y divide-gray-100">
                         {customer.orders.map((order) => (
                             <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-6 py-4 font-mono text-navy-900">
+                                <td className="px-6 py-4 font-mono text-gray-900">
                                     #{order.id.slice(0, 8)}
                                 </td>
                                 <td className="px-6 py-4 text-gray-500">
                                     {new Date(order.created_at).toLocaleDateString()}
                                 </td>
-                                <td className="px-6 py-4 font-bold text-navy-900">
+                                <td className="px-6 py-4 font-bold text-gray-900">
                                     ₹{order.total_amount}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${order.status === 'delivered' ? 'bg-green-50 border-green-100 text-green-700' :
-                                            order.status === 'cancelled' ? 'bg-red-50 border-red-100 text-red-700' :
-                                                'bg-amber-50 border-amber-100 text-amber-700'
+                                        order.status === 'cancelled' ? 'bg-red-50 border-red-100 text-red-700' :
+                                            'bg-amber-50 border-amber-100 text-amber-700'
                                         }`}>
                                         {order.status}
                                     </span>

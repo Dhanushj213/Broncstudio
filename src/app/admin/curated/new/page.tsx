@@ -64,7 +64,7 @@ export default function NewCollectionPage() {
                     </button>
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Create New Collection</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Create New Collection</h1>
                     <p className="text-gray-500 text-sm">Define your new curated showcase.</p>
                 </div>
             </div>
@@ -73,33 +73,33 @@ export default function NewCollectionPage() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-bold text-navy-900 mb-2">Collection Title</label>
+                        <label className="block text-sm font-bold text-gray-900 mb-2">Collection Title</label>
                         <input
                             type="text"
                             placeholder="e.g. Summer Vibes"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors font-medium"
+                            className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors font-medium"
                             required
                         />
                     </div>
 
                     {/* Subtitle / Description */}
                     <div>
-                        <label className="block text-sm font-bold text-navy-900 mb-2">Subtitle / Tagline</label>
+                        <label className="block text-sm font-bold text-gray-900 mb-2">Subtitle / Tagline</label>
                         <input
                             type="text"
                             placeholder="e.g. Fun in the sun."
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors font-medium"
+                            className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors font-medium"
                         />
                         <p className="text-xs text-gray-400 mt-1">Short text that appears below the title on cards.</p>
                     </div>
 
                     {/* Image URL */}
                     <div>
-                        <label className="block text-sm font-bold text-navy-900 mb-2">Cover Image URL</label>
+                        <label className="block text-sm font-bold text-gray-900 mb-2">Cover Image URL</label>
                         <div className="flex gap-4 items-start">
                             <div className="flex-1">
                                 <div className="relative">
@@ -108,7 +108,7 @@ export default function NewCollectionPage() {
                                         placeholder="https://..."
                                         value={formData.image_url}
                                         onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors text-sm"
+                                        className="w-full pl-10 pr-4 py-3 bg-white text-gray-900 border border-gray-200 rounded-xl focus:outline-none focus:border-navy-900 transition-colors text-sm"
                                     />
                                     <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 </div>
@@ -134,16 +134,16 @@ export default function NewCollectionPage() {
                                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                                 className="w-5 h-5 text-coral-500 rounded focus:ring-coral-500 border-gray-300"
                             />
-                            <span className="text-sm font-bold text-navy-900">Active (Visible)</span>
+                            <span className="text-sm font-bold text-gray-900">Active (Visible)</span>
                         </label>
 
                         <div className="flex items-center gap-3">
-                            <span className="text-sm font-bold text-navy-900">Order:</span>
+                            <span className="text-sm font-bold text-gray-900">Order:</span>
                             <input
                                 type="number"
                                 value={formData.display_order}
                                 onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-                                className="w-20 px-2 py-1 bg-gray-50 border border-gray-200 rounded-lg text-sm"
+                                className="w-20 px-2 py-1 bg-white text-gray-900 border border-gray-200 rounded-lg text-sm"
                             />
                         </div>
                     </div>

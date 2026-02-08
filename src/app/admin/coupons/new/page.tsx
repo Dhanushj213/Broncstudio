@@ -49,14 +49,14 @@ export default function NewCouponPage() {
                 <ArrowLeft size={18} /> Back to Coupons
             </Link>
 
-            <h1 className="text-2xl font-bold text-navy-900 mb-6">Create Coupon</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Coupon</h1>
 
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
                 <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Coupon Code *</label>
                     <input
                         type="text"
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg uppercase"
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg uppercase bg-white text-gray-900"
                         placeholder="SUMMER20"
                         value={formData.code}
                         onChange={(e) => setFormData({ ...formData, code: e.target.value })}
@@ -68,7 +68,7 @@ export default function NewCouponPage() {
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-1">Type</label>
                         <select
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-900"
                             value={formData.discount_type}
                             onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
                         >
@@ -80,7 +80,7 @@ export default function NewCouponPage() {
                         <label className="block text-sm font-bold text-gray-700 mb-1">Value *</label>
                         <input
                             type="number"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-900"
                             placeholder="20"
                             value={formData.discount_value}
                             onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
@@ -93,7 +93,7 @@ export default function NewCouponPage() {
                     <label className="block text-sm font-bold text-gray-700 mb-1">Usage Limit (Optional)</label>
                     <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-200 rounded-lg"
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-900"
                         placeholder="e.g. 100"
                         value={formData.usage_limit}
                         onChange={(e) => setFormData({ ...formData, usage_limit: e.target.value })}

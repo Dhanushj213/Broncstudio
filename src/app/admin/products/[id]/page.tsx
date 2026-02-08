@@ -265,7 +265,7 @@ export default function EditProductPage() {
                     <Link href="/admin/products" className="text-gray-500 hover:text-navy-900 transition-colors flex items-center gap-1 mb-4">
                         <ArrowLeft size={18} /> Back to Products
                     </Link>
-                    <h1 className="text-2xl font-bold text-navy-900">Edit Product</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
                 </div>
                 <button
                     onClick={handleDelete}
@@ -287,7 +287,7 @@ export default function EditProductPage() {
                                 onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
                                 className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
                             />
-                            <span className="text-sm font-bold text-navy-900">Featured Product</span>
+                            <span className="text-sm font-bold text-gray-900">Featured Product</span>
                         </label>
                     </div>
 
@@ -295,7 +295,7 @@ export default function EditProductPage() {
                         <label className="block text-sm font-bold text-gray-700 mb-1">Product Name *</label>
                         <input
                             type="text"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                             placeholder="e.g. Vintage Leather Jacket"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -307,7 +307,7 @@ export default function EditProductPage() {
                         <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
                         <textarea
                             rows={4}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                             placeholder="Product description..."
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -342,7 +342,7 @@ export default function EditProductPage() {
                                     />
                                     <input
                                         type="text"
-                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm"
+                                        className="flex-1 px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg text-sm"
                                         placeholder="Color Name (e.g. Navy Blue)"
                                         value={color.name}
                                         onChange={(e) => handleColorChange(idx, 'name', e.target.value)}
@@ -365,7 +365,7 @@ export default function EditProductPage() {
                         <label className="block text-sm font-bold text-gray-700 mb-1">Sizes (Comma separated)</label>
                         <input
                             type="text"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                             placeholder="e.g. S, M, L, XL or 2-3Y, 3-4Y"
                             value={formData.sizes}
                             onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
@@ -381,7 +381,7 @@ export default function EditProductPage() {
                         <label className="block text-sm font-bold text-gray-700 mb-1">Highlights (One per line)</label>
                         <textarea
                             rows={4}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors font-mono text-sm"
+                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors font-mono text-sm"
                             placeholder="100% Cotton&#10;Breathable&#10;Machine Wash"
                             value={formData.highlights}
                             onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
@@ -403,7 +403,7 @@ export default function EditProductPage() {
                         <label className="block text-sm font-bold text-gray-700 mb-1">Shipping & Returns</label>
                         <textarea
                             rows={3}
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                             placeholder="Shipping policy details..."
                             value={formData.shipping_returns}
                             onChange={(e) => setFormData({ ...formData, shipping_returns: e.target.value })}
@@ -420,7 +420,7 @@ export default function EditProductPage() {
                             <input
                                 type="number"
                                 min="0" step="0.01"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 placeholder="0.00"
                                 value={formData.price}
                                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -432,7 +432,7 @@ export default function EditProductPage() {
                             <input
                                 type="number"
                                 min="0" step="0.01"
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 placeholder="0.00"
                                 value={formData.compare_at_price}
                                 onChange={(e) => setFormData({ ...formData, compare_at_price: e.target.value })}
@@ -442,7 +442,7 @@ export default function EditProductPage() {
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Department (Parent)</label>
                             <select
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 value={selectedParentId}
                                 onChange={(e) => {
                                     setSelectedParentId(e.target.value);
@@ -459,7 +459,7 @@ export default function EditProductPage() {
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Subcategory *</label>
                             <select
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 value={formData.category_id}
                                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                                 disabled={!selectedParentId}
@@ -497,7 +497,7 @@ export default function EditProductPage() {
                                     onChange={(e) => setFormData({ ...formData, is_pet: e.target.checked })}
                                     className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
                                 />
-                                <span className="text-sm font-bold text-navy-900">It's a Pet Product 🐾</span>
+                                <span className="text-sm font-bold text-gray-900">It's a Pet Product 🐾</span>
                             </label>
                         </div>
 
@@ -519,7 +519,7 @@ export default function EditProductPage() {
                                                             : current.filter(x => x !== g);
                                                         setFormData({ ...formData, gender_visibility: updated });
                                                     }}
-                                                    className="rounded border-gray-300 text-navy-900"
+                                                    className="rounded border-gray-300 text-gray-900"
                                                 />
                                                 <span className="capitalize">{g}</span>
                                             </label>
@@ -621,7 +621,7 @@ export default function EditProductPage() {
                             <div className="flex gap-2">
                                 <input
                                     type="url"
-                                    className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    className="flex-1 px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                     placeholder="https://..."
                                     value={imageInput}
                                     onChange={(e) => setImageInput(e.target.value)}
