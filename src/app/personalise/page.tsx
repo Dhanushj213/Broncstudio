@@ -134,6 +134,12 @@ export default function PersonaliseListingPage() {
             result = result.filter(p => {
                 const pGenders = p.metadata.personalization?.gender_supported || [];
                 const target = selectedSubCategory.toLowerCase();
+
+                // Special case: Kids specific (exclude unisex unless explicitly tagged kids)
+                if (target === 'kids') {
+                    return pGenders.includes('kids');
+                }
+
                 return pGenders.includes(target) || pGenders.includes('unisex');
             });
         }
@@ -183,8 +189,8 @@ export default function PersonaliseListingPage() {
                                             setSelectedSubCategory(''); // Reset sub on main change
                                         }}
                                         className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedCategory === cat
-                                                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
-                                                : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+                                            ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
+                                            : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
                                             }`}
                                     >
                                         {cat}
@@ -212,8 +218,8 @@ export default function PersonaliseListingPage() {
                                             key={sub}
                                             onClick={() => setSelectedSubCategory(sub)}
                                             className={`w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${selectedSubCategory === sub
-                                                    ? 'bg-neutral-100 text-neutral-900 font-bold'
-                                                    : 'text-neutral-600 hover:text-neutral-900'
+                                                ? 'bg-neutral-100 text-neutral-900 font-bold'
+                                                : 'text-neutral-600 hover:text-neutral-900'
                                                 }`}
                                         >
                                             {sub}
