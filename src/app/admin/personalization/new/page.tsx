@@ -257,7 +257,8 @@ export default function AddPersonalizationProductPage() {
                                                 ...formData,
                                                 category_group: newGroup,
                                                 subcategory_group: firstSub,
-                                                product_type: firstType
+                                                product_type: firstType,
+                                                category_id: ''
                                             });
                                         }}
                                     >
