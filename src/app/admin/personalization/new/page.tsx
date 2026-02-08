@@ -6,12 +6,7 @@ import { ArrowLeft, Save, Loader2, ChevronDown, ChevronUp, Check, AlertTriangle,
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { PERSONALIZATION_TAXONOMY, SUPPORTED_GENDERS, Gender, PrintTypeConfig, PlacementConfig } from '@/lib/personalization';
-
-const PREDEFINED_COLORS = ['White', 'Black', 'Navy', 'Olive', 'Grey', 'Red', 'Blue', 'Yellow', 'Pink', 'Beige', 'Maroon'];
-const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', 'Standard'];
-const PLACEMENTS = ['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve', 'Wrap Around'];
-const PRINT_TYPES = ['DTG Printing', 'Embroidery'];
+import { PERSONALIZATION_TAXONOMY, SUPPORTED_GENDERS, Gender, PrintTypeConfig, PlacementConfig, PREDEFINED_COLORS, PREDEFINED_SIZES, PLACEMENTS, PRINT_TYPES } from '@/lib/personalization';
 
 
 
@@ -45,7 +40,7 @@ export default function AddPersonalizationProductPage() {
         name: '', // Internal Admin Name
 
         // Taxonomy Selections
-        category_group: 'Clothing', // Top Level (Clothing, Accessories...)
+        category_group: 'Apparel', // Top Level (Clothing, Accessories...)
         subcategory_group: 'Men', // Secondary (Men, Women.. for Clothing only)
         product_type: 'Classic Crew T-Shirt', // Specific Base Type
 
@@ -208,7 +203,7 @@ export default function AddPersonalizationProductPage() {
         setLoading(false);
     };
 
-    const isApparel = formData.category_group === 'Clothing';
+    const isApparel = formData.category_group === 'Apparel';
 
     return (
         <div className="max-w-4xl mx-auto pb-32">

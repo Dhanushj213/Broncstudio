@@ -26,9 +26,18 @@ export interface PersonalizationConfig {
     };
 }
 
+
+// Constants
+export const PREDEFINED_COLORS = ['White', 'Black', 'Navy', 'Olive', 'Grey', 'Red', 'Blue', 'Yellow', 'Pink', 'Beige', 'Maroon', 'Purple', 'Orange', 'Green', 'Charcoal', 'Heather Grey'];
+export const PREDEFINED_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'Standard', 'OS'];
+export const PLACEMENTS = ['Front', 'Back', 'Left Pocket', 'Right Pocket', 'Left Sleeve', 'Right Sleeve', 'Wrap Around', 'Inside Label'];
+export const PRINT_TYPES = ['DTG Printing', 'Embroidery', 'DTF Printing', 'Vinyl Printing'];
+
+export const SUPPORTED_GENDERS: Gender[] = ['men', 'women', 'unisex', 'kids'];
+
 // Full Taxonomy from User Request
-export const PERSONALIZATION_TAXONOMY = {
-    'Clothing': {
+export const PERSONALIZATION_TAXONOMY: Record<string, { subcategories?: string[], types: Record<string, string[]> | string[] }> = {
+    'Apparel': {
         subcategories: ['Men', 'Women', 'Kids', 'Unisex'],
         types: {
             'Men': [
@@ -51,21 +60,24 @@ export const PERSONALIZATION_TAXONOMY = {
             'Kids': [
                 // Boys
                 'Classic Crew T-Shirt', 'Hoodie',
-                // Girls (Note: Same names, usually handled by gender_supported filtering or distinct base products if needed. For now assuming shared names.)
+                // Girls
+                'Classic Crew T-Shirt'
             ],
             'Unisex': [
                 // T-Shirts
                 'Oversized Classic T-Shirt', 'Oversized Standard T-Shirt', 'Tie Dye Oversized T-Shirt',
-                'Acid Wash Oversized Tee', 'Terry Oversized Tee', 'Supima T-Shirt', 'Basic T-Shirt PC',
-                'Cotton Stretch T-Shirt', 'Oversized Shirt',
+                'Acid Wash Oversized Tee', 'Terry Oversized Tee', 'Supima T-Shirt', 'Basic T-Shirt',
+                'PC Cotton Stretch T-Shirt',
+                // Shirts
+                'Oversized Shirt',
                 // Outerwear
-                'Hoodie', 'Oversized Hoodie', 'Sweatshirt', 'Oversized Sweatshirt', 'Zip Hoodie', 'Acid Wash Hoodie',
+                'Oversized Hoodie', 'Sweatshirt', 'Oversized Sweatshirt', 'Zip Hoodie', 'Acid Wash Hoodie',
                 // Bottomwear
                 'Sweatpants', 'Joggers', 'Terry Shorts', 'Tie Dye Shorts'
             ]
         }
     },
-    'Accessories': {
+    'Accessories': { // Renamed from Accessories (Headwear) to just Accessories to match Request key loosely or better keeps simple
         types: [
             'Classic Baseball Cap', 'Baseball Ottoman Cap', 'Sports Cap',
             'Classic Snapback Cap', 'Classic Trucker Cap', 'Classic Bucket Hat'
@@ -85,17 +97,23 @@ export const PERSONALIZATION_TAXONOMY = {
         ]
     },
     'Gifts & Stationery': {
-        types: [
-            'Keychain', 'Badge', 'Black Badge', 'Dog Tag', 'Luggage Tag', 'Embroidery Patches',
-            'Bookmark', 'Stickers', 'Postcards', 'Greeting Cards', 'Sketchbook', 'Notebook', 'Notepad', 'Daily Planner'
-        ]
+        subcategories: ['Everyday Gifts', 'Paper Goods'],
+        types: {
+            'Everyday Gifts': [
+                'Keychain', 'Badge', 'Black Badge', 'Dog Tag', 'Luggage Tag', 'Embroidery Patches'
+            ],
+            'Paper Goods': [
+                'Pen', 'Bookmark', 'Stickers', 'Postcards', 'Greeting Cards', 'Sketchbook', 'Notebook', 'Notepad', 'Daily Planner'
+            ]
+        }
     },
     'Home & Decor': {
-        types: [
-            'Poster', 'Framed Poster', 'Canvas', 'Acrylic Poster', 'Metal Poster', 'Tapestry',
-            'Table Runner', 'Placemat', 'Cloth Napkin', 'Acrylic Coaster', 'Coasters',
-            'Fridge Magnet', 'Acrylic Display Stand', 'Christmas Ornaments'
-        ]
+        subcategories: ['Wall Decor', 'Table & Living', 'Decor Accessories'],
+        types: {
+            'Wall Decor': ['Poster', 'Framed Poster', 'Canvas', 'Acrylic Poster', 'Metal Poster', 'Tapestry'],
+            'Table & Living': ['Table Runner', 'Placemat', 'Cloth Napkin', 'Acrylic Coaster', 'Coasters'],
+            'Decor Accessories': ['Fridge Magnet', 'Acrylic Display Stand', 'Christmas Ornaments']
+        }
     },
     'Toys & Activities': {
         types: ['MDF Wooden Puzzle', 'Jigsaw Puzzle']
@@ -108,4 +126,3 @@ export const PERSONALIZATION_TAXONOMY = {
     }
 };
 
-export const SUPPORTED_GENDERS: Gender[] = ['men', 'women', 'unisex', 'kids'];
