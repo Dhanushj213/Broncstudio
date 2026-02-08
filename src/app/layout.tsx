@@ -1,6 +1,20 @@
 import type { Metadata } from "next";
 import { Poppins, Inter, Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header/Header";
+import MobileNav from "@/components/Header/MobileNav";
+import PremiumFooter from "@/components/Footer/PremiumFooter";
+import FooterWrapper from "@/components/Footer/FooterWrapper";
+import { UIProvider } from "@/context/UIContext";
+import AnnouncementBar from "@/components/Layout/AnnouncementBar";
+import SplashScreen from "@/components/Layout/SplashScreen";
+import SearchOverlay from "@/components/Search/SearchOverlay";
+import WishlistDrawer from "@/components/Wishlist/WishlistDrawer";
+import QuickViewModal from "@/components/Product/QuickViewModal";
+import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
+import { ToastProvider } from "@/context/ToastContext";
+import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,8 +44,8 @@ export const metadata: Metadata = {
   title: "Broncstudio",
   description: "Stories, Style & Smiles — All in One Place",
   icons: {
-    icon: '/BroncStudio (2).png',
-    apple: '/BroncStudio (2).png',
+    icon: '/blacklogo.png',
+    apple: '/blacklogo.png',
   },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
@@ -40,20 +54,6 @@ export const metadata: Metadata = {
     title: "BroncStudio",
   },
 };
-
-import Header from "@/components/Header/Header";
-import MobileNav from "@/components/Header/MobileNav";
-import PremiumFooter from "@/components/Footer/PremiumFooter";
-import FooterWrapper from "@/components/Footer/FooterWrapper";
-import { UIProvider } from "@/context/UIContext";
-import AnnouncementBar from "@/components/Layout/AnnouncementBar";
-import SplashScreen from "@/components/Layout/SplashScreen";
-import SearchOverlay from "@/components/Search/SearchOverlay";
-import WishlistDrawer from "@/components/Wishlist/WishlistDrawer";
-import QuickViewModal from "@/components/Product/QuickViewModal";
-import { CartProvider } from "@/context/CartContext";
-import { WishlistProvider } from "@/context/WishlistContext";
-import { ToastProvider } from "@/context/ToastContext";
 
 export default function RootLayout({
   children,
@@ -66,28 +66,30 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} antialiased`}
       >
-        <CartProvider>
-          <WishlistProvider>
-            <ToastProvider>
-              <UIProvider>
-                <SplashScreen />
-                <AnnouncementBar />
-                <Header />
-                <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
-                  {children}
-                </main>
-                <FooterWrapper>
-                  <PremiumFooter />
-                </FooterWrapper>
-                <MobileNav />
-                <SearchOverlay />
-                <WishlistDrawer />
-                <QuickViewModal />
-                {/* Global Overlays will be injected here later */}
-              </UIProvider>
-            </ToastProvider>
-          </WishlistProvider>
-        </CartProvider>
+        <StoreSettingsProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <ToastProvider>
+                <UIProvider>
+                  <SplashScreen />
+                  <AnnouncementBar />
+                  <Header />
+                  <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
+                    {children}
+                  </main>
+                  <FooterWrapper>
+                    <PremiumFooter />
+                  </FooterWrapper>
+                  <MobileNav />
+                  <SearchOverlay />
+                  <WishlistDrawer />
+                  <QuickViewModal />
+                  {/* Global Overlays will be injected here later */}
+                </UIProvider>
+              </ToastProvider>
+            </WishlistProvider>
+          </CartProvider>
+        </StoreSettingsProvider>
       </body>
     </html>
   );

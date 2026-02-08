@@ -1,0 +1,3 @@
+ALTER TABLE store_settings 
+ADD COLUMN IF NOT EXISTS shipping_charge DECIMAL(10,2) DEFAULT 100,
+ADD COLUMN IF NOT EXISTS free_shipping_threshold DECIMAL(10,2) DEFAULT 5000;

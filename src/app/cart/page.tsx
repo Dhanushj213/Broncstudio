@@ -6,12 +6,15 @@ import { Trash2, Minus, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/utils/formatPrice';
+import { useStoreSettings } from '@/context/StoreSettingsContext';
 
 const CartPage = () => {
     const { items, removeFromCart, updateQuantity, cartTotal } = useCart();
+    const { settings } = useStoreSettings();
 
-    const shipping = 0; // Free
-    const tax = Math.round(cartTotal * 0.05); // 5% Tax
+    const shipping = cartTotal >= settings.free_shipping_threshold ? 0 : settings.shipping_charge;
+    const tax = Math.round(cartTotal * (settings.tax_rate / 100)); // Dynamic Tax Rate
     const total = cartTotal + shipping + tax;
 
     if (items.length === 0) {
@@ -111,7 +114,7 @@ const CartPage = () => {
                                     </p>
 
                                     <div className="flex justify-between items-end">
-                                        <span className="text-xl font-bold text-navy-900">₹{item.price}</span>
+                                        <span className="text-xl font-bold text-navy-900">{formatPrice(item.price)}</span>
 
                                         {/* Quantity */}
                                         <div className="flex items-center gap-3 bg-white rounded-xl shadow-sm border border-gray-100 px-1 py-1">
@@ -146,15 +149,17 @@ const CartPage = () => {
                             <div className="space-y-4 mb-6">
                                 <div className="flex justify-between text-sm font-medium text-gray-500">
                                     <span>Subtotal</span>
-                                    <span className="text-navy-900 font-bold">₹{cartTotal}</span>
+                                    <span className="text-navy-900 font-bold">{formatPrice(cartTotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm font-medium text-gray-500">
                                     <span>Shipping</span>
-                                    <span className="text-green-500 font-bold">Free</span>
+                                    <span className={`${shipping === 0 ? 'text-green-500' : 'text-navy-900'} font-bold`}>
+                                        {shipping === 0 ? 'Free' : formatPrice(shipping)}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm font-medium text-gray-500">
                                     <span>Tax</span>
-                                    <span className="text-navy-900 font-bold">₹{tax}</span>
+                                    <span className="text-navy-900 font-bold">{formatPrice(tax)}</span>
                                 </div>
                             </div>
 
@@ -162,7 +167,7 @@ const CartPage = () => {
 
                             <div className="flex justify-between items-end mb-8">
                                 <span className="text-lg font-bold text-navy-900">Total</span>
-                                <span className="text-3xl font-heading font-bold text-navy-900">₹{total}</span>
+                                <span className="text-3xl font-heading font-bold text-navy-900">{formatPrice(total)}</span>
                             </div>
 
                             <Link href="/checkout" className="block w-full">
@@ -183,7 +188,7 @@ const CartPage = () => {
             <div className="fixed bottom-0 inset-x-0 p-4 bg-white/90 backdrop-blur-md border-t border-gray-100 md:hidden z-50">
                 <Link href="/checkout">
                     <button className="w-full py-3.5 bg-navy-900 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2">
-                        Checkout • ₹{total}
+                        Checkout • {formatPrice(total)}
                     </button>
                 </Link>
             </div>

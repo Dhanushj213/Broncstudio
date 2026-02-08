@@ -6,6 +6,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import { X, ShoppingBag, Trash2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { formatPrice } from '@/utils/formatPrice';
 
 export default function WishlistDrawer() {
     const { isWishlistOpen, closeWishlist } = useUI();
@@ -74,7 +75,7 @@ export default function WishlistDrawer() {
 
                                             <div className="mt-auto">
                                                 <div className="flex justify-between items-center mb-3">
-                                                    <span className="text-navy-900 font-bold">₹{item.price}</span>
+                                                    <span className="text-navy-900 font-bold">{formatPrice(item.price)}</span>
                                                 </div>
                                                 <button
                                                     onClick={() => handleMoveToBag(item)}

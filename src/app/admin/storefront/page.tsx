@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Save, Loader2, Play, Image as ImageIcon, ExternalLink, Type } from 'lucide-react';
+import { Save, Loader2, Play, Image as ImageIcon, Plus, Trash2, LayoutTemplate } from 'lucide-react';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 /* 
  * NOTE: This page relies on a 'content_blocks' table in Supabase.
@@ -19,14 +20,29 @@ import { Save, Loader2, Play, Image as ImageIcon, ExternalLink, Type } from 'luc
  * create policy "Admin full access" on content_blocks for all using (auth.role() = 'authenticated');
  */
 
+type HeroContentType = 'video' | 'images';
+
+interface HeroContent {
+    type: HeroContentType;
+    video_url: string;
+    poster_url: string;
+    images: string[];
+    heading: string;
+    subheading: string;
+    button_text: string;
+    button_link: string;
+}
+
 export default function StorefrontPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
     // Hero Section State
-    const [heroContent, setHeroContent] = useState({
-        video_url: 'https://videos.pexels.com/video-files/5668471/5668471-uhd_2560_1440_30fps.mp4',
-        poster_url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80',
+    const [heroContent, setHeroContent] = useState<HeroContent>({
+        type: 'video',
+        video_url: '',
+        poster_url: '',
+        images: ['', '', '', '', ''],
         heading: 'Summer Luxe',
         subheading: 'New Collection',
         button_text: 'Shop Now',
@@ -51,7 +67,13 @@ export default function StorefrontPage() {
             .single();
 
         if (data && data.content) {
-            setHeroContent(prev => ({ ...prev, ...data.content }));
+            // Ensure compatibility with old data that might not have 'type' or 'images'
+            setHeroContent(prev => ({
+                ...prev,
+                ...data.content,
+                type: data.content.type || 'video',
+                images: data.content.images || prev.images
+            }));
         }
         setLoading(false);
     };
@@ -79,6 +101,12 @@ export default function StorefrontPage() {
         setSaving(false);
     };
 
+    const handleImageChange = (index: number, value: string) => {
+        const newImages = [...heroContent.images];
+        newImages[index] = value;
+        setHeroContent({ ...heroContent, images: newImages });
+    };
+
     if (loading) return <div className="p-20 text-center text-gray-500">Loading storefront settings...</div>;
 
     return (
@@ -94,53 +122,104 @@ export default function StorefrontPage() {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                         <h2 className="text-lg font-bold text-navy-900 flex items-center gap-2">
-                            <Play size={20} className="text-coral-500" />
-                            Hero Section (Video/Image)
+                            <LayoutTemplate size={20} className="text-coral-500" />
+                            Hero Section
                         </h2>
                         <span className="text-xs font-bold uppercase tracking-wider bg-green-100 text-green-700 px-2 py-1 rounded">Live</span>
                     </div>
 
                     <div className="p-6 grid grid-cols-1 gap-6">
-                        {/* Media Configuration */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">
-                                    Video URL (MP4)
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Play size={16} className="text-gray-400" />
-                                    </div>
-                                    <input
-                                        type="url"
-                                        value={heroContent.video_url}
-                                        onChange={e => setHeroContent({ ...heroContent, video_url: e.target.value })}
-                                        className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Direct link to .mp4 file. Leave empty for image only.</p>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">
-                                    Poster / Fallback Image URL
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <ImageIcon size={16} className="text-gray-400" />
-                                    </div>
-                                    <input
-                                        type="url"
-                                        value={heroContent.poster_url}
-                                        onChange={e => setHeroContent({ ...heroContent, poster_url: e.target.value })}
-                                        className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Shown while video loads or on mobile.</p>
+                        {/* Type Selection */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-2">Content Type</label>
+                            <div className="flex gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setHeroContent({ ...heroContent, type: 'video' })}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'video' ? 'border-coral-500 bg-coral-50 text-coral-700' : 'border-gray-200 hover:border-gray-300'}`}
+                                >
+                                    <Play size={20} />
+                                    <span className="font-bold">Video Background</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setHeroContent({ ...heroContent, type: 'images' })}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'images' ? 'border-coral-500 bg-coral-50 text-coral-700' : 'border-gray-200 hover:border-gray-300'}`}
+                                >
+                                    <ImageIcon size={20} />
+                                    <span className="font-bold">Rolling Images (5)</span>
+                                </button>
                             </div>
                         </div>
+
+                        {/* Video Configuration */}
+                        {heroContent.type === 'video' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">
+                                        Video URL (MP4)
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Play size={16} className="text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="url"
+                                            value={heroContent.video_url}
+                                            onChange={e => setHeroContent({ ...heroContent, video_url: e.target.value })}
+                                            className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                            placeholder="https://..."
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">Direct link to .mp4 file.</p>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">
+                                        Poster / Fallback Image URL
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <ImageIcon size={16} className="text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="url"
+                                            value={heroContent.poster_url}
+                                            onChange={e => setHeroContent({ ...heroContent, poster_url: e.target.value })}
+                                            className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                            placeholder="https://..."
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">Shown while video loads or on mobile.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Images Configuration */}
+                        {heroContent.type === 'images' && (
+                            <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <label className="block text-sm font-bold text-gray-700">
+                                    Scrolling Images (5 Required)
+                                </label>
+                                {heroContent.images.map((url, index) => (
+                                    <div key={index} className="flex gap-2 items-center">
+                                        <span className="w-6 text-sm font-bold text-gray-400 text-right">{index + 1}.</span>
+                                        <div className="relative flex-1">
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <ImageIcon size={16} className="text-gray-400" />
+                                            </div>
+                                            <input
+                                                type="url"
+                                                value={url}
+                                                onChange={e => handleImageChange(index, e.target.value)}
+                                                className="w-full pl-10 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                                placeholder={`Image URL #${index + 1}`}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
                         <hr className="border-gray-100" />
 
@@ -187,12 +266,20 @@ export default function StorefrontPage() {
 
                     {/* Preview (Mini) */}
                     <div className="bg-gray-900 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden h-48">
-                        {/* We can't actually render the full video component here easily without context, but we can fake it */}
                         <div className="absolute inset-0 opacity-40">
-                            {heroContent.video_url ? (
-                                <video src={heroContent.video_url} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+                            {heroContent.type === 'video' ? (
+                                heroContent.video_url ? (
+                                    <video src={getGoogleDriveDirectLink(heroContent.video_url)} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+                                ) : (
+                                    <img src={getGoogleDriveDirectLink(heroContent.poster_url)} className="w-full h-full object-cover" alt="Preview" />
+                                )
                             ) : (
-                                <img src={heroContent.poster_url} className="w-full h-full object-cover" alt="Preview" />
+                                <div className="w-full h-full flex overflow-hidden">
+                                    {/* Simple preview for images - just show first one */}
+                                    {heroContent.images[0] && (
+                                        <img src={getGoogleDriveDirectLink(heroContent.images[0])} className="w-full h-full object-cover" alt="Preview" />
+                                    )}
+                                </div>
                             )}
                         </div>
                         <div className="relative z-10 text-white">

@@ -11,7 +11,7 @@ export default function manifest(): MetadataRoute.Manifest {
         theme_color: '#ffffff',
         icons: [
             {
-                src: '/BroncStudio (2).png',
+                src: '/blacklogo.png',
                 sizes: 'any',
                 type: 'image/png',
             },

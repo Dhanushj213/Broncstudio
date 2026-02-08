@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Save, Loader2, Store, Mail, CreditCard } from 'lucide-react';
+import { Save, Loader2, Store, Mail, CreditCard, Truck } from 'lucide-react';
 
 interface StoreSettings {
     id: string;
@@ -10,6 +10,8 @@ interface StoreSettings {
     support_email: string;
     currency: string;
     tax_rate: number;
+    shipping_charge: number;
+    free_shipping_threshold: number;
     announcement_text?: string;
     announcement_link?: string;
     announcement_active?: boolean;
@@ -24,6 +26,8 @@ export default function SettingsPage() {
         support_email: '',
         currency: 'INR',
         tax_rate: 18,
+        shipping_charge: 0,
+        free_shipping_threshold: 0,
         announcement_text: '',
         announcement_link: '',
         announcement_active: true
@@ -52,13 +56,12 @@ export default function SettingsPage() {
                 support_email: data.support_email,
                 currency: data.currency,
                 tax_rate: data.tax_rate,
+                shipping_charge: data.shipping_charge ?? 0,
+                free_shipping_threshold: data.free_shipping_threshold ?? 0,
                 announcement_text: data.announcement_text || '',
                 announcement_link: data.announcement_link || '',
                 announcement_active: data.announcement_active ?? true
             });
-        } else if (!data) {
-            // Fallback if seed didn't run, though SQL should have handled it
-            // We can insert a default here potentially, but let's assume raw state
         }
         setLoading(false);
     };
@@ -72,6 +75,8 @@ export default function SettingsPage() {
             support_email: formData.support_email,
             currency: formData.currency,
             tax_rate: formData.tax_rate,
+            shipping_charge: formData.shipping_charge,
+            free_shipping_threshold: formData.free_shipping_threshold,
             announcement_text: formData.announcement_text,
             announcement_link: formData.announcement_link,
             announcement_active: formData.announcement_active,
@@ -183,11 +188,49 @@ export default function SettingsPage() {
                     </div>
                 </div>
 
+                {/* Shipping Configuration */}
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <Truck size={20} className="text-gray-400" />
+                        Shipping & Fulfillment
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Standard Shipping Charge</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                                <input
+                                    type="number"
+                                    value={formData.shipping_charge}
+                                    onChange={(e) => setFormData({ ...formData, shipping_charge: parseFloat(e.target.value) })}
+                                    className="w-full pl-8 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    placeholder="0"
+                                />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Charged if cart value is below threshold.</p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Free Shipping Threshold</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                                <input
+                                    type="number"
+                                    value={formData.free_shipping_threshold}
+                                    onChange={(e) => setFormData({ ...formData, free_shipping_threshold: parseFloat(e.target.value) })}
+                                    className="w-full pl-8 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    placeholder="0"
+                                />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Cart total required for free shipping.</p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Regional & Financial */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                         <CreditCard size={20} className="text-gray-400" />
-                        finance & Regional
+                        Financial & Regional
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -204,13 +247,16 @@ export default function SettingsPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Tax Rate (%)</label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                value={formData.tax_rate}
-                                onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) })}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            />
+                            <div className="relative">
+                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">%</span>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    value={formData.tax_rate}
+                                    onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

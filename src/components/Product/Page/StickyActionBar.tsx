@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ShoppingBag, Zap } from 'lucide-react';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface StickyActionBarProps {
     price: number;
@@ -42,8 +43,8 @@ export default function StickyActionBar({ price, originalPrice, productName, pro
                 <div className="flex flex-col">
                     <span className="text-xs text-gray-500 font-bold uppercase">Total</span>
                     <div className="flex items-center gap-1">
-                        <span className="text-lg font-bold text-navy-900">₹{price}</span>
-                        {originalPrice && <span className="text-xs text-gray-400 line-through">₹{originalPrice}</span>}
+                        <span className="text-lg font-bold text-navy-900">{formatPrice(price)}</span>
+                        {originalPrice && <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>}
                     </div>
                 </div>
 
@@ -74,8 +75,8 @@ export default function StickyActionBar({ price, originalPrice, productName, pro
                     <div>
                         <h3 className="font-bold text-navy-900 text-sm">{productName}</h3>
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-navy-900">₹{price}</span>
-                            {originalPrice && <span className="text-xs text-gray-400 line-through">₹{originalPrice}</span>}
+                            <span className="text-sm font-bold text-navy-900">{formatPrice(price)}</span>
+                            {originalPrice && <span className="text-xs text-gray-400 line-through">{formatPrice(originalPrice)}</span>}
                         </div>
                     </div>
                 </div>
@@ -99,3 +100,4 @@ export default function StickyActionBar({ price, originalPrice, productName, pro
         </>
     );
 }
+

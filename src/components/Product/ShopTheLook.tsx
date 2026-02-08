@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { getRecommendations } from '@/lib/recommendations';
+import { formatPrice } from '@/utils/formatPrice';
 
 interface ShopTheLookProps {
     product: any;
@@ -106,7 +107,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                     {/* Price Summary */}
                     <div className="flex items-center gap-2 mb-4">
                         <div className="text-lg font-bold text-navy-900">
-                            Total price: <span className="text-red-600">₹{bundleTotal}</span>
+                            Total price: <span className="text-red-600">{formatPrice(bundleTotal)}</span>
                         </div>
                     </div>
 
@@ -128,7 +129,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                             <div className="leading-tight">
                                 <span className="font-medium text-navy-900">This item: {product.name}</span>
                                 <span className="text-gray-400 mx-1">-</span>
-                                <span className="font-bold text-red-600">₹{product.price}</span>
+                                <span className="font-bold text-red-600">{formatPrice(product.price)}</span>
                             </div>
                         </div>
                         {/* Recommendations */}
@@ -140,7 +141,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                 <div className="leading-tight">
                                     <span className="font-medium text-navy-900">{item.name}</span>
                                     <span className="text-gray-400 mx-1">-</span>
-                                    <span className="font-bold text-red-600">₹{item.price}</span>
+                                    <span className="font-bold text-red-600">{formatPrice(item.price)}</span>
                                 </div>
                             </div>
                         ))}
@@ -168,17 +169,17 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                         <div className="text-sm text-gray-500 mb-6 space-y-1">
                             <div className="flex justify-between w-full font-bold">
                                 <span>{product.name}</span>
-                                <span>₹{product.price}</span>
+                                <span>{formatPrice(product.price)}</span>
                             </div>
                             {items.map(item => (
                                 <div key={item.id} className="flex justify-between w-full">
                                     <span>{item.name}</span>
-                                    <span>₹{item.price}</span>
+                                    <span>{formatPrice(item.price)}</span>
                                 </div>
                             ))}
                             <div className="border-t border-gray-100 pt-2 flex justify-between w-full font-bold text-navy-900 mt-2">
                                 <span>Total</span>
-                                <span>₹{bundleTotal}</span>
+                                <span>{formatPrice(bundleTotal)}</span>
                             </div>
                         </div>
                         <button

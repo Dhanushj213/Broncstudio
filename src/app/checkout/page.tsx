@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, CreditCard, Wallet, Banknote, ShieldCheck, Mail, MapPin, Phone, User, CheckCircle2 } from 'lucide-react';
+import { formatPrice } from '@/utils/formatPrice';
 import Link from 'next/link';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import GlassCard from '@/components/UI/GlassCard';
@@ -9,11 +10,14 @@ import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { createOrder } from '@/actions/orderActions'; // Server Action
 
+import { useStoreSettings } from '@/context/StoreSettingsContext';
+
 export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState('upi');
     const [orderStatus, setOrderStatus] = useState<'idle' | 'processing' | 'success' | 'rejected'>('idle');
     const { userName } = useUI();
     const { items, clearCart, cartTotal } = useCart();
+    const { settings } = useStoreSettings();
 
     // Form State
     const [formData, setFormData] = useState({
@@ -31,8 +35,8 @@ export default function CheckoutPage() {
     };
 
     const subtotal = cartTotal;
-    const shipping = 0;
-    const tax = Math.round(subtotal * 0.05);
+    const shipping = subtotal >= settings.free_shipping_threshold ? 0 : settings.shipping_charge;
+    const tax = Math.round(subtotal * (settings.tax_rate / 100));
     const total = subtotal + shipping + tax;
 
     const handlePlaceOrder = async () => {
@@ -241,7 +245,7 @@ export default function CheckoutPage() {
                         <GlassCard className="p-6 bg-white/80 backdrop-blur-xl">
                             <h3 className="text-lg font-heading font-bold text-navy-900 mb-4">You're paying,</h3>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-heading font-bold text-navy-900">₹{total}</span>
+                                <span className="text-4xl font-heading font-bold text-navy-900">{formatPrice(total)}</span>
                                 <span className="text-sm text-gray-500 font-bold">Total</span>
                             </div>
 
@@ -256,7 +260,7 @@ export default function CheckoutPage() {
                                             <p className="text-sm font-bold text-navy-900 truncate">{item.name}</p>
                                             <p className="text-xs text-gray-500">Qty: {item.qty} {item.size && `• ${item.size}`}</p>
                                         </div>
-                                        <p className="text-sm font-bold text-navy-900">₹{item.price * item.qty}</p>
+                                        <p className="text-sm font-bold text-navy-900">{formatPrice(item.price * item.qty)}</p>
                                     </div>
                                 ))}
                             </div>
@@ -264,15 +268,17 @@ export default function CheckoutPage() {
                             <div className="space-y-3 mb-6 bg-gray-50/50 p-4 rounded-xl">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Subtotal</span>
-                                    <span className="font-bold text-navy-900">₹{subtotal}</span>
+                                    <span className="font-bold text-navy-900">{formatPrice(subtotal)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Shipping</span>
-                                    <span className="font-bold text-green-500">Free</span>
+                                    <span className={`${shipping === 0 ? 'text-green-500' : 'text-navy-900'} font-bold`}>
+                                        {shipping === 0 ? 'Free' : formatPrice(shipping)}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-gray-500">Tax</span>
-                                    <span className="font-bold text-navy-900">₹{tax}</span>
+                                    <span className="font-bold text-navy-900">{formatPrice(tax)}</span>
                                 </div>
                             </div>
 
@@ -293,3 +299,4 @@ export default function CheckoutPage() {
         </main>
     );
 }
+

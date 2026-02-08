@@ -6,7 +6,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   swcMinify: true,
-  disable: false, // Enable PWA in dev mode for testing, change to process.env.NODE_ENV === "development" for prod only if needed
+  disable: process.env.NODE_ENV === "development", // Disable PWA in dev mode to prevent caching issues
   workboxOptions: {
     disableDevLogs: true,
   },
@@ -23,6 +23,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "plus.unsplash.com" },
       { protocol: "https", hostname: "share.google" },
       { protocol: "https", hostname: "placehold.co" },
+      { protocol: "https", hostname: "via.placeholder.com" },
+      { protocol: "https", hostname: "drive.google.com" },
+      { protocol: "https", hostname: "doc.google.com" },
     ],
     dangerouslyAllowSVG: true,
   },
