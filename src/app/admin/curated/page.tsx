@@ -78,7 +78,7 @@ export default function AdminCuratedPage() {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-heading font-bold text-navy-900">Curated Collections</h1>
+                    <h1 className="text-3xl font-heading font-bold text-gray-900">Curated Collections</h1>
                     <p className="text-gray-500">Manage your special product showcases.</p>
                 </div>
                 <Link href="/admin/curated/new">
@@ -124,8 +124,8 @@ export default function AdminCuratedPage() {
                                 )}
                                 <div className="absolute top-4 right-4">
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md ${section.is_active
-                                            ? 'bg-green-500/90 text-white'
-                                            : 'bg-gray-500/90 text-white'
+                                        ? 'bg-green-500/90 text-white'
+                                        : 'bg-gray-500/90 text-white'
                                         }`}>
                                         {section.is_active ? 'Active' : 'Draft'}
                                     </span>
@@ -134,7 +134,7 @@ export default function AdminCuratedPage() {
 
                             {/* Content */}
                             <div className="p-6">
-                                <h3 className="text-xl font-bold text-navy-900 mb-1">{section.title}</h3>
+                                <h3 className="text-xl font-bold text-gray-900 mb-1">{section.title}</h3>
                                 <p className="text-gray-500 text-sm line-clamp-2 mb-6 min-h-[40px]">
                                     {section.description || "No description provided."}
                                 </p>

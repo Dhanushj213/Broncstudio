@@ -166,7 +166,7 @@ export default function AdminProductsPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Products</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Products</h1>
                     <p className="text-gray-500 text-sm">Manage your product catalog</p>
                 </div>
                 <Link href="/admin/products/new">
@@ -186,7 +186,7 @@ export default function AdminProductsPage() {
                         placeholder="Search products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                     />
                 </div>
                 <button className="px-4 py-2 bg-white border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50">
@@ -242,7 +242,7 @@ export default function AdminProductsPage() {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="font-bold text-navy-900">{product.name}</div>
+                                                <div className="font-bold text-gray-900">{product.name}</div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
@@ -250,7 +250,7 @@ export default function AdminProductsPage() {
                                                 Category
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-navy-900">
+                                        <td className="px-6 py-4 font-bold text-gray-900">
                                             ₹{product.price}
                                         </td>
                                         <td className="px-6 py-4 text-center">
@@ -306,6 +306,6 @@ export default function AdminProductsPage() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

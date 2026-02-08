@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-navy-900">Analytics Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
 
             {loading ? (
                 <div className="p-12 text-center text-gray-400">Loading analytics...</div>

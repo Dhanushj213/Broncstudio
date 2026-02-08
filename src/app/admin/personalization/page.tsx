@@ -80,7 +80,7 @@ export default function AdminPersonalizationPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <Palette className="text-coral-500" />
                         Personalization Products
                     </h1>
@@ -108,7 +108,7 @@ export default function AdminPersonalizationPage() {
                         placeholder="Search base products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                     />
                 </div>
                 <button className="px-4 py-2 bg-white border border-gray-200 text-gray-600 font-bold rounded-lg hover:bg-gray-50">
@@ -163,7 +163,7 @@ export default function AdminPersonalizationPage() {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="font-bold text-navy-900">{product.name}</div>
+                                                <div className="font-bold text-gray-900">{product.name}</div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
@@ -171,7 +171,7 @@ export default function AdminPersonalizationPage() {
                                                 {product.metadata?.personalization?.print_type || 'Custom'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-navy-900">
+                                        <td className="px-6 py-4 font-bold text-gray-900">
                                             ₹{product.price}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">

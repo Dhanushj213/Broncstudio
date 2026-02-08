@@ -84,7 +84,7 @@ export default function CustomersPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Customers</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
                     <p className="text-gray-500 text-sm">View your customer base</p>
                 </div>
             </div>
@@ -98,7 +98,7 @@ export default function CustomersPage() {
                         placeholder="Search customers..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                     />
                 </div>
             </div>
@@ -136,7 +136,7 @@ export default function CustomersPage() {
                                                     {customer.name[0]}
                                                 </div>
                                                 <div>
-                                                    <Link href={`/admin/customers/${customer.id}`} className="font-bold text-navy-900 hover:text-blue-600 hover:underline">
+                                                    <Link href={`/admin/customers/${customer.id}`} className="font-bold text-gray-900 hover:text-blue-600 hover:underline">
                                                         {customer.name}
                                                     </Link>
                                                     <div className="text-gray-400 text-xs flex items-center gap-1">
@@ -151,7 +151,7 @@ export default function CustomersPage() {
                                                 {/* Email would go here if we had it */}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-navy-900">
+                                        <td className="px-6 py-4 font-bold text-gray-900">
                                             {customer.totalOrders}
                                         </td>
                                         <td className="px-6 py-4 font-bold text-green-700">

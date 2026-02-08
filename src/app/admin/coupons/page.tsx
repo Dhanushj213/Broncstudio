@@ -58,7 +58,7 @@ export default function AdminCouponsPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Coupons</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Coupons</h1>
                     <p className="text-gray-500 text-sm">Manage discounts and promotions</p>
                 </div>
                 <Link href="/admin/coupons/new">
@@ -91,7 +91,7 @@ export default function AdminCouponsPage() {
                         <tbody className="divide-y divide-gray-100">
                             {coupons.map((coupon) => (
                                 <tr key={coupon.id} className="hover:bg-gray-50/50">
-                                    <td className="px-6 py-4 font-mono font-bold text-navy-900">{coupon.code}</td>
+                                    <td className="px-6 py-4 font-mono font-bold text-gray-900">{coupon.code}</td>
                                     <td className="px-6 py-4">
                                         {coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : `₹${coupon.discount_value}`}
                                     </td>

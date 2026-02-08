@@ -67,7 +67,7 @@ export default function AdminOrdersPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Orders</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
                     <p className="text-gray-500 text-sm">Manage and track customer orders</p>
                 </div>
                 {/* Export / Actions could go here */}
@@ -82,7 +82,7 @@ export default function AdminOrdersPage() {
                         placeholder="Search by Order ID, Customer..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                        className="w-full pl-10 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                     />
                 </div>
                 <div className="flex gap-2 relative overflow-x-auto pb-2 md:pb-0">
@@ -91,8 +91,8 @@ export default function AdminOrdersPage() {
                             key={status}
                             onClick={() => setStatusFilter(status)}
                             className={`px-4 py-2 rounded-lg text-sm font-bold capitalize whitespace-nowrap transition-colors ${statusFilter === status
-                                    ? 'bg-navy-900 text-white'
-                                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                                ? 'bg-navy-900 text-white'
+                                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
                             {status}
@@ -131,7 +131,7 @@ export default function AdminOrdersPage() {
                             <tbody className="divide-y divide-gray-100">
                                 {filteredOrders.map((order) => (
                                     <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                                        <td className="px-6 py-4 font-mono font-medium text-navy-900">
+                                        <td className="px-6 py-4 font-mono font-medium text-gray-900">
                                             #{order.id.slice(0, 8)}...
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
@@ -141,13 +141,13 @@ export default function AdminOrdersPage() {
                                             {order.shipping_address?.firstName} {order.shipping_address?.lastName}
                                             <div className="text-xs text-gray-400 font-normal">{order.shipping_address?.city}</div>
                                         </td>
-                                        <td className="px-6 py-4 font-bold text-navy-900">
+                                        <td className="px-6 py-4 font-bold text-gray-900">
                                             ₹{order.total_amount}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-50 border-green-100 text-green-700' :
-                                                    order.payment_status === 'failed' ? 'bg-red-50 border-red-100 text-red-700' :
-                                                        'bg-gray-50 border-gray-100 text-gray-600'
+                                                order.payment_status === 'failed' ? 'bg-red-50 border-red-100 text-red-700' :
+                                                    'bg-gray-50 border-gray-100 text-gray-600'
                                                 }`}>
                                                 {order.payment_status}
                                             </span>

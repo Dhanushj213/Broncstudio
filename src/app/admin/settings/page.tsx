@@ -110,7 +110,7 @@ export default function SettingsPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-20">
             <div>
-                <h1 className="text-2xl font-bold text-navy-900">Store Settings</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Store Settings</h1>
                 <p className="text-gray-500 text-sm">Manage your general store configuration</p>
             </div>
 
@@ -128,7 +128,7 @@ export default function SettingsPage() {
                                 type="text"
                                 value={formData.store_name}
                                 onChange={(e) => setFormData({ ...formData, store_name: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                             />
                         </div>
                         <div>
@@ -139,7 +139,7 @@ export default function SettingsPage() {
                                     type="email"
                                     value={formData.support_email}
                                     onChange={(e) => setFormData({ ...formData, support_email: e.target.value })}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    className="w-full pl-10 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 />
                             </div>
                         </div>
@@ -171,7 +171,7 @@ export default function SettingsPage() {
                                 type="text"
                                 value={formData.announcement_text}
                                 onChange={(e) => setFormData({ ...formData, announcement_text: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 placeholder="e.g. Free Shipping on all orders above ₹999 • New Collection Dropped"
                             />
                         </div>
@@ -181,7 +181,7 @@ export default function SettingsPage() {
                                 type="text"
                                 value={formData.announcement_link}
                                 onChange={(e) => setFormData({ ...formData, announcement_link: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 placeholder="e.g. /shop/new-arrivals"
                             />
                         </div>
@@ -203,7 +203,7 @@ export default function SettingsPage() {
                                     type="number"
                                     value={formData.shipping_charge}
                                     onChange={(e) => setFormData({ ...formData, shipping_charge: parseFloat(e.target.value) })}
-                                    className="w-full pl-8 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    className="w-full pl-8 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                     placeholder="0"
                                 />
                             </div>
@@ -217,7 +217,7 @@ export default function SettingsPage() {
                                     type="number"
                                     value={formData.free_shipping_threshold}
                                     onChange={(e) => setFormData({ ...formData, free_shipping_threshold: parseFloat(e.target.value) })}
-                                    className="w-full pl-8 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    className="w-full pl-8 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                     placeholder="0"
                                 />
                             </div>
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                             <select
                                 value={formData.currency}
                                 onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors bg-white text-gray-900"
                             >
                                 <option value="INR">INR (₹)</option>
                                 <option value="USD">USD ($)</option>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
                                     step="0.1"
                                     value={formData.tax_rate}
                                     onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) })}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                    className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
                                 />
                             </div>
                         </div>

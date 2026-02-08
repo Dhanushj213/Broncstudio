@@ -64,7 +64,7 @@ export default function ShippingPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-navy-900">Shipping & Fulfillment</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Shipping & Fulfillment</h1>
                     <p className="text-gray-500 text-sm">Manage order delivery status</p>
                 </div>
             </div>
@@ -73,19 +73,19 @@ export default function ShippingPage() {
             <div className="flex gap-4 border-b border-gray-200">
                 <button
                     onClick={() => setFilter('all')}
-                    className={`pb-3 px-1 text-sm font-bold transition-colors border-b-2 ${filter === 'all' ? 'border-navy-900 text-navy-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`pb-3 px-1 text-sm font-bold transition-colors border-b-2 ${filter === 'all' ? 'border-navy-900 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     All Shipments
                 </button>
                 <button
                     onClick={() => setFilter('ready')}
-                    className={`pb-3 px-1 text-sm font-bold transition-colors border-b-2 ${filter === 'ready' ? 'border-navy-900 text-navy-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`pb-3 px-1 text-sm font-bold transition-colors border-b-2 ${filter === 'ready' ? 'border-navy-900 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Ready to Ship
                 </button>
                 <button
                     onClick={() => setFilter('shipped')}
-                    className={`pb-3 px-1 text-sm font-bold transition-colors border-b-2 ${filter === 'shipped' ? 'border-navy-900 text-navy-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`pb-3 px-1 text-sm font-bold transition-colors border-b-2 ${filter === 'shipped' ? 'border-navy-900 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
                     Shipped / Delivered
                 </button>
@@ -103,17 +103,17 @@ export default function ShippingPage() {
                         <div key={order.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div className="flex items-start gap-4">
                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl shrink-0 ${order.status === 'processing' ? 'bg-amber-50 text-amber-600' :
-                                        order.status === 'shipped' ? 'bg-blue-50 text-blue-600' :
-                                            'bg-green-50 text-green-600'
+                                    order.status === 'shipped' ? 'bg-blue-50 text-blue-600' :
+                                        'bg-green-50 text-green-600'
                                     }`}>
                                     <Package size={20} />
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2 mb-1">
-                                        <h3 className="font-bold text-navy-900">Order #{order.id.slice(0, 8)}</h3>
+                                        <h3 className="font-bold text-gray-900">Order #{order.id.slice(0, 8)}</h3>
                                         <span className={`px-2 py-0.5 text-xs font-bold rounded capitalize ${order.status === 'processing' ? 'bg-amber-100 text-amber-800' :
-                                                order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-green-100 text-green-800'
+                                            order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                                                'bg-green-100 text-green-800'
                                             }`}>
                                             {order.status === 'processing' ? 'Ready to Ship' : order.status}
                                         </span>

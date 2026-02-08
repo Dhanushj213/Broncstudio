@@ -61,7 +61,7 @@ export default function PaymentsPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-navy-900">Payments & Transactions</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Payments & Transactions</h1>
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -93,7 +93,7 @@ export default function PaymentsPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                     <h2 className="font-bold text-gray-900">Recent Transactions</h2>
-                    <button className="text-sm font-bold text-navy-900 flex items-center gap-1 hover:underline">
+                    <button className="text-sm font-bold text-gray-900 flex items-center gap-1 hover:underline">
                         <Download size={14} /> Export CSV
                     </button>
                 </div>
@@ -124,7 +124,7 @@ export default function PaymentsPage() {
                                     <td className="px-6 py-4 text-gray-600 capitalize">
                                         {tx.payment_method}
                                     </td>
-                                    <td className="px-6 py-4 font-bold text-navy-900">
+                                    <td className="px-6 py-4 font-bold text-gray-900">
                                         {formatCurrency(tx.total_amount)}
                                     </td>
                                     <td className="px-6 py-4">
