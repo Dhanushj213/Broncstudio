@@ -184,13 +184,13 @@ export default function AdminPersonalizationPage() {
                                             <div className="flex items-center justify-end gap-2">
                                                 {/* Re-use standard edit page for now since it supports everything */}
                                                 <Link href={`/admin/personalization/${product.id}`}>
-                                                    <button className="p-2 hover:bg-blue-50 text-gray-400 hover:text-blue-600 rounded-lg transition-colors">
+                                                    <button className="p-2 hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-lg transition-colors">
                                                         <Edit size={18} />
                                                     </button>
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(product.id)}
-                                                    className="p-2 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                                    className="p-2 hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-lg transition-colors"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>

@@ -142,7 +142,7 @@ export default function AdminCuratedPage() {
                                 <div className="flex items-center justify-between border-t border-gray-50 pt-4 mt-auto">
                                     <div className="flex gap-2">
                                         <Link href={`/admin/curated/${section.id}`}>
-                                            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-navy-50 text-navy-700 hover:bg-navy-100 font-bold text-xs transition-colors">
+                                            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200 font-bold text-xs transition-colors">
                                                 <Edit size={16} />
                                                 Manage
                                             </button>

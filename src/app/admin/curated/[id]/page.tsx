@@ -193,7 +193,7 @@ export default function EditCollectionPage() {
                 {/* LEFT: Details Form */}
                 <div className="lg:col-span-1 space-y-6">
                     <form onSubmit={handleSaveDetails} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4 sticky top-6">
-                        <h3 className="font-bold text-lg text-navy-900 border-b border-gray-100 pb-2">Details</h3>
+                        <h3 className="font-bold text-lg text-gray-900 border-b border-gray-100 pb-2">Details</h3>
 
                         {/* Title */}
                         <div>
@@ -279,7 +279,7 @@ export default function EditCollectionPage() {
                     {/* Assigned Products List */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
                         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                            <h3 className="font-bold text-lg text-navy-900">
+                            <h3 className="font-bold text-lg text-gray-900">
                                 Assigned Products
                                 <span className="ml-2 bg-coral-100 text-coral-600 px-2 py-0.5 rounded-full text-xs align-middle">
                                     {assignedProducts.length}
@@ -303,7 +303,7 @@ export default function EditCollectionPage() {
                                                 )}
                                             </div>
                                             <div>
-                                                <div className="font-bold text-navy-900 text-sm">{product.name}</div>
+                                                <div className="font-bold text-gray-900 text-sm">{product.name}</div>
                                                 <div className="text-gray-500 text-xs">₹{product.price}</div>
                                             </div>
                                         </div>
@@ -323,7 +323,7 @@ export default function EditCollectionPage() {
                     {/* Add Products */}
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
                         <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                            <h3 className="font-bold text-navy-900 mb-3">Add Products</h3>
+                            <h3 className="font-bold text-gray-900 mb-3">Add Products</h3>
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
@@ -350,7 +350,7 @@ export default function EditCollectionPage() {
                                                     <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
                                                 )}
                                             </div>
-                                            <div className="font-medium text-navy-900 text-sm">{product.name}</div>
+                                            <div className="font-medium text-gray-900 text-sm">{product.name}</div>
                                         </div>
                                         <button
                                             className="p-1.5 bg-blue-100 text-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
