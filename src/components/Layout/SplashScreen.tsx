@@ -50,15 +50,7 @@ export default function SplashScreen() {
                         alt="Broncstudio"
                         fill
                         sizes="(max-width: 768px) 96px, 128px"
-                        className="object-contain dark:hidden"
-                        priority
-                    />
-                    <Image
-                        src="/whitelogo.png"
-                        alt="Broncstudio"
-                        fill
-                        sizes="(max-width: 768px) 96px, 128px"
-                        className="object-contain hidden dark:block"
+                        className="object-contain"
                         priority
                     />
                 </motion.div>
