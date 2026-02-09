@@ -160,29 +160,29 @@ export default function OrderDetailPage() {
     return (
         <div className="max-w-5xl mx-auto space-y-6 pb-20">
             {/* Header / Nav */}
-            <div className="flex items-center gap-4 text-gray-500 mb-4">
-                <Link href="/admin/orders" className="hover:text-navy-900 transition-colors flex items-center gap-1">
+            <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 mb-4">
+                <Link href="/admin/orders" className="hover:text-navy-900 dark:hover:text-white transition-colors flex items-center gap-1">
                     <ArrowLeft size={18} /> Back to Orders
                 </Link>
                 <span>/</span>
-                <span className="font-mono text-gray-900">#{order.id.slice(0, 8)}</span>
+                <span className="font-mono text-gray-900 dark:text-white">#{order.id.slice(0, 8)}</span>
             </div>
 
             {/* Title & Actions Header */}
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         Order #{order.id.slice(0, 8)}
-                        <span className={`text-base px-3 py-1 rounded-full border uppercase tracking-wider ${order.status === 'pending' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                            order.status === 'processing' ? 'bg-purple-50 border-purple-200 text-purple-700' :
-                                order.status === 'shipped' ? 'bg-blue-50 border-blue-200 text-blue-700' :
-                                    order.status === 'delivered' ? 'bg-green-50 border-green-200 text-green-700' :
-                                        'bg-red-50 border-red-200 text-red-700'
+                        <span className={`text-base px-3 py-1 rounded-full border uppercase tracking-wider ${order.status === 'pending' ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700/30 text-amber-700 dark:text-amber-300' :
+                            order.status === 'processing' ? 'bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-700/30 text-purple-700 dark:text-purple-300' :
+                                order.status === 'shipped' ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700/30 text-blue-700 dark:text-blue-300' :
+                                    order.status === 'delivered' ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700/30 text-green-700 dark:text-green-300' :
+                                        'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700/30 text-red-700 dark:text-red-300'
                             }`}>
                             {order.status}
                         </span>
                     </h1>
-                    <p className="text-gray-500 mt-2 flex items-center gap-2" suppressHydrationWarning>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-2" suppressHydrationWarning>
                         <Clock size={16} /> Placed on {new Date(order.created_at).toLocaleString()}
                     </p>
                 </div>
@@ -196,7 +196,7 @@ export default function OrderDetailPage() {
                         <button
                             onClick={handleUndoStatus}
                             disabled={actionLoading}
-                            className="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
+                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                             title="Undo last status update"
                         >
                             <Clock size={20} className="transform -scale-x-100" />
@@ -208,7 +208,7 @@ export default function OrderDetailPage() {
                             <button
                                 onClick={() => handleUpdateStatus('cancelled')}
                                 disabled={actionLoading}
-                                className="bg-white border border-gray-200 text-red-600 hover:bg-red-50 hover:border-red-200 font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
+                                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/10 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-200 dark:hover:border-red-900/30 font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
                             >
                                 <XCircle size={20} />
                                 Reject Order
@@ -216,7 +216,7 @@ export default function OrderDetailPage() {
                             <button
                                 onClick={() => handleUpdateStatus('processing')}
                                 disabled={actionLoading}
-                                className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all"
+                                className="bg-navy-900 dark:bg-coral-500 text-white hover:bg-navy-800 dark:hover:bg-coral-600 font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 dark:shadow-coral-500/20 transition-all"
                             >
                                 <CheckCircle size={20} />
                                 Accept Order
@@ -256,55 +256,74 @@ export default function OrderDetailPage() {
                 {/* Left Column: Items & Payment */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Order Items */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
-                        <div className="p-6 border-b border-gray-100">
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5 overflow-hidden">
+                        <div className="p-6 border-b border-gray-100 dark:border-white/5">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <Package size={20} className="text-gray-400" />
                                 Order Items
                             </h2>
                         </div>
-                        <div className="divide-y divide-gray-100">
+                        <div className="divide-y divide-gray-100 dark:divide-white/5">
                             {items.map((item, idx) => {
                                 const meta = item.metadata as any;
                                 return (
                                     <div key={idx} className="p-6 flex items-start gap-4">
-                                        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 relative group">
+                                        <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative group">
                                             <img src={meta?.image_url || item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                             {meta?.image_url && (
-                                                <a
-                                                    href={meta.image_url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    download
-                                                    className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-bold"
+                                                <button
+                                                    onClick={async (e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        try {
+                                                            const response = await fetch(meta.image_url);
+                                                            const blob = await response.blob();
+                                                            const blobUrl = window.URL.createObjectURL(blob);
+                                                            const link = document.createElement('a');
+                                                            link.href = blobUrl;
+                                                            // improved filename logic
+                                                            const cleanName = item.name.replace(/[^a-zA-Z0-9]/g, '_');
+                                                            const ext = meta.image_url.split('.').pop()?.split('?')[0] || 'png';
+                                                            const safeExt = ext.length > 4 ? 'png' : ext;
+                                                            link.download = `${cleanName}_${meta.placement || 'design'}.${safeExt}`;
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            document.body.removeChild(link);
+                                                            window.URL.revokeObjectURL(blobUrl);
+                                                        } catch (err) {
+                                                            console.error('Download failed', err);
+                                                            addToast('Failed to download image', 'error');
+                                                        }
+                                                    }}
+                                                    className="absolute inset-0 w-full h-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-bold cursor-pointer border-none"
                                                 >
                                                     Download
-                                                </a>
+                                                </button>
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                                            <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                                 {item.name}
                                                 {meta?.is_custom && (
-                                                    <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">
+                                                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">
                                                         Custom
                                                     </span>
                                                 )}
                                             </h3>
                                             <div className="space-y-1 mt-1">
-                                                <p className="text-sm text-gray-500">
-                                                    Size: <span className="font-medium text-gray-700">{meta?.size || item.size || 'N/A'}</span>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    Size: <span className="font-medium text-gray-700 dark:text-gray-300">{meta?.size || item.size || 'N/A'}</span>
                                                 </p>
 
                                                 {meta?.is_custom && (
-                                                    <div className="text-sm bg-gray-50 p-2 rounded border border-gray-100 inline-block mt-1">
-                                                        <p className="text-gray-500 text-xs uppercase font-bold mb-1">Print Details</p>
-                                                        <p>Type: <span className="font-medium text-gray-900">{meta.print_type}</span></p>
-                                                        <p>Placement: <span className="font-medium text-gray-900">{meta.placement}</span></p>
+                                                    <div className="text-sm bg-gray-50 dark:bg-white/5 p-2 rounded border border-gray-100 dark:border-white/10 inline-block mt-1">
+                                                        <p className="text-gray-500 dark:text-gray-400 text-xs uppercase font-bold mb-1">Print Details</p>
+                                                        <p className="text-gray-700 dark:text-gray-300">Type: <span className="font-medium text-gray-900 dark:text-white">{meta.print_type}</span></p>
+                                                        <p className="text-gray-700 dark:text-gray-300">Placement: <span className="font-medium text-gray-900 dark:text-white">{meta.placement}</span></p>
                                                         {meta.note && (
-                                                            <div className="mt-2 pt-2 border-t border-gray-200">
+                                                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-white/10">
                                                                 <p className="text-xs text-gray-400">Customer Note:</p>
-                                                                <p className="italic text-gray-700">"{meta.note}"</p>
+                                                                <p className="italic text-gray-700 dark:text-gray-300">"{meta.note}"</p>
                                                             </div>
                                                         )}
                                                     </div>
@@ -312,10 +331,10 @@ export default function OrderDetailPage() {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-bold text-gray-900">₹{item.price * item.quantity}</p>
+                                            <p className="font-bold text-gray-900 dark:text-white">₹{item.price * item.quantity}</p>
                                             <p className="text-xs text-gray-400">₹{item.price} each</p>
-                                            <p className="text-sm text-gray-500 mt-1">
-                                                Qty: <span className="font-medium text-gray-700">{item.quantity}</span>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                Qty: <span className="font-medium text-gray-700 dark:text-gray-300">{item.quantity}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -324,7 +343,7 @@ export default function OrderDetailPage() {
                         </div>
 
                         {/* Summary Section with GST & Wallet */}
-                        <div className="bg-gray-50 p-6 space-y-3 border-t border-gray-100">
+                        <div className="bg-gray-50 dark:bg-white/5 p-6 space-y-3 border-t border-gray-100 dark:border-white/5">
                             {(() => {
                                 // Detailed Bill Logic
                                 const itemsTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -345,47 +364,47 @@ export default function OrderDetailPage() {
 
                                 return (
                                     <>
-                                        <div className="flex justify-between items-center text-sm text-gray-600">
+                                        <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                                             <span>Items Subtotal</span>
                                             <span>₹{itemsTotal.toFixed(2)}</span>
                                         </div>
 
                                         {derivedShipping > 0 && (
-                                            <div className="flex justify-between items-center text-sm text-gray-600">
+                                            <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
                                                 <span>Shipping</span>
                                                 <span>₹{derivedShipping.toFixed(2)}</span>
                                             </div>
                                         )}
 
                                         {couponDiscount > 0 && (
-                                            <div className="flex justify-between items-center text-sm text-green-600">
+                                            <div className="flex justify-between items-center text-sm text-green-600 dark:text-green-400">
                                                 <span>Coupon Discount</span>
                                                 <span>- ₹{couponDiscount.toFixed(2)}</span>
                                             </div>
                                         )}
 
                                         {walletUsed > 0 && (
-                                            <div className="flex justify-between items-center text-sm text-emerald-600 font-medium">
+                                            <div className="flex justify-between items-center text-sm text-emerald-600 dark:text-emerald-400 font-medium">
                                                 <span>Wallet Credit Used</span>
                                                 <span>- ₹{walletUsed.toFixed(2)}</span>
                                             </div>
                                         )}
 
                                         {/* GST Breakdown */}
-                                        <div className="border-t border-gray-200 my-2 pt-2 pb-2">
-                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                        <div className="border-t border-gray-200 dark:border-white/10 my-2 pt-2 pb-2">
+                                            <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
                                                 <span>Taxable Value (Approx)</span>
                                                 <span>₹{taxableValue.toFixed(2)}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                            <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
                                                 <span>GST (18%)</span>
                                                 <span>₹{gstAmount.toFixed(2)}</span>
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                                            <span className="font-bold text-gray-900 text-lg">Total Paid</span>
-                                            <span className="text-2xl font-bold text-navy-900">₹{totalPaid.toFixed(2)}</span>
+                                        <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-white/10">
+                                            <span className="font-bold text-gray-900 dark:text-white text-lg">Total Paid</span>
+                                            <span className="text-2xl font-bold text-navy-900 dark:text-white">₹{totalPaid.toFixed(2)}</span>
                                         </div>
                                     </>
                                 );
@@ -394,23 +413,23 @@ export default function OrderDetailPage() {
                     </div>
 
                     {/* Payment Info */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
-                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
                             <CreditCard size={20} className="text-gray-400" />
                             Payment Information
                         </h2>
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/5">
                             <div>
-                                <p className="text-sm text-gray-500 mb-1">Payment Method</p>
-                                <p className="font-bold text-gray-900 capitalize">{order.payment_method?.replace(/_/g, ' ') || 'N/A'}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Payment Method</p>
+                                <p className="font-bold text-gray-900 dark:text-white capitalize">{order.payment_method?.replace(/_/g, ' ') || 'N/A'}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm text-gray-500 mb-1">Payment Status</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Payment Status</p>
                                 <div className="flex flex-col items-end gap-2">
-                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 border-green-200 text-green-700' :
-                                        order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
-                                            order.payment_status === 'refunded' ? 'bg-indigo-100 border-indigo-200 text-indigo-700' :
-                                                'bg-amber-100 border-amber-200 text-amber-700'
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-700/30 text-green-700 dark:text-green-300' :
+                                        order.payment_status === 'failed' ? 'bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-700/30 text-red-700 dark:text-red-300' :
+                                            order.payment_status === 'refunded' ? 'bg-indigo-100 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700/30 text-indigo-700 dark:text-indigo-300' :
+                                                'bg-amber-100 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700/30 text-amber-700 dark:text-amber-300'
                                         }`}>
                                         {order.payment_status}
                                     </span>
@@ -418,7 +437,7 @@ export default function OrderDetailPage() {
                                         <button
                                             onClick={handleMarkAsPaid}
                                             disabled={actionLoading}
-                                            className="text-xs text-blue-600 font-bold hover:underline disabled:text-gray-400"
+                                            className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline disabled:text-gray-400"
                                         >
                                             Mark as Paid
                                         </button>
@@ -427,7 +446,7 @@ export default function OrderDetailPage() {
                             </div>
                         </div>
                         {order.status === 'pending' && order.payment_status === 'pending' && (
-                            <div className="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-100 text-sm text-amber-800 flex items-start gap-2">
+                            <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-700/30 text-sm text-amber-800 dark:text-amber-200 flex items-start gap-2">
                                 <div className="min-w-[4px] h-[4px] bg-amber-500 rounded-full mt-2" />
                                 <p>This order is waiting for admin approval. Since payment is pending (COD), verifying the customer via phone is recommended before accepting.</p>
                             </div>
@@ -438,56 +457,56 @@ export default function OrderDetailPage() {
                 {/* Right Column: Customer & Shipping */}
                 <div className="space-y-6">
                     {/* Customer */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
-                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
                             <User size={20} className="text-gray-400" />
                             Customer Details
                         </h2>
                         <div className="space-y-4">
-                            <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                            <div className="flex items-center gap-3 pb-4 border-b border-gray-100 dark:border-white/5">
+                                <div className="w-10 h-10 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 font-bold">
                                     {order.shipping_address?.firstName?.[0]}
                                 </div>
                                 <div>
-                                    <p className="font-bold text-gray-900">
+                                    <p className="font-bold text-gray-900 dark:text-white">
                                         {order.shipping_address?.firstName} {order.shipping_address?.lastName}
                                     </p>
-                                    <p className="text-sm text-gray-500">Customer</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">Customer</p>
                                 </div>
                             </div>
 
                             <div>
                                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Contact Info</p>
-                                <p className="text-sm text-gray-700 font-medium">{order.shipping_address?.phone}</p>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{order.shipping_address?.phone}</p>
                                 {/* We might want to store email in orders table too if not in address JSON */}
                             </div>
                         </div>
                     </div>
 
                     {/* Shipping Address */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
-                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-4">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
                             <MapPin size={20} className="text-gray-400" />
                             Shipping Address
                         </h2>
-                        <address className="not-italic text-sm text-gray-600 space-y-1">
-                            <p className="font-medium text-gray-900">{order.shipping_address?.address}</p>
+                        <address className="not-italic text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                            <p className="font-medium text-gray-900 dark:text-white">{order.shipping_address?.address}</p>
                             <p>{order.shipping_address?.city}, {order.shipping_address?.pincode}</p>
                             <p>India</p>
                         </address>
 
-                        <div className="mt-6 pt-6 border-t border-gray-100">
-                            <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-white/5">
+                            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                                 <Truck size={16} className="text-gray-400" />
                                 Delivery Status
                             </h3>
                             {/* Tracking History Timeline */}
-                            <div className="relative pl-4 border-l-2 border-gray-100 space-y-6">
+                            <div className="relative pl-4 border-l-2 border-gray-100 dark:border-white/5 space-y-6">
                                 {/* Always show Created At */}
                                 <div className="relative">
-                                    <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${isPending && (!order.status_history || order.status_history.length === 0) ? 'bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.2)]' : 'bg-gray-300'
+                                    <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 box-content ${isPending && (!order.status_history || order.status_history.length === 0) ? 'bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.2)]' : 'bg-gray-300 dark:bg-gray-600'
                                         }`} />
-                                    <p className="text-sm font-medium text-gray-900">Order Placed</p>
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white">Order Placed</p>
                                     <p className="text-xs text-gray-400" suppressHydrationWarning>{new Date(order.created_at).toLocaleString()}</p>
                                 </div>
 
@@ -528,8 +547,8 @@ export default function OrderDetailPage() {
 
                                     return (
                                         <div key={idx} className="relative">
-                                            <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${colorClass} ${finalShadow}`} />
-                                            <p className="text-sm font-medium text-gray-900 capitalize">{displayText}</p>
+                                            <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 box-content ${colorClass} ${finalShadow}`} />
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">{displayText}</p>
                                             <p className="text-xs text-gray-400" suppressHydrationWarning>
                                                 {new Date(hist.timestamp).toLocaleString()}
                                                 {subText && <span className="block text-[10px] text-gray-400">{subText}</span>}
@@ -541,8 +560,8 @@ export default function OrderDetailPage() {
                                 {/* Fallback for Old Orders (No History Array) but have status */}
                                 {(!order.status_history || order.status_history.length === 0) && order.status !== 'pending' && (
                                     <div className="relative">
-                                        <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${order.status === 'cancelled' ? 'bg-red-500' : 'bg-green-500'}`} />
-                                        <p className="text-sm font-medium text-gray-900 capitalize">{order.status}</p>
+                                        <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 box-content ${order.status === 'cancelled' ? 'bg-red-500' : 'bg-green-500'}`} />
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">{order.status}</p>
                                         <p className="text-xs text-gray-400">Date unknown (Legacy)</p>
                                     </div>
                                 )}

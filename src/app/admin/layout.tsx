@@ -84,11 +84,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     };
 
     if (verifying) {
-        return <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center font-bold text-gray-500">Verifying Access...</div>;
+        return <div className="min-h-screen bg-[#F3F4F6] dark:bg-slate-950 flex items-center justify-center font-bold text-gray-500 dark:text-gray-400">Verifying Access...</div>;
     }
 
     return (
-        <div className="min-h-screen bg-[#F3F4F6] flex font-sans">
+        <div className="min-h-screen bg-[#F3F4F6] dark:bg-slate-950 flex font-sans transition-colors duration-300">
             {/* Mobile Sidebar Overlay */}
             {isSidebarOpen && (
                 <div
@@ -99,12 +99,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             {/* Sidebar */}
             <aside className={`
-                fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-[#0B1220] text-white transition-transform duration-300 ease-in-out
+                fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-[#0B1220] text-white transition-transform duration-300 ease-in-out shadow-xl
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
-                <div className="p-6 flex items-center justify-between">
+                <div className="p-6 flex items-center justify-between border-b border-white/10">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-coral-500 rounded-lg flex items-center justify-center font-bold text-white">
+                        <div className="w-8 h-8 bg-coral-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-coral-500/20">
                             B
                         </div>
                         <span className="text-xl font-bold tracking-tight">BroncAdmin</span>
@@ -114,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </button>
                 </div>
 
-                <div className="px-4 py-2">
+                <div className="px-4 py-6">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 px-2">Main Menu</p>
                     <nav className="space-y-1">
                         {SIDEBAR_ITEMS.map((item) => {
@@ -139,7 +139,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </nav>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
+                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-[#0B1220]">
                     <button
                         onClick={handleSignOut}
                         className="flex items-center gap-3 px-3 py-2.5 w-full text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all font-medium"
@@ -153,20 +153,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* Mobile Header */}
-                <header className="bg-white border-b border-gray-200 p-4 lg:hidden flex items-center justify-between sticky top-0 z-30">
+                <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-white/10 p-4 lg:hidden flex items-center justify-between sticky top-0 z-30 transition-colors duration-300">
                     <div className="flex items-center gap-3">
-                        <button onClick={() => setIsSidebarOpen(true)} className="text-gray-600">
+                        <button onClick={() => setIsSidebarOpen(true)} className="text-gray-600 dark:text-gray-300">
                             <Menu size={24} />
                         </button>
-                        <span className="font-bold text-gray-900">Dashboard</span>
+                        <span className="font-bold text-gray-900 dark:text-white">Dashboard</span>
                     </div>
-                    <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         {/* Avatar Placeholder */}
                     </div>
                 </header>
 
                 <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-                    <div className="max-w-7xl mx-auto">
+                    <div className="max-w-7xl mx-auto space-y-6">
                         {children}
                     </div>
                 </main>

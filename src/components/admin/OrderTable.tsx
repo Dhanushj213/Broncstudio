@@ -79,24 +79,24 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'delivered': return 'bg-green-100 text-green-700';
-            case 'shipped': return 'bg-blue-100 text-blue-700';
-            case 'processing': return 'bg-amber-100 text-amber-700';
-            case 'cancelled': return 'bg-red-100 text-red-700';
-            default: return 'bg-gray-100 text-gray-700';
+            case 'delivered': return 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300';
+            case 'shipped': return 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300';
+            case 'processing': return 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300';
+            case 'cancelled': return 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300';
+            default: return 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300';
         }
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
             {/* Toolbar */}
-            <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div className="p-4 border-b border-gray-100 dark:border-white/5 flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                     <div className="relative w-full sm:w-64">
                         <input
                             type="text"
                             placeholder="Search Order ID, Name..."
-                            className="w-full pl-4 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy-900/10"
+                            className="w-full pl-4 pr-4 py-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-navy-900/10 dark:focus:ring-white/20 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -106,7 +106,7 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
                 <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
                     {/* Status Filter */}
                     <select
-                        className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:outline-none"
+                        className="px-3 py-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 focus:outline-none"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -120,7 +120,7 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
 
                     {/* Payment Filter */}
                     <select
-                        className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 focus:outline-none"
+                        className="px-3 py-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 focus:outline-none"
                         value={paymentFilter}
                         onChange={(e) => setPaymentFilter(e.target.value)}
                     >
@@ -134,9 +134,9 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
             {/* Table */}
             <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
+                    <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">
                         <tr>
-                            <th className="px-6 py-4 cursor-pointer hover:bg-gray-100" onClick={() => handleSort('created_at')}>
+                            <th className="px-6 py-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10" onClick={() => handleSort('created_at')}>
                                 <div className="flex items-center gap-1">
                                     Date
                                     {sortField === 'created_at' && (sortOrder === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />)}
@@ -144,14 +144,14 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
                             </th>
                             <th className="px-6 py-4">Order ID</th>
                             <th className="px-6 py-4">Customer</th>
-                            <th className="px-6 py-4 cursor-pointer hover:bg-gray-100" onClick={() => handleSort('total_amount')}>
+                            <th className="px-6 py-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10" onClick={() => handleSort('total_amount')}>
                                 <div className="flex items-center gap-1">
                                     Total
                                     {sortField === 'total_amount' && (sortOrder === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />)}
                                 </div>
                             </th>
                             <th className="px-6 py-4">Payment</th>
-                            <th className="px-6 py-4 cursor-pointer hover:bg-gray-100" onClick={() => handleSort('status')}>
+                            <th className="px-6 py-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10" onClick={() => handleSort('status')}>
                                 <div className="flex items-center gap-1">
                                     Status
                                     {sortField === 'status' && (sortOrder === 'desc' ? <ChevronDown size={14} /> : <ChevronUp size={14} />)}
@@ -160,32 +160,32 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
                             <th className="px-6 py-4 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                         {loading ? (
-                            <tr><td colSpan={7} className="p-8 text-center">Loading orders...</td></tr>
+                            <tr><td colSpan={7} className="p-8 text-center text-gray-500 dark:text-gray-400">Loading orders...</td></tr>
                         ) : sortedOrders.length === 0 ? (
-                            <tr><td colSpan={7} className="p-8 text-center text-gray-500">No orders found matching filters.</td></tr>
+                            <tr><td colSpan={7} className="p-8 text-center text-gray-500 dark:text-gray-400">No orders found matching filters.</td></tr>
                         ) : (
                             sortedOrders.map((order) => (
-                                <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
-                                    <td className="px-6 py-4 text-gray-500 font-medium">
+                                <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors group">
+                                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400 font-medium">
                                         {format(new Date(order.created_at), 'MMM d, yyyy')}
-                                        <div className="text-xs text-gray-400">{format(new Date(order.created_at), 'HH:mm')}</div>
+                                        <div className="text-xs text-gray-400 dark:text-gray-500">{format(new Date(order.created_at), 'HH:mm')}</div>
                                     </td>
-                                    <td className="px-6 py-4 font-bold text-gray-900">
-                                        <Link href={`/admin/orders/${order.id}`} className="hover:text-blue-600 hover:underline">
+                                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
+                                        <Link href={`/admin/orders/${order.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
                                             #{order.id.slice(0, 8)}
                                         </Link>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        <div className="font-medium text-gray-900">{order.shipping_address?.firstName} {order.shipping_address?.lastName}</div>
+                                    <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
+                                        <div className="font-medium text-gray-900 dark:text-white">{order.shipping_address?.firstName} {order.shipping_address?.lastName}</div>
                                         {/* <div className="text-xs">{order.shipping_address?.city}</div> */}
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-900">{formatCurrency(order.total_amount)}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(order.total_amount)}</td>
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col gap-1">
-                                            <span className="text-xs font-bold uppercase text-gray-500">{order.payment_method}</span>
-                                            <span className={`text-xs px-2 py-0.5 rounded w-fit ${order.payment_status === 'paid' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                            <span className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">{order.payment_method}</span>
+                                            <span className={`text-xs px-2 py-0.5 rounded w-fit ${order.payment_status === 'paid' ? 'bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-300'}`}>
                                                 {order.payment_status}
                                             </span>
                                         </div>
@@ -196,9 +196,9 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2 text-gray-400">
+                                        <div className="flex items-center justify-end gap-2 text-gray-400 dark:text-gray-500">
                                             <Link href={`/admin/orders/${order.id}`}>
-                                                <button className="p-2 hover:bg-gray-100 rounded-lg hover:text-navy-900 transition-colors" title="View Details">
+                                                <button className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg hover:text-navy-900 dark:hover:text-white transition-colors" title="View Details">
                                                     <Eye size={18} />
                                                 </button>
                                             </Link>
@@ -213,7 +213,7 @@ export default function OrderTable({ orders, loading, onStatusChange }: OrderTab
             </div>
 
             {/* Pagination (Simple for now) */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 text-xs text-gray-500 flex justify-between items-center">
+            <div className="p-4 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5 text-xs text-gray-500 dark:text-gray-400 flex justify-between items-center">
                 <span>Showing {sortedOrders.length} orders</span>
                 {/* Pagination controls can go here */}
             </div>

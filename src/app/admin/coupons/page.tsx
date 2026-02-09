@@ -58,11 +58,11 @@ export default function AdminCouponsPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Coupons</h1>
-                    <p className="text-gray-500 text-sm">Manage discounts and promotions</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Coupons</h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">Manage discounts and promotions</p>
                 </div>
                 <Link href="/admin/coupons/new">
-                    <button className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 transition-all">
+                    <button className="bg-navy-900 dark:bg-coral-500 text-white hover:bg-navy-800 dark:hover:bg-coral-600 font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-navy-900/20 dark:shadow-coral-500/20 transition-all">
                         <Plus size={20} />
                         Create Coupon
                     </button>
@@ -70,16 +70,16 @@ export default function AdminCouponsPage() {
             </div>
 
             {loading ? (
-                <div className="p-12 flex justify-center"><Loader2 className="animate-spin" /></div>
+                <div className="p-12 flex justify-center"><Loader2 className="animate-spin text-navy-900 dark:text-white" /></div>
             ) : coupons.length === 0 ? (
-                <div className="p-12 text-center text-gray-400 bg-white rounded-xl border border-dashed border-gray-200">
+                <div className="p-12 text-center text-gray-400 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-gray-200 dark:border-white/10">
                     <Tag size={48} className="mx-auto mb-4 opacity-20" />
                     <p>No coupons found. Run the SQL migration first!</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-[#FAF9F7] text-gray-500 font-bold uppercase text-xs border-b border-gray-100">
+                        <thead className="bg-[#FAF9F7] dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-xs border-b border-gray-100 dark:border-white/5">
                             <tr>
                                 <th className="px-6 py-4">Code</th>
                                 <th className="px-6 py-4">Discount</th>
@@ -88,23 +88,23 @@ export default function AdminCouponsPage() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                             {coupons.map((coupon) => (
-                                <tr key={coupon.id} className="hover:bg-gray-50/50">
-                                    <td className="px-6 py-4 font-mono font-bold text-gray-900">{coupon.code}</td>
-                                    <td className="px-6 py-4">
+                                <tr key={coupon.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                                    <td className="px-6 py-4 font-mono font-bold text-gray-900 dark:text-white">{coupon.code}</td>
+                                    <td className="px-6 py-4 text-gray-700 dark:text-gray-300">
                                         {coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : `₹${coupon.discount_value}`}
                                     </td>
-                                    <td className="px-6 py-4 self-center">
+                                    <td className="px-6 py-4 self-center text-gray-600 dark:text-gray-400">
                                         {coupon.usage_count} / {coupon.usage_limit || '∞'}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-bold ${coupon.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${coupon.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400'}`}>
                                             {coupon.is_active ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button onClick={() => handleDelete(coupon.id)} className="text-red-400 hover:text-red-600">
+                                        <button onClick={() => handleDelete(coupon.id)} className="text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors">
                                             <Trash2 size={18} />
                                         </button>
                                     </td>

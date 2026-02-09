@@ -44,6 +44,20 @@ export default function ProfileClient() {
                 avatar_url: user.user_metadata?.avatar_url
             };
 
+            // Check if blocked
+            const { data: blocked } = await supabase
+                .from('blocked_users')
+                .select('reason')
+                .eq('user_id', user.id)
+                .maybeSingle();
+
+            if (blocked) {
+                alert(`Your account has been restricted: ${blocked.reason || 'Contact Support'}`);
+                await supabase.auth.signOut();
+                router.push('/');
+                return;
+            }
+
             setUser(profileData);
             setLoading(false);
         };

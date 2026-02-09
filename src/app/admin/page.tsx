@@ -141,8 +141,8 @@ function DashboardContent() {
             {/* Header & Filters */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-                    <p className="text-gray-500 mt-1">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">
                         {dateRange.label === 'All Time'
                             ? 'Showing all time data.'
                             : `Showing data for ${dateRange.label} (${dateRange.from ? format(dateRange.from, 'MMM d') : ''} - ${dateRange.to ? format(dateRange.to, 'MMM d') : ''})`}
@@ -150,14 +150,14 @@ function DashboardContent() {
                 </div>
 
                 {/* Date Toggles */}
-                <div className="bg-white p-1 rounded-xl border border-gray-200 shadow-sm flex flex-wrap gap-1">
+                <div className="bg-white dark:bg-slate-900 p-1 rounded-xl border border-gray-200 dark:border-white/10 shadow-sm flex flex-wrap gap-1">
                     {(['today', 'yesterday', 'last7', 'thisMonth', 'all'] as const).map((type) => (
                         <button
                             key={type}
                             onClick={() => setRangeType(type)}
                             className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${rangeType === type
-                                ? 'bg-navy-900 text-white shadow-md'
-                                : 'text-gray-600 hover:bg-gray-50'
+                                ? 'bg-navy-900 dark:bg-coral-500 text-white shadow-md'
+                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5'
                                 }`}
                         >
                             {type === 'last7' ? 'Last 7 Days' : type === 'thisMonth' ? 'This Month' : type.charAt(0).toUpperCase() + type.slice(1)}
@@ -169,59 +169,59 @@ function DashboardContent() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Revenue */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
                             <DollarSign size={24} />
                         </div>
                         {/* Example Trend indicator (static for now) */}
-                        <span className="flex items-center text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                        <span className="flex items-center text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">
                             <TrendingUp size={12} className="mr-1" /> +12%
                         </span>
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-1">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {loading ? '...' : formatCurrency(stats.revenue)}
                     </h3>
-                    <p className="text-sm font-medium text-gray-500">Total Revenue</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</p>
                 </div>
 
                 {/* Total Orders */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
                             <ShoppingBag size={24} />
                         </div>
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-1">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {loading ? '...' : stats.totalOrders}
                     </h3>
-                    <p className="text-sm font-medium text-gray-500">Total Orders</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</p>
                 </div>
 
                 {/* Avg Order Value */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-violet-50 text-violet-600">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400">
                             <ArrowUpRight size={24} />
                         </div>
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-1">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {loading ? '...' : formatCurrency(stats.avgOrderValue)}
                     </h3>
-                    <p className="text-sm font-medium text-gray-500">Avg. Order Value</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Avg. Order Value</p>
                 </div>
 
                 {/* Low Stock (Independent of date range usually) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
                     <div className="flex justify-between items-start mb-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-red-50 text-red-600">
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
                             <AlertTriangle size={24} />
                         </div>
                     </div>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-1">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                         {loading ? '...' : stats.lowStock}
                     </h3>
-                    <p className="text-sm font-medium text-gray-500">Low Stock Items</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Low Stock Items</p>
                 </div>
             </div>
 
@@ -237,10 +237,10 @@ function DashboardContent() {
             {/* Recent Orders & Quick Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Recent Orders Table */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h2 className="text-lg font-bold text-gray-900">Recent Orders</h2>
-                        <Link href="/admin/orders" className="bg-navy-900 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-navy-800 shadow-md transition-all">
+                <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5 overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 dark:border-white/5 flex justify-between items-center">
+                        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Orders</h2>
+                        <Link href="/admin/orders" className="bg-navy-900 dark:bg-coral-500 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-navy-800 dark:hover:bg-coral-600 shadow-md transition-all">
                             View All Orders
                         </Link>
                     </div>
@@ -249,7 +249,7 @@ function DashboardContent() {
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50 text-gray-500 font-bold uppercase text-xs">
+                                <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">
                                     <tr>
                                         <th className="px-6 py-4">Order ID</th>
                                         <th className="px-6 py-4">Customer</th>
@@ -257,19 +257,19 @@ function DashboardContent() {
                                         <th className="px-6 py-4">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                                     {recentOrders.map((order) => (
-                                        <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="px-6 py-4 font-bold text-gray-900">#{order.id.slice(0, 8)}</td>
-                                            <td className="px-6 py-4 text-gray-600">
+                                        <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                                            <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">#{order.id.slice(0, 8)}</td>
+                                            <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                                                 {order.shipping_address?.firstName || 'Guest'}
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-gray-900">{formatCurrency(order.total_amount)}</td>
+                                            <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{formatCurrency(order.total_amount)}</td>
                                             <td className="px-6 py-4">
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize ${order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                                                    order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                                                        order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                                                            'bg-amber-100 text-amber-700'
+                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize ${order.status === 'delivered' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                                                    order.status === 'shipped' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' :
+                                                        order.status === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
+                                                            'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300'
                                                     }`}>
                                                     {order.status}
                                                 </span>
@@ -283,32 +283,32 @@ function DashboardContent() {
                 </div>
 
                 {/* Quick Actions / Activity */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-6">Quick Actions</h2>
+                <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5 p-6">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h2>
                     <div className="space-y-4">
                         <Link href="/admin/products/new">
-                            <button className="w-full py-3 px-4 bg-navy-900 text-white font-bold rounded-xl hover:bg-navy-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-navy-900/20">
+                            <button className="w-full py-3 px-4 bg-navy-900 dark:bg-coral-500 text-white font-bold rounded-xl hover:bg-navy-800 dark:hover:bg-coral-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-navy-900/20 dark:shadow-coral-500/20">
                                 <Plus size={20} /> Add Product
                             </button>
                         </Link>
                         <Link href="/admin/orders">
-                            <button className="w-full py-3 px-4 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+                            <button className="w-full py-3 px-4 bg-white dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2">
                                 <ShoppingBag size={18} /> View All Orders
                             </button>
                         </Link>
                     </div>
 
                     <div className="mt-8">
-                        <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">System Health</h3>
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4 uppercase tracking-wider">System Health</h3>
                         <div className="space-y-4">
                             <div>
-                                <div className="flex justify-between text-xs font-medium text-gray-500 mb-1">
+                                <div className="flex justify-between text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                                     <span>Database Latency</span>
-                                    <span className={`${health.status === 'Healthy' ? 'text-green-600' : health.status === 'Moderate' ? 'text-amber-600' : 'text-red-600'}`}>
+                                    <span className={`${health.status === 'Healthy' ? 'text-green-600 dark:text-green-400' : health.status === 'Moderate' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>
                                         {health.status} ({health.latency}ms)
                                     </span>
                                 </div>
-                                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-2 w-full bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden">
                                     <div
                                         className={`h-full transition-all duration-500 ${health.status === 'Healthy' ? 'bg-green-500' : health.status === 'Moderate' ? 'bg-amber-500' : 'bg-red-500'}`}
                                         style={{ width: health.status === 'Checking...' ? '0%' : '100%' }}

@@ -365,3 +365,98 @@ export async function manualWalletAdjustment(userId: string, amount: number, typ
         return { success: false, error: err.message || 'Internal Server Error' };
     }
 }
+
+export async function toggleBlockUser(userId: string, shouldBlock: boolean, reason: string = '') {
+    const cookieStore = await cookies();
+
+    // 1. Authenticate & Verify Admin
+    const supabaseAuth = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) { return cookieStore.get(name)?.value },
+            },
+        }
+    );
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) return { success: false, error: 'Unauthorized' };
+    if (!isAdmin(user.email)) return { success: false, error: 'Access Denied' };
+
+    // 2. Setup Client (Service Role)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) return { success: false, error: 'Server Configuration Error: Missing Service Role' };
+
+    const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId)) {
+        return { success: false, error: 'Invalid User ID format. Cannot block non-registered users.' };
+    }
+
+    if (shouldBlock) {
+        // Block - Explicitly specify onConflict to ensure it updates if exists (though usually we just want to ensure it's there)
+        const { error } = await supabaseAdmin
+            .from('blocked_users')
+            .upsert(
+                { user_id: userId, reason: reason, blocked_by: user.id },
+                { onConflict: 'user_id' }
+            )
+            .select();
+
+        if (error) {
+            console.error("Block User Failed:", error);
+            return { success: false, error: error.message };
+        }
+    } else {
+        // Unblock
+        const { error } = await supabaseAdmin
+            .from('blocked_users')
+            .delete()
+            .eq('user_id', userId);
+
+        if (error) {
+            console.error("Unblock User Failed:", error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    return { success: true };
+}
+
+export async function getBlockedUsers() {
+    // 1. Authenticate & Verify Admin (Standard check)
+    // Actually, we can just allow public read if we set RLS properly, but fetch here is safer.
+    const cookieStore = await cookies();
+    const supabaseAuth = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: { get(name: string) { return cookieStore.get(name)?.value } },
+        }
+    );
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user || !isAdmin(user.email)) return { success: false, error: 'Unauthorized' };
+
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    const { data, error } = await supabaseAdmin
+        .from('blocked_users')
+        .select('user_id, reason, created_at');
+
+    if (error) {
+        console.error("Fetch Blocked Users Failed:", error);
+        return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+}

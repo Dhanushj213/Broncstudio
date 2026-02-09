@@ -234,15 +234,24 @@ export default function ProductionPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             {item.image_url && (
-                                                <a
-                                                    href={item.image_url}
-                                                    download
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const safeName = item.product_name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                                                        const filename = `${item.order_id.slice(0, 5)}_${safeName}_${item.size || 'NA'}_${item.quantity}.png`;
+                                                        fetch(item.image_url)
+                                                            .then(res => res.blob())
+                                                            .then(blob => saveAs(blob, filename))
+                                                            .catch(err => {
+                                                                console.error(err);
+                                                                addToast('Failed to download', 'error');
+                                                            });
+                                                    }}
+                                                    className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer border-none bg-transparent"
                                                     title="Download Design"
                                                 >
                                                     <Download size={18} />
-                                                </a>
+                                                </button>
                                             )}
                                         </td>
                                     </tr>

@@ -58,6 +58,17 @@ export async function createOrder(
         return { success: false, error: 'You must be logged in to place an order.' };
     }
 
+    // 1.1 Check if User is Blocked
+    const { data: blockedEntry } = await supabase
+        .from('blocked_users')
+        .select('reason')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+    if (blockedEntry) {
+        return { success: false, error: 'Your account has been restricted. Please contact support.' };
+    }
+
     // 1.5 Validate Coupon (Server-side safety check)
     if (couponCode) {
         const { data: coupon, error: couponError } = await supabase
@@ -114,7 +125,7 @@ export async function createOrder(
             coupon_code: couponCode,
             discount_amount: discountAmount,
             status: 'pending',
-            payment_status: 'pending',
+            payment_status: paymentMethod === 'upi' ? 'paid' : 'pending',
             payment_method: paymentMethod,
             shipping_address: address,
         })

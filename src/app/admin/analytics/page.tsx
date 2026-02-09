@@ -53,21 +53,21 @@ export default function AnalyticsPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h1>
 
             {loading ? (
                 <div className="p-12 text-center text-gray-400">Loading analytics...</div>
             ) : (
                 <div className="space-y-8">
                     {/* Revenue Chart */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5">
                         <div className="flex items-center justify-between mb-6">
                             <div>
-                                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                     <TrendingUp size={20} className="text-emerald-500" />
                                     Revenue Trends
                                 </h2>
-                                <p className="text-sm text-gray-500">Last 7 Days Performance</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Last 7 Days Performance</p>
                             </div>
                         </div>
                         <div className="h-[300px] w-full">
@@ -79,11 +79,13 @@ export default function AnalyticsPage() {
                                             <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} tickFormatter={(value) => `₹${value}`} />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" strokeOpacity={0.2} />
+                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 12 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 12 }} tickFormatter={(value) => `₹${value}`} />
                                     <Tooltip
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                        contentStyle={{ backgroundColor: '#1F2937', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)', color: '#F3F4F6' }}
+                                        itemStyle={{ color: '#F3F4F6' }}
+                                        labelStyle={{ color: '#9CA3AF' }}
                                         formatter={(value: any) => [`₹${value}`, 'Revenue']}
                                     />
                                     <Area type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
@@ -93,9 +95,9 @@ export default function AnalyticsPage() {
                     </div>
 
                     {/* Order Volume */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5">
                         <div className="mb-6">
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <ShoppingBag size={20} className="text-blue-500" />
                                 Order Volume
                             </h2>
@@ -103,10 +105,15 @@ export default function AnalyticsPage() {
                         <div className="h-[250px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={revenueData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{ fill: '#6B7280', fontSize: 12 }} />
-                                    <Tooltip cursor={{ fill: '#F3F4F6' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" strokeOpacity={0.2} />
+                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 12 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} allowDecimals={false} tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+                                    <Tooltip
+                                        cursor={{ fill: '#374151', opacity: 0.1 }}
+                                        contentStyle={{ backgroundColor: '#1F2937', borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)', color: '#F3F4F6' }}
+                                        itemStyle={{ color: '#F3F4F6' }}
+                                        labelStyle={{ color: '#9CA3AF' }}
+                                    />
                                     <Bar dataKey="orders" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={50} />
                                 </BarChart>
                             </ResponsiveContainer>

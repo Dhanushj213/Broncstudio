@@ -30,7 +30,7 @@ export default function InvoiceDownloadButton({ order, variant = 'outline' }: In
 
     return (
         <PDFDownloadLink
-            document={<InvoicePDF order={order} />}
+            document={<InvoicePDF order={order} logoPath={window.location.origin + '/blacklogo.png'} />}
             fileName={`invoice_${order.id.slice(0, 8)}.pdf`}
             className="inline-block"
         >

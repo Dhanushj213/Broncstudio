@@ -67,12 +67,12 @@ export default function AdminOrdersPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">All Orders</h1>
-                    <p className="text-gray-500 mt-1">Manage and track all customer orders.</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">All Orders</h1>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Manage and track all customer orders.</p>
                 </div>
                 <button
                     onClick={handleExportCSV}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all text-sm shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-all text-sm shadow-sm"
                 >
                     <Download size={18} /> Export CSV
                 </button>
