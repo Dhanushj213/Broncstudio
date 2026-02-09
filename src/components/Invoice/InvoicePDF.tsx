@@ -7,130 +7,134 @@ import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/
 
 const styles = StyleSheet.create({
     page: {
-        padding: 40,
+        padding: 30,
         fontFamily: 'Helvetica',
-        fontSize: 10,
+        fontSize: 8,
         color: '#1a1a1a',
-        lineHeight: 1.5,
+        lineHeight: 1.4,
+        position: 'relative',
+    },
+    watermark: {
+        position: 'absolute',
+        top: 250,
+        left: 100,
+        width: 400,
+        height: 400,
+        opacity: 0.1,
+        transform: 'rotate(-45deg)',
+        zIndex: -1,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 30,
+        marginBottom: 20,
         borderBottomWidth: 1,
         borderBottomColor: '#e5e7eb',
         borderBottomStyle: 'solid',
-        paddingBottom: 20,
+        paddingBottom: 15,
     },
     companyDetails: {
+        flexDirection: 'column',
         textAlign: 'right',
+        alignItems: 'flex-end',
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         textTransform: 'uppercase',
         color: '#111827',
         letterSpacing: 1,
+        marginBottom: 8, // Added margin to prevent overlap
     },
     subTitle: {
-        fontSize: 10,
+        fontSize: 9,
         color: '#6b7280',
-        marginTop: 4,
+        marginTop: 2,
     },
     invoiceMeta: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 20,
-        marginBottom: 30,
+        marginTop: 10,
+        marginBottom: 20,
     },
     metaColumn: {
         flexDirection: 'column',
         width: '48%',
     },
     label: {
-        fontSize: 8,
+        fontSize: 7,
         textTransform: 'uppercase',
         color: '#6b7280',
-        marginBottom: 4,
+        marginBottom: 2,
         fontWeight: 'bold',
     },
     value: {
-        fontSize: 10,
+        fontSize: 9,
         color: '#111827',
-        marginBottom: 12,
+        marginBottom: 4,
     },
+    // Table Styles
     table: {
         width: '100%',
-        marginTop: 20,
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: '#e5e7eb',
+        borderStyle: 'solid',
     },
     tableHeader: {
         flexDirection: 'row',
-        borderBottomWidth: 1,
-        borderBottomColor: '#000',
-        borderBottomStyle: 'solid',
         backgroundColor: '#f9fafb',
-        paddingVertical: 8,
-        paddingHorizontal: 4,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e5e7eb',
+        paddingVertical: 6,
+        alignItems: 'center',
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: '#e5e7eb',
-        borderBottomStyle: 'solid',
-        paddingVertical: 12,
+        paddingVertical: 8,
+        alignItems: 'flex-start',
+    },
+    colHeader: {
+        fontSize: 7,
+        fontWeight: 'bold',
+        color: '#374151',
         paddingHorizontal: 4,
     },
-    col1: { width: '45%' },
-    col2: { width: '15%', textAlign: 'center' },
-    col3: { width: '20%', textAlign: 'right' },
-    col4: { width: '20%', textAlign: 'right' },
-
+    colText: {
+        fontSize: 8,
+        paddingHorizontal: 4,
+    },
     productName: {
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: 'bold',
         color: '#111827',
     },
     productMeta: {
-        fontSize: 9,
+        fontSize: 7,
         color: '#6b7280',
-        marginTop: 2,
-    },
-    // Flex row for size/color replacing gap
-    metaRow: {
-        flexDirection: 'row',
-        marginTop: 2,
-    },
-    metaItem: {
-        marginRight: 8,
-    },
-    customDetail: {
-        fontSize: 8,
-        color: '#4b5563',
-        marginTop: 2,
-        paddingLeft: 4,
-        borderLeftWidth: 1,
-        borderLeftColor: '#d1d5db',
-        borderLeftStyle: 'solid',
+        marginTop: 1,
     },
     totals: {
-        marginTop: 30,
+        marginTop: 20,
         alignItems: 'flex-end',
     },
     totalRow: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        marginBottom: 8,
+        marginBottom: 4,
         width: '50%',
     },
     totalLabel: {
-        fontSize: 10,
+        fontSize: 9,
         color: '#4b5563',
-        marginRight: 20,
+        marginRight: 10,
         textAlign: 'right',
         flex: 1,
     },
     totalValue: {
-        fontSize: 10,
+        fontSize: 9,
         color: '#111827',
         fontWeight: 'bold',
         width: 80,
@@ -139,34 +143,38 @@ const styles = StyleSheet.create({
     grandTotal: {
         borderTopWidth: 1,
         borderTopColor: '#000',
-        borderTopStyle: 'solid',
-        paddingTop: 12,
+        paddingTop: 8,
         marginTop: 4,
     },
     grandTotalLabel: {
         fontSize: 12,
         fontWeight: 'bold',
         color: '#111827',
-        marginRight: 20,
-        flex: 1,
+        width: 'auto',
         textAlign: 'right',
+        flex: 1,
+        marginRight: 20,
     },
     grandTotalValue: {
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: 'bold',
         color: '#111827',
         width: 80,
         textAlign: 'right',
     },
     footer: {
-        marginTop: 50,
-        paddingTop: 20,
+        marginTop: 'auto', // Push to bottom if content is short, or just margin
+        paddingTop: 10,
         borderTopWidth: 1,
         borderTopColor: '#e5e7eb',
-        borderTopStyle: 'solid',
         textAlign: 'center',
-        fontSize: 8,
+        fontSize: 7,
         color: '#9ca3af',
+        width: '100%',
+        position: 'absolute',
+        bottom: 30,
+        left: 30,
+        right: 30,
     },
 });
 
@@ -191,191 +199,304 @@ export interface Order {
     payment_status: string;
     payment_method: string;
     items?: OrderItem[];
+    coupon_discount?: number;
+    discount_amount?: number;
+    wallet_amount_used?: number;
 }
 
 interface InvoicePDFProps {
     order: Order;
-    logoPath?: string; // Optional logo path override
+    logoPath?: string;
 }
 
-// Helper to format currency
-const formatCurrency = (amount: number) => {
-    return `Rs. ${amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-};
+// Helpers
+const formatCurrency = (amount: number) => `Rs. ${amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
 
-// Helper to format date in Indian format
 const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.toLocaleDateString('en-IN', { month: 'short' });
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (e) {
+        return dateString;
+    }
 };
 
 export const InvoicePDF: React.FC<InvoicePDFProps> = ({ order, logoPath = '/blacklogo.png' }) => {
 
-    // Recalculate Totals based on logic described in prompts
-    const subtotal = order.items?.reduce((sum, item) => sum + (item.price * item.quantity), 0) || 0;
+    // 1. Determine State Logic
+    const shippingState: string = (order.shipping_address?.state || '').toLowerCase().trim();
+    // Assuming 'karnataka' or 'ka' is the home state. 
+    const isInterState = !(shippingState === 'karnataka' || shippingState === 'ka');
 
-    // Tax Calculation Logic (Replicated from Checkout)
-    let totalTax = 0;
-    order.items?.forEach(item => {
-        const itemQty = item.quantity;
-        if (item.metadata?.is_custom) {
-            const basePrice = item.metadata.base_price_unit || 0;
-            const customCost = item.metadata.customization_cost_unit || 0;
-            const productGst = item.metadata.gst_percent || 12;
-            const printGst = item.metadata.print_gst_percent || 18;
+    // 2. Calculate Taxes Per Item
+    let runningSubtotal = 0;
+    let runningTotalTax = 0;
 
-            const baseTax = (basePrice * itemQty * productGst) / 100;
-            const customTax = (customCost * itemQty * printGst) / 100;
-            totalTax += (baseTax + customTax);
+    const enrichedItems = (order.items || []).map(item => {
+        const meta = item.metadata || {};
+        const qty = item.quantity;
+
+        // Strategy: "Rate" is usually pre-tax basic price.
+        // But if item.price is the selling price (inclusive or exclusive dependent on your DB), we need to clarify.
+        // Assuming item.price is the taxable value (base price) logic from previous context:
+        // "const itemTax = (item.price * itemQty * gst) / 100"
+        // This implies item.price is EXCLUSIVE of tax.
+
+        const unitPrice = item.price;
+        const taxableValue = unitPrice * qty;
+
+        let taxPercent = 18; // Default
+        if (meta.is_custom) {
+            taxPercent = meta.gst_percent || 12;
         } else {
-            const gst = item.metadata?.gst_percent || 18; // Default to 18 if not found
-            const itemTax = (item.price * itemQty * gst) / 100;
-            totalTax += itemTax;
+            taxPercent = meta.gst_percent || 18;
         }
+
+        const taxAmount = (taxableValue * taxPercent) / 100;
+
+        runningSubtotal += taxableValue;
+        runningTotalTax += taxAmount;
+
+        const totalLineAmount = taxableValue + taxAmount;
+
+        return {
+            ...item,
+            taxPercent,
+            taxableValue,
+            taxAmount,
+            totalLineAmount
+        };
     });
 
-    // Calculate estimated shipping
-    const estimatedShipping = Math.max(0, order.total_amount - subtotal - Math.round(totalTax));
+    // Shipping Calculation (Balancing figure)
+    // Grand Total (Paid) = Subtotal + Tax + Shipping - Coupon - Wallet
+    // Therefore: Shipping = Grand Total - (Subtotal + Tax) + Coupon + Wallet
 
-    // Safety check: ensure no negative values
-    const finalShipping = estimatedShipping > 0 ? estimatedShipping : 0;
+    const calculatedGross = runningSubtotal + runningTotalTax;
+    const couponDiscount = order.coupon_discount || order.discount_amount || 0;
+    const walletUsed = order.wallet_amount_used || 0;
 
-    // Split GST into CGST and SGST (assuming intrastate - Karnataka to Karnataka)
-    const cgst = totalTax / 2;
-    const sgst = totalTax / 2;
+    // We used order.total_amount as the final paid amount
+    // So Shipping = Paid - Gross + Coupon + Wallet
+    // E.g. Gross 118. Coupon 10. Paid 108. Shipping 0.
+    // 108 - 118 + 10 + 0 = 0. Correct.
+
+    const shippingCost = Math.max(0, order.total_amount - calculatedGross + couponDiscount + walletUsed);
+
+    // 3. Payment/Order Status Logic
+    let displayStatus = 'PENDING';
+    let statusColor = '#F59E0B'; // Amber/Warning by default
+
+    // Priority 1: Order Cancellation
+    if (order.status?.toLowerCase() === 'cancelled') {
+        displayStatus = 'CANCELLED';
+        statusColor = '#EF4444'; // Red
+    }
+    // Priority 2: Payment Status (Admin overrides)
+    else if (order.payment_status === 'refunded') {
+        displayStatus = 'REFUNDED';
+        statusColor = '#6366F1'; // Indigo
+    }
+    else if (order.payment_status === 'paid') {
+        displayStatus = 'PAID';
+        statusColor = '#10B981'; // Green
+    }
+    else if (order.payment_status === 'failed') {
+        displayStatus = 'PAYMENT FAILED';
+        statusColor = '#EF4444'; // Red
+    }
+    else {
+        // Fallback for pending/cod
+        if (order.payment_method === 'cod') {
+            displayStatus = 'PENDING (COD)';
+        } else {
+            displayStatus = 'PAYMENT PENDING';
+        }
+    }
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
+                {/* Watermark Logo */}
+                <Image src={logoPath} style={styles.watermark} />
 
                 {/* Header */}
                 <View style={styles.header}>
                     <View>
-                        <Image
-                            src={logoPath}
-                            style={{ width: 150, height: 'auto', marginBottom: 10 }}
-                        />
+                        <Image src={logoPath} style={{ width: 100, height: 'auto', marginBottom: 10 }} />
                         <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#111827' }}>BRONCSTUDIO</Text>
-                        <Text style={{ fontSize: 9, color: '#6b7280', marginTop: 2 }}>Bangalore, India</Text>
-                        <Text style={{ fontSize: 9, color: '#6b7280' }}>support@broncstudio.com</Text>
-                        <Text style={{ fontSize: 9, color: '#6b7280' }}>GSTIN: 29AAAAA0000A1Z5</Text>
+                        <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 4 }}>Bangalore, Karnataka, India</Text>
+                        <Text style={{ fontSize: 8, color: '#6b7280' }}>support@broncstudio.com</Text>
+                        <Text style={{ fontSize: 8, color: '#6b7280' }}>GSTIN: 29AAAAA0000A1Z5</Text>
                     </View>
                     <View style={styles.companyDetails}>
-                        <Text style={styles.title}>INVOICE</Text>
-                        <Text style={[styles.subTitle, { fontSize: 11, fontWeight: 'bold', color: '#374151' }]}>Tax Invoice</Text>
+                        <Text style={styles.title}>TAX INVOICE</Text>
                         <Text style={styles.subTitle}>#{order.id.slice(0, 8).toUpperCase()}</Text>
+                        <Text style={{ fontSize: 9, marginTop: 4 }}>Date: {formatDate(order.created_at)}</Text>
+                        <Text style={{ fontSize: 9, marginTop: 2, color: statusColor, fontWeight: 'bold' }}>
+                            Status: {displayStatus}
+                        </Text>
                     </View>
                 </View>
 
-                {/* Bill To & Ship To */}
+                {/* Bill To / Ship To */}
                 <View style={styles.invoiceMeta}>
                     <View style={styles.metaColumn}>
-                        <Text style={styles.label}>Billed To</Text>
-                        <Text style={styles.value}>{order.shipping_address?.firstName} {order.shipping_address?.lastName}</Text>
+                        <Text style={styles.label}>Bill To / Ship To</Text>
+                        <Text style={[styles.value, { fontWeight: 'bold' }]}>{order.shipping_address?.firstName} {order.shipping_address?.lastName}</Text>
                         <Text style={styles.value}>{order.shipping_address?.address}</Text>
-                        <Text style={styles.value}>{order.shipping_address?.city} - {order.shipping_address?.pincode}</Text>
-                        <Text style={styles.value}>Phone: {order.shipping_address?.phone}</Text>
+                        <Text style={styles.value}>{order.shipping_address?.city}, {order.shipping_address?.state}</Text>
+                        <Text style={styles.value}>{order.shipping_address?.pincode}</Text>
+                        <Text style={styles.value}>Ph: {order.shipping_address?.phone}</Text>
                     </View>
-                    <View style={styles.metaColumn}>
+                    <View style={[styles.metaColumn, { alignItems: 'flex-end' }]}>
                         <Text style={styles.label}>Invoice Details</Text>
-                        <Text style={styles.value}>Invoice Date: {formatDate(order.created_at)}</Text>
-                        <Text style={styles.value}>Order ID: #{order.id.slice(0, 8)}</Text>
-                        <Text style={styles.value}>Place of Supply: Karnataka (29)</Text>
+                        <Text style={styles.value}>Order ID: {order.id}</Text>
+                        <Text style={styles.value}>Place of Supply: {order.shipping_address?.state || 'Karnataka'}</Text>
+                        <Text style={styles.value}>Payment Method: {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online'}</Text>
+                        {/* If interstate showing IGST, else CGST/SGST implied */}
+                        <Text style={[styles.value, { fontSize: 8, color: '#6b7280' }]}>{isInterState ? '(Inter-State Supply)' : '(Intra-State Supply)'}</Text>
                     </View>
                 </View>
 
                 {/* Items Table */}
                 <View style={styles.table}>
                     <View style={styles.tableHeader}>
-                        <Text style={[styles.productName, styles.col1]}>ITEM DESCRIPTION</Text>
-                        <Text style={[styles.productName, styles.col2]}>QTY</Text>
-                        <Text style={[styles.productName, styles.col3]}>UNIT PRICE</Text>
-                        <Text style={[styles.productName, styles.col4]}>TOTAL</Text>
+                        <Text style={[styles.colHeader, { width: '25%' }]}>Description</Text>
+                        <Text style={[styles.colHeader, { width: '8%', textAlign: 'center' }]}>Qty</Text>
+                        <Text style={[styles.colHeader, { width: '12%', textAlign: 'right' }]}>Rate</Text>
+                        <Text style={[styles.colHeader, { width: '12%', textAlign: 'right' }]}>Taxable Val</Text>
+
+                        {!isInterState ? (
+                            <>
+                                <Text style={[styles.colHeader, { width: '11%', textAlign: 'right' }]}>CGST</Text>
+                                <Text style={[styles.colHeader, { width: '11%', textAlign: 'right' }]}>SGST</Text>
+                            </>
+                        ) : (
+                            <Text style={[styles.colHeader, { width: '22%', textAlign: 'right' }]}>IGST</Text>
+                        )}
+
+                        <Text style={[styles.colHeader, { width: '18%', textAlign: 'right' }]}>Total</Text>
                     </View>
 
-                    {order.items?.map((item, index) => {
-                        const meta = item.metadata || {};
-                        const isCustom = meta.is_custom;
+                    {enrichedItems.map((item, index) => {
+                        // Rate calc
+                        const halfRate = item.taxPercent / 2;
+                        const halfAmt = item.taxAmount / 2;
 
                         return (
                             <View key={index} style={styles.tableRow}>
-                                <View style={styles.col1}>
+                                <View style={{ width: '25%', paddingHorizontal: 4 }}>
                                     <Text style={styles.productName}>{item.name}</Text>
-                                    <View style={styles.metaRow}>
-                                        {item.size && <Text style={[styles.productMeta, styles.metaItem]}>Size: {item.size}</Text>}
-                                        {meta.color && <Text style={styles.productMeta}>Color: {meta.color}</Text>}
+                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                        {item.size && <Text style={styles.productMeta}>Size: {item.size} </Text>}
+                                        {item.metadata?.color && <Text style={styles.productMeta}>Color: {item.metadata.color} </Text>}
                                     </View>
-
-                                    {/* Customization Details */}
-                                    {isCustom && meta.placements && (
-                                        <View style={{ marginTop: 4 }}>
-                                            {Object.entries(meta.placements).map(([key, val]: any) => (
-                                                <Text key={key} style={styles.customDetail}>
-                                                    • {key}: {val.print_type?.name || 'Custom Print'}
-                                                </Text>
-                                            ))}
-                                        </View>
-                                    )}
                                 </View>
 
-                                <Text style={[styles.value, styles.col2]}>{item.quantity}</Text>
-                                <Text style={[styles.value, styles.col3]}>{formatCurrency(item.price)}</Text>
-                                <Text style={[styles.value, styles.col4]}>{formatCurrency(item.price * item.quantity)}</Text>
+                                <Text style={[styles.colText, { width: '8%', textAlign: 'center' }]}>{item.quantity}</Text>
+                                <Text style={[styles.colText, { width: '12%', textAlign: 'right' }]}>{formatCurrency(item.price)}</Text>
+                                <Text style={[styles.colText, { width: '12%', textAlign: 'right' }]}>{formatCurrency(item.taxableValue)}</Text>
+
+                                {!isInterState ? (
+                                    <>
+                                        <View style={{ width: '11%', paddingHorizontal: 4, alignItems: 'flex-end' }}>
+                                            <Text style={styles.colText}>{formatCurrency(halfAmt)}</Text>
+                                            <Text style={{ fontSize: 6, color: '#6b7280' }}>@{halfRate}%</Text>
+                                        </View>
+                                        <View style={{ width: '11%', paddingHorizontal: 4, alignItems: 'flex-end' }}>
+                                            <Text style={styles.colText}>{formatCurrency(halfAmt)}</Text>
+                                            <Text style={{ fontSize: 6, color: '#6b7280' }}>@{halfRate}%</Text>
+                                        </View>
+                                    </>
+                                ) : (
+                                    <View style={{ width: '22%', paddingHorizontal: 4, alignItems: 'flex-end' }}>
+                                        <Text style={styles.colText}>{formatCurrency(item.taxAmount)}</Text>
+                                        <Text style={{ fontSize: 6, color: '#6b7280' }}>@{item.taxPercent}%</Text>
+                                    </View>
+                                )}
+
+                                <Text style={[styles.colText, { width: '18%', textAlign: 'right', fontWeight: 'bold' }]}>
+                                    {formatCurrency(item.totalLineAmount)}
+                                </Text>
                             </View>
                         );
                     })}
                 </View>
 
-                {/* Totals */}
+                {/* Totals Section */}
                 <View style={styles.totals}>
                     <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Subtotal</Text>
-                        <Text style={styles.totalValue}>{formatCurrency(subtotal)}</Text>
+                        <Text style={styles.totalLabel}>Total Taxable Amount</Text>
+                        <Text style={styles.totalValue}>{formatCurrency(runningSubtotal)}</Text>
                     </View>
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>CGST @9%</Text>
-                        <Text style={styles.totalValue}>{formatCurrency(cgst)}</Text>
-                    </View>
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>SGST @9%</Text>
-                        <Text style={styles.totalValue}>{formatCurrency(sgst)}</Text>
-                    </View>
-                    <View style={styles.totalRow}>
-                        <Text style={styles.totalLabel}>Shipping</Text>
-                        <Text style={styles.totalValue}>{estimatedShipping > 0 ? formatCurrency(estimatedShipping) : 'Free'}</Text>
-                    </View>
+
+                    {!isInterState ? (
+                        <>
+                            <View style={styles.totalRow}>
+                                <Text style={styles.totalLabel}>Total CGST</Text>
+                                <Text style={styles.totalValue}>{formatCurrency(runningTotalTax / 2)}</Text>
+                            </View>
+                            <View style={styles.totalRow}>
+                                <Text style={styles.totalLabel}>Total SGST</Text>
+                                <Text style={styles.totalValue}>{formatCurrency(runningTotalTax / 2)}</Text>
+                            </View>
+                        </>
+                    ) : (
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Total IGST</Text>
+                            <Text style={styles.totalValue}>{formatCurrency(runningTotalTax)}</Text>
+                        </View>
+                    )}
+
+                    {shippingCost > 0 && (
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Shipping</Text>
+                            <Text style={styles.totalValue}>{formatCurrency(shippingCost)}</Text>
+                        </View>
+                    )}
+
+                    {couponDiscount > 0 && (
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Coupon Discount</Text>
+                            <Text style={styles.totalValue}>-{formatCurrency(couponDiscount)}</Text>
+                        </View>
+                    )}
+
+                    {walletUsed > 0 && (
+                        <View style={styles.totalRow}>
+                            <Text style={styles.totalLabel}>Wallet Adjustment</Text>
+                            <Text style={styles.totalValue}>-{formatCurrency(walletUsed)}</Text>
+                        </View>
+                    )}
+
                     <View style={[styles.totalRow, styles.grandTotal]}>
                         <Text style={styles.grandTotalLabel}>Grand Total</Text>
                         <Text style={styles.grandTotalValue}>{formatCurrency(order.total_amount)}</Text>
                     </View>
                 </View>
 
-                {/* Payment Info */}
-                <View style={{ marginTop: 20, paddingTop: 15, borderTopWidth: 1, borderTopColor: '#e5e7eb', borderTopStyle: 'solid' }}>
-                    <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 8 }}>Payment Details</Text>
-                    <Text style={{ fontSize: 9, color: '#4b5563' }}>
-                        Payment Method: {order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online'}
+                {/* Note Area */}
+                <View style={{ marginTop: 20 }}>
+                    <Text style={{ fontSize: 8, fontStyle: 'italic', color: '#6b7280' }}>
+                        Note: No returns or exchanges are accepted as per our policy.
+                        This invoice shows a detailed breakdown of taxes applicable based on your shipping address.
+                        For any discrepancies, please contact support.
                     </Text>
-                    <Text style={{ fontSize: 9, color: '#4b5563', marginTop: 2 }}>
-                        Payment Status: {order.payment_status === 'paid' ? 'Paid' : 'Pending'}
-                    </Text>
-                    {order.payment_method !== 'cod' && order.payment_status === 'paid' && (
-                        <Text style={{ fontSize: 9, color: '#4b5563', marginTop: 2 }}>
-                            Payment Gateway: Online
-                        </Text>
-                    )}
                 </View>
 
                 {/* Footer */}
                 <View style={styles.footer}>
-                    <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>Note:</Text>
-                    <Text style={{ marginBottom: 8 }}>All sales are final. No returns or exchanges are applicable.</Text>
-                    <Text style={{ marginTop: 4 }}>Thank you for shopping with Broncstudio!</Text>
-                    <Text>This is a computer-generated invoice and does not require a signature.</Text>
-                    <Text style={{ marginTop: 8, fontSize: 9, color: '#6b7280' }}>www.broncstudio.com</Text>
+                    <Text>Subject to Bangalore Jurisdiction. This is a computer generated invoice.</Text>
+
+                    <View style={{ alignItems: 'center', marginTop: 10, marginBottom: 10 }}>
+                        <Text style={{ fontSize: 8, fontWeight: 'bold' }}>For BRONCSTUDIO</Text>
+                        <Image src={logoPath} style={{ width: 60, height: 'auto', opacity: 0.6, marginVertical: 4 }} />
+                        <Text style={{ fontSize: 7, color: '#6b7280' }}>(Authorized Signatory)</Text>
+                    </View>
+
+                    <Text style={{ fontWeight: 'bold' }}>www.broncstudio.com</Text>
+                    <Text style={{ marginTop: 2, fontSize: 6 }}>Regd: Bangalore, Karnataka. Contact: support@broncstudio.com</Text>
                 </View>
             </Page>
         </Document>

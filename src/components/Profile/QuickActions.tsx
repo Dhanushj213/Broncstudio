@@ -2,13 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Package, Heart, MapPin, CreditCard, Headphones, ChevronRight } from 'lucide-react';
+import { Package, Heart, CreditCard, Headphones, ChevronRight, Wallet } from 'lucide-react';
 
 export default function QuickActions() {
     const actions = [
         { icon: Package, label: 'My Orders', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20', href: '/profile/orders' },
         { icon: Heart, label: 'Wishlist', color: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-50 dark:bg-pink-900/20', href: '/profile/wishlist' },
-        { icon: MapPin, label: 'Addresses', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-900/20', href: '/profile/addresses' },
+
+        { icon: Wallet, label: 'My Wallet', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20', href: '/profile/wallet' },
         { icon: CreditCard, label: 'Payments', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-900/20', href: '/profile/payments' },
         { icon: Headphones, label: 'Support', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-900/20', href: '/profile/support' },
     ];

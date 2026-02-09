@@ -94,7 +94,64 @@ export async function updateOrderStatus(orderId: string, newStatus: string) {
         return { success: false, error: 'Database Update Failed: ' + updateError.message };
     }
 
-    // 5. Auto-Cleanup: Delete personalization images
+    // 5. Wallet Cashback Logic (5% on Delivery)
+    if (newStatus === 'delivered') {
+        const { processWalletTransaction } = await import('./walletActions');
+
+        // Fetch order total to calculate 5%
+        // NOTE: We should exclude shipping/tax if possible, but 'total_amount' is usually inclusive.
+        // User requested "exclude GST, shipping". 
+        // We might need to fetch items to calculate base value or store it separately.
+        // For now, let's use total_amount as a proxy or fetch items if we want strictness.
+        // Strict Rule: "Exclude GST, shipping".
+        // We'd need to re-sum `item.price * item.quantity` (assuming item.price is base).
+        // Let's do that for accuracy.
+
+        const { data: orderItems } = await supabaseClient
+            .from('order_items')
+            .select('price, quantity')
+            .eq('order_id', orderId);
+
+        let productValue = 0;
+        if (orderItems) {
+            productValue = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        }
+
+        // 5% Cashback
+        const cashbackAmount = parseFloat((productValue * 0.05).toFixed(2));
+
+        if (cashbackAmount > 0) {
+            // Get User ID from order (we need to fetch it if not in currentOrder)
+            const { data: orderUser } = await supabaseClient
+                .from('orders')
+                .select('user_id')
+                .eq('id', orderId)
+                .single();
+
+            if (orderUser && orderUser.user_id) {
+                await processWalletTransaction({
+                    userId: orderUser.user_id,
+                    amount: cashbackAmount,
+                    type: 'credit',
+                    reason: 'purchase_cashback',
+                    referenceId: orderId,
+                    expiryDays: 30 // 30 days expiry
+                });
+            }
+        }
+    } else if (newStatus === 'cancelled' || newStatus === 'returned') {
+        // Reverse Wallet if previously credited?
+        // Logic: if we credited for this order, we should debit it back.
+        // But usually cancellation happens before delivery, so no credit yet.
+        // Returns happen after delivery.
+
+        if (newStatus === 'returned') {
+            // TODO: Implement reversal logic if needed. 
+            // Search ledger for 'purchase_cashback' with this orderId and reverse it.
+        }
+    }
+
+    // 6. Auto-Cleanup: Delete personalization images
     if (newStatus === 'delivered' || newStatus === 'cancelled') {
         const { data: items } = await supabaseClient
             .from('order_items')
@@ -268,4 +325,43 @@ export async function undoLastStatusUpdate(orderId: string) {
     }
 
     return { success: true, newStatus };
+}
+
+export async function manualWalletAdjustment(userId: string, amount: number, type: 'credit' | 'debit', reason: string) {
+    const cookieStore = await cookies();
+
+    // 1. Authenticate & Verify Admin
+    const supabaseAuth = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) { return cookieStore.get(name)?.value },
+            },
+        }
+    );
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) return { success: false, error: 'Unauthorized' };
+    if (!isAdmin(user.email)) return { success: false, error: 'Access Denied' };
+
+    // 2. Perform Transaction
+    try {
+        const { processWalletTransaction } = await import('./walletActions');
+        const result = await processWalletTransaction({
+            userId,
+            amount,
+            type,
+            reason: reason || 'admin_adjustment',
+            // referenceId: `admin_${user.id}_${Date.now()}` // Optional reference
+        });
+
+        if (!result.success) {
+            return { success: false, error: result.error };
+        }
+
+        return { success: true };
+    } catch (err: any) {
+        console.error("Manual Wallet Adjustment Failed:", err);
+        return { success: false, error: err.message || 'Internal Server Error' };
+    }
 }

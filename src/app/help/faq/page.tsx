@@ -16,7 +16,7 @@ export default function FAQPage() {
                         </div>
                         <div className="bg-surface-2/50 border border-subtle rounded-xl p-6">
                             <h4 className="font-bold text-primary mb-2">Can I cancel my order?</h4>
-                            <p className="text-secondary">Yes, you can cancel your order within 24 hours of placing it or before it has been shipped, whichever is earlier. Please visit your Order History to request a cancellation.</p>
+                            <p className="text-secondary">Yes, you can cancel your order within 6 hours of placing it or before it has been shipped, whichever is earlier. Please visit your Order History to request a cancellation.</p>
                         </div>
                     </div>
                 </section>
@@ -31,6 +31,20 @@ export default function FAQPage() {
                         <div className="bg-surface-2/50 border border-subtle rounded-xl p-6">
                             <h4 className="font-bold text-primary mb-2">Do you ship internationally?</h4>
                             <p className="text-secondary">Currently, we treat India as our home. International shipping is coming soon! Sign up for our newsletter to be the first to know.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 className="text-xl font-bold text-primary mb-4">Returns & Exchanges</h3>
+                    <div className="space-y-6">
+                        <div className="bg-surface-2/50 border border-subtle rounded-xl p-6">
+                            <h4 className="font-bold text-primary mb-2">What is your return policy?</h4>
+                            <p className="text-secondary">We have a strict No Return Policy on all products. All sales are final. However, if you receive a damaged or defective item, we will happily exchange it for you.</p>
+                        </div>
+                        <div className="bg-surface-2/50 border border-subtle rounded-xl p-6">
+                            <h4 className="font-bold text-primary mb-2">How do I request an exchange for a damaged item?</h4>
+                            <p className="text-secondary">Please contact our support team within 3 days of delivery with photos or videos of the damage. We will guide you through the exchange process.</p>
                         </div>
                     </div>
                 </section>

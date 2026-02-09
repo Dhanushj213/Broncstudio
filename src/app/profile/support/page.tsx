@@ -16,7 +16,7 @@ const faqs: FAQ[] = [
     },
     {
         question: 'What is the return policy?',
-        answer: 'We offer a 30-day return policy for all unused items in their original packaging. To initiate a return, please contact our support team via email or phone. Return shipping is free for defective items.'
+        answer: 'We have a strict No Return Policy on all products. All sales are final. If you receive a damaged or defective item, please contact us within 3 days of delivery for an exchange.'
     },
     {
         question: 'Do you ship internationally?',

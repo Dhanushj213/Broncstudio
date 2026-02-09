@@ -7,30 +7,28 @@ export default function ReturnsPage() {
     return (
         <InfoPage title="Returns & Refunds">
             <div className="space-y-8 text-gray-700 dark:text-gray-300">
-                <div className="p-6 bg-coral-50 dark:bg-coral-900/10 border border-coral-100 dark:border-coral-500/20 rounded-xl text-coral-800 dark:text-coral-300 text-sm font-medium mb-8">
-                    <strong>Note:</strong> We have a 7-day hassle-free return policy for most items.
+                <div className="p-6 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-500/20 rounded-xl text-red-800 dark:text-red-300 text-sm font-medium mb-8">
+                    <strong>Important:</strong> We have a strict No Return Policy on all products.
                 </div>
 
-                <h3 className="text-xl font-bold text-navy-900 dark:text-white">How do I return an item?</h3>
-                <ol className="list-decimal pl-5 space-y-3">
-                    <li>Visit the <strong>Order History</strong> section in your profile.</li>
-                    <li>Select the order and item you wish to return.</li>
-                    <li>Choose a reason for return and submit the request.</li>
-                    <li>Our courier partner will pick up the item within 2–3 business days.</li>
-                </ol>
-
-                <h3 className="text-xl font-bold text-navy-900 dark:text-white mt-8">Refund Process</h3>
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white">Return Policy</h3>
                 <p>
-                    Once the item is picked up and verified at our warehouse, the refund will be initiated.
+                    Please note that we do not accept returns on any products, including personalized items. All sales are final. Since many of our products are made-to-order or customized, we are unable to offer returns or refunds once an order is placed.
                 </p>
-                <ul className="list-disc pl-5 space-y-2">
-                    <li><strong>Prepaid Orders:</strong> Refunded to original source (5–7 business days).</li>
-                    <li><strong>COD Orders:</strong> Refunded to your bank account via link/UPI or Store Credit (instant).</li>
+
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white mt-8">Damaged or Defective Items</h3>
+                <p>
+                    In the unlikely event that you receive a damaged or defective product, we are happy to offer an exchange.
+                </p>
+                <ul className="list-disc pl-5 space-y-2 mt-4">
+                    <li>Exchange requests must be raised within <strong>3 days</strong> of the order delivery date.</li>
+                    <li>Please provide clear photos or videos of the damage when contacting support.</li>
+                    <li>The item must be unused and in its original packaging.</li>
                 </ul>
 
-                <h3 className="text-xl font-bold text-navy-900 dark:text-white mt-8">Non-Returnable Items</h3>
+                <h3 className="text-xl font-bold text-navy-900 dark:text-white mt-8">How to Request an Exchange</h3>
                 <p>
-                    For hygiene reasons, innerwear, socks, and personalized items are not eligible for return unless defective.
+                    To request an exchange for a damaged item, please contact our customer support team immediately through our contact page or email us directly. We will review your request and guide you through the exchange process.
                 </p>
             </div>
         </InfoPage>

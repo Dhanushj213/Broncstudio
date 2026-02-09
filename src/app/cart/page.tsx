@@ -14,7 +14,7 @@ const CartPage = () => {
     const { settings } = useStoreSettings();
 
     const shipping = cartTotal >= settings.free_shipping_threshold ? 0 : settings.shipping_charge;
-    const tax = Math.round(cartTotal * (settings.tax_rate / 100)); // Dynamic Tax Rate
+    const tax = parseFloat((cartTotal * (settings.tax_rate / 100)).toFixed(2)); // Dynamic Tax Rate
     const total = cartTotal + shipping + tax;
 
     if (items.length === 0) {

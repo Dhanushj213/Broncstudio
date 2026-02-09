@@ -81,7 +81,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                         {/* Main Product */}
                         <div className="relative flex-1 aspect-[3/4] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                             <Image
-                                src={product.images?.[0] || ''}
+                                src={product.images?.[0] || '/images/placeholder.jpg'}
                                 alt={product.name}
                                 fill
                                 className="object-cover"
@@ -94,7 +94,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                 <div className="text-gray-400 flex-shrink-0"><Plus size={14} /></div>
                                 <div className="relative flex-1 aspect-[3/4] rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                                     <Image
-                                        src={item.images?.[0] || item.image || ''}
+                                        src={item.images?.[0] || item.image || '/images/placeholder.jpg'}
                                         alt={item.name}
                                         fill
                                         className="object-cover"

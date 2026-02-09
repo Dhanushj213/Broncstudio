@@ -3,11 +3,7 @@
 import React from 'react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 
-const FEATURES = [
-    { name: 'Vogue Kids', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Vogue_logo.svg/2560px-Vogue_logo.svg.png', quote: "The coolest kids' brand coming out of India right now.", date: 'Oct 2023' },
-    { name: 'Elle Decor', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Elle_logo.svg', quote: "Broncstudio brings a whimsical charm to nursery interiors.", date: 'Dec 2023' },
-    { name: 'Mint Lounge', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Livemint_logo.svg/1024px-Livemint_logo.svg.png', quote: "Sustainable, stylish, and built for play.", date: 'Jan 2024' },
-];
+const FEATURES: { name: string; logo: string; quote: string; date: string }[] = [];
 
 export default function PressPage() {
     return (

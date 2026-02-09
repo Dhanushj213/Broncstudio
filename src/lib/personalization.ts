@@ -24,6 +24,8 @@ export interface PersonalizationConfig {
         max_size_mb: number;
         allowed_formats: string[];
     };
+    gst_percent?: number;
+    print_gst_percent?: number;
 }
 
 

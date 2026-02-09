@@ -192,8 +192,14 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
             base_product_id: product.id,
             size: selectedSize,
             color: selectedColor,
-            placements: placements, // Store the entire state map
-            note: note
+            placements: placements,
+            note: note,
+
+            // Financial Breakdown for Tax Calc
+            base_price_unit: product.price,
+            customization_cost_unit: totalPrice - product.price,
+            gst_percent: product.metadata.personalization.gst_percent ?? 12,
+            print_gst_percent: product.metadata.personalization.print_gst_percent ?? 18
         };
 
         addToCart({
@@ -265,8 +271,8 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                                                 key={color}
                                                 onClick={() => setSelectedColor(color)}
                                                 className={`px-4 py-2 rounded-lg border font-medium text-sm transition-all ${selectedColor === color
-                                                        ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
-                                                        : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                                                    ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
+                                                    : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
                                                     }`}
                                             >
                                                 {color}
@@ -286,8 +292,8 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                                                 key={size}
                                                 onClick={() => setSelectedSize(size)}
                                                 className={`w-12 h-12 flex items-center justify-center rounded-lg border font-bold text-sm transition-all ${selectedSize === size
-                                                        ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
-                                                        : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
+                                                    ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900'
+                                                    : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
                                                     }`}
                                             >
                                                 {size}
@@ -423,8 +429,8 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                                 onClick={handleAddToCart}
                                 disabled={!canAddToCart}
                                 className={`w-full py-4 rounded-xl font-bold text-lg shadow-xl flex items-center justify-center gap-3 transition-all ${canAddToCart
-                                        ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:translate-y-[-2px]'
-                                        : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                                    ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:translate-y-[-2px]'
+                                    : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
                                     }`}
                             >
                                 <ShoppingBag size={20} />

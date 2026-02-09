@@ -65,6 +65,10 @@ export default function EditPersonalizationProductPage() {
             // Rich Placement Config
             placements: {} as Record<string, PlacementConfig>,
 
+            // Tax Configuration
+            gst_percent: 12,
+            print_gst_percent: 18,
+
             image_requirements: {
                 min_dpi: 300,
                 max_size_mb: 20,
@@ -638,25 +642,65 @@ export default function EditPersonalizationProductPage() {
                         <div className="p-6 border-t border-gray-100 space-y-8 animate-in slide-in-from-top-2">
 
                             {/* Price */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2">Base Product Cost (₹) *</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
-                                        <input
-                                            type="number"
-                                            className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 outline-none font-bold text-lg text-gray-900 bg-white"
-                                            placeholder="0.00"
-                                            value={formData.price}
-                                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                            required
-                                        />
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Base Product Cost (₹) *</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                                            <input
+                                                type="number"
+                                                className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 outline-none font-bold text-lg text-gray-900 bg-white"
+                                                placeholder="0.00"
+                                                value={formData.price}
+                                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                                required
+                                            />
+                                        </div>
+                                        <p className="text-xs text-gray-400 mt-1.5">Cost of the blank item alone.</p>
                                     </div>
-                                    <p className="text-xs text-gray-400 mt-1.5">Cost of the blank item alone.</p>
+                                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm">
+                                        <p className="font-bold text-navy-900 mb-1">Customer Pricing Model:</p>
+                                        <p className="text-gray-600">Base Cost + (Placement Price × Count) + Calculated GST</p>
+                                    </div>
                                 </div>
-                                <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-sm">
-                                    <p className="font-bold text-navy-900 mb-1">Customer Pricing Model:</p>
-                                    <p className="text-gray-600">Base Cost + (Placement Price × Count) + 18% GST</p>
+
+                                {/* GST Configuration */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-100 pt-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Base Product GST (%)</label>
+                                        <select
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 outline-none font-bold text-gray-900 bg-white"
+                                            value={formData.personalization.gst_percent ?? 12}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                personalization: { ...formData.personalization, gst_percent: Number(e.target.value) }
+                                            })}
+                                        >
+                                            <option value="0">0% (Exempt)</option>
+                                            <option value="5">5% (Apparel)</option>
+                                            <option value="12">12% (Apparel &gt; 1000)</option>
+                                            <option value="18">18%</option>
+                                            <option value="28">28%</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Print Service GST (%)</label>
+                                        <select
+                                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-navy-900 outline-none font-bold text-gray-900 bg-white"
+                                            value={formData.personalization.print_gst_percent ?? 18}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                personalization: { ...formData.personalization, print_gst_percent: Number(e.target.value) }
+                                            })}
+                                        >
+                                            <option value="0">0%</option>
+                                            <option value="5">5%</option>
+                                            <option value="12">12%</option>
+                                            <option value="18">18% (Service)</option>
+                                            <option value="28">28%</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 

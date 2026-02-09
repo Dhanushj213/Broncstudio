@@ -52,11 +52,12 @@ export default function DiscoverMore() {
     if (!loading && products.length === 0) return null;
 
     return (
-        <section className="py-20 px-6 bg-gradient-to-b from-gray-50 to-white dark:from-navy-900 dark:to-navy-950">
+        <section className="pt-10 pb-20 px-6 bg-white dark:bg-black/5">
             <div className="max-w-[1440px] mx-auto">
                 <div className="flex flex-col items-center mb-12 text-center">
-                    <div className="w-12 h-12 bg-coral-100 dark:bg-coral-900/20 rounded-full flex items-center justify-center text-coral-500 mb-4 animate-pulse">
-                        <Sparkles size={24} />
+                    <div className="relative w-16 h-16 flex items-center justify-center mb-4">
+                        <div className="absolute inset-0 bg-amber-500/20 blur-xl rounded-full animate-pulse" />
+                        <Sparkles size={32} className="relative z-10 text-amber-500 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]" />
                     </div>
                     <h2 className="text-3xl md:text-4xl font-heading font-black text-navy-900 dark:text-white mb-3">
                         Discover More

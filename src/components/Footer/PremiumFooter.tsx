@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import {
     Lock, Truck, RotateCcw, MapPin,
     Instagram, Facebook, Youtube, Twitter,
-    ChevronDown, CreditCard,
+    ChevronDown, CreditCard, Wallet,
     Crown, Leaf, BookOpen, Newspaper, Percent, Sparkles, HelpCircle
 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
@@ -89,9 +89,7 @@ export default function PremiumFooter() {
                             <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
                                 <Truck size={14} className="text-emerald-400" /> Fast Delivery
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
-                                <RotateCcw size={14} className="text-emerald-400" /> Returns
-                            </div>
+
                             <div className="flex items-center gap-2 text-xs text-brand-secondary bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 cursor-default">
                                 <MapPin size={14} className="text-emerald-400" /> India
                             </div>
@@ -129,8 +127,8 @@ export default function PremiumFooter() {
                             </li>
                             <li>
                                 <Link href="/rewards" className="flex items-center gap-2 text-amber-500 hover:text-amber-400 transition-colors font-bold group">
-                                    <Crown size={16} className="group-hover:-translate-y-0.5 transition-transform" />
-                                    Legends Club
+                                    <Wallet size={16} className="group-hover:-translate-y-0.5 transition-transform" />
+                                    My Wallet
                                 </Link>
                             </li>
                             <li>

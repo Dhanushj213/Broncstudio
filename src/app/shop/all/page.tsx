@@ -55,7 +55,7 @@ export default function AllProductsPage() {
             <AmbientBackground />
 
             {/* Header */}
-            <div className="sticky top-[72px] z-30 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-white/5 py-4 px-6 md:px-12 flex items-center justify-between">
+            <div className="sticky top-[60px] z-30 bg-white dark:bg-black border-b border-gray-100 dark:border-white/5 py-4 px-6 md:px-12 flex items-center justify-between transition-all duration-300 shadow-sm">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => router.back()}
@@ -76,7 +76,7 @@ export default function AllProductsPage() {
             </div>
 
             {/* Grid */}
-            <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-6 pt-8">
+            <div className="relative z-10 max-w-[1400px] mx-auto px-4 md:px-6 pt-32">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-12">
                     {products.map((product, idx) => (
                         <div key={product.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 0.05, 1)}s` }}>

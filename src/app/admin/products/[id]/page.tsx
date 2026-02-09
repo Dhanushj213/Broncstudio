@@ -34,6 +34,8 @@ export default function EditProductPage() {
         category_id: '',
         images: [] as string[],
         is_featured: false,
+        gst_percent: '18', // Default
+
 
         tags: '',
         // Dynamic Fields
@@ -138,7 +140,8 @@ export default function EditProductPage() {
             product_type: meta.product_type || '',
             fit: meta.fit || 'regular',
             style: meta.style || 'minimal',
-            primary_color: meta.primary_color || ''
+            primary_color: meta.primary_color || '',
+            gst_percent: meta.gst_percent ? String(meta.gst_percent) : '18'
         });
         setFetching(false);
     };
@@ -192,6 +195,7 @@ export default function EditProductPage() {
             is_featured: formData.is_featured,
             tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
             // Save Dynamic Fields
+            gst_percent: parseFloat(formData.gst_percent),
             stock_status: formData.stock_status,
             colors: formData.colors,
             sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
@@ -438,6 +442,23 @@ export default function EditProductPage() {
                                 onChange={(e) => setFormData({ ...formData, compare_at_price: e.target.value })}
                             />
                         </div>
+
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">GST Rate (%)</label>
+                            <select
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                value={formData.gst_percent}
+                                onChange={(e) => setFormData({ ...formData, gst_percent: e.target.value })}
+                            >
+                                <option value="0">0% (Exempt)</option>
+                                <option value="3">3%</option>
+                                <option value="5">5%</option>
+                                <option value="12">12%</option>
+                                <option value="18">18%</option>
+                                <option value="28">28%</option>
+                            </select>
+                        </div>
+
                         {/* Category Selection Logic */}
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Department (Parent)</label>

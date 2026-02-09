@@ -92,7 +92,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const clearCart = () => setItems([]);
 
     const cartCount = items.reduce((acc, item) => acc + item.qty, 0);
-    const cartTotal = items.reduce((acc, item) => acc + (item.price * item.qty), 0);
+    const cartTotal = parseFloat(items.reduce((acc, item) => acc + (item.price * item.qty), 0).toFixed(2));
 
     return (
         <CartContext.Provider value={{

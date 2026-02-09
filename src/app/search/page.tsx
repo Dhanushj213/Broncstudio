@@ -25,12 +25,19 @@ function SearchContent() {
                 return;
             }
 
-            // Simple text search on name or description
-            const { data, error } = await supabase
+            // Split query into words for better matching
+            const words = query.trim().split(/\s+/).filter(Boolean);
+
+            // Build query: name ilike %word1% AND name ilike %word2% ...
+            let queryBuilder = supabase
                 .from('products')
-                .select('*')
-                .ilike('name', `%${query}%`)
-                .limit(50);
+                .select('*');
+
+            words.forEach(word => {
+                queryBuilder = queryBuilder.ilike('name', `%${word}%`);
+            });
+
+            const { data, error } = await queryBuilder.limit(50);
 
             if (error) {
                 console.error('Search error:', error);
@@ -44,20 +51,20 @@ function SearchContent() {
     }, [query]);
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-[var(--header-height)]">
+        <div className="min-h-screen bg-gray-50 dark:bg-black pt-[var(--header-height)]">
             {/* Header */}
-            <div className="sticky top-[72px] z-20 bg-white/80 backdrop-blur-md border-b border-gray-100 py-4 px-4 md:px-8 flex items-center gap-4">
+            <div className="sticky top-[60px] md:top-[72px] z-20 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-white/10 py-4 px-4 md:px-8 flex items-center gap-4 transition-all">
                 <button
                     onClick={() => router.back()}
-                    className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="p-2 -ml-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
                 >
-                    <ArrowLeft className="text-navy-900" size={24} />
+                    <ArrowLeft className="text-navy-900 dark:text-white" size={24} />
                 </button>
                 <div>
-                    <h1 className="text-xl font-bold text-navy-900">
+                    <h1 className="text-xl font-bold text-navy-900 dark:text-white">
                         "{query}"
                     </h1>
-                    <p className="text-xs text-gray-500">{products.length} results found</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{products.length} results found</p>
                 </div>
             </div>
 

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Package, ChevronRight, Loader2, ShoppingBag, Clock, PackageCheck, Truck, XCircle } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { createClient } from '@/utils/supabase/client';
+import { cancelOrder } from '@/actions/orderActions';
 
 interface Order {
     id: string;
@@ -33,7 +34,7 @@ export default function OrdersPage() {
 
             const { data, error } = await supabase
                 .from('orders')
-                .select('*')
+                .select('*, items:order_items(name, quantity, image_url)')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
@@ -146,8 +147,40 @@ export default function OrdersPage() {
                                         <div className="text-sm font-bold text-navy-900 dark:text-white">
                                             Total: {formatPrice(order.total_amount)}
                                         </div>
-                                        <div className="flex items-center gap-1 text-xs font-bold text-coral-500 group-hover:underline">
-                                            View Details <ChevronRight size={14} />
+                                        <div className="flex items-center gap-4">
+                                            {(() => {
+                                                const created = new Date(order.created_at).getTime();
+                                                const now = new Date().getTime();
+                                                const diffHours = (now - created) / (1000 * 60 * 60);
+                                                const isCancellable = diffHours < 6 && !['delivered', 'shipped', 'cancelled'].includes(order.status);
+
+                                                if (isCancellable) {
+                                                    return (
+                                                        <button
+                                                            onClick={async (e) => {
+                                                                e.preventDefault();
+                                                                if (confirm('Are you sure you want to cancel this order?')) {
+                                                                    const res = await cancelOrder(order.id);
+                                                                    if (res.success) {
+                                                                        // Optimistic update
+                                                                        setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: 'cancelled' } : o));
+                                                                        alert('Order cancelled successfully.');
+                                                                    } else {
+                                                                        alert(res.error || 'Failed to cancel order.');
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-200 transition-colors z-10 relative"
+                                                        >
+                                                            Cancel Order
+                                                        </button>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
+                                            <div className="flex items-center gap-1 text-xs font-bold text-coral-500 group-hover:underline">
+                                                View Details <ChevronRight size={14} />
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>

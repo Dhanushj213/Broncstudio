@@ -25,6 +25,7 @@ export default function AddProductPage() {
         name: '',
         description: '',
         price: '',
+        gst_percent: '18', // Default GST
         compare_at_price: '',
         category_id: '',
         images: [] as string[],
@@ -141,6 +142,7 @@ export default function AddProductPage() {
             material_care: formData.material_care,
             shipping_returns: formData.shipping_returns,
             size_guide: formData.size_guide,
+            gst_percent: parseFloat(formData.gst_percent),
 
             // Engine Meta
             is_pet: formData.is_pet,
@@ -314,6 +316,23 @@ export default function AddProductPage() {
                                 value={formData.compare_at_price}
                                 onChange={(e) => setFormData({ ...formData, compare_at_price: e.target.value })}
                             />
+                        </div>
+
+                        {/* GST Selection */}
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">GST Rate (%)</label>
+                            <select
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                value={formData.gst_percent}
+                                onChange={(e) => setFormData({ ...formData, gst_percent: e.target.value })}
+                            >
+                                <option value="0">0% (Exempt)</option>
+                                <option value="3">3%</option>
+                                <option value="5">5%</option>
+                                <option value="12">12%</option>
+                                <option value="18">18%</option>
+                                <option value="28">28%</option>
+                            </select>
                         </div>
 
                         {/* Status Field */}

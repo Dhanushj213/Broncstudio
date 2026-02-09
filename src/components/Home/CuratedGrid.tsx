@@ -32,7 +32,7 @@ export default function CuratedGrid() {
     if (sections.length === 0) return null;
 
     return (
-        <section className="py-12 md:py-20 px-4 md:px-8 bg-white dark:bg-black/5">
+        <section className="pt-12 md:pt-20 pb-0 md:pb-0 px-4 md:px-8 bg-white dark:bg-black/5">
             <div className="max-w-[1440px] mx-auto">
                 <div className="text-center mb-10">
                     <h2 className="text-2xl md:text-3xl font-heading font-bold text-navy-900 dark:text-white uppercase tracking-widest">

@@ -87,7 +87,7 @@ export default function SearchOverlay() {
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-navy-900 dark:text-white">Trending Now</h3>
                             </div>
                             <div className="flex flex-wrap gap-3">
-                                {['Little Legends', 'Sustainable', 'Gift Sets', 'Space Decor', 'Dinosaur Tee', 'Party Wear'].map((tag) => (
+                                {['Oversized Tees', 'Hoodies', 'Caps', 'Tote Bags', 'Daily Planners', 'iPhone Cases'].map((tag) => (
                                     <button
                                         key={tag}
                                         onClick={() => handleSearch(tag)}
@@ -96,6 +96,30 @@ export default function SearchOverlay() {
                                         {tag}
                                     </button>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* Suggestions Section */}
+                        <div className="mt-6">
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-4 px-1">Suggestions</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {(() => {
+                                    const suggestions = [
+                                        'Fridge Magnets', 'Pet Tags', 'Colouring Books', 'Posters',
+                                        'Tote Bags', 'Mouse Pads', 'Gaming Pads', 'Coffee Mugs',
+                                        'Badges', 'Dog Tees'
+                                    ];
+                                    // Shuffle using a simple random sort for display variety
+                                    return suggestions.sort(() => Math.random() - 0.5).map((item) => (
+                                        <button
+                                            key={item}
+                                            onClick={() => handleSearch(item)}
+                                            className="text-sm text-gray-600 dark:text-gray-300 hover:text-navy-900 dark:hover:text-white bg-gray-50 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 px-4 py-2 rounded-lg transition-colors"
+                                        >
+                                            {item}
+                                        </button>
+                                    ));
+                                })()}
                             </div>
                         </div>
                     </motion.div>

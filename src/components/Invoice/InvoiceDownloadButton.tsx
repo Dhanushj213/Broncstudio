@@ -23,8 +23,8 @@ export default function InvoiceDownloadButton({ order, variant = 'outline' }: In
     }
 
     const buttonClasses = {
-        primary: "flex items-center gap-2 bg-navy-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-navy-800 transition-colors",
-        outline: "flex items-center gap-2 border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-gray-50 transition-colors",
+        primary: "flex items-center gap-2 bg-navy-900 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-navy-800 dark:bg-white dark:text-navy-900 dark:hover:bg-gray-200 transition-colors",
+        outline: "flex items-center gap-2 border border-subtle text-primary px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors",
         ghost: "flex items-center gap-2 text-coral-500 hover:text-coral-600 text-sm font-bold"
     };
 

@@ -106,9 +106,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                         <div>
                             <span className="text-sm font-bold text-primary block mb-3">Select Color: <span className="text-secondary font-normal">{selectedColor}</span></span>
                             <div className="flex gap-3">
-                                {colors.map((color: any) => (
+                                {colors.map((color: any, i: number) => (
                                     <button
-                                        key={color.name}
+                                        key={`${color.name}-${i}`}
                                         onClick={() => setSelectedColor(color.name)}
                                         className={`w-10 h-10 rounded-full border-2 p-1 transition-all ${selectedColor === color.name ? 'border-black dark:border-white' : 'border-transparent hover:border-subtle'}`}
                                         title={color.name}
@@ -178,10 +178,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                     <Truck size={18} className="text-primary" />
                     <span className="text-sm text-primary">Fast Delivery</span>
                 </div>
-                <div className="flex items-center gap-3">
-                    <RotateCcw size={18} className="text-primary" />
-                    <span className="text-sm text-primary">{meta.shipping_returns ? 'Easy Returns' : '7 Day Return Policy'}</span>
-                </div>
+
                 <div className="flex items-center gap-3">
                     <ShieldCheck size={18} className="text-primary" />
                     <span className="text-sm text-primary">Cash on Delivery Available</span>

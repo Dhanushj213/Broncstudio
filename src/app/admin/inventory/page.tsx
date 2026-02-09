@@ -19,6 +19,7 @@ export default function InventoryPage() {
     const [products, setProducts] = useState<ProductInventory[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [filter, setFilter] = useState('all');
     const [savingId, setSavingId] = useState<string | null>(null);
 
     const supabase = createBrowserClient(
@@ -77,9 +78,13 @@ export default function InventoryPage() {
         setSavingId(null);
     };
 
-    const filteredProducts = products.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredProducts = products.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const status = p.metadata?.stock_status || 'in_stock';
+
+        if (filter === 'all') return matchesSearch;
+        return matchesSearch && status === filter;
+    });
 
     return (
         <div className="space-y-6">
@@ -91,15 +96,36 @@ export default function InventoryPage() {
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4">
-                <div className="relative flex-1">
+            <div className="flex flex-col md:flex-row gap-4">
+                <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 flex gap-1 w-fit">
+                    <button
+                        onClick={() => setFilter('all')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'all' ? 'bg-navy-900 text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+                    >
+                        All
+                    </button>
+                    <button
+                        onClick={() => setFilter('low_stock')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'low_stock' ? 'bg-orange-100 text-orange-700' : 'text-gray-500 hover:bg-gray-50'}`}
+                    >
+                        Low Stock
+                    </button>
+                    <button
+                        onClick={() => setFilter('out_of_stock')}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'out_of_stock' ? 'bg-red-100 text-red-700' : 'text-gray-500 hover:bg-gray-50'}`}
+                    >
+                        Out of Stock
+                    </button>
+                </div>
+
+                <div className="relative flex-1 bg-white rounded-xl shadow-sm border border-gray-100">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
                         type="text"
                         placeholder="Search products..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                        className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 rounded-lg focus:outline-none"
                     />
                 </div>
             </div>

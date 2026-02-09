@@ -58,6 +58,11 @@ export default function AddPersonalizationProductPage() {
             print_types: {} as Record<string, PrintTypeConfig>,
             placements: {} as Record<string, PlacementConfig>,
 
+            // Tax Configuration
+            gst_percent: 12, // Base Product Tax (Apparel default)
+            print_gst_percent: 18, // Customization Service Tax
+
+
             // New Gender Logic
             gender_supported: [] as Gender[],
 

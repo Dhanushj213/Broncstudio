@@ -17,6 +17,11 @@ export default function EditProfilePage() {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
 
+    const [loadingOtp, setLoadingOtp] = useState(false);
+    const [showOtpInput, setShowOtpInput] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [otpSent, setOtpSent] = useState(false);
+
     const router = useRouter();
     const supabase = createClient();
 
@@ -32,12 +37,56 @@ export default function EditProfilePage() {
             // Set form values from user data
             setEmail(user.email || '');
             setFullName(user.user_metadata?.full_name || '');
-            setPhone(user.user_metadata?.phone || '');
+            // Prioritize authenticated phone, fallback to metadata
+            setPhone(user.phone || user.user_metadata?.phone || '');
             setLoading(false);
         };
 
         fetchUserData();
     }, [supabase, router]);
+
+    const handleSendOtp = async () => {
+        setLoadingOtp(true);
+        setError(null);
+        try {
+            const { error: otpError } = await supabase.auth.updateUser({
+                phone: `+91${phone}`
+            });
+
+            if (otpError) throw otpError;
+
+            setOtpSent(true);
+            setShowOtpInput(true);
+            alert('OTP sent to your phone number');
+        } catch (err: any) {
+            setError(err.message || 'Failed to send OTP');
+        } finally {
+            setLoadingOtp(false);
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        setLoadingOtp(true);
+        setError(null);
+        try {
+            const { error: verifyError } = await supabase.auth.verifyOtp({
+                phone: `+91${phone}`,
+                token: otp,
+                type: 'phone_change'
+            });
+
+            if (verifyError) throw verifyError;
+
+            setSuccess(true);
+            setShowOtpInput(false);
+            setOtpSent(false);
+            alert('Phone number verified successfully!');
+        } catch (err: any) {
+            setError(err.message || 'Invalid OTP');
+        } finally {
+            setLoadingOtp(false);
+        }
+    };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,6 +154,7 @@ export default function EditProfilePage() {
                         </div>
                     )}
 
+                    {/* Full Name */}
                     <div>
                         <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Full Name</label>
                         <input
@@ -115,6 +165,8 @@ export default function EditProfilePage() {
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 text-navy-900 dark:text-white focus:border-navy-900 dark:focus:border-white focus:ring-0 outline-none transition-colors"
                         />
                     </div>
+
+                    {/* Email */}
                     <div>
                         <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Email</label>
                         <input
@@ -125,28 +177,79 @@ export default function EditProfilePage() {
                         />
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Email cannot be changed here</p>
                     </div>
+
+                    {/* Phone Number with OTP */}
                     <div>
                         <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Phone Number</label>
-                        <input
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="+91 XXXXX XXXXX"
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 text-navy-900 dark:text-white focus:border-navy-900 dark:focus:border-white focus:ring-0 outline-none transition-colors"
-                        />
+                        <div className="flex gap-2">
+                            <input
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                    setPhone(val);
+                                }}
+                                placeholder="9876543210"
+                                className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 text-navy-900 dark:text-white focus:border-navy-900 dark:focus:border-white focus:ring-0 outline-none transition-colors"
+                            />
+                            {showOtpInput ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowOtpInput(false)}
+                                    className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-navy-900"
+                                >
+                                    Cancel
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={handleSendOtp}
+                                    disabled={loadingOtp || phone.length !== 10}
+                                    className="px-4 py-2 bg-navy-900 dark:bg-white text-white dark:text-black rounded-xl text-sm font-bold disabled:opacity-50 whitespace-nowrap"
+                                >
+                                    {loadingOtp ? <Loader2 className="animate-spin" size={16} /> : 'Verify'}
+                                </button>
+                            )}
+                        </div>
+                        {otpSent && <p className="text-xs text-green-600 mt-1">OTP sent to +91 {phone}</p>}
                     </div>
+
+                    {/* OTP Input */}
+                    {showOtpInput && (
+                        <div className="animate-in fade-in slide-in-from-top-2">
+                            <label className="block text-sm font-bold text-navy-900 dark:text-white mb-1">Enter OTP</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={otp}
+                                    onChange={(e) => setOtp(e.target.value)}
+                                    placeholder="Enter 6-digit OTP"
+                                    maxLength={6}
+                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-black/20 text-navy-900 dark:text-white focus:border-navy-900 dark:focus:border-white focus:ring-0 outline-none transition-colors"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleVerifyOtp}
+                                    disabled={loadingOtp || otp.length !== 6}
+                                    className="px-6 py-2 bg-coral-500 text-white rounded-xl text-sm font-bold disabled:opacity-50"
+                                >
+                                    {loadingOtp ? <Loader2 className="animate-spin" size={16} /> : 'Confirm'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     <button
                         type="submit"
                         disabled={saving || success}
-                        className="w-full bg-navy-900 dark:bg-white text-white dark:text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-coral-500 dark:hover:bg-gray-200 transition-colors mt-4 disabled:opacity-70"
+                        className="w-full bg-navy-900 dark:bg-white text-white dark:text-black font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-coral-500 dark:hover:bg-gray-200 transition-colors mt-8 disabled:opacity-70"
                     >
                         {saving ? (
                             <Loader2 size={18} className="animate-spin" />
                         ) : success ? (
                             <><CheckCircle size={18} /> Saved!</>
                         ) : (
-                            <><Save size={18} /> Save Changes</>
+                            <><Save size={18} /> Save Profile</>
                         )}
                     </button>
                 </form>

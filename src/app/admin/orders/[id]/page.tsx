@@ -31,8 +31,10 @@ interface Order {
     user_id: string;
     payment_status: string;
     payment_method: string;
+    wallet_amount_used: number;
+    discount_amount: number; // Added coupon discount field
     status_history?: { status: string; timestamp: string; updated_by?: string }[];
-    items?: OrderItem[]; // We'll fetch these manually
+    items?: OrderItem[];
 }
 
 export default function OrderDetailPage() {
@@ -80,6 +82,10 @@ export default function OrderDetailPage() {
 
         if (itemsData) {
             setItems(itemsData);
+            // MERGE ITEMS INTO ORDER STATE FOR INVOICE
+            setOrder({ ...orderData, items: itemsData });
+        } else {
+            setOrder(orderData);
         }
         setLoading(false);
     };
@@ -147,6 +153,9 @@ export default function OrderDetailPage() {
     }
 
     const isPending = order.status === 'pending';
+
+    // Calculations
+    // Calculations done in render now
 
     return (
         <div className="max-w-5xl mx-auto space-y-6 pb-20">
@@ -313,9 +322,74 @@ export default function OrderDetailPage() {
                                 )
                             })}
                         </div>
-                        <div className="bg-gray-50 p-6 flex justify-between items-center border-t border-gray-100">
-                            <span className="font-bold text-gray-500">Total Amount</span>
-                            <span className="text-2xl font-bold text-navy-900">₹{order.total_amount}</span>
+
+                        {/* Summary Section with GST & Wallet */}
+                        <div className="bg-gray-50 p-6 space-y-3 border-t border-gray-100">
+                            {(() => {
+                                // Detailed Bill Logic
+                                const itemsTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                                const walletUsed = order.wallet_amount_used || 0;
+                                const couponDiscount = order.discount_amount || 0;
+                                const totalPaid = order.total_amount;
+
+                                // Derived Shipping
+                                const derivedShipping = Math.max(0, totalPaid - (itemsTotal - couponDiscount - walletUsed));
+
+                                // Tax Calculation (Estimated for display)
+                                // Assuming tax is inclusive in the Items Total for simplicity in this view, 
+                                // or we can show tax breakdown of the subtotal.
+                                // Let's match the Invoice logic: Taxable Value + GST = Items Total
+                                const taxRate = 0.18;
+                                const taxableValue = itemsTotal / (1 + taxRate);
+                                const gstAmount = itemsTotal - taxableValue;
+
+                                return (
+                                    <>
+                                        <div className="flex justify-between items-center text-sm text-gray-600">
+                                            <span>Items Subtotal</span>
+                                            <span>₹{itemsTotal.toFixed(2)}</span>
+                                        </div>
+
+                                        {derivedShipping > 0 && (
+                                            <div className="flex justify-between items-center text-sm text-gray-600">
+                                                <span>Shipping</span>
+                                                <span>₹{derivedShipping.toFixed(2)}</span>
+                                            </div>
+                                        )}
+
+                                        {couponDiscount > 0 && (
+                                            <div className="flex justify-between items-center text-sm text-green-600">
+                                                <span>Coupon Discount</span>
+                                                <span>- ₹{couponDiscount.toFixed(2)}</span>
+                                            </div>
+                                        )}
+
+                                        {walletUsed > 0 && (
+                                            <div className="flex justify-between items-center text-sm text-emerald-600 font-medium">
+                                                <span>Wallet Credit Used</span>
+                                                <span>- ₹{walletUsed.toFixed(2)}</span>
+                                            </div>
+                                        )}
+
+                                        {/* GST Breakdown */}
+                                        <div className="border-t border-gray-200 my-2 pt-2 pb-2">
+                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                                <span>Taxable Value (Approx)</span>
+                                                <span>₹{taxableValue.toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-xs text-gray-500">
+                                                <span>GST (18%)</span>
+                                                <span>₹{gstAmount.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-between items-center pt-2 border-t border-gray-200">
+                                            <span className="font-bold text-gray-900 text-lg">Total Paid</span>
+                                            <span className="text-2xl font-bold text-navy-900">₹{totalPaid.toFixed(2)}</span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
                         </div>
                     </div>
 
@@ -335,7 +409,8 @@ export default function OrderDetailPage() {
                                 <div className="flex flex-col items-end gap-2">
                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${order.payment_status === 'paid' ? 'bg-green-100 border-green-200 text-green-700' :
                                         order.payment_status === 'failed' ? 'bg-red-100 border-red-200 text-red-700' :
-                                            'bg-amber-100 border-amber-200 text-amber-700'
+                                            order.payment_status === 'refunded' ? 'bg-indigo-100 border-indigo-200 text-indigo-700' :
+                                                'bg-amber-100 border-amber-200 text-amber-700'
                                         }`}>
                                         {order.payment_status}
                                     </span>
@@ -430,13 +505,34 @@ export default function OrderDetailPage() {
                                     const isLast = idx === order.status_history!.length - 1;
                                     const finalShadow = isLast ? shadowClass : '';
 
+                                    // Determine specific text for cancellation
+                                    let displayText = hist.status.replace(/_/g, ' ');
+                                    let subText = null;
+
+                                    if (hist.status === 'cancelled') {
+                                        if (hist.updated_by === 'Customer') {
+                                            displayText = 'Cancelled by Customer';
+                                        } else {
+                                            displayText = 'Cancelled by Bronc';
+                                            // Optional: Show which admin cancelled it if needed
+                                            if (hist.updated_by && hist.updated_by.includes('@')) {
+                                                subText = `by ${hist.updated_by}`;
+                                            }
+                                        }
+                                    } else if (hist.updated_by && hist.updated_by !== 'Customer') {
+                                        // For other statuses, show who updated it if available (and not Customer, just in case)
+                                        if (hist.updated_by.includes('@')) {
+                                            subText = `by ${hist.updated_by}`;
+                                        }
+                                    }
+
                                     return (
                                         <div key={idx} className="relative">
                                             <div className={`absolute -left-[21px] top-1 w-3 h-3 rounded-full border-2 border-white box-content ${colorClass} ${finalShadow}`} />
-                                            <p className="text-sm font-medium text-gray-900 capitalize">{hist.status.replace(/_/g, ' ')}</p>
+                                            <p className="text-sm font-medium text-gray-900 capitalize">{displayText}</p>
                                             <p className="text-xs text-gray-400" suppressHydrationWarning>
                                                 {new Date(hist.timestamp).toLocaleString()}
-                                                {hist.updated_by && <span className="block text-[10px] text-gray-300">by {hist.updated_by}</span>}
+                                                {subText && <span className="block text-[10px] text-gray-400">{subText}</span>}
                                             </p>
                                         </div>
                                     );

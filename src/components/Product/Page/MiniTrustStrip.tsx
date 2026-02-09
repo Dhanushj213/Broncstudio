@@ -6,7 +6,6 @@ import { ShieldCheck, RotateCcw, Headphones, CheckCircle } from 'lucide-react';
 export default function MiniTrustStrip() {
     const features = [
         { icon: ShieldCheck, text: "100% Secure Payments" },
-        { icon: RotateCcw, text: "Easy 7-Day Returns" },
         { icon: Headphones, text: "24/7 Support" },
         { icon: CheckCircle, text: "Quality Assured" },
     ];
