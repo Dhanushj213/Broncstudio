@@ -67,53 +67,53 @@ export default function ShippingPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <Truck size={24} className="text-navy-900" />
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                        <Truck size={24} className="text-navy-900 dark:text-coral-500" />
                         Shipping & Logistics
                     </h1>
-                    <p className="text-gray-500 mt-1">Manage shipments and track deliveries.</p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Manage shipments and track deliveries.</p>
                 </div>
             </div>
 
             {/* Filters */}
             <div className="flex flex-col md:flex-row gap-4">
-                <div className="bg-white p-1 rounded-xl shadow-sm border border-gray-100 flex gap-1 w-fit">
+                <div className="bg-white dark:bg-slate-900 p-1 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 flex gap-1 w-fit">
                     <button
                         onClick={() => setFilter('unshipped')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'unshipped' ? 'bg-navy-900 text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'unshipped' ? 'bg-navy-900 dark:bg-coral-500 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5'}`}
                     >
                         To Ship ({orders.filter(o => o.status === 'processing').length})
                     </button>
                     <button
                         onClick={() => setFilter('shipped')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'shipped' ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'shipped' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5'}`}
                     >
                         Shipped / Delivered
                     </button>
                     <button
                         onClick={() => setFilter('all')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'all' ? 'bg-gray-100 text-gray-700' : 'text-gray-500 hover:bg-gray-50'}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${filter === 'all' ? 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5'}`}
                     >
                         All
                     </button>
                 </div>
 
-                <div className="relative flex-1 bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="relative flex-1 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-white/5">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
                         type="text"
                         placeholder="Search Order ID, Name, City..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 rounded-lg focus:outline-none"
+                        className="w-full pl-10 pr-4 py-3 bg-transparent text-gray-900 dark:text-white rounded-lg focus:outline-none placeholder:text-gray-400"
                     />
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-[#FAF9F7] text-gray-500 font-bold uppercase text-xs border-b border-gray-100">
+                        <thead className="bg-[#FAF9F7] dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-xs border-b border-gray-100 dark:border-white/5">
                             <tr>
                                 <th className="px-6 py-4">Order Details</th>
                                 <th className="px-6 py-4">Customer</th>
@@ -122,17 +122,17 @@ export default function ShippingPage() {
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                             {loading ? (
                                 <tr><td colSpan={5} className="p-8 text-center text-gray-400">Loading shipments...</td></tr>
                             ) : filteredOrders.length === 0 ? (
                                 <tr><td colSpan={5} className="p-8 text-center text-gray-400">No shipments found.</td></tr>
                             ) : (
                                 filteredOrders.map(order => (
-                                    <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
+                                    <tr key={order.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <Link href={`/admin/orders/${order.id}`} className="font-bold text-gray-900 hover:text-blue-600 hover:underline">
+                                                <Link href={`/admin/orders/${order.id}`} className="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline">
                                                     #{order.id.slice(0, 8)}
                                                 </Link>
                                                 <span className="text-xs text-gray-400 flex items-center gap-1 mt-1">
@@ -141,24 +141,24 @@ export default function ShippingPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <p className="font-medium text-gray-900">{order.shipping_address?.firstName} {order.shipping_address?.lastName}</p>
-                                            <p className="text-xs text-gray-500">{order.shipping_address?.phone}</p>
+                                            <p className="font-medium text-gray-900 dark:text-white">{order.shipping_address?.firstName} {order.shipping_address?.lastName}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">{order.shipping_address?.phone}</p>
                                         </td>
-                                        <td className="px-6 py-4 text-gray-600">
+                                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                                             <p>{order.shipping_address?.city}</p>
                                             <p className="text-xs text-gray-400">{order.shipping_address?.pincode}</p>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold capitalize ${order.status === 'processing' ? 'bg-amber-100 text-amber-700' :
-                                                order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-green-100 text-green-700'
+                                            <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold capitalize ${order.status === 'processing' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                                                order.status === 'shipped' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                                                    'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                                 }`}>
                                                 {order.status === 'processing' ? 'Pending Ship' : order.status}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <Link href={`/admin/orders/${order.id}`}>
-                                                <button className="text-blue-600 hover:text-blue-800 font-bold text-xs flex items-center gap-1 ml-auto">
+                                                <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-bold text-xs flex items-center gap-1 ml-auto">
                                                     Manage <ExternalLink size={12} />
                                                 </button>
                                             </Link>

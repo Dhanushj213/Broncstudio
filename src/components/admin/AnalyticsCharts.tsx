@@ -58,13 +58,40 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 
+    // Custom Tooltip for Dark Mode compatibility
+    const CustomTooltip = ({ active, payload, label, formatter }: any) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-white dark:bg-slate-800 border border-gray-100 dark:border-white/10 p-3 rounded-lg shadow-lg">
+                    <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">
+                        {label ? (tryFormatDate(label)) : ''}
+                    </p>
+                    {payload.map((entry: any, index: number) => (
+                        <p key={index} className="text-xs font-medium" style={{ color: entry.color }}>
+                            {entry.name}: {
+                                formatter
+                                    ? formatter(entry.value, entry.name, entry)
+                                    : entry.value
+                            }
+                        </p>
+                    ))}
+                </div>
+            );
+        }
+        return null;
+    };
+
+    const tryFormatDate = (str: string) => {
+        try { return format(new Date(str), 'MMM d'); } catch { return str; }
+    }
+
     return (
         <div className="space-y-6">
 
             {/* Row 1: Revenue & Orders Trend */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Revenue & Orders Trend</h3>
+                <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Revenue & Orders Trend</h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={dailyStats} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -80,12 +107,11 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
                                 </defs>
                                 <XAxis
                                     dataKey="date"
-                                    tickFormatter={(str) => {
-                                        try { return format(new Date(str), 'MMM d'); } catch { return str; }
-                                    }}
+                                    tickFormatter={tryFormatDate}
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
+                                    tick={{ fill: '#9CA3AF' }} // Gray-400
                                 />
                                 <YAxis
                                     yAxisId="left"
@@ -93,6 +119,7 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
+                                    tick={{ fill: '#9CA3AF' }}
                                 />
                                 <YAxis
                                     yAxisId="right"
@@ -100,18 +127,15 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
                                     fontSize={12}
                                     tickLine={false}
                                     axisLine={false}
+                                    tick={{ fill: '#9CA3AF' }}
                                 />
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                <Tooltip
-                                    formatter={(value: number | undefined, name: string | undefined) => [
-                                        name === 'revenue' ? formatCurrency(value || 0) : value || 0,
-                                        name === 'revenue' ? 'Revenue' : 'Orders'
-                                    ]}
-                                    labelFormatter={(label) => {
-                                        try { return format(new Date(label), 'PPP'); } catch { return label; }
-                                    }}
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+                                <Tooltip content={<CustomTooltip formatter={(value: number, name: string) => [
+                                    name === 'Revenue' ? formatCurrency(value) : value,
+                                    name
+                                ]} />}
                                 />
-                                <Legend />
+                                <Legend wrapperStyle={{ paddingTop: '10px' }} />
                                 <Area
                                     yAxisId="left"
                                     type="monotone"
@@ -136,8 +160,8 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
                 </div>
 
                 {/* Status Breakdown (Pie) */}
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Order Status</h3>
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Order Status</h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -151,10 +175,10 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
                                     dataKey="value"
                                 >
                                     {statusStats.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name.toLowerCase()] || COLORS[index % COLORS.length]} />
+                                        <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name.toLowerCase()] || COLORS[index % COLORS.length]} stroke="none" />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(val: number | undefined) => [val || 0, 'Orders']} />
+                                <Tooltip content={<CustomTooltip />} />
                                 <Legend verticalAlign="bottom" height={36} />
                             </PieChart>
                         </ResponsiveContainer>
@@ -163,8 +187,8 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
             </div>
 
             {/* Row 2: Payment Methods */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Payment Methods</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/50 dark:border-white/5">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Payment Methods</h3>
                 <div className="h-[250px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
@@ -172,10 +196,10 @@ export default function AnalyticsCharts({ dailyStats, paymentStats, statusStats 
                             data={paymentStats}
                             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                         >
-                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" strokeOpacity={0.2} />
                             <XAxis type="number" hide />
-                            <YAxis dataKey="name" type="category" width={100} fontSize={12} tickLine={false} axisLine={false} />
-                            <Tooltip cursor={{ fill: '#F3F4F6' }} />
+                            <YAxis dataKey="name" type="category" width={100} fontSize={12} tickLine={false} axisLine={false} tick={{ fill: '#9CA3AF' }} />
+                            <Tooltip content={<CustomTooltip cursor={{ fill: 'transparent' }} />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                             <Bar dataKey="value" fill="#3B82F6" radius={[0, 4, 4, 0]} barSize={20}>
                                 {paymentStats.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
