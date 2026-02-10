@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ProductGalleryOptimized as ProductGallery } from '@/components/Product/Page/ProductGallery';
+import ProductGallery from '@/components/Product/Page/ProductGallery';
 import ProductInfo from '@/components/Product/Page/ProductInfo';
 import StickyActionBar from '@/components/Product/Page/StickyActionBar';
 import MiniTrustStrip from '@/components/Product/Page/MiniTrustStrip';
@@ -131,8 +131,8 @@ export default function ProductClient() {
     return (
         <main className="bg-background min-h-screen pb-8 md:pb-0 pt-[var(--header-height)]">
             {/* Main Product Section */}
-            <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-6 md:pt-12 mb-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
+            <div className="max-w-[1200px] mx-auto px-0 md:px-6 pt-0 md:pt-12 mb-12 md:mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16 items-start">
                     {/* Left: Gallery */}
                     <div className="w-full">
                         <ProductGallery images={product.images || [product.image_url || '/images/placeholder.jpg']} />
