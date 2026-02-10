@@ -186,7 +186,7 @@ export default function QuickViewModal() {
                                             className={clsx(
                                                 "min-w-[48px] h-10 px-3 rounded border text-sm font-bold transition-all",
                                                 selectedSize === size
-                                                    ? "bg-navy-900 text-white border-navy-900 dark:bg-white dark:text-navy-900"
+                                                    ? "bg-navy-900 text-white border-navy-900 dark:bg-white dark:text-slate-900"
                                                     : "bg-transparent text-gray-600 border-gray-200 hover:border-navy-900 dark:text-gray-300 dark:border-white/10 dark:hover:border-white"
                                             )}
                                         >
@@ -204,7 +204,7 @@ export default function QuickViewModal() {
                                     className={clsx(
                                         "w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-lg transition-all",
                                         inStock
-                                            ? "bg-navy-900 text-white hover:bg-coral-500 hover:shadow-coral-500/20 dark:bg-white dark:text-navy-900"
+                                            ? "bg-navy-900 text-white hover:bg-coral-500 hover:shadow-coral-500/20 dark:bg-white dark:text-slate-900"
                                             : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                     )}
                                 >

@@ -34,8 +34,8 @@ export default function MobileCategoryRail() {
                         <Link href="/shop/new-arrivals" className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
                             <div className="w-20 h-20 rounded-2xl bg-navy-900 dark:bg-white flex items-center justify-center shadow-lg shadow-navy-900/10 transition-transform group-active:scale-95">
                                 <div className="text-center">
-                                    <span className="block text-white dark:text-navy-900 text-[10px] font-bold tracking-widest uppercase mb-0.5">NEW</span>
-                                    <span className="block text-white dark:text-navy-900 text-xs font-black tracking-tighter">DROPS</span>
+                                    <span className="block text-white dark:text-slate-900 text-[10px] font-bold tracking-widest uppercase mb-0.5">NEW</span>
+                                    <span className="block text-white dark:text-slate-900 text-xs font-black tracking-tighter">DROPS</span>
                                 </div>
                             </div>
                             <span className="text-xs font-bold text-navy-900 dark:text-white text-center tracking-wide">

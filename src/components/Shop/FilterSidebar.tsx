@@ -159,7 +159,7 @@ export default function FilterSidebar({ products, activeFilters, onFilterChange,
                                                     className={clsx(
                                                         "py-2 text-xs font-medium rounded-md border transition-all",
                                                         isActive
-                                                            ? "bg-navy-900 text-white border-navy-900 dark:bg-white dark:text-navy-900"
+                                                            ? "bg-navy-900 text-white border-navy-900 dark:bg-white dark:text-slate-900"
                                                             : "bg-transparent border-gray-200 text-gray-600 hover:border-navy-900 dark:border-white/10 dark:text-gray-300 dark:hover:border-white"
                                                     )}
                                                 >

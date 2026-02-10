@@ -148,8 +148,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 </div>
             )}
 
-            {/* Actions (Desktop) */}
-            <div className="hidden md:flex gap-4 mt-4">
+            {/* Actions (Desktop & Mobile) */}
+            <div className="flex gap-3 md:gap-4 mt-4">
                 <button
                     onClick={handleAddToCart}
                     disabled={isOutOfStock}
