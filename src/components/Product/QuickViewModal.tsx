@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
-import { X, ShoppingBag, Star, Check, AlertCircle } from 'lucide-react';
+import { X, ShoppingBag, Check, AlertCircle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import clsx from 'clsx';
 
@@ -106,7 +106,7 @@ export default function QuickViewModal() {
                                 </button>
                             </div>
 
-                            {/* Price & Rating */}
+                            {/* Price */}
                             <div className="flex items-center gap-4 mb-6 border-b border-gray-100 dark:border-white/10 pb-6">
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-2xl font-bold text-coral-500">{formatPrice(product.price)}</span>
@@ -115,15 +115,6 @@ export default function QuickViewModal() {
                                             {formatPrice(product.originalPrice)}
                                         </span>
                                     )}
-                                </div>
-                                <div className="h-4 w-px bg-gray-200 dark:bg-white/20"></div>
-                                <div className="flex items-center gap-1">
-                                    <Star size={14} className="text-yellow-400 fill-current" />
-                                    <Star size={14} className="text-yellow-400 fill-current" />
-                                    <Star size={14} className="text-yellow-400 fill-current" />
-                                    <Star size={14} className="text-yellow-400 fill-current" />
-                                    <Star size={14} className="text-gray-300 dark:text-gray-600" />
-                                    <span className="text-xs text-gray-500 ml-1">(12)</span>
                                 </div>
                             </div>
 

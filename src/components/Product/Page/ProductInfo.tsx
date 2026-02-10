@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Star, Truck, RotateCcw, ShieldCheck, ChevronDown, Ruler, ShoppingBag, Zap } from 'lucide-react';
+import { Truck, RotateCcw, ShieldCheck, ChevronDown, Ruler, ShoppingBag, Zap } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
@@ -69,11 +69,6 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                 </h1>
 
                 <div className="flex flex-wrap items-center gap-3 pt-1">
-                    <div className="flex gap-0.5 text-accent-orange">
-                        {[1, 2, 3, 4, 5].map(i => <Star key={i} size={14} fill="currentColor" strokeWidth={0} />)}
-                    </div>
-                    <span className="text-[11px] font-bold text-secondary tracking-wide underline underline-offset-4">48 Reviews</span>
-
                     <div className="flex items-center gap-2">
                         {meta.is_featured && (
                             <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Featured</span>

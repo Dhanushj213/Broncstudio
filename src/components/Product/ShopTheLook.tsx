@@ -139,8 +139,8 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                         <div
                                             onClick={() => toggleSelection(item.id)}
                                             className={`relative aspect-[4/5] rounded-[2rem] overflow-hidden cursor-pointer transition-all duration-700 ease-in-out border-2 ${isSelected
-                                                    ? 'border-navy-900 dark:border-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]'
-                                                    : 'border-transparent opacity-60 grayscale-[0.4] scale-95 hover:opacity-80 hover:scale-98'
+                                                ? 'border-navy-900 dark:border-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)]'
+                                                : 'border-transparent opacity-60 grayscale-[0.4] scale-95 hover:opacity-80 hover:scale-98'
                                                 }`}
                                         >
                                             <Image
@@ -165,8 +165,8 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                                     {/* Custom Checkbox Tag */}
                                                     <div
                                                         className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl ring-2 ${isSelected
-                                                                ? 'bg-coral-500 text-white ring-white/20 scale-100'
-                                                                : 'bg-white/10 backdrop-blur-md text-transparent ring-white/10 scale-90'
+                                                            ? 'bg-coral-500 text-white ring-white/20 scale-100'
+                                                            : 'bg-white/10 backdrop-blur-md text-transparent ring-white/10 scale-90'
                                                             }`}
                                                     >
                                                         <Check size={18} strokeWidth={4} />
@@ -176,7 +176,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                                 {/* Price Tag (Appears on Hover) */}
                                                 <motion.div
                                                     animate={{ opacity: isSelected ? 1 : 0, y: isSelected ? 0 : 10 }}
-                                                    className="inline-flex self-start bg-navy-900/90 dark:bg-white/90 backdrop-blur-xl text-white dark:text-navy-900 px-4 py-2 rounded-xl text-sm font-black shadow-2xl"
+                                                    className="inline-flex self-start bg-white/90 dark:bg-white backdrop-blur-xl text-black px-4 py-2 rounded-xl text-sm font-black shadow-2xl ring-1 ring-black/5"
                                                 >
                                                     {formatPrice(item.price)}
                                                 </motion.div>
@@ -256,8 +256,8 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                     onClick={handleAddBundle}
                                     disabled={totalItems === 0}
                                     className={`group/btn w-full py-6 font-black rounded-3xl flex items-center justify-center gap-3 transition-all duration-500 overflow-hidden relative shadow-2xl active:scale-[0.98] ${totalItems > 0
-                                            ? 'bg-navy-900 dark:bg-white text-white dark:text-black hover:bg-coral-500 dark:hover:bg-coral-400'
-                                            : 'bg-gray-100 dark:bg-[#111] text-gray-400 cursor-not-allowed'
+                                        ? 'bg-navy-900 dark:bg-white text-white dark:text-black hover:bg-coral-500 dark:hover:bg-coral-400'
+                                        : 'bg-gray-100 dark:bg-[#111] text-gray-400 cursor-not-allowed'
                                         }`}
                                 >
                                     <ShoppingBag size={22} className="transition-transform group-hover/btn:-translate-y-1" />
