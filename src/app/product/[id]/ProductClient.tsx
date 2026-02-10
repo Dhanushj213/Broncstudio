@@ -156,6 +156,7 @@ export default function ProductClient() {
                     products={relatedProducts}
                     className="bg-surface-2/30"
                     layout="carousel"
+                    fullWidth={true}
                 />
             )}
 
@@ -167,6 +168,7 @@ export default function ProductClient() {
                     products={randomProducts}
                     className="bg-background py-16"
                     layout="carousel"
+                    fullWidth={true}
                 />
             )}
 
