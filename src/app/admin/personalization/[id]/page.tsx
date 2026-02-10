@@ -145,6 +145,8 @@ export default function EditPersonalizationProductPage() {
                 sizes: pConfig.sizes || [],
                 print_types: printTypes,
                 placements: placements,
+                gst_percent: pConfig.gst_percent ?? 12,
+                print_gst_percent: pConfig.print_gst_percent ?? 18,
                 image_requirements: pConfig.image_requirements || { min_dpi: 300, max_size_mb: 20, allowed_formats: ['png', 'jpg', 'pdf'] }
             }
         });

@@ -13,6 +13,10 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 });
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@react-pdf/renderer"],
+  experimental: {
+    esmExternals: 'loose',
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.googleusercontent.com" },

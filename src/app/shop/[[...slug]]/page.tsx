@@ -36,7 +36,7 @@ const resolveMetadata = async (slugArray: string[]) => {
     if (slugArray.length === 2) {
         return {
             title: `${l2Node.name} - ${l1Node.name}`,
-            description: l2Node.description || `Browse ${l2Node.name} in ${l1Node.name}.`,
+            description: (l2Node as any).description || `Browse ${l2Node.name} in ${l1Node.name}.`,
             image: l1Node.image // Fallback to category image
         };
     }
@@ -64,8 +64,8 @@ const resolveMetadata = async (slugArray: string[]) => {
     return null;
 }
 
-export async function generateMetadata({ params }: { params: { slug?: string[] } }): Promise<Metadata> {
-    const slug = params.slug || [];
+export async function generateMetadata({ params }: { params: Promise<{ slug?: string[] }> }): Promise<Metadata> {
+    const { slug = [] } = await params;
     const meta = await resolveMetadata(slug);
 
     if (!meta) {
