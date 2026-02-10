@@ -74,23 +74,22 @@ export default function ProductClient() {
                 }
             }
 
-            // 3. Fetch "Try Me" Products (Randomized)
+            // 3. Fetch "Try Me" Products (Randomized Full Catalog)
             const { data: randomPool } = await supabase
                 .from('products')
                 .select('*')
-                .neq('id', id)
-                .limit(40); // Fetch a pool to randomize from
+                .neq('id', id);
 
             if (randomPool) {
-                // Shuffle logic
+                // Better Shuffle logic for larger datasets
                 const shuffled = [...randomPool].sort(() => 0.5 - Math.random());
-                const selectedRandom = shuffled.slice(0, 10).map((p: any) => ({
+                const allRandom = shuffled.map((p: any) => ({
                     ...p,
                     image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
                     secondaryImage: p.images?.[1],
                     originalPrice: p.compare_at_price
                 }));
-                setRandomProducts(selectedRandom);
+                setRandomProducts(allRandom);
             }
 
             setLoading(false);
