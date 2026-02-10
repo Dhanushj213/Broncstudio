@@ -24,6 +24,7 @@ export default function ProductClient() {
     const { addToast } = useToast();
     const [product, setProduct] = useState<any>(null);
     const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+    const [randomProducts, setRandomProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const supabase = createBrowserClient(
@@ -53,17 +54,16 @@ export default function ProductClient() {
 
             setProduct(mainProduct);
 
-            // 2. Fetch Related Products (Same Category)
+            // 2. Fetch Related Products (Strict Category Matching)
             if (mainProduct.category_id) {
                 const { data: related } = await supabase
                     .from('products')
                     .select('*')
                     .eq('category_id', mainProduct.category_id)
-                    .neq('id', id) // Exclude current
-                    .limit(8);
+                    .neq('id', id)
+                    .limit(12);
 
                 if (related) {
-                    // Map to ensure valid image format if needed
                     const mappedRelated = related.map((p: any) => ({
                         ...p,
                         image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
@@ -72,6 +72,25 @@ export default function ProductClient() {
                     }));
                     setRelatedProducts(mappedRelated);
                 }
+            }
+
+            // 3. Fetch "Try Me" Products (Randomized)
+            const { data: randomPool } = await supabase
+                .from('products')
+                .select('*')
+                .neq('id', id)
+                .limit(40); // Fetch a pool to randomize from
+
+            if (randomPool) {
+                // Shuffle logic
+                const shuffled = [...randomPool].sort(() => 0.5 - Math.random());
+                const selectedRandom = shuffled.slice(0, 10).map((p: any) => ({
+                    ...p,
+                    image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
+                    secondaryImage: p.images?.[1],
+                    originalPrice: p.compare_at_price
+                }));
+                setRandomProducts(selectedRandom);
             }
 
             setLoading(false);
@@ -133,9 +152,20 @@ export default function ProductClient() {
             {relatedProducts.length > 0 && (
                 <ProductShowcase
                     title="You May Also Like"
-                    subtitle="Customers who bought this also checked out these styles."
+                    subtitle={`Discover more from the ${product.category?.name || 'same'} collection.`}
                     products={relatedProducts}
                     className="bg-surface-2/30"
+                    layout="carousel"
+                />
+            )}
+
+            {/* Try Me Section (Randomized) */}
+            {randomProducts.length > 0 && (
+                <ProductShowcase
+                    title="Try Something New"
+                    subtitle="Explore a random selection from our entire catalog."
+                    products={randomProducts}
+                    className="bg-background py-16"
                     layout="carousel"
                 />
             )}
