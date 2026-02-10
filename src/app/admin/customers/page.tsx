@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { User, ShoppingBag, Calendar, ArrowRight, Search } from 'lucide-react';
+import { User, ShoppingBag, Calendar, ArrowRight, Search, Mail, Phone, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -10,6 +10,8 @@ interface CustomerMetrics {
     user_id: string;
     name: string;
     email: string;
+    phone: string;
+    secondary_phone?: string;
     total_spent: number;
     orders_count: number;
     last_order_date: string;
@@ -40,13 +42,20 @@ export default function CustomersPage() {
         setLoading(true);
 
         // Fetch Blocked Users
-        const { getBlockedUsers } = await import('@/actions/adminActions');
+        const { getBlockedUsers, getAllProfiles } = await import('@/actions/adminActions');
         const blockedRes = await getBlockedUsers();
         const blockedSet = new Set<string>();
         if (blockedRes.success && blockedRes.data) {
             blockedRes.data.forEach((b: any) => blockedSet.add(b.user_id));
         }
         setBlockedUsers(blockedSet);
+
+        // Fetch Profiles (for correct email/phone)
+        const profilesRes = await getAllProfiles();
+        const profileMap = new Map<string, any>();
+        if (profilesRes.success && profilesRes.data) {
+            profilesRes.data.forEach((p: any) => profileMap.set(p.id, p));
+        }
 
         // Fetch all orders
         const { data: orders, error } = await supabase
@@ -68,10 +77,19 @@ export default function CustomersPage() {
                 // Skip if really no ID
                 if (!userId) return;
 
+                const profile = profileMap.get(userId);
+
+                // Priority: Profile -> Order Shipping Address -> Defaults
+                const email = profile?.email || order.shipping_address?.email || 'N/A';
+                const phone = profile?.phone || order.shipping_address?.phone || 'N/A';
+                const name = profile?.full_name || `${order.shipping_address?.firstName || ''} ${order.shipping_address?.lastName || ''}`.trim() || 'Unknown';
+
                 const current = customerMap.get(userId) || {
                     user_id: userId,
-                    name: `${order.shipping_address?.firstName || ''} ${order.shipping_address?.lastName || ''}`.trim() || 'Unknown',
-                    email: order.shipping_address?.email || 'N/A',
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    secondary_phone: order.shipping_address?.secondaryPhone,
                     total_spent: 0,
                     orders_count: 0,
                     last_order_date: order.created_at,
@@ -84,12 +102,25 @@ export default function CustomersPage() {
                 current.orders_count += 1;
                 current.is_blocked = blockedSet.has(userId);
 
+                // If profile data was missing initially but found in later orders (unlikely if profile exists, but good fallback)
+                if (current.email === 'N/A' && order.shipping_address?.email) current.email = order.shipping_address.email;
+                if (current.phone === 'N/A' && order.shipping_address?.phone) current.phone = order.shipping_address.phone;
+
+
                 // Track Dates
                 if (new Date(order.created_at) > new Date(current.last_order_date)) {
                     current.last_order_date = order.created_at;
+                    // Update latest contact info from most recent order IF profile didn't provide it
+                    if (!profile?.phone && order.shipping_address?.phone) current.phone = order.shipping_address.phone;
+                    if (order.shipping_address?.secondaryPhone) current.secondary_phone = order.shipping_address.secondaryPhone;
                 }
                 if (new Date(order.created_at) < new Date(current.first_order_date)) {
                     current.first_order_date = order.created_at;
+                }
+
+                // Fallback: If we still don't have a secondary phone, check this older order
+                if (!current.secondary_phone && order.shipping_address?.secondaryPhone) {
+                    current.secondary_phone = order.shipping_address.secondaryPhone;
                 }
 
                 customerMap.set(userId, current);
@@ -142,9 +173,72 @@ export default function CustomersPage() {
         }
     };
 
+    const handleExportCustomerCSV = () => {
+        try {
+            if (!customers.length) {
+                alert("No customers to export");
+                return;
+            }
+
+            const headers = ['Customer Name', 'Email', 'Phone', 'Alt Phone', 'Total Spent', 'Orders Count', 'Last Order Date', 'First Order Date', 'Status'];
+
+            const escapeCsv = (str: string | number | boolean | null | undefined) => {
+                if (str === null || str === undefined) return '""';
+                const stringValue = String(str);
+                // Replace newlines with spaces to prevent breaking CSV structure
+                const cleanValue = stringValue.replace(/[\r\n]+/g, ' ');
+                const escaped = cleanValue.replace(/"/g, '""');
+                return `"${escaped}"`;
+            };
+
+            const safeFormatDate = (dateStr: string) => {
+                try {
+                    const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) return 'N/A';
+                    return format(d, 'yyyy-MM-dd');
+                } catch {
+                    return 'N/A';
+                }
+            };
+
+            const rows = customers.map(c => [
+                c.name,
+                c.email,
+                c.phone,
+                c.secondary_phone || '',
+                c.total_spent,
+                c.orders_count,
+                safeFormatDate(c.last_order_date),
+                safeFormatDate(c.first_order_date),
+                c.is_blocked ? 'Blocked' : 'Active'
+            ]);
+
+            const csvContent = [
+                headers.map(escapeCsv).join(','),
+                ...rows.map(row => row.map(escapeCsv).join(','))
+            ].join('\n');
+
+            // Use Uint8Array for BOM to ensure correct encoding without string manipulation issues
+            const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+            const blob = new Blob([bom, csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `customers_export_${format(new Date(), 'yyyyMMdd_HHmm')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err: any) {
+            console.error("Export Failed:", err);
+            alert("Failed to export CSV: " + err.message);
+        }
+    };
+
     const filteredCustomers = customers.filter(c =>
         c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.email.toLowerCase().includes(searchQuery.toLowerCase())
+        c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.phone.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const sortedCustomers = [...filteredCustomers].sort((a, b) => b.total_spent - a.total_spent); // High value customers first
@@ -159,6 +253,12 @@ export default function CustomersPage() {
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">Analyze customer value and purchase history.</p>
                 </div>
+                <button
+                    onClick={handleExportCustomerCSV}
+                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition-all text-sm shadow-sm"
+                >
+                    <Download size={18} /> Export Data
+                </button>
             </div>
 
             {/* Search */}
@@ -166,7 +266,7 @@ export default function CustomersPage() {
                 <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                     type="text"
-                    placeholder="Search customers by name or email..."
+                    placeholder="Search customers by name, email, or phone..."
                     className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-900 text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-navy-900/10 dark:focus:ring-white/20 shadow-sm placeholder-gray-500 dark:placeholder-gray-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -182,6 +282,7 @@ export default function CustomersPage() {
                             <thead className="bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-xs">
                                 <tr>
                                     <th className="px-6 py-4">Customer</th>
+                                    <th className="px-6 py-4">Contact Info</th>
                                     <th className="px-6 py-4">Orders</th>
                                     <th className="px-6 py-4">Total Spent</th>
                                     <th className="px-6 py-4">Last Order</th>
@@ -191,7 +292,7 @@ export default function CustomersPage() {
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                                 {sortedCustomers.length === 0 ? (
-                                    <tr><td colSpan={6} className="p-8 text-center text-gray-400">No customers found.</td></tr>
+                                    <tr><td colSpan={7} className="p-8 text-center text-gray-400">No customers found.</td></tr>
                                 ) : (
                                     sortedCustomers.map((customer, idx) => (
                                         <tr key={idx} className={`hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors ${customer.is_blocked ? 'bg-red-50 dark:bg-red-900/10' : ''}`}>
@@ -205,8 +306,25 @@ export default function CustomersPage() {
                                                             {customer.name}
                                                             {customer.is_blocked && <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold uppercase">Blocked</span>}
                                                         </p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">{customer.email}</p>
                                                     </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-1.5">
+                                                    <div className="flex items-center gap-2 text-gray-900 dark:text-white font-medium text-sm">
+                                                        <Mail size={14} className="text-gray-400" />
+                                                        {customer.email}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
+                                                        <Phone size={14} className="text-gray-400" />
+                                                        {customer.phone}
+                                                    </div>
+                                                    {customer.secondary_phone && (
+                                                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 pl-6">
+                                                            <span className="text-[10px] uppercase font-bold tracking-wider opacity-70">Alt</span>
+                                                            {customer.secondary_phone}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

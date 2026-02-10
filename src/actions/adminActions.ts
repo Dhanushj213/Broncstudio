@@ -460,3 +460,34 @@ export async function getBlockedUsers() {
 
     return { success: true, data };
 }
+
+export async function getAllProfiles() {
+    const cookieStore = await cookies();
+    const supabaseAuth = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: { get(name: string) { return cookieStore.get(name)?.value } },
+        }
+    );
+    const { data: { user } } = await supabaseAuth.auth.getUser();
+    if (!user || !isAdmin(user.email)) return { success: false, error: 'Unauthorized' };
+
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        serviceRoleKey!,
+        { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+
+    const { data, error } = await supabaseAdmin
+        .from('profiles')
+        .select('id, email, phone, full_name');
+
+    if (error) {
+        console.error("Fetch Profiles Failed:", error);
+        return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+}

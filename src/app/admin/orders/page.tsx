@@ -37,30 +37,67 @@ export default function AdminOrdersPage() {
     }, []);
 
     const handleExportCSV = () => {
-        if (!orders.length) return;
+        try {
+            if (!orders.length) {
+                alert("No orders to export");
+                return;
+            }
 
-        // Basic CSV Logic
-        const headers = ['Order ID', 'Date', 'Customer', 'Amount', 'Status', 'Payment', 'City'];
-        const rows = orders.map(o => [
-            o.id,
-            format(new Date(o.created_at), 'yyyy-MM-dd HH:mm'),
-            `${o.shipping_address?.firstName} ${o.shipping_address?.lastName}`,
-            o.total_amount,
-            o.status,
-            o.payment_method,
-            o.shipping_address?.city || ''
-        ]);
+            const headers = ['Order ID', 'Date', 'Customer Name', 'Email', 'Phone', 'Amount', 'Status', 'Payment', 'City', 'State', 'Pincode'];
 
-        const csvContent = "data:text/csv;charset=utf-8,"
-            + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const escapeCsv = (str: string | number | null | undefined) => {
+                if (str === null || str === undefined) return '""';
+                const stringValue = String(str);
+                // Replace newlines with spaces to prevent breaking CSV structure
+                const cleanValue = stringValue.replace(/[\r\n]+/g, ' ');
+                const escaped = cleanValue.replace(/"/g, '""');
+                return `"${escaped}"`;
+            };
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `orders_export_${format(new Date(), 'yyyyMMdd')}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const safeFormatDate = (dateStr: string) => {
+                try {
+                    const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) return 'N/A';
+                    return format(d, 'yyyy-MM-dd HH:mm');
+                } catch {
+                    return 'N/A';
+                }
+            };
+
+            const rows = orders.map(o => [
+                o.id,
+                safeFormatDate(o.created_at),
+                `${o.shipping_address?.firstName || ''} ${o.shipping_address?.lastName || ''}`.trim(),
+                o.shipping_address?.email || 'N/A',
+                o.shipping_address?.phone || 'N/A',
+                o.total_amount,
+                o.status,
+                o.payment_method,
+                o.shipping_address?.city || '',
+                o.shipping_address?.state || '',
+                o.shipping_address?.pincode || ''
+            ]);
+
+            const csvContent = [
+                headers.map(escapeCsv).join(','),
+                ...rows.map(row => row.map(escapeCsv).join(','))
+            ].join('\n');
+
+            // Use Uint8Array for BOM to ensure correct encoding without string manipulation issues
+            const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+            const blob = new Blob([bom, csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `orders_export_${format(new Date(), 'yyyyMMdd_HHmm')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err: any) {
+            console.error("Orders Export Failed:", err);
+            alert("Failed to export Orders CSV: " + err.message);
+        }
     };
 
     return (

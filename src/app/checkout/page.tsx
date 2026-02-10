@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { formatPrice } from '@/utils/formatPrice';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import GlassCard from '@/components/UI/GlassCard';
 import { useUI } from '@/context/UIContext';
@@ -23,6 +24,8 @@ const INDIAN_STATES = [
 ];
 
 export default function CheckoutPage() {
+    const router = useRouter();
+    const [countdown, setCountdown] = useState(5);
     const [paymentMethod, setPaymentMethod] = useState('upi');
     const [orderStatus, setOrderStatus] = useState<'idle' | 'processing' | 'success' | 'rejected'>('idle');
     const { userName } = useUI();
@@ -38,7 +41,7 @@ export default function CheckoutPage() {
 
     // Coupon State
     const [couponCode, setCouponCode] = useState('');
-    const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+    const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number; type?: 'percentage' | 'fixed_amount' | 'free_shipping' } | null>(null);
     const [couponError, setCouponError] = useState('');
     const [couponLoading, setCouponLoading] = useState(false);
 
@@ -198,7 +201,9 @@ export default function CheckoutPage() {
     };
 
     const subtotal = cartTotal;
-    const shipping = subtotal >= settings.free_shipping_threshold ? 0 : settings.shipping_charge;
+    // Shipping Logic: Free if threshold met OR if free_shipping coupon is active
+    const isFreeShippingCoupon = appliedCoupon?.type === 'free_shipping';
+    const shipping = (subtotal >= settings.free_shipping_threshold || isFreeShippingCoupon) ? 0 : settings.shipping_charge;
 
     // Calculate Tax
     let totalTax = 0;
@@ -247,7 +252,32 @@ export default function CheckoutPage() {
         if (isWalletApplied && cartTotal < 999) {
             setIsWalletApplied(false);
         }
-    }, [cartTotal, isWalletApplied]);
+    }, [items, cartTotal, settings, walletBalance, loadingUser]);
+
+    // Auto-Redirect on Success
+    // Auto-Redirect on Success
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (orderStatus === 'success') {
+            timer = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [orderStatus]);
+
+    // Handle Redirect Side Effect
+    useEffect(() => {
+        if (orderStatus === 'success' && countdown === 0) {
+            router.push('/');
+        }
+    }, [orderStatus, countdown, router]);
 
     // Coupon Handler
     const handleApplyCoupon = async () => {
@@ -256,7 +286,11 @@ export default function CheckoutPage() {
         try {
             const res = await validateCoupon(couponCode, cartTotal);
             if (res.valid) {
-                setAppliedCoupon({ code: res.couponCode!, discount: res.discountAmount });
+                setAppliedCoupon({
+                    code: res.couponCode!,
+                    discount: res.discountAmount,
+                    type: res.couponType
+                });
                 setCouponCode(''); // Clear input on success
 
                 // Party Cheers Animation
@@ -398,13 +432,16 @@ export default function CheckoutPage() {
                             </div>
                         </div>
                     )}
+                    <p className="text-sm text-secondary mb-4">
+                        You will be redirected to the home page in <span className="font-bold text-primary">{countdown}</span> seconds...
+                    </p>
                     <Link href="/">
                         <button className="w-full py-4 bg-primary text-background font-bold rounded-xl hover:bg-coral-500 transition-colors shadow-lg">
-                            Continue Shopping
+                            Continue Shopping Now
                         </button>
                     </Link>
                 </GlassCard>
-            </main>
+            </main >
         );
     }
 
@@ -717,7 +754,9 @@ export default function CheckoutPage() {
                                 <div className="flex justify-between text-sm text-secondary">
                                     <span>Shipping</span>
                                     <span className={`font-medium ${shipping === 0 ? 'text-green-500' : 'text-primary'}`}>
-                                        {shipping === 0 ? 'Free' : formatPrice(shipping)}
+                                        {shipping === 0 ? (
+                                            <>Free {isFreeShippingCoupon && <span className="text-[10px] ml-1 opacity-80">(Coupon)</span>}</>
+                                        ) : formatPrice(shipping)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm text-secondary">
@@ -752,12 +791,12 @@ export default function CheckoutPage() {
                                         <div className="relative z-10">
                                             <p className="text-sm font-bold text-green-600 flex items-center gap-2">
                                                 <PartyPopper size={16} className="text-green-500 animate-bounce" />
-                                                Coupon Applied!
+                                                {appliedCoupon.type === 'free_shipping' ? 'Free Shipping Active!' : 'Coupon Applied!'}
                                             </p>
                                             <p className="text-xs text-green-700/80 font-medium mt-0.5">
                                                 <span className="font-mono bg-green-200/50 px-1 rounded text-green-800">{appliedCoupon.code}</span>
                                                 &nbsp;saved you&nbsp;
-                                                <span className="font-bold underline">{formatPrice(appliedCoupon.discount)}</span>
+                                                <span className="font-bold underline">{appliedCoupon.type === 'free_shipping' ? 'Shipping Charges' : formatPrice(appliedCoupon.discount)}</span>
                                             </p>
                                         </div>
                                         <button

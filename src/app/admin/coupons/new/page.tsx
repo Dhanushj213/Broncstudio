@@ -65,28 +65,38 @@ export default function NewCouponPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div>
+                    <div className={formData.discount_type === 'free_shipping' ? 'col-span-2' : ''}>
                         <label className="block text-sm font-bold text-gray-700 mb-1">Type</label>
                         <select
                             className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-900"
                             value={formData.discount_type}
-                            onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
+                            onChange={(e) => {
+                                const type = e.target.value;
+                                setFormData({
+                                    ...formData,
+                                    discount_type: type,
+                                    discount_value: type === 'free_shipping' ? '0' : formData.discount_value
+                                });
+                            }}
                         >
                             <option value="percentage">Percentage (%)</option>
                             <option value="fixed_amount">Fixed Amount (₹)</option>
+                            <option value="free_shipping">Free Shipping</option>
                         </select>
                     </div>
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Value *</label>
-                        <input
-                            type="number"
-                            className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-900"
-                            placeholder="20"
-                            value={formData.discount_value}
-                            onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
-                            required
-                        />
-                    </div>
+                    {formData.discount_type !== 'free_shipping' && (
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Value *</label>
+                            <input
+                                type="number"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-900"
+                                placeholder="20"
+                                value={formData.discount_value}
+                                onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
+                                required={formData.discount_type !== 'free_shipping'}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div>

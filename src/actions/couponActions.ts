@@ -7,6 +7,7 @@ export interface CouponValidationResult {
     valid: boolean;
     discountAmount: number;
     couponCode?: string;
+    couponType?: 'percentage' | 'fixed_amount' | 'free_shipping';
     message?: string;
 }
 
@@ -48,20 +49,27 @@ export async function validateCoupon(code: string, cartTotal: number): Promise<C
 
     // 4. Calculate Discount
     let discount = 0;
+    let type = coupon.discount_type;
+
     if (coupon.discount_type === 'percentage') {
         discount = (cartTotal * coupon.discount_value) / 100;
-        // Optional: Max discount cap? Not in schema yet.
-        // Cap at cart total to avoid negative
         if (discount > cartTotal) discount = cartTotal;
     } else if (coupon.discount_type === 'fixed_amount') {
         discount = coupon.discount_value;
         if (discount > cartTotal) discount = cartTotal;
+    } else if (coupon.discount_type === 'free_shipping') {
+        // Discount is handled in checkout logic (shipping becomes 0)
+        // We set discount value to 0 here to avoid double counting, 
+        // or we could try to calculate shipping here but we don't have shipping const in this function easily.
+        // Better to return type and let checkout handle it.
+        discount = 0;
     }
 
     return {
         valid: true,
-        discountAmount: parseFloat(discount.toFixed(2)), // Round to 2 decimal places
+        discountAmount: parseFloat(discount.toFixed(2)),
         couponCode: coupon.code,
-        message: 'Coupon applied successfully!'
+        couponType: type, // Add this to interface!
+        message: type === 'free_shipping' ? 'Free Shipping Applied!' : 'Coupon applied successfully!'
     };
 }
