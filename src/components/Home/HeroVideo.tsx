@@ -174,9 +174,9 @@ export default function HeroVideo() {
             {/* Overlay Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-            {/* Content Overlay - Bottom Aligned */}
+            {/* Content Overlay - Centered/Bottom Biased */}
             {!isLoading && (processedContent.heading || processedContent.subheading || content.button_text) && (
-                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-end pb-8 md:pb-32 px-6 text-center z-10 transition-all">
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-24 md:pb-40 px-6 text-center z-10 transition-all">
                     <div className="animate-fade-in-up">
                         {processedContent.subheading && (
                             <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-4 block drop-shadow-md opacity-90">
