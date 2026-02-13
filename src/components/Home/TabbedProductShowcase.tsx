@@ -98,42 +98,20 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
         const fetchProducts = async () => {
             setLoading(true);
 
+            let targetIds: string[] = [];
+
             // Determine if activeTab is a "Virtual" tab from local taxonomy
-            // Re-resolve localNode to check
             const localNode = Object.values(require('@/data/categories').CATEGORY_TAXONOMY).find((c: any) => c.slug === categorySlug || c.legacy_slug === categorySlug) as any;
             const virtualSub = localNode?.subcategories?.find((s: any) => s.slug === activeTab);
 
-            let targetIds: string[] = [];
-
             if (virtualSub && virtualSub.items) {
-                // It is a virtual tab (e.g. "Men"). Use its 'items' to find real DB categories.
                 const itemSlugs = virtualSub.items.map((i: any) => i.slug);
-
-                // Fetch category IDs for these slugs
-                const { data: childCats } = await supabase
-                    .from('categories')
-                    .select('id')
-                    .in('slug', itemSlugs);
-
-                if (childCats && childCats.length > 0) {
-                    targetIds = childCats.map((c: any) => c.id);
-                }
+                const { data: childCats } = await supabase.from('categories').select('id').in('slug', itemSlugs);
+                if (childCats && childCats.length > 0) targetIds = childCats.map((c: any) => c.id);
             } else {
-                // Standard DB Logic (activeTab is a slug of a real category)
-                // First, get the ID of the active tab category
-                const { data: tabCat } = await supabase
-                    .from('categories')
-                    .select('id')
-                    .eq('slug', activeTab)
-                    .single();
-
+                const { data: tabCat } = await supabase.from('categories').select('id').eq('slug', activeTab).single();
                 if (tabCat) {
-                    // Get IDs of its children
-                    const { data: subChildren } = await supabase
-                        .from('categories')
-                        .select('id')
-                        .eq('parent_id', tabCat.id);
-
+                    const { data: subChildren } = await supabase.from('categories').select('id').eq('parent_id', tabCat.id);
                     targetIds = [tabCat.id, ...(subChildren?.map((c: any) => c.id) || [])];
                 }
             }
@@ -167,7 +145,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
         };
 
         fetchProducts();
-    }, [activeTab]);
+    }, [activeTab, categorySlug]);
 
     if (!categoryNode) return null; // Or skeleton
 

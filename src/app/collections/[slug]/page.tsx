@@ -106,7 +106,7 @@ export default function CollectionPage() {
                 return;
             }
 
-            // Case B: Standard Category/Item
+            // Case C: Standard Category/Item
             if (node.type === 'item' || node.type === 'category') {
                 const targetSlug = node.data.slug;
 
@@ -309,7 +309,7 @@ export default function CollectionPage() {
                     {/* STANDARD CONTENT AREA */}
                     <div className="container-premium mx-auto px-4 md:px-6">
 
-                        {/* 1. Sub-Collection Cards (Worlds/Higher Categories) */}
+                        {/* 1. Sub-Collection Cards (Standard) */}
                         {showCards && !showProducts && (
                             <motion.div
                                 initial={{ opacity: 0 }}

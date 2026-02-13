@@ -41,11 +41,16 @@ export default function EditPersonalizationProductPage() {
     const [sections, setSections] = useState({
         identity: true,
         customization: true,
+        compatibility: true,
         printing: true,
         pricing: true
     });
 
     const toggleSection = (key: keyof typeof sections) => setSections(prev => ({ ...prev, [key]: !prev[key] }));
+
+    const [brands, setBrands] = useState<any[]>([]);
+    const [models, setModels] = useState<any[]>([]);
+    const [compatibility, setCompatibility] = useState<Record<string, { enabled: boolean; stock: number; sku: string }>>({});
 
     const [formData, setFormData] = useState({
         name: '', // Internal Admin Name
@@ -85,22 +90,44 @@ export default function EditPersonalizationProductPage() {
     );
 
     useEffect(() => {
-        if (id) fetchProduct(id);
+        const init = async () => {
+            await fetchDeviceCatalog();
+            if (id) await fetchProduct(id);
+        };
+        init();
     }, [id]);
+
+    const fetchDeviceCatalog = async () => {
+        const [bRes, mRes] = await Promise.all([
+            supabase.from('brands').select('*').order('name'),
+            supabase.from('device_models').select('*').order('name')
+        ]);
+        if (bRes.data) setBrands(bRes.data);
+        if (mRes.data) setModels(mRes.data);
+    };
 
     const fetchProduct = async (productId: string) => {
         setFetching(true);
-        const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .eq('id', productId)
-            .single();
+        const [prodReq, compReq] = await Promise.all([
+            supabase.from('products').select('*').eq('id', productId).single(),
+            supabase.from('product_compatibility').select('*').eq('product_id', productId)
+        ]);
+
+        const { data, error } = prodReq;
+        const compData = compReq.data || [];
 
         if (error || !data) {
             alert('Error loading product');
             router.push('/admin/personalization');
             return;
         }
+
+        // Map compatibility
+        const compMap: Record<string, any> = {};
+        compData.forEach((c: any) => {
+            compMap[c.device_model_id] = { enabled: true, stock: c.stock, sku: c.sku };
+        });
+        setCompatibility(compMap);
 
         const meta = data.metadata || {};
         const pConfig = meta.personalization || {};
@@ -218,8 +245,8 @@ export default function EditPersonalizationProductPage() {
             return;
         }
 
-        // Update
-        const { error } = await supabase.from('products').update({
+        // Update Product
+        const { error: prodError } = await supabase.from('products').update({
             name: name,
             description: formData.description,
             price: parseFloat(price),
@@ -232,13 +259,39 @@ export default function EditPersonalizationProductPage() {
             }
         }).eq('id', id);
 
-        if (error) {
-            console.error(error);
-            alert('Failed to update base product: ' + error.message);
-        } else {
-            router.push('/admin/personalization');
-            router.refresh();
+        if (prodError) {
+            console.error(prodError);
+            alert('Failed to update base product: ' + prodError.message);
+            setLoading(false);
+            return;
         }
+
+        // Update Compatibility if Phone Case
+        if (product_type === 'Phone Case') {
+            // Clear existing
+            await supabase.from('product_compatibility').delete().eq('product_id', id);
+
+            // Insert new
+            const compToInsert = Object.entries(compatibility)
+                .filter(([_, cfg]) => cfg.enabled)
+                .map(([modelId, cfg]) => ({
+                    product_id: id,
+                    device_model_id: modelId,
+                    stock: cfg.stock || 0,
+                    sku: cfg.sku || ''
+                }));
+
+            if (compToInsert.length > 0) {
+                const { error: compError } = await supabase.from('product_compatibility').insert(compToInsert);
+                if (compError) {
+                    console.error('Comp Error:', compError);
+                    alert('Warning: Product saved but compatibility details failed to update.');
+                }
+            }
+        }
+
+        router.push('/admin/personalization');
+        router.refresh();
         setLoading(false);
     };
 
@@ -470,6 +523,88 @@ export default function EditPersonalizationProductPage() {
                         </div>
                     )}
                 </div>
+
+                {/* SECTION 2.5: DEVICE COMPATIBILITY (Dynamic for Phone Cases) */}
+                {formData.product_type === 'Phone Case' && (
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden ring-2 ring-coral-500/20">
+                        <button type="button" onClick={() => toggleSection('compatibility')} className="w-full flex items-center justify-between p-6 bg-coral-50/30 hover:bg-coral-50 transition-colors">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-coral-100 text-coral-600 flex items-center justify-center font-bold text-sm">2.5</div>
+                                <h2 className="text-lg font-bold text-gray-900">Device Compatibility</h2>
+                            </div>
+                            {sections.compatibility ? <ChevronUp size={20} className="text-coral-400" /> : <ChevronDown size={20} className="text-coral-400" />}
+                        </button>
+
+                        {sections.compatibility && (
+                            <div className="p-6 border-t border-gray-100 space-y-8 animate-in slide-in-from-top-2">
+                                {brands.map(brand => (
+                                    <div key={brand.id} className="space-y-4">
+                                        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                                            <h3 className="font-black text-gray-900 uppercase tracking-wider text-sm">{brand.name} Models</h3>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const brandModels = models.filter(m => m.brand_id === brand.id);
+                                                    const allEnabled = brandModels.every(m => compatibility[m.id]?.enabled);
+                                                    const newComp = { ...compatibility };
+                                                    brandModels.forEach(m => {
+                                                        newComp[m.id] = { ...newComp[m.id], enabled: !allEnabled };
+                                                    });
+                                                    setCompatibility(newComp);
+                                                }}
+                                                className="text-[10px] font-bold text-coral-500 hover:text-coral-600 uppercase"
+                                            >
+                                                Toggle All
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                            {models.filter(m => m.brand_id === brand.id).map(model => (
+                                                <div key={model.id} className={`p-3 rounded-xl border transition-all ${compatibility[model.id]?.enabled ? 'bg-coral-50/30 border-coral-200' : 'bg-gray-50/50 border-gray-100 opacity-60'}`}>
+                                                    <label className="flex items-center gap-3 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="w-4 h-4 rounded border-gray-300 text-coral-500 focus:ring-coral-500"
+                                                            checked={!!compatibility[model.id]?.enabled}
+                                                            onChange={(e) => setCompatibility({
+                                                                ...compatibility,
+                                                                [model.id]: { ...compatibility[model.id], enabled: e.target.checked }
+                                                            })}
+                                                        />
+                                                        <span className="text-sm font-bold text-gray-700">{model.name}</span>
+                                                    </label>
+                                                    {compatibility[model.id]?.enabled && (
+                                                        <div className="mt-2 grid grid-cols-2 gap-2 animate-in fade-in scale-95 duration-200">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="SKU"
+                                                                className="px-2 py-1 text-[10px] bg-white border border-coral-100 rounded focus:border-coral-300 outline-none text-gray-900"
+                                                                value={compatibility[model.id]?.sku || ''}
+                                                                onChange={(e) => setCompatibility({
+                                                                    ...compatibility,
+                                                                    [model.id]: { ...compatibility[model.id], sku: e.target.value }
+                                                                })}
+                                                            />
+                                                            <input
+                                                                type="number"
+                                                                placeholder="Stock"
+                                                                className="px-2 py-1 text-[10px] bg-white border border-coral-100 rounded focus:border-coral-300 outline-none text-gray-900"
+                                                                value={compatibility[model.id]?.stock || 0}
+                                                                onChange={(e) => setCompatibility({
+                                                                    ...compatibility,
+                                                                    [model.id]: { ...compatibility[model.id], stock: parseInt(e.target.value) || 0 }
+                                                                })}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* SECTION 3: PRINTING RULES */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

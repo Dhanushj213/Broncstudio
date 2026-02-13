@@ -30,6 +30,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "via.placeholder.com" },
       { protocol: "https", hostname: "drive.google.com" },
       { protocol: "https", hostname: "doc.google.com" },
+      { protocol: "https", hostname: "*.supabase.co" },
     ],
     dangerouslyAllowSVG: true,
   },

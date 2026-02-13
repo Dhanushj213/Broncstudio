@@ -8,7 +8,7 @@ import { useToast } from '@/context/ToastContext';
 import { useRouter } from 'next/navigation';
 
 interface ProductInfoProps {
-    product: any; // Using any for simplicity in this rapid iteration, ideally strict type
+    product: any;
 }
 
 export default function ProductInfo({ product }: ProductInfoProps) {
@@ -22,20 +22,12 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const sizes = meta.sizes || []; // Array of strings
     const highlights = meta.highlights || []; // Array of strings
 
-
+    const [selectedSize, setSelectedSize] = useState(sizes[0] || '');
+    const [selectedColor, setSelectedColor] = useState(colors[0]?.name || '');
 
     const stockStatus = meta.stock_status || 'in_stock'; // in_stock, out_of_stock, low_stock
     const isOutOfStock = stockStatus === 'out_of_stock';
     const isLowStock = stockStatus === 'low_stock';
-
-    const [selectedSize, setSelectedSize] = useState(sizes[0] || '');
-    const [selectedColor, setSelectedColor] = useState(colors[0]?.name || '');
-
-    // Reset selection if product changes (optional, but good practice)
-    React.useEffect(() => {
-        if (sizes.length > 0) setSelectedSize(sizes[0]);
-        if (colors.length > 0) setSelectedColor(colors[0].name);
-    }, [product]);
 
     const handleAddToCart = () => {
         if (isOutOfStock) return;
@@ -99,6 +91,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             {/* Variants */}
             {!isOutOfStock && (
                 <div className="space-y-6 md:space-y-10">
+
                     {/* Colors */}
                     {colors.length > 0 && (
                         <div>

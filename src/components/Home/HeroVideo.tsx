@@ -12,6 +12,7 @@ interface HeroContent {
     video_url: string;
     poster_url: string;
     images: string[];
+    mobile_images: string[];
     heading: string;
     subheading: string;
     button_text: string;
@@ -24,11 +25,13 @@ export default function HeroVideo() {
         video_url: '',
         poster_url: '',
         images: [],
+        mobile_images: [],
         heading: 'Summer Luxe',
         subheading: 'New Collection',
         button_text: 'Shop Now',
         button_link: '/shop/new-arrivals'
     });
+    const [isMobile, setIsMobile] = useState(false);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -52,12 +55,21 @@ export default function HeroVideo() {
                     ...data.content,
                     // Fallbacks for legacy data
                     type: data.content.type || 'video',
-                    images: data.content.images || prev.images
+                    images: data.content.images || prev.images,
+                    mobile_images: data.content.mobile_images || data.content.images || prev.mobile_images
                 }));
             }
         };
 
         fetchContent();
+
+        // Device detection
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
     // Process content to handle Google Drive links
@@ -70,10 +82,16 @@ export default function HeroVideo() {
         };
     }, [content]);
 
-    // Filter out empty strings from images
+    // Filter out empty strings from images based on device
     const validImages = React.useMemo(() => {
-        return processedContent.images ? processedContent.images.filter(img => img && img.trim() !== '') : [];
-    }, [processedContent.images]);
+        const imageSet = isMobile && content.mobile_images?.length > 0
+            ? content.mobile_images
+            : content.images;
+
+        return imageSet ? imageSet
+            .filter(img => img && img.trim() !== '')
+            .map(img => getGoogleDriveDirectLink(img)) : [];
+    }, [content.images, content.mobile_images, isMobile]);
 
     // Auto-scroll logic for images
     useEffect(() => {
@@ -96,12 +114,12 @@ export default function HeroVideo() {
     }, [content.type, validImages]);
 
     return (
-        <section className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-black group">
+        <section className="relative w-full h-[calc(100dvh-136px)] md:h-[90vh] overflow-hidden bg-black group">
             {/* Background Content */}
             {content.type === 'video' ? (
                 processedContent.video_url ? (
                     <video
-                        className="absolute inset-0 w-full h-full object-cover opacity-80"
+                        className="absolute inset-0 w-full h-full object-cover object-top opacity-80"
                         autoPlay
                         loop
                         muted
@@ -128,7 +146,7 @@ export default function HeroVideo() {
                             <img
                                 src={img}
                                 alt={`Banner ${idx + 1}`}
-                                className="w-full h-full object-cover opacity-90"
+                                className="w-full h-full object-cover object-top opacity-90"
                                 referrerPolicy="no-referrer"
                             />
                         </div>
@@ -145,20 +163,22 @@ export default function HeroVideo() {
             {/* Overlay Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-            {/* Content Content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 px-6 text-center z-10">
-                <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-3 animate-fade-in-up drop-shadow-md">
-                    {content.subheading}
-                </span>
-                <h2 className="text-white text-4xl md:text-6xl font-serif font-medium italic mb-6 animate-fade-in-up delay-100 drop-shadow-lg">
-                    {content.heading}
-                </h2>
-                <Link
-                    href={content.button_link}
-                    className="bg-white text-black px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all transform hover:scale-105 shadow-lg animate-fade-in-up delay-200"
-                >
-                    {content.button_text}
-                </Link>
+            {/* Content Content - Bottom Aligned */}
+            <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-end pb-8 md:pb-32 px-6 text-center z-10 transition-all">
+                <div className="animate-fade-in-up">
+                    <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-4 block drop-shadow-md opacity-90">
+                        {content.subheading}
+                    </span>
+                    <h2 className="text-white text-5xl md:text-9xl font-serif font-medium italic mb-10 drop-shadow-lg leading-tight">
+                        {content.heading}
+                    </h2>
+                    <Link
+                        href={content.button_link}
+                        className="inline-block bg-white text-black px-12 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-coral-500 hover:text-white transition-all transform hover:scale-110 shadow-2xl"
+                    >
+                        {content.button_text}
+                    </Link>
+                </div>
             </div>
         </section>
     );

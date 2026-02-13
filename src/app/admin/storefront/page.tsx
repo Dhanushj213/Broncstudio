@@ -27,6 +27,7 @@ interface HeroContent {
     video_url: string;
     poster_url: string;
     images: string[];
+    mobile_images: string[];
     heading: string;
     subheading: string;
     button_text: string;
@@ -42,12 +43,14 @@ export default function StorefrontPage() {
         type: 'video',
         video_url: '',
         poster_url: '',
-        images: ['', '', '', '', ''],
+        images: [''],
+        mobile_images: [''],
         heading: 'Summer Luxe',
         subheading: 'New Collection',
         button_text: 'Shop Now',
         button_link: '/shop/new-arrivals'
     });
+    const [activeTab, setActiveTab] = useState<'desktop' | 'mobile'>('desktop');
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -67,12 +70,13 @@ export default function StorefrontPage() {
             .single();
 
         if (data && data.content) {
-            // Ensure compatibility with old data that might not have 'type' or 'images'
+            // Ensure compatibility with old data
             setHeroContent(prev => ({
                 ...prev,
                 ...data.content,
                 type: data.content.type || 'video',
-                images: data.content.images || prev.images
+                images: data.content.images || prev.images,
+                mobile_images: data.content.mobile_images || data.content.images || prev.mobile_images
             }));
         }
         setLoading(false);
@@ -102,9 +106,26 @@ export default function StorefrontPage() {
     };
 
     const handleImageChange = (index: number, value: string) => {
-        const newImages = [...heroContent.images];
+        const key = activeTab === 'desktop' ? 'images' : 'mobile_images';
+        const newImages = [...heroContent[key]];
         newImages[index] = value;
-        setHeroContent({ ...heroContent, images: newImages });
+        setHeroContent({ ...heroContent, [key]: newImages });
+    };
+
+    const addImage = () => {
+        const key = activeTab === 'desktop' ? 'images' : 'mobile_images';
+        setHeroContent({ ...heroContent, [key]: [...heroContent[key], ''] });
+    };
+
+    const removeImage = (index: number) => {
+        const key = activeTab === 'desktop' ? 'images' : 'mobile_images';
+        const newImages = heroContent[key].filter((_, i) => i !== index);
+        // Ensure at least one image field exists
+        if (newImages.length === 0) {
+            setHeroContent({ ...heroContent, [key]: [''] });
+        } else {
+            setHeroContent({ ...heroContent, [key]: newImages });
+        }
     };
 
     if (loading) return <div className="p-20 text-center text-gray-500">Loading storefront settings...</div>;
@@ -147,7 +168,7 @@ export default function StorefrontPage() {
                                     className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'images' ? 'border-coral-500 bg-coral-50 text-orange-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'}`}
                                 >
                                     <ImageIcon size={20} />
-                                    <span className="font-bold">Rolling Images (5)</span>
+                                    <span className="font-bold">Rolling Images</span>
                                 </button>
                             </div>
                         </div>
@@ -197,27 +218,67 @@ export default function StorefrontPage() {
 
                         {/* Images Configuration */}
                         {heroContent.type === 'images' && (
-                            <div className="space-y-3 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <label className="block text-sm font-bold text-gray-700">
-                                    Scrolling Images (5 Required)
-                                </label>
-                                {heroContent.images.map((url, index) => (
-                                    <div key={index} className="flex gap-2 items-center">
-                                        <span className="w-6 text-sm font-bold text-gray-400 text-right">{index + 1}.</span>
-                                        <div className="relative flex-1">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <ImageIcon size={16} className="text-gray-400" />
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                {/* Device Tabs */}
+                                <div className="flex border-b border-gray-100">
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('desktop')}
+                                        className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'desktop' ? 'border-coral-500 text-coral-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                                    >
+                                        Desktop View
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab('mobile')}
+                                        className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'mobile' ? 'border-coral-500 text-coral-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                                    >
+                                        Mobile / App View
+                                    </button>
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <label className="block text-sm font-bold text-gray-700">
+                                        {activeTab === 'desktop' ? 'Desktop' : 'Mobile'} Scrolling Images
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={addImage}
+                                        className="text-sm font-bold text-white bg-coral-500 hover:bg-coral-600 flex items-center gap-2 px-4 py-2 rounded-xl transition-all shadow-lg shadow-coral-500/20 active:scale-95"
+                                    >
+                                        <Plus size={18} />
+                                        Add {activeTab === 'desktop' ? 'Desktop' : 'Mobile'} Image
+                                    </button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {(activeTab === 'desktop' ? heroContent.images : heroContent.mobile_images).map((url, index) => (
+                                        <div key={index} className="flex gap-2 items-center group">
+                                            <span className="w-6 text-sm font-bold text-gray-400 text-right">{index + 1}.</span>
+                                            <div className="relative flex-1">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <ImageIcon size={16} className="text-gray-400" />
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={url}
+                                                    onChange={e => handleImageChange(index, e.target.value)}
+                                                    className="w-full pl-10 pr-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
+                                                    placeholder={`${activeTab === 'desktop' ? 'Desktop' : 'Mobile'} Image URL #${index + 1}`}
+                                                />
+                                                {(activeTab === 'desktop' ? heroContent.images : heroContent.mobile_images).length > 1 && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage(index)}
+                                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 transition-colors"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                )}
                                             </div>
-                                            <input
-                                                type="url"
-                                                value={url}
-                                                onChange={e => handleImageChange(index, e.target.value)}
-                                                className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
-                                                placeholder={`Image URL #${index + 1}`}
-                                            />
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         )}
 

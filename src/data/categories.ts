@@ -189,16 +189,6 @@ export const CATEGORY_TAXONOMY = {
                     { name: 'Large Totes', slug: 'large-totes' },
                     { name: 'Drawstrings', slug: 'drawstring-bags' }
                 ]
-            },
-            {
-                id: 'tech-accessories',
-                name: 'Tech Accessories',
-                slug: 'phone-cases', // Container slug, actual items below
-                items: [
-                    { name: 'iPhone', slug: 'iphone-cases' },
-                    { name: 'Samsung', slug: 'samsung-cases' },
-                    { name: 'OnePlus', slug: 'oneplus-cases' }
-                ]
             }
         ]
     },
@@ -365,8 +355,6 @@ export const DEPARTMENT_TAXONOMY: Record<string, Department> = {
             {
                 title: 'Tech & Desk',
                 items: [
-                    { label: 'iPhone Cases', href: '/shop/accessories/phone-cases/iphone-cases', badge: 'New' },
-                    { label: 'Samsung Cases', href: '/shop/accessories/phone-cases/samsung-cases' },
                     { label: 'Mouse Pads', href: '/shop/home/desk-essentials/mouse-pads' },
                     { label: 'Gaming Pads', href: '/shop/home/desk-essentials/gaming-pads' }
                 ]

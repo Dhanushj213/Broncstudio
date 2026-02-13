@@ -49,7 +49,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const addToCart = (product: any, size: string) => {
         // If it's a custom order, we need a unique ID for every addition (allow multiple configs)
-        // Otherwise, group by product+size
+        // Otherwise, group by product+size+model
         const isCustom = size === 'Custom' || product.metadata?.is_custom;
         const itemId = isCustom
             ? `${product.id}-custom-${Date.now()}-${Math.floor(Math.random() * 1000)}`

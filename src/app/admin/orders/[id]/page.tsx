@@ -269,37 +269,7 @@ export default function OrderDetailPage() {
                                 return (
                                     <div key={idx} className="p-6 flex items-start gap-4">
                                         <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative group">
-                                            <img src={meta?.image_url || item.image_url} alt={item.name} className="w-full h-full object-cover" />
-                                            {meta?.image_url && (
-                                                <button
-                                                    onClick={async (e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        try {
-                                                            const response = await fetch(meta.image_url);
-                                                            const blob = await response.blob();
-                                                            const blobUrl = window.URL.createObjectURL(blob);
-                                                            const link = document.createElement('a');
-                                                            link.href = blobUrl;
-                                                            // improved filename logic
-                                                            const cleanName = item.name.replace(/[^a-zA-Z0-9]/g, '_');
-                                                            const ext = meta.image_url.split('.').pop()?.split('?')[0] || 'png';
-                                                            const safeExt = ext.length > 4 ? 'png' : ext;
-                                                            link.download = `${cleanName}_${meta.placement || 'design'}.${safeExt}`;
-                                                            document.body.appendChild(link);
-                                                            link.click();
-                                                            document.body.removeChild(link);
-                                                            window.URL.revokeObjectURL(blobUrl);
-                                                        } catch (err) {
-                                                            console.error('Download failed', err);
-                                                            addToast('Failed to download image', 'error');
-                                                        }
-                                                    }}
-                                                    className="absolute inset-0 w-full h-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-xs font-bold cursor-pointer border-none"
-                                                >
-                                                    Download
-                                                </button>
-                                            )}
+                                            <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -313,17 +283,71 @@ export default function OrderDetailPage() {
                                             <div className="space-y-1 mt-1">
                                                 <p className="text-sm text-gray-500 dark:text-gray-400">
                                                     Size: <span className="font-medium text-gray-700 dark:text-gray-300">{meta?.size || item.size || 'N/A'}</span>
+                                                    {meta?.color && (
+                                                        <> / Color: <span className="font-medium text-gray-700 dark:text-gray-300">{meta.color}</span></>
+                                                    )}
                                                 </p>
 
                                                 {meta?.is_custom && (
-                                                    <div className="text-sm bg-gray-50 dark:bg-white/5 p-2 rounded border border-gray-100 dark:border-white/10 inline-block mt-1">
-                                                        <p className="text-gray-500 dark:text-gray-400 text-xs uppercase font-bold mb-1">Print Details</p>
-                                                        <p className="text-gray-700 dark:text-gray-300">Type: <span className="font-medium text-gray-900 dark:text-white">{meta.print_type}</span></p>
-                                                        <p className="text-gray-700 dark:text-gray-300">Placement: <span className="font-medium text-gray-900 dark:text-white">{meta.placement}</span></p>
+                                                    <div className="mt-4 space-y-4">
+                                                        {/* PLACEMENTS GRID */}
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                            {meta.placements ? (
+                                                                Object.entries(meta.placements as Record<string, any>)
+                                                                    .filter(([_, p]) => p.enabled && p.uploadedImage)
+                                                                    .map(([loc, p]) => (
+                                                                        <div key={loc} className="bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3">
+                                                                            <div className="w-12 h-12 bg-white dark:bg-black/20 rounded border border-gray-200 dark:border-white/10 overflow-hidden flex-shrink-0">
+                                                                                <img src={p.uploadedImage} alt={loc} className="w-full h-full object-contain p-1" />
+                                                                            </div>
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{loc}</p>
+                                                                                <p className="text-xs font-medium text-gray-900 dark:text-white truncate">{p.printType}</p>
+                                                                            </div>
+                                                                            <button
+                                                                                onClick={async (e) => {
+                                                                                    e.preventDefault();
+                                                                                    try {
+                                                                                        const response = await fetch(p.uploadedImage);
+                                                                                        const blob = await response.blob();
+                                                                                        const blobUrl = window.URL.createObjectURL(blob);
+                                                                                        const link = document.createElement('a');
+                                                                                        link.href = blobUrl;
+                                                                                        const cleanName = item.name.replace(/[^a-zA-Z0-9]/g, '_');
+                                                                                        let ext = p.uploadedImage.split('.').pop()?.split('?')[0] || 'png';
+                                                                                        if (ext.length > 4) ext = 'png';
+                                                                                        link.download = `Order_${order.id.slice(0, 8)}_${loc}_${cleanName}.${ext}`;
+                                                                                        document.body.appendChild(link);
+                                                                                        link.click();
+                                                                                        document.body.removeChild(link);
+                                                                                        window.URL.revokeObjectURL(blobUrl);
+                                                                                    } catch (err) {
+                                                                                        addToast('Download failed', 'error');
+                                                                                    }
+                                                                                }}
+                                                                                className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg text-blue-600 dark:text-blue-400 transition-colors"
+                                                                                title="Download Artwork"
+                                                                            >
+                                                                                <Package size={16} />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))
+                                                            ) : (
+                                                                /* Legacy single placement fallback */
+                                                                <div className="bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3 col-span-2">
+                                                                    <div className="flex-1">
+                                                                        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Placement Detail (Legacy)</p>
+                                                                        <p className="text-xs font-medium text-gray-900 dark:text-white">Type: {meta.print_type || 'N/A'}</p>
+                                                                        <p className="text-xs font-medium text-gray-900 dark:text-white">Loc: {meta.placement || 'N/A'}</p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+
                                                         {meta.note && (
-                                                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-white/10">
-                                                                <p className="text-xs text-gray-400">Customer Note:</p>
-                                                                <p className="italic text-gray-700 dark:text-gray-300">"{meta.note}"</p>
+                                                            <div className="bg-amber-50/50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-100/50 dark:border-amber-900/20">
+                                                                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase mb-1">Customer Note</p>
+                                                                <p className="text-sm italic text-gray-700 dark:text-gray-300">"{meta.note}"</p>
                                                             </div>
                                                         )}
                                                     </div>
