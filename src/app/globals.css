@@ -159,23 +159,43 @@
     color: #FFFFFF;
   }
 
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px !important;
+    height: 6px !important;
+    display: block !important;
   }
 
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track,
   ::-webkit-scrollbar-track {
-    background: var(--bg-page);
+    background: transparent !important;
   }
 
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb,
   ::-webkit-scrollbar-thumb {
-    background: var(--bg-surface-3);
-    border-radius: 4px;
-    border: 2px solid var(--bg-page);
+    background: rgba(0, 0, 0, 0.15) !important;
+    border-radius: 10px !important;
   }
 
+  .dark html::-webkit-scrollbar-thumb,
+  .dark body::-webkit-scrollbar-thumb,
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover,
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .dark html::-webkit-scrollbar-thumb:hover,
+  .dark body::-webkit-scrollbar-thumb:hover,
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
   }
 }
 

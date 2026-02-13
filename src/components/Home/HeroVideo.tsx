@@ -26,11 +26,12 @@ export default function HeroVideo() {
         poster_url: '',
         images: [],
         mobile_images: [],
-        heading: 'Summer Luxe',
-        subheading: 'New Collection',
+        heading: '',
+        subheading: '',
         button_text: 'Shop Now',
         button_link: '/shop/new-arrivals'
     });
+    const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +60,7 @@ export default function HeroVideo() {
                     mobile_images: data.content.mobile_images || data.content.images || prev.mobile_images
                 }));
             }
+            setIsLoading(false);
         };
 
         fetchContent();
@@ -72,10 +74,22 @@ export default function HeroVideo() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Process content to handle Google Drive links
+    // Process content to handle Google Drive links and sanitize fallback text
     const processedContent = React.useMemo(() => {
+        const sanitize = (text: string) => {
+            if (!text) return '';
+            return text
+                .replace(/No video configured/gi, '')
+                .replace(/No images configured/gi, '')
+                .replace(/Summer Luxe/gi, '')
+                .replace(/New Collection/gi, '')
+                .trim();
+        };
+
         return {
             ...content,
+            heading: sanitize(content.heading),
+            subheading: sanitize(content.subheading),
             video_url: getGoogleDriveDirectLink(content.video_url),
             poster_url: getGoogleDriveDirectLink(content.poster_url),
             images: content.images.map(img => getGoogleDriveDirectLink(img))
@@ -114,7 +128,7 @@ export default function HeroVideo() {
     }, [content.type, validImages]);
 
     return (
-        <section className="relative w-full h-[calc(100dvh-136px)] md:h-[90vh] overflow-hidden bg-black group">
+        <section className="relative w-full h-[calc(100vh-104px)] overflow-hidden bg-black group">
             {/* Background Content */}
             {content.type === 'video' ? (
                 processedContent.video_url ? (
@@ -131,14 +145,12 @@ export default function HeroVideo() {
                         Your browser does not support the video tag.
                     </video>
                 ) : (
-                    <div className="min-w-full w-full h-full bg-gray-900 flex items-center justify-center">
-                        <span className="text-gray-700">No video configured</span>
-                    </div>
+                    <div className="min-w-full w-full h-full bg-black flex items-center justify-center" />
                 )
             ) : (
                 <div
                     ref={scrollContainerRef}
-                    className="absolute inset-0 w-full h-full flex overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth"
+                    className="absolute inset-0 w-full h-full flex overflow-hidden scroll-smooth"
                 >
                     {validImages.map((img, idx) => (
                         <div key={idx} className="min-w-full w-full h-full snap-center flex-shrink-0 relative">
@@ -152,10 +164,9 @@ export default function HeroVideo() {
                         </div>
                     ))}
                     {/* Fallback if no valid images are found */}
+                    {/* Fallback if no valid images are found */}
                     {validImages.length === 0 && (
-                        <div className="min-w-full w-full h-full bg-gray-900 flex items-center justify-center">
-                            <span className="text-gray-700">No images configured</span>
-                        </div>
+                        <div className="min-w-full w-full h-full bg-black flex items-center justify-center" />
                     )}
                 </div>
             )}
@@ -163,23 +174,31 @@ export default function HeroVideo() {
             {/* Overlay Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
-            {/* Content Content - Bottom Aligned */}
-            <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-end pb-8 md:pb-32 px-6 text-center z-10 transition-all">
-                <div className="animate-fade-in-up">
-                    <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-4 block drop-shadow-md opacity-90">
-                        {content.subheading}
-                    </span>
-                    <h2 className="text-white text-5xl md:text-9xl font-serif font-medium italic mb-10 drop-shadow-lg leading-tight">
-                        {content.heading}
-                    </h2>
-                    <Link
-                        href={content.button_link}
-                        className="inline-block bg-white text-black px-12 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-coral-500 hover:text-white transition-all transform hover:scale-110 shadow-2xl"
-                    >
-                        {content.button_text}
-                    </Link>
+            {/* Content Overlay - Bottom Aligned */}
+            {!isLoading && (processedContent.heading || processedContent.subheading || content.button_text) && (
+                <div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-end pb-8 md:pb-32 px-6 text-center z-10 transition-all">
+                    <div className="animate-fade-in-up">
+                        {processedContent.subheading && (
+                            <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-4 block drop-shadow-md opacity-90">
+                                {processedContent.subheading}
+                            </span>
+                        )}
+                        {processedContent.heading && (
+                            <h2 className="text-white text-5xl md:text-9xl font-serif font-medium italic mb-10 drop-shadow-lg leading-tight text-center">
+                                {processedContent.heading}
+                            </h2>
+                        )}
+                        {content.button_text && (
+                            <Link
+                                href={content.button_link || '#'}
+                                className="inline-block bg-white text-black px-12 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#891d12] hover:text-white transition-all transform hover:scale-110 shadow-2xl"
+                            >
+                                {content.button_text}
+                            </Link>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )}
         </section>
     );
 }

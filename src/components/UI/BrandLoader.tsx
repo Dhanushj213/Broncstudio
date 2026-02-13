@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -9,116 +9,206 @@ interface BrandLoaderProps {
     size?: 'sm' | 'md' | 'lg';
 }
 
-const ICONS = [
-    { id: 'tshirt', color: 'text-coral-500', d: "M20 20 L30 15 L40 20 L40 40 L60 40 L60 20 L70 15 L80 20 L85 35 L75 40 L75 80 L25 80 L25 40 L15 35 Z" },
-    { id: 'mug', color: 'text-blue-500', d: "M25 25 L75 25 L70 80 L30 80 Z M75 35 C85 35, 85 60, 72 60" },
-    { id: 'cap', color: 'text-green-500', d: "M20 50 C20 30, 80 30, 80 50 L90 55 L90 60 L10 60 L10 55 Z" },
-    { id: 'bag', color: 'text-yellow-500', d: "M35 30 L35 15 C35 5, 65 5, 65 15 L65 30 L80 30 L80 85 L20 85 L20 30 Z" },
-    { id: 'phone', color: 'text-purple-500', d: "M35 15 L65 15 C70 15, 70 15, 70 20 L70 80 C70 85, 70 85, 65 85 L35 85 C30 85, 30 85, 30 80 L30 20 Z" },
-    { id: 'hoodie', color: 'text-pink-500', d: "M30 30 C30 10, 70 10, 70 30 L85 40 L80 85 L20 85 L15 40 Z" }
+const LOADER_QUOTES = [
+    // Fashion
+    "Style is a way to say who you are without having to speak.",
+    "Fashion fades, only style remains the same.",
+    "Clothes mean nothing until someone lives in them.",
+    "Fashion is about dreaming and making other people dream.",
+
+    // Lifestyle
+    "The best form of luxury is time.",
+    "Live the life you've imagined.",
+    "Elegance is not standing out, but being remembered.",
+    "Quality is not an act, it is a habit.",
+
+    // Discipline
+    "Discipline is the bridge between goals and accomplishment.",
+    "Suffer the pain of discipline or suffer the pain of regret.",
+    "Motivation gets you going, but discipline keeps you growing.",
+    "Discipline is choosing between what you want now and what you want most.",
+
+    // Motivation
+    "The best is yet to come.",
+    "Chase excellence, and success will follow.",
+    "Focus on the process, not the outcome.",
+    "Your ambition is the only limit."
 ];
 
 export default function BrandLoader({ text = 'Just a moment...', size = 'md' }: BrandLoaderProps) {
+    const [quote, setQuote] = useState('');
+
+    useEffect(() => {
+        const randomQuote = LOADER_QUOTES[Math.floor(Math.random() * LOADER_QUOTES.length)];
+        setQuote(randomQuote);
+    }, []);
+
     if (size === 'sm') return <div className="animate-spin w-5 h-5 border-2 border-navy-900 border-t-transparent rounded-full" />;
 
-    const radius = 65;
-
     return (
-        <div className="flex flex-col items-center justify-center p-8 w-full min-h-[400px]">
-            {/* Center Logo/Pulse */}
-            <div className="relative w-56 h-56 flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center p-8 w-full min-h-[500px] overflow-hidden">
+            <div className="relative w-80 h-80 flex items-center justify-center">
 
-                {/* Rotating Ring Container */}
+                {/* 1. Background Pulse Rings - Advanced Depth */}
                 <motion.div
-                    className="absolute inset-0 w-full h-full"
+                    className="absolute w-48 h-48 border border-navy-50 dark:border-navy-900/50 rounded-full"
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.div
+                    className="absolute w-64 h-64 border border-dashed border-gray-100 dark:border-navy-800/30 rounded-full"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 10, ease: "linear", repeat: Infinity }}
+                    transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                />
+
+                {/* 2. The Silk Thread Path */}
+                <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full -rotate-90">
+                    {/* The "To-be-stitched" guide */}
+                    <circle
+                        cx="100" cy="100" r="80"
+                        className="fill-none stroke-gray-50 dark:stroke-navy-900/40 stroke-1 stroke-dasharray-[4,4]"
+                        strokeDasharray="4 4"
+                    />
+
+                    {/* The Actual Silk Thread */}
+                    <motion.circle
+                        cx="100"
+                        cy="100"
+                        r="80"
+                        className="fill-none stroke-red-600 dark:stroke-red-500 stroke-[3]"
+                        strokeLinecap="round"
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{
+                            pathLength: [0, 1, 1, 0],
+                            opacity: [0, 1, 1, 0],
+                            strokeWidth: [3, 4, 3]
+                        }}
+                        transition={{
+                            duration: 4,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                            times: [0, 0.45, 0.55, 1]
+                        }}
+                    />
+                </svg>
+
+                {/* 3. The Tailor's Pin (Needle + Logo Head) */}
+                <motion.div
+                    className="absolute w-12 h-32 z-30 flex flex-col items-center"
+                    style={{
+                        transformOrigin: '50% 100%',
+                        top: 'calc(50% - 130px)', // Positioned relative to the track radius
+                    }}
+                    animate={{
+                        rotate: [0, 360],
+                    }}
+                    transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
                 >
-                    {ICONS.map((icon, i) => {
-                        const angle = (i / ICONS.length) * 360;
-                        const rad = (angle * Math.PI) / 180;
-
-                        // Rounding to 2 decimals to prevent hydration mismatch
-                        const x = Math.round(Math.cos(rad) * radius * 100) / 100;
-                        const y = Math.round(Math.sin(rad) * radius * 100) / 100;
-
-                        return (
-                            <motion.div
-                                key={icon.id}
-                                className={`absolute top-1/2 left-1/2 w-8 h-8 -ml-4 -mt-4 flex items-center justify-center ${icon.color}`}
-                                style={{
-                                    x,
-                                    y,
-                                }}
-                            >
-                                {/* Counter-rotate icon to keep upright */}
-                                <motion.svg
-                                    viewBox="0 0 100 100"
-                                    className="w-full h-full fill-none stroke-current stroke-[3] drop-shadow-sm" // Outline style
-                                    animate={{ rotate: -360 }}
-                                    transition={{ duration: 10, ease: "linear", repeat: Infinity }}
-                                >
-                                    <path d={icon.d} strokeLinecap="round" strokeLinejoin="round" />
-                                </motion.svg>
-                            </motion.div>
-                        );
-                    })}
-                </motion.div>
-
-                {/* Static Center Branding with Real Logo */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
-                    <div className="w-20 h-20 bg-navy-900 rounded-full flex items-center justify-center shadow-2xl z-20 border-4 border-white dark:border-navy-800 p-3 relative">
+                    {/* Pin Head (Branding) */}
+                    <motion.div
+                        className="w-12 h-12 bg-navy-900 rounded-full border-2 border-white shadow-xl flex items-center justify-center p-2.5 overflow-hidden"
+                        animate={{
+                            boxShadow: ["0 4px 6px rgba(0,0,0,0.1)", "0 10px 20px rgba(0,0,0,0.3)", "0 4px 6px rgba(0,0,0,0.1)"]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    >
                         <img
                             src="/whitelogo.png"
                             alt="Broncstudio"
                             className="w-full h-full object-contain"
                         />
+                    </motion.div>
+
+                    {/* Needle Body */}
+                    <div className="w-[3px] h-20 bg-gradient-to-b from-navy-900 via-gray-400 to-gray-200 rounded-full relative">
+                        {/* Eye of the needle */}
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-1.5 h-4 border border-white/20 rounded-full" />
+
+                        {/* Needle Tip Shine */}
+                        <motion.div
+                            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/40 blur-md rounded-full"
+                            animate={{ opacity: [0, 1, 0] }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                        />
                     </div>
-                    <div className="relative h-16 md:h-16 w-auto aspect-[6/1] md:aspect-[4/1] animate-pulse">
+                </motion.div>
+
+                {/* 4. Center Brand Identity */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pt-8 pointer-events-none">
+                    <motion.div
+                        className="relative h-12 w-48 opacity-20 dark:opacity-40"
+                        animate={{ opacity: [0.1, 0.2, 0.1] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                    >
                         <Image
                             src="/broncname.png"
                             alt="Broncstudio"
                             fill
-                            className="object-contain hidden md:block dark:hidden"
+                            className="object-contain dark:hidden"
                             priority
                         />
                         <Image
                             src="/broncnamey.png"
                             alt="Broncstudio"
                             fill
-                            className="object-contain hidden dark:md:block"
+                            className="object-contain hidden dark:block"
                             priority
                         />
-                        <Image
-                            src="/broncstudioredname.png"
-                            alt="Broncstudio"
-                            fill
-                            className="object-contain md:hidden dark:hidden"
-                            priority
-                        />
-                        <Image
-                            src="/broncstudioyellowname.png"
-                            alt="Broncstudio"
-                            fill
-                            className="object-contain hidden dark:block dark:md:hidden"
-                            priority
-                        />
-                    </div>
+                    </motion.div>
                 </div>
-                {/* Decorative Rings */}
-                <div className="absolute w-32 h-32 border border-navy-100 dark:border-navy-700 rounded-full" />
-                <div className="absolute w-40 h-40 border border-dashed border-coral-200 dark:border-coral-800 rounded-full animate-spin-slow" />
             </div>
 
-            {/* Text */}
-            <motion.p
-                initial={{ opacity: 0.5 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, repeat: Infinity, repeatType: 'reverse' }}
-                className="mt-8 text-xs font-bold tracking-[0.3em] text-navy-900 dark:text-white uppercase bg-clip-text text-transparent bg-gradient-to-r from-navy-900 to-coral-500"
-            >
-                {text}
-            </motion.p>
+            {/* 5. Text Display & Quotes */}
+            <div className="mt-12 text-center space-y-6 max-w-sm px-4">
+                <div className="space-y-3">
+                    <motion.div
+                        className="h-[2px] w-24 bg-gradient-to-r from-transparent via-navy-900 dark:via-white to-transparent mx-auto"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse' }}
+                    />
+                    <motion.p
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-[10px] font-black tracking-[0.5em] text-navy-900 dark:text-white uppercase"
+                    >
+                        {text}
+                    </motion.p>
+                </div>
+
+                {/* Random Quote */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 1 }}
+                    className="relative"
+                >
+                    <p className="text-sm font-medium italic text-gray-500 dark:text-gray-400 leading-relaxed">
+                        "{quote}"
+                    </p>
+                </motion.div>
+
+                <div className="flex justify-center gap-1.5">
+                    {[0, 1, 2].map(i => (
+                        <motion.div
+                            key={i}
+                            className="w-1 h-1 bg-red-600 rounded-full"
+                            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
+                            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Floating Fabric/Texture Elements (Optional artistic touch) */}
+            <div className="absolute inset-0 pointer-events-none opacity-5">
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-navy-900 rounded-full blur-[100px]" />
+                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-red-600 rounded-full blur-[100px]" />
+            </div>
         </div>
     );
 }

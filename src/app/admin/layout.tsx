@@ -99,7 +99,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
             {/* Sidebar */}
             <aside className={`
-                fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-[#0B1220] text-white transition-transform duration-300 ease-in-out shadow-xl
+                fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-[#0B1220] text-white transition-transform duration-300 ease-in-out shadow-xl flex flex-col
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
                 <div className="p-6 flex items-center justify-between border-b border-white/10">
@@ -114,7 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </button>
                 </div>
 
-                <div className="px-4 py-6">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 py-6">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 px-2">Main Menu</p>
                     <nav className="space-y-1">
                         {SIDEBAR_ITEMS.map((item) => {
@@ -139,7 +139,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </nav>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-[#0B1220]">
+                <div className="p-4 border-t border-white/10 bg-[#0B1220]">
                     <button
                         onClick={handleSignOut}
                         className="flex items-center gap-3 px-3 py-2.5 w-full text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all font-medium"

@@ -77,15 +77,15 @@ export default function HomeClient() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-black -mt-5 overflow-x-hidden">
+    <main className="min-h-screen bg-black overflow-x-hidden">
       <AmbientBackground />
 
       <HeroVideo />
 
       {/* Department BentoGrid */}
       <div id="worlds" className="relative pt-6 pb-4 text-center scroll-mt-[var(--header-height)]">
-        <h1 className="text-sm font-bold tracking-[0.2em] text-coral-500 uppercase mb-4 animate-fade-in-up">
-          Shop By Department
+        <h1 className="text-sm font-bold tracking-[0.2em] text-[#891d12] uppercase mb-4 animate-fade-in-up">
+          Shop By Categories
         </h1>
         <DepartmentBentoGrid />
       </div>

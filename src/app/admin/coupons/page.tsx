@@ -138,7 +138,7 @@ export default function AdminCouponsPage() {
                     <p>No coupons found. Create your first one!</p>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-hidden">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 overflow-x-auto custom-scrollbar">
                     <table className="w-full text-sm text-left">
                         <thead className="bg-[#FAF9F7] dark:bg-white/5 text-gray-500 dark:text-gray-400 font-bold uppercase text-xs border-b border-gray-100 dark:border-white/5">
                             <tr>

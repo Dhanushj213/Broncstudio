@@ -18,6 +18,7 @@ import TabbedProductShowcase from '@/components/Home/TabbedProductShowcase';
 
 // Strict Taxonomy Source
 import { CATEGORY_TAXONOMY } from '@/data/categories';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function ShopClient() {
     const { formatPrice } = useUI();
@@ -62,30 +63,54 @@ export default function ShopClient() {
 
     // 1. Resolve Taxonomy on Slug Change
     useEffect(() => {
+        const fetchDynamicCollections = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('content_blocks')
+                    .select('content')
+                    .eq('section_id', 'shop_page_collections')
+                    .single();
+
+                if (!error && data?.content) {
+                    return data.content as any[];
+                }
+            } catch (err) {
+                console.error('Error fetching dynamic shop collections:', err);
+            }
+            return null;
+        };
+
         // Helper to traverse
-        const resolve = () => {
+        const resolve = async () => {
             // A. Root (/shop)
             if (slugArray.length === 0) {
-                return {
+                const dynamicCollections = await fetchDynamicCollections();
+                const children = dynamicCollections || Object.values(CATEGORY_TAXONOMY).map(c => ({
+                    id: c.id,
+                    name: c.name,
+                    image: c.image, // Ensure image exists in taxonomy
+                    slug: c.slug,
+                    description: c.description
+                }));
+
+                setCurrentView({
                     type: 'root' as const,
                     data: { name: 'Shop Worlds', description: 'Explore our curated collections.' },
-                    children: Object.values(CATEGORY_TAXONOMY).map(c => ({
-                        id: c.id,
-                        name: c.name,
-                        image: c.image, // Ensure image exists in taxonomy
-                        slug: c.slug,
-                        description: c.description
-                    })),
+                    children: children,
                     breadcrumbs: [],
-                    heroImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80' // Default Root Image
-                };
+                    heroImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600\u0026q=80' // Default Root Image
+                });
+                return;
             }
 
             const [l1Slug, l2Slug, l3Slug] = slugArray;
 
             // B. Level 1 (e.g. kids-learning)
             const l1Node = Object.values(CATEGORY_TAXONOMY).find(c => c.slug === l1Slug);
-            if (!l1Node) return { type: '404' as const, data: null, children: [], breadcrumbs: [] };
+            if (!l1Node) {
+                setCurrentView({ type: '404' as const, data: null, children: [], breadcrumbs: [] });
+                return;
+            }
 
             if (slugArray.length === 1) {
                 // Special Case: Pets (Flattened Item Toggle)
@@ -99,17 +124,18 @@ export default function ShopClient() {
                         })) || []
                     ) || [];
 
-                    return {
+                    setCurrentView({
                         type: 'category' as const,
                         data: l1Node,
                         children: flattenedItems,
                         breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
                         heroImage: l1Node.image
-                    };
+                    });
+                    return;
                 }
 
                 // Standard Category View
-                return {
+                setCurrentView({
                     type: 'category' as const,
                     data: l1Node,
                     children: l1Node.subcategories?.map((sc: any) => ({
@@ -120,15 +146,19 @@ export default function ShopClient() {
                     })) || [],
                     breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
                     heroImage: l1Node.image
-                };
+                });
+                return;
             }
 
             // C. Level 2 (e.g. kids-learning/books)
             const l2Node = l1Node.subcategories?.find((sc: any) => sc.slug === l2Slug);
-            if (!l2Node) return { type: '404' as const, data: null, children: [], breadcrumbs: [] };
+            if (!l2Node) {
+                setCurrentView({ type: '404' as const, data: null, children: [], breadcrumbs: [] });
+                return;
+            }
 
             if (slugArray.length === 2) {
-                return {
+                setCurrentView({
                     type: 'subcategory' as const,
                     data: l2Node,
                     children: l2Node.items?.map((item: any) => ({
@@ -142,14 +172,18 @@ export default function ShopClient() {
                         { label: l2Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}` }
                     ],
                     heroImage: l1Node.image // Inherit Parent Image
-                };
+                });
+                return;
             }
 
-            // D. Level 3 (e.g. kids-learning/books/story-books) -> Leaf (Products)
+            // D. Level 3 (e.g. kids-learning/books/story-books) -\u003e Leaf (Products)
             const l3Node = l2Node.items?.find((item: any) => item.slug === l3Slug);
-            if (!l3Node) return { type: '404' as const, data: null, children: [], breadcrumbs: [] };
+            if (!l3Node) {
+                setCurrentView({ type: '404' as const, data: null, children: [], breadcrumbs: [] });
+                return;
+            }
 
-            return {
+            setCurrentView({
                 type: 'item' as const,
                 data: l3Node,
                 children: [], // No deeper levels
@@ -159,12 +193,10 @@ export default function ShopClient() {
                     { label: l3Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}/${l3Node.slug}` }
                 ],
                 heroImage: l1Node.image // Inherit Parent Image
-            };
+            });
         };
 
-        const result = resolve();
-        setCurrentView(result);
-
+        resolve();
     }, [params]); // Recalculate when URL matches
 
     // 2. Fetch Products if Leaf or Subcategory (Mixed View)
@@ -375,7 +407,7 @@ export default function ShopClient() {
                                             {/* Background Image */}
                                             <div
                                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-                                                style={{ backgroundImage: `url(${child.image || '/images/placeholder.jpg'})` }}
+                                                style={{ backgroundImage: `url(${getGoogleDriveDirectLink(child.image) || '/images/placeholder.jpg'})` }}
                                             />
 
                                             {/* Gradient Overlay - darker at bottom for text */}

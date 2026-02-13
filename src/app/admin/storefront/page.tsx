@@ -2,22 +2,29 @@
 
 import React, { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
-import { Save, Loader2, Play, Image as ImageIcon, Plus, Trash2, LayoutTemplate } from 'lucide-react';
+import {
+    Save,
+    Loader2,
+    Play,
+    Image as ImageIcon,
+    Plus,
+    Trash2,
+    LayoutTemplate,
+    Sparkles,
+    MousePointer2,
+    Globe,
+    Smartphone,
+    ExternalLink,
+    Grid,
+    ShoppingBag,
+    UserCircle,
+    CheckCircle2,
+    ChevronRight
+} from 'lucide-react';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 /* 
  * NOTE: This page relies on a 'content_blocks' table in Supabase.
- * SQL to create:
- * 
- * create table if not exists content_blocks (
- *   id uuid default gen_random_uuid() primary key,
- *   section_id text not null unique,
- *   content jsonb not null default '{}'::jsonb,
- *   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
- * );
- * alter table content_blocks enable row level security;
- * create policy "Public read access" on content_blocks for select using (true);
- * create policy "Admin full access" on content_blocks for all using (auth.role() = 'authenticated');
  */
 
 type HeroContentType = 'video' | 'images';
@@ -49,6 +56,18 @@ interface BentoContent {
     tiles: BentoTile[];
 }
 
+interface ShopCollection {
+    id: string;
+    name: string;
+    image: string;
+    slug: string;
+    description: string;
+}
+
+interface ShopCollectionsContent {
+    collections: ShopCollection[];
+}
+
 interface LoginContent {
     visual_urls: string[];
     headline: string;
@@ -57,6 +76,7 @@ interface LoginContent {
 export default function StorefrontPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
     // Hero Section State
     const [heroContent, setHeroContent] = useState<HeroContent>({
@@ -76,13 +96,19 @@ export default function StorefrontPage() {
         tiles: []
     });
 
+    // Shop Page Collections State
+    const [shopCollections, setShopCollections] = useState<ShopCollectionsContent>({
+        collections: []
+    });
+
     // Login Page State
     const [loginContent, setLoginContent] = useState<LoginContent>({
         visual_urls: ['', '', ''],
         headline: 'Capturing Moments,<br />Creating Memories'
     });
 
-    const [activeTab, setActiveTab] = useState<'desktop' | 'mobile'>('desktop');
+    const [activeHeroTab, setActiveHeroTab] = useState<'desktop' | 'mobile'>('desktop');
+    const [activeSection, setActiveSection] = useState('hero');
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -122,7 +148,6 @@ export default function StorefrontPage() {
         if (bentoData && bentoData.content) {
             setBentoContent(bentoData.content);
         } else {
-            // Default tiles if none in DB
             setBentoContent({
                 tiles: [
                     { title: 'Clothing', subtitle: 'Trending', href: '/shop/clothing', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-green-100', textColor: 'text-green-900' },
@@ -133,6 +158,28 @@ export default function StorefrontPage() {
                     { title: 'Pets', subtitle: 'Furry Friends', href: '/shop/pets', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-amber-100', textColor: 'text-amber-900' },
                     { title: 'Lifestyle', subtitle: 'Small Joys', href: '/shop/lifestyle', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-rose-50', textColor: 'text-rose-900' },
                     { title: 'Home', subtitle: 'Decor', href: '/shop/home', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80', colSpan: 'col-span-12', rowSpan: 'row-span-1', color: 'bg-indigo-100', textColor: 'text-indigo-900' }
+                ]
+            });
+        }
+
+        // Fetch Shop Collections
+        const { data: shopData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'shop_page_collections')
+            .single();
+
+        if (shopData && shopData.content) {
+            setShopCollections({ collections: shopData.content });
+        } else {
+            setShopCollections({
+                collections: [
+                    { id: 'kids', name: 'Stationery & Play', slug: 'kids', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80', description: 'Curiosity & Play.' },
+                    { id: 'clothing', name: 'Clothing', slug: 'clothing', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80', description: 'Fashion for Everyone.' },
+                    { id: 'lifestyle', name: 'Lifestyle', slug: 'lifestyle', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80', description: 'Small Joys & Gifting.' },
+                    { id: 'home', name: 'Home & Tech', slug: 'home', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80', description: 'Decor & Comfort.' },
+                    { id: 'accessories', name: 'Accessories', slug: 'accessories', image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80', description: 'Style Extras.' },
+                    { id: 'pets', name: 'Pets', slug: 'pets', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80', description: 'Furry Friends.' }
                 ]
             });
         }
@@ -154,13 +201,26 @@ export default function StorefrontPage() {
         setLoading(false);
     };
 
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSave = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         setSaving(true);
+        setSaveStatus('idle');
 
         const heroPayload = {
             section_id: 'hero_main',
             content: heroContent,
+            updated_at: new Date().toISOString()
+        };
+
+        const bentoPayload = {
+            section_id: 'bento_grid',
+            content: bentoContent,
+            updated_at: new Date().toISOString()
+        };
+
+        const shopPayload = {
+            section_id: 'shop_page_collections',
+            content: shopCollections.collections,
             updated_at: new Date().toISOString()
         };
 
@@ -174,45 +234,44 @@ export default function StorefrontPage() {
             .from('content_blocks')
             .upsert(heroPayload, { onConflict: 'section_id' });
 
-        const bentoPayload = {
-            section_id: 'bento_grid',
-            content: bentoContent,
-            updated_at: new Date().toISOString()
-        };
-
         const { error: bentoErr } = await supabase
             .from('content_blocks')
             .upsert(bentoPayload, { onConflict: 'section_id' });
+
+        const { error: shopErr } = await supabase
+            .from('content_blocks')
+            .upsert(shopPayload, { onConflict: 'section_id' });
 
         const { error: loginErr } = await supabase
             .from('content_blocks')
             .upsert(loginPayload, { onConflict: 'section_id' });
 
-        if (heroErr || bentoErr || loginErr) {
-            console.error(heroErr || bentoErr || loginErr);
-            alert('Failed to save changes!');
+        if (heroErr || bentoErr || shopErr || loginErr) {
+            console.error(heroErr || bentoErr || shopErr || loginErr);
+            setSaveStatus('error');
+            setTimeout(() => setSaveStatus('idle'), 3000);
         } else {
-            alert('Storefront updated successfully!');
+            setSaveStatus('success');
+            setTimeout(() => setSaveStatus('idle'), 3000);
         }
         setSaving(false);
     };
 
-    const handleImageChange = (index: number, value: string) => {
-        const key = activeTab === 'desktop' ? 'images' : 'mobile_images';
+    const handleHeroImageChange = (index: number, value: string) => {
+        const key = activeHeroTab === 'desktop' ? 'images' : 'mobile_images';
         const newImages = [...heroContent[key]];
         newImages[index] = value;
         setHeroContent({ ...heroContent, [key]: newImages });
     };
 
-    const addImage = () => {
-        const key = activeTab === 'desktop' ? 'images' : 'mobile_images';
+    const addHeroImage = () => {
+        const key = activeHeroTab === 'desktop' ? 'images' : 'mobile_images';
         setHeroContent({ ...heroContent, [key]: [...heroContent[key], ''] });
     };
 
-    const removeImage = (index: number) => {
-        const key = activeTab === 'desktop' ? 'images' : 'mobile_images';
+    const removeHeroImage = (index: number) => {
+        const key = activeHeroTab === 'desktop' ? 'images' : 'mobile_images';
         const newImages = heroContent[key].filter((_, i) => i !== index);
-        // Ensure at least one image field exists
         if (newImages.length === 0) {
             setHeroContent({ ...heroContent, [key]: [''] });
         } else {
@@ -220,255 +279,380 @@ export default function StorefrontPage() {
         }
     };
 
-    if (loading) return <div className="p-20 text-center text-gray-500">Loading storefront settings...</div>;
+    const scrollToSection = (id: string) => {
+        setActiveSection(id);
+        const element = document.getElementById(id);
+        if (element) {
+            const offset = 100;
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = element.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400">
+            <Loader2 size={32} className="animate-spin mb-4" />
+            <p className="font-medium">Loading Storefront Settings...</p>
+        </div>
+    );
+
+    const NAVIGATION = [
+        { id: 'hero', label: 'Hero Section', icon: <Sparkles size={18} /> },
+        { id: 'bento', label: 'Department Bento', icon: <Grid size={18} /> },
+        { id: 'shop', label: 'Shop Collections', icon: <ShoppingBag size={18} /> },
+        { id: 'login', label: 'Login Overlay', icon: <UserCircle size={18} /> },
+    ];
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900">Storefront Customization</h1>
-                <p className="text-gray-500">Manage the look and feel of your homepage headers and banners.</p>
-            </div>
+        <div className="flex flex-col lg:flex-row gap-8 pb-32 max-w-[1400px] mx-auto relative px-4 sm:px-6">
 
-            <form onSubmit={handleSave} className="space-y-8">
-
-                {/* Hero Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                            <LayoutTemplate size={20} className="text-coral-500" />
-                            Hero Section
-                        </h2>
-                        <span className="text-xs font-bold uppercase tracking-wider bg-green-100 text-green-700 px-2 py-1 rounded">Live</span>
+            {/* Left Sidebar Navigation - Sticky */}
+            <aside className="lg:w-64 flex-shrink-0">
+                <div className="sticky top-24 space-y-4">
+                    <div className="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
+                        {NAVIGATION.map((item) => (
+                            <button
+                                key={item.id}
+                                onClick={() => scrollToSection(item.id)}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeSection === item.id
+                                    ? 'bg-navy-900 text-white shadow-xl shadow-navy-900/20 scale-[1.02]'
+                                    : 'text-gray-600 hover:bg-navy-50 hover:text-navy-900'
+                                    }`}
+                            >
+                                {item.icon}
+                                {item.label}
+                                {activeSection === item.id && <ChevronRight size={14} className="ml-auto opacity-50" />}
+                            </button>
+                        ))}
                     </div>
 
-                    <div className="p-6 grid grid-cols-1 gap-6">
-                        {/* Type Selection */}
-                        <div>
-                            <label className="block text-sm font-bold text-gray-700 mb-2">Content Type</label>
-                            <div className="flex gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setHeroContent({ ...heroContent, type: 'video' })}
-                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'video' ? 'border-coral-500 bg-coral-50 text-orange-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'}`}
-                                >
-                                    <Play size={20} />
-                                    <span className="font-bold">Video Background</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setHeroContent({ ...heroContent, type: 'images' })}
-                                    className={`flex-1 py-3 px-4 rounded-xl border-2 flex items-center justify-center gap-2 transition-all ${heroContent.type === 'images' ? 'border-coral-500 bg-coral-50 text-orange-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'}`}
-                                >
-                                    <ImageIcon size={20} />
-                                    <span className="font-bold">Rolling Images</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Video Configuration */}
-                        {heroContent.type === 'video' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">
-                                        Video URL (MP4)
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Play size={16} className="text-gray-400" />
-                                        </div>
-                                        <input
-                                            type="url"
-                                            value={heroContent.video_url}
-                                            onChange={e => setHeroContent({ ...heroContent, video_url: e.target.value })}
-                                            className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
-                                            placeholder="https://..."
-                                        />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">Direct link to .mp4 file.</p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">
-                                        Poster / Fallback Image URL
-                                    </label>
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <ImageIcon size={16} className="text-gray-400" />
-                                        </div>
-                                        <input
-                                            type="url"
-                                            value={heroContent.poster_url}
-                                            onChange={e => setHeroContent({ ...heroContent, poster_url: e.target.value })}
-                                            className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
-                                            placeholder="https://..."
-                                        />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">Shown while video loads or on mobile.</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Images Configuration */}
-                        {heroContent.type === 'images' && (
-                            <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                                {/* Device Tabs */}
-                                <div className="flex border-b border-gray-100">
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('desktop')}
-                                        className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'desktop' ? 'border-coral-500 text-coral-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                                    >
-                                        Desktop View
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setActiveTab('mobile')}
-                                        className={`px-4 py-2 text-sm font-bold transition-all border-b-2 ${activeTab === 'mobile' ? 'border-coral-500 text-coral-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                                    >
-                                        Mobile / App View
-                                    </button>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <label className="block text-sm font-bold text-gray-700">
-                                        {activeTab === 'desktop' ? 'Desktop' : 'Mobile'} Scrolling Images
-                                    </label>
-                                    <button
-                                        type="button"
-                                        onClick={addImage}
-                                        className="text-sm font-bold text-white bg-coral-500 hover:bg-coral-600 flex items-center gap-2 px-4 py-2 rounded-xl transition-all shadow-lg shadow-coral-500/20 active:scale-95"
-                                    >
-                                        <Plus size={18} />
-                                        Add {activeTab === 'desktop' ? 'Desktop' : 'Mobile'} Image
-                                    </button>
-                                </div>
-
-                                <div className="space-y-3">
-                                    {(activeTab === 'desktop' ? heroContent.images : heroContent.mobile_images).map((url, index) => (
-                                        <div key={index} className="flex gap-2 items-center group">
-                                            <span className="w-6 text-sm font-bold text-gray-400 text-right">{index + 1}.</span>
-                                            <div className="relative flex-1">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <ImageIcon size={16} className="text-gray-400" />
-                                                </div>
-                                                <input
-                                                    type="url"
-                                                    value={url}
-                                                    onChange={e => handleImageChange(index, e.target.value)}
-                                                    className="w-full pl-10 pr-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-colors"
-                                                    placeholder={`${activeTab === 'desktop' ? 'Desktop' : 'Mobile'} Image URL #${index + 1}`}
-                                                />
-                                                {(activeTab === 'desktop' ? heroContent.images : heroContent.mobile_images).length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeImage(index)}
-                                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 transition-colors"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        <hr className="border-gray-100" />
-
-                        {/* Text Content */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Heading</label>
-                                <input
-                                    type="text"
-                                    value={heroContent.heading}
-                                    onChange={e => setHeroContent({ ...heroContent, heading: e.target.value })}
-                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Subheading</label>
-                                <input
-                                    type="text"
-                                    value={heroContent.subheading}
-                                    onChange={e => setHeroContent({ ...heroContent, subheading: e.target.value })}
-                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Button Text</label>
-                                <input
-                                    type="text"
-                                    value={heroContent.button_text}
-                                    onChange={e => setHeroContent({ ...heroContent, button_text: e.target.value })}
-                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Button Link</label>
-                                <input
-                                    type="text"
-                                    value={heroContent.button_link}
-                                    onChange={e => setHeroContent({ ...heroContent, button_link: e.target.value })}
-                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Preview (Mini) */}
-                    <div className="bg-gray-900 p-6 flex flex-col items-center justify-center text-center relative overflow-hidden h-48">
-                        <div className="absolute inset-0 opacity-40">
-                            {heroContent.type === 'video' ? (
-                                heroContent.video_url ? (
-                                    <video src={getGoogleDriveDirectLink(heroContent.video_url)} className="w-full h-full object-cover" muted loop autoPlay playsInline />
-                                ) : (
-                                    <img src={getGoogleDriveDirectLink(heroContent.poster_url)} className="w-full h-full object-cover" alt="Preview" />
-                                )
-                            ) : (
-                                <div className="w-full h-full flex overflow-hidden">
-                                    {/* Simple preview for images - just show first one */}
-                                    {heroContent.images[0] && (
-                                        <img src={getGoogleDriveDirectLink(heroContent.images[0])} className="w-full h-full object-cover" alt="Preview" />
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                        <div className="relative z-10 text-white">
-                            <p className="text-xs font-bold tracking-widest uppercase mb-2">{heroContent.subheading}</p>
-                            <h3 className="text-2xl font-serif italic mb-4">{heroContent.heading}</h3>
-                            <span className="bg-white text-navy-900 px-4 py-2 rounded-full text-xs font-bold uppercase">{heroContent.button_text}</span>
-                        </div>
+                    <div className="bg-navy-50 rounded-2xl p-6 border border-navy-100">
+                        <h4 className="text-navy-900 font-bold text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <Globe size={14} className="text-navy-500" />
+                            Live Shop
+                        </h4>
+                        <p className="text-navy-700 text-xs mb-4">View your changes on the live site.</p>
+                        <a
+                            href="/shop"
+                            target="_blank"
+                            className="flex items-center gap-2 text-navy-900 font-bold text-sm group"
+                        >
+                            Open Storefront
+                            <ExternalLink size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        </a>
                     </div>
                 </div>
+            </aside>
 
-                {/* Bento Grid Management */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                            <LayoutTemplate size={20} className="text-orange-500" />
-                            Department Bento Grid
-                        </h2>
-                        <span className="text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-700 px-2 py-1 rounded">Homepage</span>
+            {/* Main Content Area */}
+            <div className="flex-1 space-y-12">
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-gray-200 pb-8">
+                    <div>
+                        <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
+                            <span>Admin Dashboard</span>
+                            <ChevronRight size={12} />
+                            <span className="text-navy-900">Storefront</span>
+                        </div>
+                        <h1 className="text-4xl font-extrabold text-navy-900 tracking-tight">Customization</h1>
                     </div>
 
-                    <div className="p-6 space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {bentoContent.tiles.map((tile, idx) => (
-                                <div key={idx} className="p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:border-orange-200 transition-colors">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <h3 className="font-bold text-gray-900 capitalize">{tile.title || `Tile ${idx + 1}`}</h3>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{tile.subtitle}</span>
+                    <div className="flex items-center gap-3 self-end sm:self-auto">
+                        {saveStatus === 'success' && (
+                            <div className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-full text-sm font-bold animate-in fade-in slide-in-from-right-4 transition-all scale-100 opacity-100">
+                                <CheckCircle2 size={16} />
+                                Changes Saved!
+                            </div>
+                        )}
+                        <button
+                            onClick={() => handleSave()}
+                            disabled={saving}
+                            className="bg-navy-900 text-white font-black py-4 px-10 rounded-2xl flex items-center gap-3 shadow-2xl shadow-navy-900/40 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                        >
+                            {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                            SAVE CHANGES
+                        </button>
+                    </div>
+                </header>
+
+                <form className="space-y-12" onSubmit={(e) => e.preventDefault()}>
+
+                    {/* HERO SECTION */}
+                    <section id="hero" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 flex items-center justify-center text-white shadow-xl">
+                                <Sparkles size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Hero Section</h2>
+                                <p className="text-[10px] font-black text-navy-500 uppercase tracking-[0.2em]">Homepage Header & Branding</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden group transition-all hover:border-navy-100">
+                            <div className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
+                                {/* Left Side: Config */}
+                                <div className="lg:col-span-7 space-y-8">
+                                    <div className="space-y-4">
+                                        <label className="text-xs font-black text-navy-900 uppercase tracking-widest flex items-center gap-2">
+                                            <MousePointer2 size={14} className="text-navy-400" />
+                                            Content Format
+                                        </label>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setHeroContent({ ...heroContent, type: 'video' })}
+                                                className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${heroContent.type === 'video' ? 'border-navy-900 bg-navy-900 text-white shadow-2xl shadow-navy-900/20' : 'border-gray-200 bg-white text-gray-400 hover:border-navy-200 hover:bg-navy-50/50'}`}
+                                            >
+                                                <Play size={28} />
+                                                <span className="font-bold text-sm tracking-tight">Video Loop</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setHeroContent({ ...heroContent, type: 'images' })}
+                                                className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${heroContent.type === 'images' ? 'border-navy-900 bg-navy-900 text-white shadow-2xl shadow-navy-900/20' : 'border-gray-200 bg-white text-gray-400 hover:border-navy-200 hover:bg-navy-50/50'}`}
+                                            >
+                                                <ImageIcon size={28} />
+                                                <span className="font-bold text-sm tracking-tight">Image Slider</span>
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Image URL</label>
-                                            <div className="relative">
-                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <ImageIcon size={14} className="text-gray-400" />
+                                    {heroContent.type === 'video' ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Video Source (MP4)</label>
+                                                <div className="relative group/input">
+                                                    <input
+                                                        type="url"
+                                                        value={heroContent.video_url}
+                                                        onChange={e => setHeroContent({ ...heroContent, video_url: e.target.value })}
+                                                        className="w-full pl-4 pr-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl transition-all text-navy-900 text-sm font-bold outline-none shadow-sm"
+                                                        placeholder="Paste Drive Link..."
+                                                    />
                                                 </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Fallback Poster</label>
+                                                <input
+                                                    type="url"
+                                                    value={heroContent.poster_url}
+                                                    onChange={e => setHeroContent({ ...heroContent, poster_url: e.target.value })}
+                                                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl transition-all text-navy-900 text-sm font-bold outline-none shadow-sm"
+                                                    placeholder="Fallback image link..."
+                                                />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-6">
+                                            <div className="flex items-center gap-2 p-1.5 bg-gray-100 rounded-2xl w-fit">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveHeroTab('desktop')}
+                                                    className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeHeroTab === 'desktop' ? 'bg-white text-navy-900 shadow-xl' : 'text-gray-500 hover:text-navy-700'}`}
+                                                >
+                                                    <Globe size={14} /> Desktop View
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveHeroTab('mobile')}
+                                                    className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeHeroTab === 'mobile' ? 'bg-white text-navy-900 shadow-xl' : 'text-gray-500 hover:text-navy-700'}`}
+                                                >
+                                                    <Smartphone size={14} /> Mobile View
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                                {(activeHeroTab === 'desktop' ? heroContent.images : heroContent.mobile_images).map((url, idx) => (
+                                                    <div key={idx} className="flex gap-3 items-center group/url">
+                                                        <div className="flex-1 relative">
+                                                            <input
+                                                                type="url"
+                                                                value={url}
+                                                                onChange={e => handleHeroImageChange(idx, e.target.value)}
+                                                                className="w-full pl-4 pr-12 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl transition-all text-navy-900 text-sm font-bold outline-none shadow-sm"
+                                                                placeholder={`Gallery Image #${idx + 1}`}
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeHeroImage(idx)}
+                                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-red-500 transition-colors"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                <button
+                                                    type="button"
+                                                    onClick={addHeroImage}
+                                                    className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 font-bold text-sm hover:border-navy-900 hover:text-navy-900 hover:bg-navy-50 transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <Plus size={18} /> Add Another Image
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Primary Heading</label>
+                                            <input
+                                                type="text"
+                                                value={heroContent.heading}
+                                                onChange={e => setHeroContent({ ...heroContent, heading: e.target.value })}
+                                                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-navy-900 focus:bg-white rounded-2xl outline-none font-bold text-navy-900 placeholder:text-gray-300"
+                                                placeholder="Enter Primary Heading"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Subheading Label</label>
+                                            <input
+                                                type="text"
+                                                value={heroContent.subheading}
+                                                onChange={e => setHeroContent({ ...heroContent, subheading: e.target.value })}
+                                                className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl outline-none font-bold text-navy-900 placeholder:text-gray-300 shadow-sm"
+                                                placeholder="Enter Subheading"
+                                            />
+                                        </div>
+                                        <div className="space-y-2 text-gray-900 ">
+                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">CTA Button Text</label>
+                                            <input
+                                                type="text"
+                                                value={heroContent.button_text}
+                                                onChange={e => setHeroContent({ ...heroContent, button_text: e.target.value })}
+                                                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-navy-900 focus:bg-white rounded-2xl outline-none font-bold tracking-tight text-navy-900"
+                                            />
+                                        </div>
+                                        <div className="space-y-2 text-gray-900 ">
+                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Button Destination</label>
+                                            <input
+                                                type="text"
+                                                value={heroContent.button_link}
+                                                onChange={e => setHeroContent({ ...heroContent, button_link: e.target.value })}
+                                                className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl outline-none font-bold text-navy-900 shadow-sm"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Side: Visual Preview */}
+                                <div className="lg:col-span-5 flex flex-col gap-4">
+                                    <label className="text-xs font-black text-navy-900 uppercase tracking-widest flex items-center gap-2">
+                                        <Globe size={14} className="text-navy-400" />
+                                        Interactive Preview
+                                    </label>
+                                    <div className="relative aspect-[3/4] lg:aspect-auto lg:h-full bg-navy-900 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-navy-950 group/preview">
+                                        {/* Background Visual */}
+                                        <div className="absolute inset-0 z-0">
+                                            {heroContent.type === 'video' ? (
+                                                heroContent.video_url ? (
+                                                    <video
+                                                        src={getGoogleDriveDirectLink(heroContent.video_url)}
+                                                        className="w-full h-full object-cover"
+                                                        muted loop autoPlay playsInline
+                                                    />
+                                                ) : (
+                                                    <img src={getGoogleDriveDirectLink(heroContent.poster_url)} className="w-full h-full object-cover opacity-50" alt="" />
+                                                )
+                                            ) : (
+                                                <div className="w-full h-full overflow-hidden bg-navy-800">
+                                                    {heroContent.images[0] && (
+                                                        <img src={getGoogleDriveDirectLink(heroContent.images[0])} className="w-full h-full object-cover" alt="" />
+                                                    )}
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+                                        </div>
+
+                                        {/* Content Overlay */}
+                                        <div className="absolute inset-0 z-10 p-8 flex flex-col items-center justify-center text-center text-white space-y-4">
+                                            <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-80 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                                                {heroContent.subheading?.replace(/No video configured/gi, '').replace(/No images configured/gi, '').trim()}
+                                            </span>
+                                            <h3 className="text-3xl md:text-4xl font-black italic tracking-tighter leading-none animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                                                {heroContent.heading?.replace(/No video configured/gi, '').replace(/No images configured/gi, '').trim()}
+                                            </h3>
+                                            <div className="pt-4 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+                                                <span className="px-8 py-3 bg-white text-navy-900 rounded-full text-xs font-black uppercase tracking-widest shadow-xl">
+                                                    {heroContent.button_text}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Device Mockup Decor */}
+                                        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-5 bg-navy-950 rounded-full z-20 shadow-inner" />
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">Mobile Aspect Ratio Preview</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* BENTO GRID SECTION */}
+                    <section id="bento" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-orange-500 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white shadow-xl">
+                                <Grid size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Department Bento</h2>
+                                <p className="text-[10px] font-black text-orange-600/70 uppercase tracking-[0.2em]">Homepage Category Grid</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {bentoContent.tiles.map((tile, idx) => (
+                                <div key={idx} className="bg-white rounded-[2rem] border border-gray-100 p-6 shadow-xl hover:shadow-2xl hover:border-orange-100 transition-all group/card">
+                                    <div className="flex gap-6">
+                                        {/* Image Preview */}
+                                        <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-100">
+                                            <img
+                                                src={getGoogleDriveDirectLink(tile.image)}
+                                                className="w-full h-full object-cover transition-transform group-hover/card:scale-110 duration-700"
+                                                alt=""
+                                            />
+                                        </div>
+
+                                        {/* Inputs Grouped */}
+                                        <div className="flex-1 space-y-4">
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Tile Label</label>
+                                                    <input
+                                                        type="text"
+                                                        value={tile.title}
+                                                        onChange={e => {
+                                                            const newTiles = [...bentoContent.tiles];
+                                                            newTiles[idx] = { ...newTiles[idx], title: e.target.value };
+                                                            setBentoContent({ tiles: newTiles });
+                                                        }}
+                                                        className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-sm font-bold transition-all shadow-sm"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Accent Text</label>
+                                                    <input
+                                                        type="text"
+                                                        value={tile.subtitle}
+                                                        onChange={e => {
+                                                            const newTiles = [...bentoContent.tiles];
+                                                            newTiles[idx] = { ...newTiles[idx], subtitle: e.target.value };
+                                                            setBentoContent({ tiles: newTiles });
+                                                        }}
+                                                        className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Image Asset URL</label>
                                                 <input
                                                     type="url"
                                                     value={tile.image}
@@ -477,145 +661,279 @@ export default function StorefrontPage() {
                                                         newTiles[idx] = { ...newTiles[idx], image: e.target.value };
                                                         setBentoContent({ tiles: newTiles });
                                                     }}
-                                                    className="w-full pl-9 px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                                                    placeholder="https://images.unsplash.com/..."
+                                                    className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-xs font-mono transition-all shadow-sm"
+                                                    placeholder="Google Drive link..."
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Landing Page Slug</label>
+                                                <input
+                                                    type="text"
+                                                    value={tile.href}
+                                                    onChange={e => {
+                                                        const newTiles = [...bentoContent.tiles];
+                                                        newTiles[idx] = { ...newTiles[idx], href: e.target.value };
+                                                        setBentoContent({ tiles: newTiles });
+                                                    }}
+                                                    className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
+                                                    placeholder="/shop/..."
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* SHOP COLLECTIONS SECTION */}
+                    <section id="shop" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-blue-600 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl">
+                                <ShoppingBag size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Shop Collections</h2>
+                                <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-[0.2em]">Main Shop Gallery Cards</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {shopCollections.collections.map((col, idx) => (
+                                <div key={idx} className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-2xl hover:border-blue-100 transition-all group/shopcard">
+                                    <div className="h-40 relative bg-gray-900 overflow-hidden">
+                                        <img
+                                            src={getGoogleDriveDirectLink(col.image)}
+                                            className="w-full h-full object-cover opacity-60 transition-transform group-hover/shopcard:scale-110 duration-1000"
+                                            alt=""
+                                        />
+                                        <div className="absolute inset-0 p-4 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent">
+                                            <span className="text-white text-lg font-black tracking-tight leading-none px-2">{col.name}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-5 space-y-4">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Collection Image Link</label>
+                                            <input
+                                                type="url"
+                                                value={col.image}
+                                                onChange={e => {
+                                                    const newCols = [...shopCollections.collections];
+                                                    newCols[idx] = { ...newCols[idx], image: e.target.value };
+                                                    setShopCollections({ collections: newCols });
+                                                }}
+                                                className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-blue-600 rounded-xl outline-none text-xs truncate transition-all shadow-sm"
+                                            />
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Display Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={col.name}
+                                                    onChange={e => {
+                                                        const newCols = [...shopCollections.collections];
+                                                        newCols[idx] = { ...newCols[idx], name: e.target.value };
+                                                        setShopCollections({ collections: newCols });
+                                                    }}
+                                                    className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-blue-600 rounded-xl outline-none text-sm font-bold transition-all shadow-sm"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Catalog ID</label>
+                                                <input
+                                                    type="text"
+                                                    value={col.slug}
+                                                    onChange={e => {
+                                                        const newCols = [...shopCollections.collections];
+                                                        newCols[idx] = { ...newCols[idx], slug: e.target.value };
+                                                        setShopCollections({ collections: newCols });
+                                                    }}
+                                                    className="w-full text-gray-900 px-3 py-2 bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-xl outline-none text-xs font-mono transition-all opacity-50 select-none pointer-events-none bg-gray-100"
+                                                    readOnly
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Title</label>
-                                                <input
-                                                    type="text"
-                                                    value={tile.title}
-                                                    onChange={e => {
-                                                        const newTiles = [...bentoContent.tiles];
-                                                        newTiles[idx] = { ...newTiles[idx], title: e.target.value };
-                                                        setBentoContent({ tiles: newTiles });
-                                                    }}
-                                                    className="w-full px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Subtitle</label>
-                                                <input
-                                                    type="text"
-                                                    value={tile.subtitle}
-                                                    onChange={e => {
-                                                        const newTiles = [...bentoContent.tiles];
-                                                        newTiles[idx] = { ...newTiles[idx], subtitle: e.target.value };
-                                                        setBentoContent({ tiles: newTiles });
-                                                    }}
-                                                    className="w-full px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Target Link</label>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Gallery Description</label>
                                             <input
                                                 type="text"
-                                                value={tile.href}
+                                                value={col.description}
                                                 onChange={e => {
-                                                    const newTiles = [...bentoContent.tiles];
-                                                    newTiles[idx] = { ...newTiles[idx], href: e.target.value };
-                                                    setBentoContent({ tiles: newTiles });
+                                                    const newCols = [...shopCollections.collections];
+                                                    newCols[idx] = { ...newCols[idx], description: e.target.value };
+                                                    setShopCollections({ collections: newCols });
                                                 }}
-                                                className="w-full px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                                                placeholder="/shop/..."
+                                                className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-blue-600 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
                                             />
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </div>
+                    </section>
 
-                {/* Login Page Customization */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                            <ImageIcon size={20} className="text-indigo-500" />
-                            Login Page Settings
-                        </h2>
-                        <span className="text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded">Portal</span>
-                    </div>
-
-                    <div className="p-6 space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                <label className="block text-sm font-bold text-gray-700">
-                                    Visual Images (up to 3 for carousel)
-                                </label>
-                                {[0, 1, 2].map(idx => (
-                                    <div key={idx} className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <ImageIcon size={16} className="text-gray-400" />
-                                        </div>
-                                        <input
-                                            type="url"
-                                            value={loginContent.visual_urls[idx] || ''}
-                                            onChange={e => {
-                                                const newUrls = [...loginContent.visual_urls];
-                                                newUrls[idx] = e.target.value;
-                                                setLoginContent({ ...loginContent, visual_urls: newUrls });
-                                            }}
-                                            className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                                            placeholder={`Image URL #${idx + 1}`}
-                                        />
-                                    </div>
-                                ))}
-                                <p className="text-xs text-gray-500 mt-1">Images will auto-scroll on the login page.</p>
+                    {/* LOGIN PANEL SECTION */}
+                    <section id="login" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-indigo-500 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-xl">
+                                <UserCircle size={22} />
                             </div>
-
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">
-                                    Narrative Headline (HTML supported)
-                                </label>
-                                <textarea
-                                    value={loginContent.headline}
-                                    onChange={e => setLoginContent({ ...loginContent, headline: e.target.value })}
-                                    rows={2}
-                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                                    placeholder="Capturing Moments,<br />Creating Memories"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Use &lt;br /&gt; for line breaks.</p>
+                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Login Page</h2>
+                                <p className="text-[10px] font-black text-indigo-600/70 uppercase tracking-[0.2em]">Authentication Experience</p>
                             </div>
                         </div>
 
-                        {/* Login Preview */}
-                        <div className="border border-gray-100 rounded-xl overflow-hidden">
-                            <div className="bg-gray-50 px-4 py-2 border-b border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                Preview: Login Panel
-                            </div>
-                            <div className="relative h-48 bg-[#1a1a24] flex items-center justify-center p-8 overflow-hidden">
-                                <div className="absolute inset-0 z-0">
-                                    {loginContent.visual_urls.find(url => url !== '') && (
-                                        <img src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')} className="w-full h-full object-cover" alt="Preview" />
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden p-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                                <div className="lg:col-span-6 space-y-10">
+                                    <div className="space-y-6">
+                                        <label className="text-xs font-black text-navy-900 uppercase tracking-widest block">Carousel Imagery (Min 1, Max 3)</label>
+                                        <div className="space-y-3">
+                                            {loginContent.visual_urls.map((url, idx) => (
+                                                <div key={idx} className="flex gap-4 items-center">
+                                                    <div className="relative flex-1">
+                                                        <input
+                                                            type="url"
+                                                            value={url}
+                                                            onChange={e => {
+                                                                const newUrls = [...loginContent.visual_urls];
+                                                                newUrls[idx] = e.target.value;
+                                                                setLoginContent({ ...loginContent, visual_urls: newUrls });
+                                                            }}
+                                                            className="w-full text-navy-900 pl-4 pr-10 py-3 bg-white border-2 border-gray-200 focus:border-indigo-500 rounded-2xl outline-none font-bold text-sm transition-all shadow-sm"
+                                                            placeholder={`Image URL #${idx + 1}`}
+                                                        />
+                                                        {url && (
+                                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full overflow-hidden border border-gray-200">
+                                                                <img src={getGoogleDriveDirectLink(url)} className="w-full h-full object-cover" alt="" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <label className="text-xs font-black text-navy-900 uppercase tracking-widest block">Narrative Headline</label>
+                                        <textarea
+                                            value={loginContent.headline}
+                                            onChange={e => setLoginContent({ ...loginContent, headline: e.target.value })}
+                                            rows={4}
+                                            className="w-full text-navy-900 px-6 py-4 bg-white border-2 border-gray-200 focus:border-indigo-500 rounded-2xl outline-none font-bold text-lg leading-relaxed shadow-sm focus:bg-white transition-all"
+                                            placeholder="Introduce the brand vibe..."
+                                        />
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">HTML supported. Use \u003cbr /\u003e for line breaks.</p>
+                                    </div>
                                 </div>
-                                <div className="relative z-10 w-full">
-                                    <h4 className="text-white text-lg font-semibold leading-tight" dangerouslySetInnerHTML={{ __html: loginContent.headline }} />
+
+                                <div className="lg:col-span-6 flex flex-col gap-4">
+                                    <label className="text-xs font-black text-navy-900 uppercase tracking-widest flex items-center gap-2">
+                                        <Smartphone size={14} className="text-navy-400" />
+                                        Visual Mockup
+                                    </label>
+                                    <div className="relative aspect-video lg:aspect-auto lg:h-[450px] bg-[#1a1a24] rounded-[3rem] overflow-hidden border-[12px] border-black shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] group">
+                                        {/* Background Carousel (Preview first active) */}
+                                        <div className="absolute inset-0 z-0">
+                                            {loginContent.visual_urls.find(url => url !== '') ? (
+                                                <img
+                                                    src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')}
+                                                    className="w-full h-full object-cover opacity-60"
+                                                    alt=""
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-navy-900/50" />
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                                        </div>
+
+                                        {/* Brand Elements Mockup */}
+                                        <div className="absolute inset-0 z-10 p-12 flex flex-col justify-end">
+                                            <div className="w-12 h-12 bg-white rounded-2xl mb-6 shadow-2xl flex items-center justify-center p-2 opacity-50">
+                                                <div className="w-full h-full bg-navy-900 rounded-lg" />
+                                            </div>
+                                            <div className="max-w-xs space-y-4">
+                                                <h4 className="text-white text-3xl font-black leading-[1.1] tracking-tight transition-all duration-700 hover:scale-105 origin-left" dangerouslySetInnerHTML={{ __html: loginContent.headline }} />
+                                                <div className="flex gap-1.5">
+                                                    {[1, 2, 3].map(i => (
+                                                        <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === 1 ? 'w-8 bg-white' : 'w-2 bg-white/20'}`} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Auth Form Hint */}
+                                        <div className="absolute top-1/2 right-12 -translate-y-1/2 w-48 h-64 bg-white/5 backdrop-blur-3xl rounded-3xl border border-white/10 hidden md:block shadow-2xl p-6 space-y-3">
+                                            <div className="h-2 w-1/2 bg-white/20 rounded-full" />
+                                            <div className="h-8 w-full bg-white/5 rounded-xl" />
+                                            <div className="h-8 w-full bg-white/5 rounded-xl" />
+                                            <div className="h-10 w-full bg-red-600/40 rounded-xl" />
+                                        </div>
+                                    </div>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">Authentication Overlay Pattern</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </section>
+                </form>
+            </div>
 
-                <div className="flex justify-end sticky bottom-6 z-20">
-                    <button
-                        type="submit"
-                        disabled={saving}
-                        className="bg-navy-900 text-white hover:bg-navy-800 font-bold py-4 px-8 rounded-xl flex items-center gap-2 shadow-2xl shadow-navy-900/30 transition-all disabled:opacity-70 transform hover:scale-105"
-                    >
-                        {saving ? <Loader2 size={24} className="animate-spin" /> : <Save size={24} />}
-                        Save Changes
-                    </button>
+            {/* Floating Mobile/Tablet Save Prompt */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-between lg:hidden z-[100] shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.1)]">
+                <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none">Global Status</span>
+                    <span className="text-xs font-black text-navy-900 mt-1 flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full shadow-sm ${saving ? 'bg-orange-500 animate-pulse' : 'bg-green-500'}`} />
+                        {saving ? 'Syncing Customizations...' : 'Cloud Synced'}
+                    </span>
                 </div>
-            </form>
+                <button
+                    onClick={() => handleSave()}
+                    disabled={saving}
+                    className="bg-navy-900 text-white font-black py-4 px-8 rounded-2xl flex items-center gap-2 shadow-xl hover:scale-105 active:scale-95 transition-all text-sm tracking-widest"
+                >
+                    {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                    SYNC NOW
+                </button>
+            </div>
+
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #e2e8f0;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #cbd5e1;
+                }
+                
+                @keyframes fade-in {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                
+                @keyframes slide-in-from-bottom {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+
+                @keyframes slide-in-from-right {
+                    from { transform: translateX(20px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `}</style>
+
         </div>
     );
 }
