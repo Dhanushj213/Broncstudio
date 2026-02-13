@@ -128,7 +128,7 @@ export default function HeroVideo() {
     }, [content.type, validImages]);
 
     return (
-        <section className="relative w-full h-screen mt-[-104px] overflow-hidden bg-black group">
+        <section className="relative w-full h-[calc(100vh-32px)] mt-[-72px] overflow-hidden bg-black group">
             {/* Background Content */}
             {content.type === 'video' ? (
                 processedContent.video_url ? (

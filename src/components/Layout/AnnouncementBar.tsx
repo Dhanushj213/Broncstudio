@@ -45,7 +45,7 @@ export default function AnnouncementBar() {
     );
 
     return (
-        <div className={`${pathname === '/' ? 'bg-transparent text-white' : 'bg-red-600 text-white'} text-[10px] md:text-xs font-medium tracking-wide py-2 text-center relative z-[101]`}>
+        <div className={`${pathname === '/' ? 'bg-[#891d12] text-white' : 'bg-red-600 text-white'} text-[10px] md:text-xs font-medium tracking-wide py-2 text-center relative z-[101]`}>
             {link ? (
                 <Link href={link} className="hover:opacity-80 transition-opacity block w-full">
                     <Content />
