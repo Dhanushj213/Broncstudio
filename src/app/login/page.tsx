@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Mail, Lock, User, AlertCircle, CheckCircle, Loader2, Phone, KeyRound, Eye, EyeOff, Sparkles, ChevronLeft } from 'lucide-react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { createClient } from '@/utils/supabase/client';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 type AuthMethod = 'email' | 'phone';
 
@@ -33,7 +34,13 @@ export default function LoginPage() {
     const router = useRouter();
     const supabase = createClient();
 
-    // Check if user is already logged in
+    // Login Content Config
+    const [loginConfig, setLoginConfig] = useState({
+        visual_url: '/Users/dhanushj/.gemini/antigravity/brain/b811564d-9b17-4d46-a976-b5e4a4c7d8d4/login_visual_desert_twilight_final_1770993851502.png',
+        headline: 'Capturing Moments,<br />Creating Memories'
+    });
+
+    // Check if user is already logged in & Fetch Config
     useEffect(() => {
         const checkExistingSession = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -43,8 +50,25 @@ export default function LoginPage() {
                 setCheckingAuth(false);
             }
         };
+
+        const fetchLoginConfig = async () => {
+            const { data } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'login_page')
+                .single();
+
+            if (data && data.content) {
+                setLoginConfig(prev => ({
+                    ...prev,
+                    ...data.content
+                }));
+            }
+        };
+
         checkExistingSession();
-    }, [supabase.auth]);
+        fetchLoginConfig();
+    }, [supabase]);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -133,11 +157,12 @@ export default function LoginPage() {
                     {/* Background Visual */}
                     <div className="absolute inset-0 z-0">
                         <Image
-                            src="/Users/dhanushj/.gemini/antigravity/brain/b811564d-9b17-4d46-a976-b5e4a4c7d8d4/login_visual_desert_twilight_final_1770993851502.png"
+                            src={getGoogleDriveDirectLink(loginConfig.visual_url)}
                             alt="Visual"
                             fill
                             className="object-cover"
                             priority
+                            unoptimized={loginConfig.visual_url.startsWith('http')}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
                     </div>
@@ -161,9 +186,8 @@ export default function LoginPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
                             className="text-4xl font-semibold leading-tight mb-8 tracking-[-0.02em]"
-                        >
-                            Capturing Moments,<br />Creating Memories
-                        </motion.h2>
+                            dangerouslySetInnerHTML={{ __html: loginConfig.headline }}
+                        />
 
                         {/* Carousel Indicators (Static Mock) */}
                         <div className="flex gap-2">

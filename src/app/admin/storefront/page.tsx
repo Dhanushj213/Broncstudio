@@ -34,6 +34,11 @@ interface HeroContent {
     button_link: string;
 }
 
+interface LoginContent {
+    visual_url: string;
+    headline: string;
+}
+
 export default function StorefrontPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -50,6 +55,13 @@ export default function StorefrontPage() {
         button_text: 'Shop Now',
         button_link: '/shop/new-arrivals'
     });
+
+    // Login Page State
+    const [loginContent, setLoginContent] = useState<LoginContent>({
+        visual_url: '',
+        headline: 'Capturing Moments,<br />Creating Memories'
+    });
+
     const [activeTab, setActiveTab] = useState<'desktop' | 'mobile'>('desktop');
 
     const supabase = createBrowserClient(
@@ -63,20 +75,34 @@ export default function StorefrontPage() {
 
     const fetchContent = async () => {
         setLoading(true);
-        const { data, error } = await supabase
+        // Fetch Hero
+        const { data: heroData } = await supabase
             .from('content_blocks')
             .select('*')
             .eq('section_id', 'hero_main')
             .single();
 
-        if (data && data.content) {
-            // Ensure compatibility with old data
+        if (heroData && heroData.content) {
             setHeroContent(prev => ({
                 ...prev,
-                ...data.content,
-                type: data.content.type || 'video',
-                images: data.content.images || prev.images,
-                mobile_images: data.content.mobile_images || data.content.images || prev.mobile_images
+                ...heroData.content,
+                type: heroData.content.type || 'video',
+                images: heroData.content.images || prev.images,
+                mobile_images: heroData.content.mobile_images || heroData.content.images || prev.mobile_images
+            }));
+        }
+
+        // Fetch Login
+        const { data: loginData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'login_page')
+            .single();
+
+        if (loginData && loginData.content) {
+            setLoginContent(prev => ({
+                ...prev,
+                ...loginData.content
             }));
         }
         setLoading(false);
@@ -86,19 +112,29 @@ export default function StorefrontPage() {
         e.preventDefault();
         setSaving(true);
 
-        const payload = {
+        const heroPayload = {
             section_id: 'hero_main',
             content: heroContent,
             updated_at: new Date().toISOString()
         };
 
-        const { error } = await supabase
-            .from('content_blocks')
-            .upsert(payload, { onConflict: 'section_id' });
+        const loginPayload = {
+            section_id: 'login_page',
+            content: loginContent,
+            updated_at: new Date().toISOString()
+        };
 
-        if (error) {
-            console.error(error);
-            alert('Failed to save changes: ' + error.message);
+        const { error: heroErr } = await supabase
+            .from('content_blocks')
+            .upsert(heroPayload, { onConflict: 'section_id' });
+
+        const { error: loginErr } = await supabase
+            .from('content_blocks')
+            .upsert(loginPayload, { onConflict: 'section_id' });
+
+        if (heroErr || loginErr) {
+            console.error(heroErr || loginErr);
+            alert('Failed to save changes!');
         } else {
             alert('Storefront updated successfully!');
         }
@@ -347,6 +383,72 @@ export default function StorefrontPage() {
                             <p className="text-xs font-bold tracking-widest uppercase mb-2">{heroContent.subheading}</p>
                             <h3 className="text-2xl font-serif italic mb-4">{heroContent.heading}</h3>
                             <span className="bg-white text-navy-900 px-4 py-2 rounded-full text-xs font-bold uppercase">{heroContent.button_text}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Login Page Customization */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <ImageIcon size={20} className="text-indigo-500" />
+                            Login Page Settings
+                        </h2>
+                        <span className="text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-700 px-2 py-1 rounded">Portal</span>
+                    </div>
+
+                    <div className="p-6 space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">
+                                    Visual Image URL
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <ImageIcon size={16} className="text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="url"
+                                        value={loginContent.visual_url}
+                                        onChange={e => setLoginContent({ ...loginContent, visual_url: e.target.value })}
+                                        className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">Left panel background image.</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">
+                                    Narrative Headline (HTML supported)
+                                </label>
+                                <textarea
+                                    value={loginContent.headline}
+                                    onChange={e => setLoginContent({ ...loginContent, headline: e.target.value })}
+                                    rows={2}
+                                    className="w-full px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                                    placeholder="Capturing Moments,<br />Creating Memories"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Use &lt;br /&gt; for line breaks.</p>
+                            </div>
+                        </div>
+
+                        {/* Login Preview */}
+                        <div className="border border-gray-100 rounded-xl overflow-hidden">
+                            <div className="bg-gray-50 px-4 py-2 border-b border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Preview: Login Panel
+                            </div>
+                            <div className="relative h-48 bg-[#1a1a24] flex items-center justify-center p-8 overflow-hidden">
+                                <div className="absolute inset-0 z-0">
+                                    {loginContent.visual_url && (
+                                        <img src={getGoogleDriveDirectLink(loginContent.visual_url)} className="w-full h-full object-cover" alt="Preview" />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                                </div>
+                                <div className="relative z-10 w-full">
+                                    <h4 className="text-white text-lg font-semibold leading-tight" dangerouslySetInnerHTML={{ __html: loginContent.headline }} />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
