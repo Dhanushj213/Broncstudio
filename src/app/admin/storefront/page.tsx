@@ -34,6 +34,21 @@ interface HeroContent {
     button_link: string;
 }
 
+interface BentoTile {
+    title: string;
+    subtitle: string;
+    href: string;
+    image: string;
+    colSpan: string;
+    rowSpan: string;
+    color: string;
+    textColor: string;
+}
+
+interface BentoContent {
+    tiles: BentoTile[];
+}
+
 interface LoginContent {
     visual_urls: string[];
     headline: string;
@@ -54,6 +69,11 @@ export default function StorefrontPage() {
         subheading: 'New Collection',
         button_text: 'Shop Now',
         button_link: '/shop/new-arrivals'
+    });
+
+    // Bento Grid State
+    const [bentoContent, setBentoContent] = useState<BentoContent>({
+        tiles: []
     });
 
     // Login Page State
@@ -90,6 +110,31 @@ export default function StorefrontPage() {
                 images: heroData.content.images || prev.images,
                 mobile_images: heroData.content.mobile_images || heroData.content.images || prev.mobile_images
             }));
+        }
+
+        // Fetch Bento Grid
+        const { data: bentoData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'bento_grid')
+            .single();
+
+        if (bentoData && bentoData.content) {
+            setBentoContent(bentoData.content);
+        } else {
+            // Default tiles if none in DB
+            setBentoContent({
+                tiles: [
+                    { title: 'Clothing', subtitle: 'Trending', href: '/shop/clothing', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-green-100', textColor: 'text-green-900' },
+                    { title: 'Women', subtitle: 'For Her', href: '/shop/clothing/women', image: 'https://images.unsplash.com/photo-1525845859779-54d477ff291f?w=600&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-2', color: 'bg-orange-50', textColor: 'text-orange-900' },
+                    { title: 'Stationery & Play', subtitle: 'Curiosity', href: '/shop/kids', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-blue-50', textColor: 'text-blue-900' },
+                    { title: 'Accessories', subtitle: 'Extras', href: '/shop/accessories', image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-purple-100', textColor: 'text-purple-900' },
+                    { title: 'Men', subtitle: 'Menswear', href: '/shop/clothing/men', image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-stone-100', textColor: 'text-stone-900' },
+                    { title: 'Pets', subtitle: 'Furry Friends', href: '/shop/pets', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-amber-100', textColor: 'text-amber-900' },
+                    { title: 'Lifestyle', subtitle: 'Small Joys', href: '/shop/lifestyle', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-rose-50', textColor: 'text-rose-900' },
+                    { title: 'Home', subtitle: 'Decor', href: '/shop/home', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80', colSpan: 'col-span-12', rowSpan: 'row-span-1', color: 'bg-indigo-100', textColor: 'text-indigo-900' }
+                ]
+            });
         }
 
         // Fetch Login
@@ -129,12 +174,22 @@ export default function StorefrontPage() {
             .from('content_blocks')
             .upsert(heroPayload, { onConflict: 'section_id' });
 
+        const bentoPayload = {
+            section_id: 'bento_grid',
+            content: bentoContent,
+            updated_at: new Date().toISOString()
+        };
+
+        const { error: bentoErr } = await supabase
+            .from('content_blocks')
+            .upsert(bentoPayload, { onConflict: 'section_id' });
+
         const { error: loginErr } = await supabase
             .from('content_blocks')
             .upsert(loginPayload, { onConflict: 'section_id' });
 
-        if (heroErr || loginErr) {
-            console.error(heroErr || loginErr);
+        if (heroErr || bentoErr || loginErr) {
+            console.error(heroErr || bentoErr || loginErr);
             alert('Failed to save changes!');
         } else {
             alert('Storefront updated successfully!');
@@ -384,6 +439,96 @@ export default function StorefrontPage() {
                             <p className="text-xs font-bold tracking-widest uppercase mb-2">{heroContent.subheading}</p>
                             <h3 className="text-2xl font-serif italic mb-4">{heroContent.heading}</h3>
                             <span className="bg-white text-navy-900 px-4 py-2 rounded-full text-xs font-bold uppercase">{heroContent.button_text}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bento Grid Management */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <LayoutTemplate size={20} className="text-orange-500" />
+                            Department Bento Grid
+                        </h2>
+                        <span className="text-xs font-bold uppercase tracking-wider bg-orange-100 text-orange-700 px-2 py-1 rounded">Homepage</span>
+                    </div>
+
+                    <div className="p-6 space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {bentoContent.tiles.map((tile, idx) => (
+                                <div key={idx} className="p-6 bg-gray-50 rounded-2xl border border-gray-200 hover:border-orange-200 transition-colors">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="font-bold text-gray-900 capitalize">{tile.title || `Tile ${idx + 1}`}</h3>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{tile.subtitle}</span>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Image URL</label>
+                                            <div className="relative">
+                                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <ImageIcon size={14} className="text-gray-400" />
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={tile.image}
+                                                    onChange={e => {
+                                                        const newTiles = [...bentoContent.tiles];
+                                                        newTiles[idx] = { ...newTiles[idx], image: e.target.value };
+                                                        setBentoContent({ tiles: newTiles });
+                                                    }}
+                                                    className="w-full pl-9 px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                                                    placeholder="https://images.unsplash.com/..."
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Title</label>
+                                                <input
+                                                    type="text"
+                                                    value={tile.title}
+                                                    onChange={e => {
+                                                        const newTiles = [...bentoContent.tiles];
+                                                        newTiles[idx] = { ...newTiles[idx], title: e.target.value };
+                                                        setBentoContent({ tiles: newTiles });
+                                                    }}
+                                                    className="w-full px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Subtitle</label>
+                                                <input
+                                                    type="text"
+                                                    value={tile.subtitle}
+                                                    onChange={e => {
+                                                        const newTiles = [...bentoContent.tiles];
+                                                        newTiles[idx] = { ...newTiles[idx], subtitle: e.target.value };
+                                                        setBentoContent({ tiles: newTiles });
+                                                    }}
+                                                    className="w-full px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Target Link</label>
+                                            <input
+                                                type="text"
+                                                value={tile.href}
+                                                onChange={e => {
+                                                    const newTiles = [...bentoContent.tiles];
+                                                    newTiles[idx] = { ...newTiles[idx], href: e.target.value };
+                                                    setBentoContent({ tiles: newTiles });
+                                                }}
+                                                className="w-full px-4 py-2 bg-white text-sm text-gray-900 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                                                placeholder="/shop/..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
