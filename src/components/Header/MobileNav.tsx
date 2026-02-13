@@ -15,7 +15,7 @@ const MobileNav = () => {
 
     const navItems = [
         { name: 'Home', path: '/', icon: Home, type: 'link' },
-        { name: 'Worlds', path: '/worlds', icon: Grid, type: 'link' },
+        { name: 'Shop', path: '/shop', icon: Grid, type: 'link' },
         { name: 'Search', action: openSearch, icon: Search, type: 'button' },
         { name: 'Gifting', path: '/gift-finder', icon: Gift, type: 'link' },
         { name: 'Personalise', path: '/personalise', icon: PenTool, type: 'link' },
