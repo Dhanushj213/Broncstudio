@@ -316,14 +316,14 @@ export default function StorefrontPage() {
             {/* Left Sidebar Navigation - Sticky */}
             <aside className="lg:w-64 flex-shrink-0">
                 <div className="sticky top-24 space-y-4">
-                    <div className="bg-white rounded-2xl border border-gray-100 p-2 shadow-sm">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-white/5 p-2 shadow-sm">
                         {NAVIGATION.map((item) => (
                             <button
                                 key={item.id}
                                 onClick={() => scrollToSection(item.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeSection === item.id
                                     ? 'bg-navy-900 text-white shadow-xl shadow-navy-900/20 scale-[1.02]'
-                                    : 'text-gray-600 hover:bg-navy-50 hover:text-navy-900'
+                                    : 'text-gray-600 dark:text-gray-400 hover:bg-navy-50 dark:hover:bg-white/5 hover:text-navy-900 dark:hover:text-white'
                                     }`}
                             >
                                 {item.icon}
@@ -333,16 +333,16 @@ export default function StorefrontPage() {
                         ))}
                     </div>
 
-                    <div className="bg-navy-50 rounded-2xl p-6 border border-navy-100">
-                        <h4 className="text-navy-900 font-bold text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
+                    <div className="bg-navy-50 dark:bg-white/5 rounded-2xl p-6 border border-navy-100 dark:border-white/10">
+                        <h4 className="text-navy-900 dark:text-white font-bold text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
                             <Globe size={14} className="text-navy-500" />
                             Live Shop
                         </h4>
-                        <p className="text-navy-700 text-xs mb-4">View your changes on the live site.</p>
+                        <p className="text-navy-700 dark:text-gray-400 text-xs mb-4">View your changes on the live site.</p>
                         <a
                             href="/shop"
                             target="_blank"
-                            className="flex items-center gap-2 text-navy-900 font-bold text-sm group"
+                            className="flex items-center gap-2 text-navy-900 dark:text-white font-bold text-sm group"
                         >
                             Open Storefront
                             <ExternalLink size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -353,14 +353,14 @@ export default function StorefrontPage() {
 
             {/* Main Content Area */}
             <div className="flex-1 space-y-12">
-                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-gray-200 pb-8">
+                <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-gray-200 dark:border-white/10 pb-8">
                     <div>
                         <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
                             <span>Admin Dashboard</span>
                             <ChevronRight size={12} />
-                            <span className="text-navy-900">Storefront</span>
+                            <span className="text-navy-900 dark:text-white">Storefront</span>
                         </div>
-                        <h1 className="text-4xl font-extrabold text-navy-900 tracking-tight">Customization</h1>
+                        <h1 className="text-4xl font-extrabold text-navy-900 dark:text-white tracking-tight">Customization</h1>
                     </div>
 
                     <div className="flex items-center gap-3 self-end sm:self-auto">
@@ -385,30 +385,30 @@ export default function StorefrontPage() {
 
                     {/* HERO SECTION */}
                     <section id="hero" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4 border-b-2 border-navy-900 pb-4">
-                            <div className="w-12 h-12 rounded-2xl bg-navy-900 flex items-center justify-center text-white shadow-xl">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 dark:border-white/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 dark:bg-white/10 flex items-center justify-center text-white shadow-xl">
                                 <Sparkles size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Hero Section</h2>
-                                <p className="text-[10px] font-black text-navy-500 uppercase tracking-[0.2em]">Homepage Header & Branding</p>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Hero Section</h2>
+                                <p className="text-[10px] font-black text-navy-500 dark:text-gray-400 uppercase tracking-[0.2em]">Homepage Header & Branding</p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden group transition-all hover:border-navy-100">
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 shadow-xl shadow-gray-200/50 dark:shadow-none overflow-hidden group transition-all hover:border-navy-100 dark:hover:border-white/20">
                             <div className="p-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
                                 {/* Left Side: Config */}
                                 <div className="lg:col-span-7 space-y-8">
                                     <div className="space-y-4">
-                                        <label className="text-xs font-black text-navy-900 uppercase tracking-widest flex items-center gap-2">
-                                            <MousePointer2 size={14} className="text-navy-400" />
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                            <MousePointer2 size={14} className="text-navy-400 dark:text-gray-500" />
                                             Content Format
                                         </label>
                                         <div className="grid grid-cols-2 gap-4">
                                             <button
                                                 type="button"
                                                 onClick={() => setHeroContent({ ...heroContent, type: 'video' })}
-                                                className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${heroContent.type === 'video' ? 'border-navy-900 bg-navy-900 text-white shadow-2xl shadow-navy-900/20' : 'border-gray-200 bg-white text-gray-400 hover:border-navy-200 hover:bg-navy-50/50'}`}
+                                                className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${heroContent.type === 'video' ? 'border-navy-900 bg-navy-900 dark:bg-coral-500 dark:border-coral-500 text-white shadow-2xl shadow-navy-900/20' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-transparent text-gray-400 dark:text-gray-500 hover:border-navy-200 dark:hover:border-white/20 hover:bg-navy-50/50 dark:hover:bg-white/5'}`}
                                             >
                                                 <Play size={28} />
                                                 <span className="font-bold text-sm tracking-tight">Video Loop</span>
@@ -416,7 +416,7 @@ export default function StorefrontPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setHeroContent({ ...heroContent, type: 'images' })}
-                                                className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${heroContent.type === 'images' ? 'border-navy-900 bg-navy-900 text-white shadow-2xl shadow-navy-900/20' : 'border-gray-200 bg-white text-gray-400 hover:border-navy-200 hover:bg-navy-50/50'}`}
+                                                className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${heroContent.type === 'images' ? 'border-navy-900 bg-navy-900 dark:bg-coral-500 dark:border-coral-500 text-white shadow-2xl shadow-navy-900/20' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-transparent text-gray-400 dark:text-gray-500 hover:border-navy-200 dark:hover:border-white/20 hover:bg-navy-50/50 dark:hover:bg-white/5'}`}
                                             >
                                                 <ImageIcon size={28} />
                                                 <span className="font-bold text-sm tracking-tight">Image Slider</span>
@@ -433,7 +433,7 @@ export default function StorefrontPage() {
                                                         type="url"
                                                         value={heroContent.video_url}
                                                         onChange={e => setHeroContent({ ...heroContent, video_url: e.target.value })}
-                                                        className="w-full pl-4 pr-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl transition-all text-navy-900 text-sm font-bold outline-none shadow-sm"
+                                                        className="w-full pl-4 pr-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-navy-900 dark:focus:border-coral-500 rounded-2xl transition-all text-navy-900 dark:text-white text-sm font-bold outline-none shadow-sm"
                                                         placeholder="Paste Drive Link..."
                                                     />
                                                 </div>
@@ -444,7 +444,7 @@ export default function StorefrontPage() {
                                                     type="url"
                                                     value={heroContent.poster_url}
                                                     onChange={e => setHeroContent({ ...heroContent, poster_url: e.target.value })}
-                                                    className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl transition-all text-navy-900 text-sm font-bold outline-none shadow-sm"
+                                                    className="w-full px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-navy-900 dark:focus:border-coral-500 rounded-2xl transition-all text-navy-900 dark:text-white text-sm font-bold outline-none shadow-sm"
                                                     placeholder="Fallback image link..."
                                                 />
                                             </div>
@@ -476,13 +476,13 @@ export default function StorefrontPage() {
                                                                 type="url"
                                                                 value={url}
                                                                 onChange={e => handleHeroImageChange(idx, e.target.value)}
-                                                                className="w-full pl-4 pr-12 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl transition-all text-navy-900 text-sm font-bold outline-none shadow-sm"
+                                                                className="w-full pl-4 pr-12 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-navy-900 dark:focus:border-coral-500 rounded-2xl transition-all text-navy-900 dark:text-white text-sm font-bold outline-none shadow-sm"
                                                                 placeholder={`Gallery Image #${idx + 1}`}
                                                             />
                                                             <button
                                                                 type="button"
                                                                 onClick={() => removeHeroImage(idx)}
-                                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-red-500 transition-colors"
+                                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 dark:text-gray-600 hover:text-red-500 transition-colors"
                                                             >
                                                                 <Trash2 size={16} />
                                                             </button>
@@ -502,41 +502,41 @@ export default function StorefrontPage() {
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Primary Heading</label>
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Primary Heading</label>
                                             <input
                                                 type="text"
                                                 value={heroContent.heading}
                                                 onChange={e => setHeroContent({ ...heroContent, heading: e.target.value })}
-                                                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-navy-900 focus:bg-white rounded-2xl outline-none font-bold text-navy-900 placeholder:text-gray-300"
+                                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent dark:border-white/5 focus:border-navy-900 dark:focus:border-coral-500 focus:bg-white dark:focus:bg-slate-950 rounded-2xl outline-none font-bold text-navy-900 dark:text-white placeholder:text-gray-300"
                                                 placeholder="Enter Primary Heading"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Subheading Label</label>
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Subheading Label</label>
                                             <input
                                                 type="text"
                                                 value={heroContent.subheading}
                                                 onChange={e => setHeroContent({ ...heroContent, subheading: e.target.value })}
-                                                className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl outline-none font-bold text-navy-900 placeholder:text-gray-300 shadow-sm"
+                                                className="w-full px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-navy-900 dark:focus:border-coral-500 rounded-2xl outline-none font-bold text-navy-900 dark:text-white placeholder:text-gray-300 shadow-sm"
                                                 placeholder="Enter Subheading"
                                             />
                                         </div>
                                         <div className="space-y-2 text-gray-900 ">
-                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">CTA Button Text</label>
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">CTA Button Text</label>
                                             <input
                                                 type="text"
                                                 value={heroContent.button_text}
                                                 onChange={e => setHeroContent({ ...heroContent, button_text: e.target.value })}
-                                                className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent focus:border-navy-900 focus:bg-white rounded-2xl outline-none font-bold tracking-tight text-navy-900"
+                                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent dark:border-white/5 focus:border-navy-900 dark:focus:border-coral-500 focus:bg-white dark:focus:bg-slate-950 rounded-2xl outline-none font-bold tracking-tight text-navy-900 dark:text-white"
                                             />
                                         </div>
                                         <div className="space-y-2 text-gray-900 ">
-                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest">Button Destination</label>
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Button Destination</label>
                                             <input
                                                 type="text"
                                                 value={heroContent.button_link}
                                                 onChange={e => setHeroContent({ ...heroContent, button_link: e.target.value })}
-                                                className="w-full px-4 py-3 bg-white border-2 border-gray-200 focus:border-navy-900 rounded-2xl outline-none font-bold text-navy-900 shadow-sm"
+                                                className="w-full px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-navy-900 dark:focus:border-coral-500 rounded-2xl outline-none font-bold text-navy-900 dark:text-white shadow-sm"
                                             />
                                         </div>
                                     </div>
@@ -548,7 +548,7 @@ export default function StorefrontPage() {
                                         <Globe size={14} className="text-navy-400" />
                                         Interactive Preview
                                     </label>
-                                    <div className="relative aspect-[3/4] lg:aspect-auto lg:h-full bg-navy-900 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-navy-950 group/preview">
+                                    <div className="relative aspect-[3/4] lg:aspect-auto lg:h-full bg-navy-900 dark:bg-slate-950 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-navy-950 dark:border-white/5 group/preview">
                                         {/* Background Visual */}
                                         <div className="absolute inset-0 z-0">
                                             {heroContent.type === 'video' ? (
@@ -597,22 +597,22 @@ export default function StorefrontPage() {
 
                     {/* BENTO GRID SECTION */}
                     <section id="bento" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4 border-b-2 border-orange-500 pb-4">
+                        <div className="flex items-center gap-4 border-b-2 border-orange-500 dark:border-orange-500/50 pb-4">
                             <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white shadow-xl">
                                 <Grid size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Department Bento</h2>
-                                <p className="text-[10px] font-black text-orange-600/70 uppercase tracking-[0.2em]">Homepage Category Grid</p>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Department Bento</h2>
+                                <p className="text-[10px] font-black text-orange-600/70 dark:text-orange-400/70 uppercase tracking-[0.2em]">Homepage Category Grid</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {bentoContent.tiles.map((tile, idx) => (
-                                <div key={idx} className="bg-white rounded-[2rem] border border-gray-100 p-6 shadow-xl hover:shadow-2xl hover:border-orange-100 transition-all group/card">
+                                <div key={idx} className="bg-white dark:bg-white/5 rounded-[2rem] border border-gray-100 dark:border-white/10 p-6 shadow-xl dark:shadow-none hover:shadow-2xl hover:border-orange-100 dark:hover:border-white/20 transition-all group/card">
                                     <div className="flex gap-6">
                                         {/* Image Preview */}
-                                        <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 border border-gray-100">
+                                        <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-white/5 border border-gray-100 dark:border-white/10">
                                             <img
                                                 src={getGoogleDriveDirectLink(tile.image)}
                                                 className="w-full h-full object-cover transition-transform group-hover/card:scale-110 duration-700"
@@ -624,7 +624,7 @@ export default function StorefrontPage() {
                                         <div className="flex-1 space-y-4">
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Tile Label</label>
+                                                    <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tile Label</label>
                                                     <input
                                                         type="text"
                                                         value={tile.title}
@@ -633,11 +633,11 @@ export default function StorefrontPage() {
                                                             newTiles[idx] = { ...newTiles[idx], title: e.target.value };
                                                             setBentoContent({ tiles: newTiles });
                                                         }}
-                                                        className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-sm font-bold transition-all shadow-sm"
+                                                        className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-orange-500 rounded-xl outline-none text-sm font-bold transition-all shadow-sm"
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Accent Text</label>
+                                                    <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Accent Text</label>
                                                     <input
                                                         type="text"
                                                         value={tile.subtitle}
@@ -646,13 +646,13 @@ export default function StorefrontPage() {
                                                             newTiles[idx] = { ...newTiles[idx], subtitle: e.target.value };
                                                             setBentoContent({ tiles: newTiles });
                                                         }}
-                                                        className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
+                                                        className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-orange-500 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
                                                     />
                                                 </div>
                                             </div>
 
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Image Asset URL</label>
+                                                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Image Asset URL</label>
                                                 <input
                                                     type="url"
                                                     value={tile.image}
@@ -661,13 +661,13 @@ export default function StorefrontPage() {
                                                         newTiles[idx] = { ...newTiles[idx], image: e.target.value };
                                                         setBentoContent({ tiles: newTiles });
                                                     }}
-                                                    className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-xs font-mono transition-all shadow-sm"
+                                                    className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-orange-500 rounded-xl outline-none text-xs font-mono transition-all shadow-sm"
                                                     placeholder="Google Drive link..."
                                                 />
                                             </div>
 
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Landing Page Slug</label>
+                                                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">Landing Page Slug</label>
                                                 <input
                                                     type="text"
                                                     value={tile.href}
@@ -676,7 +676,7 @@ export default function StorefrontPage() {
                                                         newTiles[idx] = { ...newTiles[idx], href: e.target.value };
                                                         setBentoContent({ tiles: newTiles });
                                                     }}
-                                                    className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-orange-500 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
+                                                    className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-orange-500 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
                                                     placeholder="/shop/..."
                                                 />
                                             </div>
@@ -689,19 +689,19 @@ export default function StorefrontPage() {
 
                     {/* SHOP COLLECTIONS SECTION */}
                     <section id="shop" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4 border-b-2 border-blue-600 pb-4">
+                        <div className="flex items-center gap-4 border-b-2 border-blue-600 dark:border-blue-600/50 pb-4">
                             <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl">
                                 <ShoppingBag size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Shop Collections</h2>
-                                <p className="text-[10px] font-black text-blue-600/70 uppercase tracking-[0.2em]">Main Shop Gallery Cards</p>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Shop Collections</h2>
+                                <p className="text-[10px] font-black text-blue-600/70 dark:text-blue-400/70 uppercase tracking-[0.2em]">Main Shop Gallery Cards</p>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {shopCollections.collections.map((col, idx) => (
-                                <div key={idx} className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-2xl hover:border-blue-100 transition-all group/shopcard">
+                                <div key={idx} className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 overflow-hidden shadow-lg dark:shadow-none hover:shadow-2xl hover:border-blue-100 dark:hover:border-white/20 transition-all group/shopcard">
                                     <div className="h-40 relative bg-gray-900 overflow-hidden">
                                         <img
                                             src={getGoogleDriveDirectLink(col.image)}
@@ -715,7 +715,7 @@ export default function StorefrontPage() {
 
                                     <div className="p-5 space-y-4">
                                         <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Collection Image Link</label>
+                                            <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Collection Image Link</label>
                                             <input
                                                 type="url"
                                                 value={col.image}
@@ -724,13 +724,13 @@ export default function StorefrontPage() {
                                                     newCols[idx] = { ...newCols[idx], image: e.target.value };
                                                     setShopCollections({ collections: newCols });
                                                 }}
-                                                className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-blue-600 rounded-xl outline-none text-xs truncate transition-all shadow-sm"
+                                                className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-blue-600 rounded-xl outline-none text-xs truncate transition-all shadow-sm"
                                             />
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Display Name</label>
+                                                <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Display Name</label>
                                                 <input
                                                     type="text"
                                                     value={col.name}
@@ -739,11 +739,11 @@ export default function StorefrontPage() {
                                                         newCols[idx] = { ...newCols[idx], name: e.target.value };
                                                         setShopCollections({ collections: newCols });
                                                     }}
-                                                    className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-blue-600 rounded-xl outline-none text-sm font-bold transition-all shadow-sm"
+                                                    className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-blue-600 rounded-xl outline-none text-sm font-bold transition-all shadow-sm"
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Catalog ID</label>
+                                                <label className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">Catalog ID</label>
                                                 <input
                                                     type="text"
                                                     value={col.slug}
@@ -752,14 +752,14 @@ export default function StorefrontPage() {
                                                         newCols[idx] = { ...newCols[idx], slug: e.target.value };
                                                         setShopCollections({ collections: newCols });
                                                     }}
-                                                    className="w-full text-gray-900 px-3 py-2 bg-gray-50 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-xl outline-none text-xs font-mono transition-all opacity-50 select-none pointer-events-none bg-gray-100"
+                                                    className="w-full text-gray-900 dark:text-gray-500 px-3 py-2 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-blue-600 focus:bg-white rounded-xl outline-none text-xs font-mono transition-all opacity-50 select-none pointer-events-none bg-gray-100 dark:bg-slate-900"
                                                     readOnly
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Gallery Description</label>
+                                            <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">Gallery Description</label>
                                             <input
                                                 type="text"
                                                 value={col.description}
@@ -768,7 +768,7 @@ export default function StorefrontPage() {
                                                     newCols[idx] = { ...newCols[idx], description: e.target.value };
                                                     setShopCollections({ collections: newCols });
                                                 }}
-                                                className="w-full text-navy-900 px-3 py-2 bg-white border-2 border-gray-200 focus:border-blue-600 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
+                                                className="w-full text-navy-900 dark:text-white px-3 py-2 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-blue-600 rounded-xl outline-none text-xs font-bold transition-all shadow-sm"
                                             />
                                         </div>
                                     </div>
@@ -779,21 +779,21 @@ export default function StorefrontPage() {
 
                     {/* LOGIN PANEL SECTION */}
                     <section id="login" className="scroll-mt-32 space-y-6">
-                        <div className="flex items-center gap-4 border-b-2 border-indigo-500 pb-4">
+                        <div className="flex items-center gap-4 border-b-2 border-indigo-500 dark:border-indigo-500/50 pb-4">
                             <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-xl">
                                 <UserCircle size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-navy-900 uppercase tracking-tight">Login Page</h2>
-                                <p className="text-[10px] font-black text-indigo-600/70 uppercase tracking-[0.2em]">Authentication Experience</p>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Login Page</h2>
+                                <p className="text-[10px] font-black text-indigo-600/70 dark:text-indigo-400/70 uppercase tracking-[0.2em]">Authentication Experience</p>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden p-8">
+                        <div className="bg-white dark:bg-white/5 rounded-[2.5rem] border border-gray-100 dark:border-white/10 shadow-2xl dark:shadow-none overflow-hidden p-8">
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                                 <div className="lg:col-span-6 space-y-10">
                                     <div className="space-y-6">
-                                        <label className="text-xs font-black text-navy-900 uppercase tracking-widest block">Carousel Imagery (Min 1, Max 3)</label>
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest block">Carousel Imagery (Min 1, Max 3)</label>
                                         <div className="space-y-3">
                                             {loginContent.visual_urls.map((url, idx) => (
                                                 <div key={idx} className="flex gap-4 items-center">
@@ -806,7 +806,7 @@ export default function StorefrontPage() {
                                                                 newUrls[idx] = e.target.value;
                                                                 setLoginContent({ ...loginContent, visual_urls: newUrls });
                                                             }}
-                                                            className="w-full text-navy-900 pl-4 pr-10 py-3 bg-white border-2 border-gray-200 focus:border-indigo-500 rounded-2xl outline-none font-bold text-sm transition-all shadow-sm"
+                                                            className="w-full text-navy-900 dark:text-white pl-4 pr-10 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-2xl outline-none font-bold text-sm transition-all shadow-sm"
                                                             placeholder={`Image URL #${idx + 1}`}
                                                         />
                                                         {url && (
@@ -826,7 +826,7 @@ export default function StorefrontPage() {
                                             value={loginContent.headline}
                                             onChange={e => setLoginContent({ ...loginContent, headline: e.target.value })}
                                             rows={4}
-                                            className="w-full text-navy-900 px-6 py-4 bg-white border-2 border-gray-200 focus:border-indigo-500 rounded-2xl outline-none font-bold text-lg leading-relaxed shadow-sm focus:bg-white transition-all"
+                                            className="w-full text-navy-900 dark:text-white px-6 py-4 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-2xl outline-none font-bold text-lg leading-relaxed shadow-sm focus:bg-white dark:focus:bg-slate-950 transition-all"
                                             placeholder="Introduce the brand vibe..."
                                         />
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">HTML supported. Use \u003cbr /\u003e for line breaks.</p>
@@ -834,11 +834,11 @@ export default function StorefrontPage() {
                                 </div>
 
                                 <div className="lg:col-span-6 flex flex-col gap-4">
-                                    <label className="text-xs font-black text-navy-900 uppercase tracking-widest flex items-center gap-2">
+                                    <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                                         <Smartphone size={14} className="text-navy-400" />
                                         Visual Mockup
                                     </label>
-                                    <div className="relative aspect-video lg:aspect-auto lg:h-[450px] bg-[#1a1a24] rounded-[3rem] overflow-hidden border-[12px] border-black shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] group">
+                                    <div className="relative aspect-video lg:aspect-auto lg:h-[450px] bg-[#1a1a24] dark:bg-slate-950 rounded-[3rem] overflow-hidden border-[12px] border-black dark:border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] group">
                                         {/* Background Carousel (Preview first active) */}
                                         <div className="absolute inset-0 z-0">
                                             {loginContent.visual_urls.find(url => url !== '') ? (
@@ -885,10 +885,10 @@ export default function StorefrontPage() {
             </div>
 
             {/* Floating Mobile/Tablet Save Prompt */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-between lg:hidden z-[100] shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.1)]">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-gray-100 dark:border-white/10 flex items-center justify-between lg:hidden z-[100] shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.1)]">
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none">Global Status</span>
-                    <span className="text-xs font-black text-navy-900 mt-1 flex items-center gap-2">
+                    <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest leading-none">Global Status</span>
+                    <span className="text-xs font-black text-navy-900 dark:text-white mt-1 flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full shadow-sm ${saving ? 'bg-orange-500 animate-pulse' : 'bg-green-500'}`} />
                         {saving ? 'Syncing Customizations...' : 'Cloud Synced'}
                     </span>
@@ -914,8 +914,14 @@ export default function StorefrontPage() {
                     background: #e2e8f0;
                     border-radius: 10px;
                 }
+                .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.1);
+                }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #cbd5e1;
+                }
+                .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.2);
                 }
                 
                 @keyframes fade-in {
