@@ -36,9 +36,26 @@ export default function LoginPage() {
 
     // Login Content Config
     const [loginConfig, setLoginConfig] = useState({
-        visual_url: '/Users/dhanushj/.gemini/antigravity/brain/b811564d-9b17-4d46-a976-b5e4a4c7d8d4/login_visual_desert_twilight_final_1770993851502.png',
+        visual_urls: [
+            'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop'
+        ],
         headline: 'Capturing Moments,<br />Creating Memories'
     });
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    // Carousel Logic
+    useEffect(() => {
+        const validUrls = loginConfig.visual_urls.filter(url => url !== '');
+        if (validUrls.length > 1) {
+            const interval = setInterval(() => {
+                setCurrentIndex(prev => (prev + 1) % validUrls.length);
+            }, 5000);
+            return () => clearInterval(interval);
+        }
+    }, [loginConfig.visual_urls]);
 
     // Check if user is already logged in & Fetch Config
     useEffect(() => {
@@ -61,7 +78,8 @@ export default function LoginPage() {
             if (data && data.content) {
                 setLoginConfig(prev => ({
                     ...prev,
-                    ...data.content
+                    ...data.content,
+                    visual_urls: data.content.visual_urls || (data.content.visual_url ? [data.content.visual_url, '', ''] : prev.visual_urls)
                 }));
             }
         };
@@ -145,64 +163,92 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-[#13131a] text-white p-4 md:p-8 font-sans selection:bg-indigo-500/30">
+        <div className="min-h-[calc(100vh-72px)] w-full flex items-center justify-center bg-black text-white p-4 md:p-8 font-sans selection:bg-red-500/30 overflow-x-hidden relative">
+            {/* Cinematic Red & Black Background */}
+            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+                {/* Primary Radial Glow */}
+                <div
+                    className="absolute inset-0 opacity-80"
+                    style={{
+                        background: 'radial-gradient(circle at 35% 50%, rgba(185, 28, 28, 0.25) 0%, rgba(127, 29, 29, 0.1) 40%, rgba(0, 0, 0, 1) 100%)'
+                    }}
+                />
+
+                {/* Top-Right Secondary Glow */}
+                <div
+                    className="absolute inset-0 opacity-30"
+                    style={{
+                        background: 'radial-gradient(circle at 85% 15%, rgba(185, 28, 28, 0.15) 0%, transparent 50%)'
+                    }}
+                />
+
+                {/* Micro-Texture Overlay (Low-opacity grain) */}
+                <div
+                    className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+                    }}
+                />
+            </div>
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full max-w-6xl relative z-10 grid grid-cols-1 md:grid-cols-2 rounded-[32px] overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/5"
+                className="w-full max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-2 rounded-[32px] overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/5 font-sans md:h-[min(750px,80vh)]"
             >
                 {/* LEFT PANEL: Cinematic Visual */}
-                <div className="relative hidden md:flex flex-col justify-between p-12 min-h-[700px]">
-                    {/* Background Visual */}
+                <div className="relative hidden md:flex flex-col justify-between p-12 order-1 h-full">
+                    {/* Background Visual Carousel */}
                     <div className="absolute inset-0 z-0">
-                        <Image
-                            src={getGoogleDriveDirectLink(loginConfig.visual_url)}
-                            alt="Visual"
-                            fill
-                            className="object-cover"
-                            priority
-                            unoptimized={loginConfig.visual_url.startsWith('http')}
-                        />
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentIndex}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 1.5 }}
+                                className="absolute inset-0"
+                            >
+                                <Image
+                                    src={getGoogleDriveDirectLink(loginConfig.visual_urls.filter(url => url !== '')[currentIndex] || loginConfig.visual_urls[0])}
+                                    alt="Visual"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    unoptimized={loginConfig.visual_urls[currentIndex]?.startsWith('http')}
+                                />
+                            </motion.div>
+                        </AnimatePresence>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
                     </div>
 
-                    {/* Left Header */}
-                    <div className="relative z-10 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="relative h-6 w-24">
-                                <Image src="/broncnamey.png" alt="Bronc" fill className="object-contain object-left" />
-                            </div>
-                        </div>
+                    {/* Header */}
+                    <div className="relative z-10 flex items-center justify-end">
                         <Link href="/" className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all flex items-center gap-2">
                             Back to website <ArrowRight size={12} />
                         </Link>
                     </div>
 
-                    {/* Narrative Text */}
+                    {/* Narrative Text - Removed Headline as requested */}
                     <div className="relative z-10 max-w-sm">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className="text-4xl font-semibold leading-tight mb-8 tracking-[-0.02em]"
-                            dangerouslySetInnerHTML={{ __html: loginConfig.headline }}
-                        />
-
-                        {/* Carousel Indicators (Static Mock) */}
+                        {/* Carousel Indicators */}
                         <div className="flex gap-2">
-                            <div className="h-[2px] w-6 bg-white/40 rounded-full" />
-                            <div className="h-[2px] w-6 bg-white/40 rounded-full" />
-                            <div className="h-[2px] w-12 bg-white rounded-full" />
+                            {loginConfig.visual_urls.filter(url => url !== '').map((_, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    className={`h-[2px] rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-12 bg-white' : 'w-6 bg-white/40'}`}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
 
                 {/* RIGHT PANEL: Form */}
-                <div className="p-8 md:p-16 lg:p-20 bg-[#1a1a24] flex flex-col justify-center">
-                    <div className="max-w-md mx-auto w-full">
-                        <header className="mb-10">
-                            <h1 className="text-4xl font-semibold mb-3 tracking-tight">
+                <div className="p-8 md:p-12 lg:p-16 bg-[#0c0c0e] flex flex-col justify-center order-2 h-full overflow-y-auto">
+                    <div className="max-w-md mx-auto w-full py-4">
+                        <header className="mb-6 md:mb-10">
+                            <h1 className="text-3xl md:text-5xl font-semibold mb-3 md:mb-4 tracking-tight">
                                 {isLogin ? 'Welcome back' : 'Create an account'}
                             </h1>
                             <p className="text-white/40 text-sm font-medium">
@@ -213,9 +259,9 @@ export default function LoginPage() {
                                         setError(null);
                                         setMessage(null);
                                     }}
-                                    className="ml-2 text-indigo-400 hover:text-indigo-300 font-bold transition-colors underline underline-offset-4"
+                                    className="ml-2 text-red-600 hover:text-red-500 font-bold transition-colors underline underline-offset-4"
                                 >
-                                    {isLogin ? 'Join The Archive' : 'Log in'}
+                                    {isLogin ? 'Create new account' : 'Log in'}
                                 </button>
                             </p>
                         </header>
@@ -239,26 +285,26 @@ export default function LoginPage() {
                         </AnimatePresence>
 
                         {/* Auth Form */}
-                        <form className="space-y-5" onSubmit={handleAuth}>
+                        <form className="space-y-6" onSubmit={handleAuth}>
                             {!isLogin && authMethod === 'email' && (
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
+                                    <div className="relative">
                                         <input
                                             type="text"
                                             placeholder="First name"
                                             value={fullName.split(' ')[0] || ''}
                                             onChange={(e) => setFullName(`${e.target.value} ${fullName.split(' ')[1] || ''}`)}
                                             required={!isLogin}
-                                            className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                            className="w-full px-5 py-4 bg-white/5 border border-white/5 rounded-[14px] text-white placeholder:text-white/30 focus:outline-none focus:border-red-600/50 transition-all text-sm font-medium"
                                         />
                                     </div>
-                                    <div className="space-y-2">
+                                    <div className="relative">
                                         <input
                                             type="text"
                                             placeholder="Last name"
                                             value={fullName.split(' ')[1] || ''}
                                             onChange={(e) => setFullName(`${fullName.split(' ')[0] || ''} ${e.target.value}`)}
-                                            className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                            className="w-full px-5 py-4 bg-white/5 border border-white/5 rounded-[14px] text-white placeholder:text-white/30 focus:outline-none focus:border-red-600/50 transition-all text-sm font-medium"
                                         />
                                     </div>
                                 </div>
@@ -271,7 +317,7 @@ export default function LoginPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                    className="w-full px-5 py-4 bg-white/5 border border-white/5 rounded-[14px] text-white placeholder:text-white/30 focus:outline-none focus:border-red-600/50 transition-all text-sm font-medium"
                                 />
                             </div>
 
@@ -283,48 +329,35 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                     minLength={6}
-                                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                    className="w-full px-5 py-4 bg-white/5 border border-white/5 rounded-[14px] text-white placeholder:text-white/30 focus:outline-none focus:border-red-600/50 transition-all text-sm font-medium"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
 
-                            {!isLogin && (
-                                <label className="flex items-center gap-3 cursor-pointer group">
-                                    <div className="relative flex items-center justify-center">
-                                        <input type="checkbox" required className="peer sr-only" />
-                                        <div className="w-5 h-5 border-2 border-white/20 rounded-md peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all" />
-                                        <CheckCircle size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
-                                    </div>
-                                    <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors">
-                                        I agree to the <Link href="/terms" className="underline underline-offset-2 hover:text-white">Terms & Conditions</Link>
-                                    </span>
-                                </label>
-                            )}
-
                             <motion.button
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full py-[18px] bg-red-700 hover:bg-red-800 text-white font-bold text-base rounded-[14px] transition-all shadow-lg shadow-red-500/10 disabled:opacity-50 flex items-center justify-center gap-2 transform active:scale-[0.98]"
                             >
-                                {loading ? <Loader2 size={18} className="animate-spin" /> : (
+                                {loading ? <Loader2 size={22} className="animate-spin" /> : (
                                     <>{isLogin ? 'Log in' : 'Create account'}</>
                                 )}
                             </motion.button>
                         </form>
 
-                        <div className="mt-10 relative">
+                        <div className="mt-12 relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-white/5" />
                             </div>
-                            <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest text-white/20">
-                                <span className="bg-[#1a1a24] px-4">Or register with</span>
+                            <div className="relative flex justify-center text-[11px] font-bold uppercase tracking-widest text-white/20">
+                                <span className="bg-[#0c0c0e] px-4">Or register with</span>
                             </div>
                         </div>
 
@@ -333,31 +366,22 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={() => handleOAuth('google')}
-                                className="flex items-center justify-center gap-3 py-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group"
+                                className="flex items-center justify-center gap-2 py-[18px] bg-transparent border border-white/10 rounded-[14px] hover:bg-white/5 transition-all group"
                             >
                                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                                <span className="text-xs font-bold text-white group-hover:text-white transition-colors">Google</span>
+                                <span className="text-sm font-semibold text-white">Google</span>
                             </button>
                             <button
                                 type="button"
-                                className="flex items-center justify-center gap-3 py-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group"
+                                className="flex items-center justify-center gap-2 py-[18px] bg-transparent border border-white/10 rounded-[14px] hover:bg-white/5 transition-all group"
                             >
-                                <img src="https://www.svgrepo.com/show/511330/apple-173.svg" className="w-5 h-5 invert opacity-80 group-hover:opacity-100" alt="Apple" />
-                                <span className="text-xs font-bold text-white group-hover:text-white transition-colors">Apple</span>
+                                <img src="https://www.svgrepo.com/show/511330/apple-173.svg" className="w-5 h-5 invert opacity-100" alt="Apple" />
+                                <span className="text-sm font-semibold text-white">Apple</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </motion.div>
-
-            {/* Global Footer (Subtle) */}
-            <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-between items-center text-[10px] font-bold text-white/10 uppercase tracking-[0.4em] px-12 pointer-events-none">
-                <span className="pointer-events-auto">© {new Date().getFullYear()} Broncstudio Archive</span>
-                <div className="flex gap-10 pointer-events-auto">
-                    <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-                    <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-                </div>
-            </div>
         </div>
     );
 }

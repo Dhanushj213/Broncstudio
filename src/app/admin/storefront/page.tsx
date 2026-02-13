@@ -35,7 +35,7 @@ interface HeroContent {
 }
 
 interface LoginContent {
-    visual_url: string;
+    visual_urls: string[];
     headline: string;
 }
 
@@ -58,7 +58,7 @@ export default function StorefrontPage() {
 
     // Login Page State
     const [loginContent, setLoginContent] = useState<LoginContent>({
-        visual_url: '',
+        visual_urls: ['', '', ''],
         headline: 'Capturing Moments,<br />Creating Memories'
     });
 
@@ -102,7 +102,8 @@ export default function StorefrontPage() {
         if (loginData && loginData.content) {
             setLoginContent(prev => ({
                 ...prev,
-                ...loginData.content
+                ...loginData.content,
+                visual_urls: loginData.content.visual_urls || (loginData.content.visual_url ? [loginData.content.visual_url, '', ''] : ['', '', ''])
             }));
         }
         setLoading(false);
@@ -399,23 +400,29 @@ export default function StorefrontPage() {
 
                     <div className="p-6 space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">
-                                    Visual Image URL
+                            <div className="space-y-4">
+                                <label className="block text-sm font-bold text-gray-700">
+                                    Visual Images (up to 3 for carousel)
                                 </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <ImageIcon size={16} className="text-gray-400" />
+                                {[0, 1, 2].map(idx => (
+                                    <div key={idx} className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <ImageIcon size={16} className="text-gray-400" />
+                                        </div>
+                                        <input
+                                            type="url"
+                                            value={loginContent.visual_urls[idx] || ''}
+                                            onChange={e => {
+                                                const newUrls = [...loginContent.visual_urls];
+                                                newUrls[idx] = e.target.value;
+                                                setLoginContent({ ...loginContent, visual_urls: newUrls });
+                                            }}
+                                            className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                                            placeholder={`Image URL #${idx + 1}`}
+                                        />
                                     </div>
-                                    <input
-                                        type="url"
-                                        value={loginContent.visual_url}
-                                        onChange={e => setLoginContent({ ...loginContent, visual_url: e.target.value })}
-                                        className="w-full pl-10 px-4 py-2 bg-white text-gray-900 placeholder-gray-400 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Left panel background image.</p>
+                                ))}
+                                <p className="text-xs text-gray-500 mt-1">Images will auto-scroll on the login page.</p>
                             </div>
 
                             <div>
@@ -440,8 +447,8 @@ export default function StorefrontPage() {
                             </div>
                             <div className="relative h-48 bg-[#1a1a24] flex items-center justify-center p-8 overflow-hidden">
                                 <div className="absolute inset-0 z-0">
-                                    {loginContent.visual_url && (
-                                        <img src={getGoogleDriveDirectLink(loginContent.visual_url)} className="w-full h-full object-cover" alt="Preview" />
+                                    {loginContent.visual_urls.find(url => url !== '') && (
+                                        <img src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')} className="w-full h-full object-cover" alt="Preview" />
                                     )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
                                 </div>

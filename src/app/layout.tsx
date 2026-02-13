@@ -11,6 +11,8 @@ import SplashScreen from "@/components/Layout/SplashScreen";
 import SearchOverlay from "@/components/Search/SearchOverlay";
 import WishlistDrawer from "@/components/Wishlist/WishlistDrawer";
 import QuickViewModal from "@/components/Product/QuickViewModal";
+import NavVisibilityWrapper from "@/components/Layout/NavVisibilityWrapper";
+import ConditionalMain from "@/components/Layout/ConditionalMain";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { ToastProvider } from "@/context/ToastContext";
@@ -127,6 +129,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const hideStorefrontPaths = ['/login', '/admin', '/admin/orders', '/admin/products']; // Basic list, wrapper handles subpaths or exact matches
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -145,15 +149,23 @@ export default function RootLayout({
                 <ToastProvider>
                   <UIProvider>
                     <SplashScreen />
-                    <AnnouncementBar />
+                    <NavVisibilityWrapper hideOnPaths={hideStorefrontPaths}>
+                      <AnnouncementBar />
+                    </NavVisibilityWrapper>
+
                     <Header />
-                    <main className="pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0">
+
+                    <ConditionalMain hideOnPaths={hideStorefrontPaths}>
                       {children}
-                    </main>
-                    <FooterWrapper>
-                      <PremiumFooter />
-                    </FooterWrapper>
-                    <MobileNav />
+                    </ConditionalMain>
+
+                    <NavVisibilityWrapper hideOnPaths={hideStorefrontPaths}>
+                      <FooterWrapper>
+                        <PremiumFooter />
+                      </FooterWrapper>
+                      <MobileNav />
+                    </NavVisibilityWrapper>
+
                     <SearchOverlay />
                     <WishlistDrawer />
                     <QuickViewModal />
