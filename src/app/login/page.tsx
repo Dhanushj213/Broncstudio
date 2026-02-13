@@ -121,122 +121,80 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#020617] text-white p-4 font-sans">
-            {/* Elegant Background Mesh */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <motion.div
-                    animate={{
-                        opacity: [0.3, 0.5, 0.3],
-                        scale: [1, 1.1, 1],
-                    }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-gradient-to-br from-indigo-900/30 to-transparent rounded-full blur-[140px]"
-                />
-                <motion.div
-                    animate={{
-                        opacity: [0.2, 0.4, 0.2],
-                        scale: [1.1, 1, 1.1],
-                    }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute bottom-[-10%] right-[-10%] w-[80%] h-[80%] bg-gradient-to-tl from-coral-900/20 to-transparent rounded-full blur-[140px]"
-                />
-            </div>
-
-            {/* Subtle Back Button */}
-            <Link href="/" className="absolute top-10 left-10 z-50 group flex items-center gap-3 text-white/30 hover:text-white transition-all duration-300">
-                <div className="p-2.5 rounded-full bg-white/5 border border-white/5 group-hover:border-white/20 group-hover:bg-white/10 transition-all">
-                    <ChevronLeft size={18} />
-                </div>
-                <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all">Portal</span>
-            </Link>
-
+        <div className="min-h-screen w-full flex items-center justify-center bg-[#13131a] text-white p-4 md:p-8 font-sans selection:bg-indigo-500/30">
             <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full max-w-5xl relative z-10"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full max-w-6xl relative z-10 grid grid-cols-1 md:grid-cols-2 rounded-[32px] overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/5"
             >
-                {/* Refined Main Card */}
-                <div className="w-full grid grid-cols-1 md:grid-cols-2 rounded-[32px] border border-white/10 bg-black/40 backdrop-blur-[40px] shadow-[0_40px_120px_-30px_rgba(0,0,0,0.9)] overflow-hidden">
-
-                    {/* LEFT PANEL: Narrative */}
-                    <div className="relative p-12 lg:p-16 hidden md:flex flex-col justify-between overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
-
-                        <div className="relative z-10">
-                            {/* FIXED LOGO CONTAINER */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3, duration: 0.8 }}
-                                className="relative h-14 w-48 mb-16"
-                            >
-                                <Image
-                                    src="/broncnamey.png"
-                                    alt="Broncstudio"
-                                    fill
-                                    className="object-contain object-left"
-                                    priority
-                                />
-                            </motion.div>
-
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={isLogin ? 'login' : 'signup'}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                                >
-                                    <h1 className="text-5xl lg:text-7xl font-bold leading-[1.05] mb-8 tracking-[-0.03em]">
-                                        {isLogin ? (
-                                            <>The Archive <br /><span className="text-coral-500">Awaits.</span></>
-                                        ) : (
-                                            <>Join The <br /><span className="text-cyan-400">Vanguard.</span></>
-                                        )}
-                                    </h1>
-                                    <p className="text-base lg:text-lg text-white/40 max-w-sm leading-relaxed font-medium">
-                                        {isLogin
-                                            ? "Re-enter the studio to access your curated selections and personalized style profiles."
-                                            : "Unlock priority access to our most sought-after drops and limited edition collections."}
-                                    </p>
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
-
-                        <div className="relative z-10 flex items-center gap-6 text-white/10 text-[9px] font-black uppercase tracking-[0.4em]">
-                            <span className="flex items-center gap-2"><Sparkles size={12} /> Established MMXXIV</span>
-                            <span className="w-px h-3 bg-white/10" />
-                            <span>Bronc Studio Premium</span>
-                        </div>
+                {/* LEFT PANEL: Cinematic Visual */}
+                <div className="relative hidden md:flex flex-col justify-between p-12 min-h-[700px]">
+                    {/* Background Visual */}
+                    <div className="absolute inset-0 z-0">
+                        <Image
+                            src="/Users/dhanushj/.gemini/antigravity/brain/b811564d-9b17-4d46-a976-b5e4a4c7d8d4/login_visual_desert_twilight_final_1770993851502.png"
+                            alt="Visual"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
                     </div>
 
-                    {/* RIGHT PANEL: Authentication */}
-                    <div className="p-8 md:p-14 lg:p-20 flex flex-col justify-center bg-white/[0.01] border-l border-white/5 relative">
-
-                        <div className="text-center mb-10 md:hidden">
-                            <div className="relative h-8 w-32 mx-auto mb-8">
-                                <Image src="/broncnamey.png" alt="Broncstudio" fill className="object-contain" priority />
+                    {/* Left Header */}
+                    <div className="relative z-10 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="relative h-6 w-24">
+                                <Image src="/broncnamey.png" alt="Bronc" fill className="object-contain object-left" />
                             </div>
                         </div>
+                        <Link href="/" className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all flex items-center gap-2">
+                            Back to website <ArrowRight size={12} />
+                        </Link>
+                    </div>
 
-                        {/* Modern Tab System */}
-                        <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl mb-12 shadow-inner">
-                            <button
-                                type="button"
-                                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-500 ${authMethod === 'email' ? 'bg-white text-black shadow-lg' : 'text-white/30 hover:text-white/60'}`}
-                                onClick={() => { setAuthMethod('email'); setError(null); }}
-                            >
-                                Email
-                            </button>
-                            <button
-                                type="button"
-                                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-500 ${authMethod === 'phone' ? 'bg-white text-black shadow-lg' : 'text-white/30 hover:text-white/60'}`}
-                                onClick={() => { setAuthMethod('phone'); setError(null); }}
-                            >
-                                Secure SMS
-                            </button>
+                    {/* Narrative Text */}
+                    <div className="relative z-10 max-w-sm">
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="text-4xl font-semibold leading-tight mb-8 tracking-[-0.02em]"
+                        >
+                            Capturing Moments,<br />Creating Memories
+                        </motion.h2>
+
+                        {/* Carousel Indicators (Static Mock) */}
+                        <div className="flex gap-2">
+                            <div className="h-[2px] w-6 bg-white/40 rounded-full" />
+                            <div className="h-[2px] w-6 bg-white/40 rounded-full" />
+                            <div className="h-[2px] w-12 bg-white rounded-full" />
                         </div>
+                    </div>
+                </div>
+
+                {/* RIGHT PANEL: Form */}
+                <div className="p-8 md:p-16 lg:p-20 bg-[#1a1a24] flex flex-col justify-center">
+                    <div className="max-w-md mx-auto w-full">
+                        <header className="mb-10">
+                            <h1 className="text-4xl font-semibold mb-3 tracking-tight">
+                                {isLogin ? 'Welcome back' : 'Create an account'}
+                            </h1>
+                            <p className="text-white/40 text-sm font-medium">
+                                {isLogin ? 'Don\'t have an account?' : 'Already have an account?'}
+                                <button
+                                    onClick={() => {
+                                        setIsLogin(!isLogin);
+                                        setError(null);
+                                        setMessage(null);
+                                    }}
+                                    className="ml-2 text-indigo-400 hover:text-indigo-300 font-bold transition-colors underline underline-offset-4"
+                                >
+                                    {isLogin ? 'Join The Archive' : 'Log in'}
+                                </button>
+                            </p>
+                        </header>
 
                         {/* Notifications */}
                         <AnimatePresence mode="wait">
@@ -246,8 +204,8 @@ export default function LoginPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     className={`mb-8 p-4 rounded-xl border flex items-start gap-4 text-xs font-bold ${error
-                                            ? 'bg-red-500/10 border-red-500/20 text-red-400'
-                                            : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
+                                        ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                                        : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
                                         }`}
                                 >
                                     {error ? <AlertCircle size={16} className="shrink-0" /> : <CheckCircle size={16} className="shrink-0" />}
@@ -256,161 +214,126 @@ export default function LoginPage() {
                             )}
                         </AnimatePresence>
 
-                        {/* Main Form */}
-                        <form className="space-y-4" onSubmit={handleAuth}>
-                            <AnimatePresence mode="wait">
-                                {authMethod === 'email' ? (
-                                    <motion.div key="email" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-                                        {!isLogin && (
-                                            <div className="group relative">
-                                                <input
-                                                    type="text"
-                                                    placeholder="NAME"
-                                                    value={fullName}
-                                                    onChange={(e) => setFullName(e.target.value)}
-                                                    required={!isLogin}
-                                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 focus:bg-white/[0.05] transition-all font-bold text-xs tracking-widest"
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="group relative">
-                                            <input
-                                                type="email"
-                                                placeholder="EMAIL ADDRESS"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                required
-                                                className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 focus:bg-white/[0.05] transition-all font-bold text-xs tracking-widest"
-                                            />
-                                        </div>
-                                        <div className="group relative">
-                                            <input
-                                                type={showPassword ? "text" : "password"}
-                                                placeholder="PASSWORD"
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                required
-                                                minLength={6}
-                                                className="w-full pl-6 pr-14 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 focus:bg-white/[0.05] transition-all font-bold text-xs tracking-widest"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
-                                            >
-                                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                ) : (
-                                    <motion.div key="phone" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                        {/* Auth Form */}
+                        <form className="space-y-5" onSubmit={handleAuth}>
+                            {!isLogin && authMethod === 'email' && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
                                         <input
-                                            type="tel"
-                                            placeholder="+91 NUMBER"
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                            required
-                                            disabled={otpSent}
-                                            className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 transition-all font-bold text-xs tracking-widest disabled:opacity-40"
+                                            type="text"
+                                            placeholder="First name"
+                                            value={fullName.split(' ')[0] || ''}
+                                            onChange={(e) => setFullName(`${e.target.value} ${fullName.split(' ')[1] || ''}`)}
+                                            required={!isLogin}
+                                            className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
                                         />
-                                        {otpSent && (
-                                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                <input
-                                                    type="text"
-                                                    placeholder="OTP CODE"
-                                                    value={otp}
-                                                    onChange={(e) => setOtp(e.target.value)}
-                                                    required
-                                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 transition-all font-bold text-xs tracking-widest"
-                                                />
-                                            </motion.div>
-                                        )}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            {isLogin && authMethod === 'email' && (
-                                <div className="flex justify-end pt-1">
-                                    <button type="button" className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-coral-400 transition-colors">Forgot Credentials?</button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Last name"
+                                            value={fullName.split(' ')[1] || ''}
+                                            onChange={(e) => setFullName(`${fullName.split(' ')[0] || ''} ${e.target.value}`)}
+                                            className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                        />
+                                    </div>
                                 </div>
+                            )}
+
+                            <div className="relative">
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                />
+                            </div>
+
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    minLength={6}
+                                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/[0.07] transition-all text-sm font-medium"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+
+                            {!isLogin && (
+                                <label className="flex items-center gap-3 cursor-pointer group">
+                                    <div className="relative flex items-center justify-center">
+                                        <input type="checkbox" required className="peer sr-only" />
+                                        <div className="w-5 h-5 border-2 border-white/20 rounded-md peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all" />
+                                        <CheckCircle size={12} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
+                                    </div>
+                                    <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors">
+                                        I agree to the <Link href="/terms" className="underline underline-offset-2 hover:text-white">Terms & Conditions</Link>
+                                    </span>
+                                </label>
                             )}
 
                             <motion.button
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full mt-6 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl relative overflow-hidden group shadow-2xl disabled:opacity-50"
+                                className="w-full py-4.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-indigo-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
                             >
-                                <span className="relative z-10 flex items-center justify-center gap-4">
-                                    {loading ? (
-                                        <Loader2 size={18} className="animate-spin" />
-                                    ) : (
-                                        <>
-                                            {authMethod === 'phone' ? (otpSent ? 'Login' : 'Send OTP') : (isLogin ? 'Sign In' : 'Create')}
-                                            <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
-                                        </>
-                                    )}
-                                </span>
-                                <div className="absolute inset-0 bg-coral-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                                <span className="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20">
-                                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
-                                        <div className="flex items-center gap-4">
-                                            {authMethod === 'phone' ? (otpSent ? 'Login' : 'Send OTP') : (isLogin ? 'Sign In' : 'Create')}
-                                            <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
-                                        </div>
-                                    )}
-                                </span>
+                                {loading ? <Loader2 size={18} className="animate-spin" /> : (
+                                    <>{isLogin ? 'Log in' : 'Create account'}</>
+                                )}
                             </motion.button>
                         </form>
 
-                        {/* Social / Footer */}
-                        <div className="mt-12 space-y-8">
-                            <div className="flex items-center gap-4">
-                                <div className="h-px w-full bg-white/5" />
-                                <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em] whitespace-nowrap">Secure Gateway</span>
-                                <div className="h-px w-full bg-white/5" />
+                        <div className="mt-10 relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-white/5" />
                             </div>
+                            <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest text-white/20">
+                                <span className="bg-[#1a1a24] px-4">Or register with</span>
+                            </div>
+                        </div>
 
+                        {/* Side-by-side Social */}
+                        <div className="mt-8 grid grid-cols-2 gap-4">
                             <button
                                 type="button"
                                 onClick={() => handleOAuth('google')}
-                                className="w-full py-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center gap-4 hover:bg-white/10 hover:border-white/20 transition-all group"
+                                className="flex items-center justify-center gap-3 py-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group"
                             >
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity" alt="Google" />
-                                <span className="text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.2em] transition-colors">Continue with Google</span>
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+                                <span className="text-xs font-bold text-white group-hover:text-white transition-colors">Google</span>
                             </button>
-
-                            <div className="text-center">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsLogin(!isLogin);
-                                        setError(null);
-                                        setMessage(null);
-                                        setAuthMethod('email');
-                                    }}
-                                    className="group inline-flex flex-col items-center gap-2"
-                                >
-                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] transition-colors group-hover:text-white/40">
-                                        {isLogin ? "No account yet?" : "Already a member?"}
-                                    </span>
-                                    <span className="text-xs font-black text-white group-hover:text-coral-500 transition-colors uppercase tracking-[0.2em] border-b border-white/10 pb-1">
-                                        {isLogin ? "Request Access" : "Secure Portal"}
-                                    </span>
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                className="flex items-center justify-center gap-3 py-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group"
+                            >
+                                <img src="https://www.svgrepo.com/show/511330/apple-173.svg" className="w-5 h-5 invert opacity-80 group-hover:opacity-100" alt="Apple" />
+                                <span className="text-xs font-bold text-white group-hover:text-white transition-colors">Apple</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <div className="mt-12 flex justify-between items-center text-[9px] font-black text-white/10 uppercase tracking-[0.4em] px-10">
-                    <span>© {new Date().getFullYear()} Studio Bronc</span>
-                    <div className="flex gap-10">
-                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-                        <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-                    </div>
-                </div>
             </motion.div>
+
+            {/* Global Footer (Subtle) */}
+            <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-between items-center text-[10px] font-bold text-white/10 uppercase tracking-[0.4em] px-12 pointer-events-none">
+                <span className="pointer-events-auto">© {new Date().getFullYear()} Broncstudio Archive</span>
+                <div className="flex gap-10 pointer-events-auto">
+                    <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                    <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+                </div>
+            </div>
         </div>
     );
 }
