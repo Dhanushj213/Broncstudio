@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Search, ShoppingBag, Heart, Menu, User, ChevronDown, Home } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
@@ -13,6 +14,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { DEPARTMENT_TAXONOMY } from '@/data/categories';
 
 export default function Header() {
+    const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [currentUser, setCurrentUser] = useState<SupabaseUser | null>(null);
@@ -53,7 +55,7 @@ export default function Header() {
     return (
         <>
             <header
-                className={`sticky top-0 z-[100] w-full transition-all duration-300 ${isScrolled ? 'h-[60px] shadow-sm bg-black/80 backdrop-blur-md' : 'h-[72px] bg-black'}`}
+                className={`sticky top-0 z-[100] w-full transition-all duration-300 ${isScrolled ? 'h-[60px] shadow-sm bg-black/80 backdrop-blur-md' : (pathname === '/' ? 'h-[72px] bg-transparent' : 'h-[72px] bg-black')}`}
                 onMouseLeave={() => setActiveDepartment(null)}
             >
                 <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between relative">

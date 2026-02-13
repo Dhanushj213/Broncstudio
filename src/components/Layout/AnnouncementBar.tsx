@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 
 export default function AnnouncementBar() {
@@ -33,6 +34,8 @@ export default function AnnouncementBar() {
         fetchSettings();
     }, []);
 
+    const pathname = usePathname();
+
     if (!isActive) return null;
 
     const Content = () => (
@@ -42,7 +45,7 @@ export default function AnnouncementBar() {
     );
 
     return (
-        <div className="bg-red-600 text-white text-[10px] md:text-xs font-medium tracking-wide py-2 text-center relative z-[101]">
+        <div className={`${pathname === '/' ? 'bg-transparent text-white' : 'bg-red-600 text-white'} text-[10px] md:text-xs font-medium tracking-wide py-2 text-center relative z-[101]`}>
             {link ? (
                 <Link href={link} className="hover:opacity-80 transition-opacity block w-full">
                     <Content />
