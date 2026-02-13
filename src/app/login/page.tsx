@@ -121,80 +121,55 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#020617] text-white p-4 font-sansSelection">
-            {/* Dynamic Mesh Background */}
+        <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#020617] text-white p-4 font-sans">
+            {/* Elegant Background Mesh */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
                     animate={{
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 90, 0],
-                        x: [0, 100, 0],
-                        y: [0, -50, 0]
+                        opacity: [0.3, 0.5, 0.3],
+                        scale: [1, 1.1, 1],
                     }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/20 rounded-full blur-[120px]"
+                    transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-gradient-to-br from-indigo-900/30 to-transparent rounded-full blur-[140px]"
                 />
                 <motion.div
                     animate={{
-                        scale: [1, 1.3, 1],
-                        rotate: [0, -90, 0],
-                        x: [0, -100, 0],
-                        y: [0, 50, 0]
+                        opacity: [0.2, 0.4, 0.2],
+                        scale: [1.1, 1, 1.1],
                     }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                    className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-coral-500/20 rounded-full blur-[120px]"
-                />
-                <motion.div
-                    animate={{
-                        scale: [1, 1.5, 1],
-                        x: [0, 50, 0],
-                        y: [0, 100, 0]
-                    }}
-                    transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[20%] right-[10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[100px]"
+                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-[-10%] right-[-10%] w-[80%] h-[80%] bg-gradient-to-tl from-coral-900/20 to-transparent rounded-full blur-[140px]"
                 />
             </div>
 
-            <Link href="/" className="absolute top-8 left-8 z-50 group flex items-center gap-2 text-white/40 hover:text-white transition-all cursor-pointer">
-                <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 group-hover:border-white/20 transition-all">
-                    <ChevronLeft size={20} />
+            {/* Subtle Back Button */}
+            <Link href="/" className="absolute top-10 left-10 z-50 group flex items-center gap-3 text-white/30 hover:text-white transition-all duration-300">
+                <div className="p-2.5 rounded-full bg-white/5 border border-white/5 group-hover:border-white/20 group-hover:bg-white/10 transition-all">
+                    <ChevronLeft size={18} />
                 </div>
-                <span className="text-sm font-bold tracking-widest uppercase">Back</span>
+                <span className="text-[10px] font-black tracking-[0.4em] uppercase opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all">Portal</span>
             </Link>
 
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full max-w-5xl relative z-10"
             >
-                {/* Main Card */}
-                <div className="w-full grid grid-cols-1 md:grid-cols-2 rounded-[40px] border border-white/20 bg-black/40 backdrop-blur-[60px] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden">
+                {/* Refined Main Card */}
+                <div className="w-full grid grid-cols-1 md:grid-cols-2 rounded-[32px] border border-white/10 bg-black/40 backdrop-blur-[40px] shadow-[0_40px_120px_-30px_rgba(0,0,0,0.9)] overflow-hidden">
 
-                    {/* LEFT PANEL */}
-                    <div className="relative p-12 hidden md:flex flex-col justify-between overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-transparent pointer-events-none" />
-
-                        {/* Animated Visual Element */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] opacity-20 pointer-events-none">
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                                className="w-full h-full border-[1px] border-dashed border-white rounded-full"
-                            />
-                            <motion.div
-                                animate={{ rotate: -360 }}
-                                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-                                className="absolute inset-4 border-[1px] border-dashed border-coral-500 rounded-full"
-                            />
-                        </div>
+                    {/* LEFT PANEL: Narrative */}
+                    <div className="relative p-12 lg:p-16 hidden md:flex flex-col justify-between overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none" />
 
                         <div className="relative z-10">
+                            {/* FIXED LOGO CONTAINER */}
                             <motion.div
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="h-10 w-auto aspect-[4/1] mb-12"
+                                transition={{ delay: 0.3, duration: 0.8 }}
+                                className="relative h-14 w-48 mb-16"
                             >
                                 <Image
                                     src="/broncnamey.png"
@@ -208,142 +183,107 @@ export default function LoginPage() {
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={isLogin ? 'login' : 'signup'}
-                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 1.1, y: -20 }}
-                                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -20 }}
+                                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                                 >
-                                    <h1 className="text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-tighter">
+                                    <h1 className="text-5xl lg:text-7xl font-bold leading-[1.05] mb-8 tracking-[-0.03em]">
                                         {isLogin ? (
-                                            <>Experience <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-coral-400 to-pink-500">The Archive.</span></>
+                                            <>The Archive <br /><span className="text-coral-500">Awaits.</span></>
                                         ) : (
-                                            <>Join The <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Vanguard.</span></>
+                                            <>Join The <br /><span className="text-cyan-400">Vanguard.</span></>
                                         )}
                                     </h1>
-                                    <p className="text-lg text-white/50 max-w-sm leading-relaxed font-medium">
+                                    <p className="text-base lg:text-lg text-white/40 max-w-sm leading-relaxed font-medium">
                                         {isLogin
-                                            ? "Access your curated collections and personalized drops. Exclusive gear is waiting for you."
-                                            : "Elevate your journey with early access and member-only releases. The future of style starts here."}
+                                            ? "Re-enter the studio to access your curated selections and personalized style profiles."
+                                            : "Unlock priority access to our most sought-after drops and limited edition collections."}
                                     </p>
                                 </motion.div>
                             </AnimatePresence>
                         </div>
 
-                        <div className="relative z-10 flex items-center gap-4 text-white/20 text-[10px] font-black uppercase tracking-[0.2em]">
-                            <span>Premium Craftsmanship</span>
-                            <span className="w-1 h-1 bg-white/20 rounded-full" />
-                            <span>Worldwide Access</span>
+                        <div className="relative z-10 flex items-center gap-6 text-white/10 text-[9px] font-black uppercase tracking-[0.4em]">
+                            <span className="flex items-center gap-2"><Sparkles size={12} /> Established MMXXIV</span>
+                            <span className="w-px h-3 bg-white/10" />
+                            <span>Bronc Studio Premium</span>
                         </div>
                     </div>
 
-                    {/* RIGHT PANEL */}
-                    <div className="p-8 md:p-16 flex flex-col justify-center bg-white/[0.02] border-l border-white/5 relative overflow-hidden">
-
-                        {/* Interactive Sparkle Decoration */}
-                        <motion.div
-                            animate={{ opacity: [0, 0.5, 0] }}
-                            transition={{ duration: 3, repeat: Infinity }}
-                            className="absolute top-10 right-10 text-coral-500/30"
-                        >
-                            <Sparkles size={40} />
-                        </motion.div>
+                    {/* RIGHT PANEL: Authentication */}
+                    <div className="p-8 md:p-14 lg:p-20 flex flex-col justify-center bg-white/[0.01] border-l border-white/5 relative">
 
                         <div className="text-center mb-10 md:hidden">
-                            <div className="relative h-10 w-40 mx-auto mb-6">
+                            <div className="relative h-8 w-32 mx-auto mb-8">
                                 <Image src="/broncnamey.png" alt="Broncstudio" fill className="object-contain" priority />
                             </div>
-                            <h2 className="text-2xl font-black uppercase tracking-tighter">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
                         </div>
 
-                        {/* Custom Tab Switcher */}
-                        <div className="flex p-1.5 bg-white/5 rounded-2xl mb-10 border border-white/10 relative shadow-inner">
-                            <motion.div
-                                className="absolute top-1.5 bottom-1.5 rounded-xl bg-gradient-to-tr from-white/10 to-white/20 backdrop-blur-md border border-white/20 shadow-lg"
-                                initial={false}
-                                animate={{
-                                    left: authMethod === 'email' ? '6px' : '50%',
-                                    width: 'calc(50% - 6px)',
-                                }}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            />
+                        {/* Modern Tab System */}
+                        <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl mb-12 shadow-inner">
                             <button
-                                className={`flex-1 py-3 text-xs font-black uppercase tracking-widest relative z-10 transition-all duration-300 ${authMethod === 'email' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
+                                type="button"
+                                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-500 ${authMethod === 'email' ? 'bg-white text-black shadow-lg' : 'text-white/30 hover:text-white/60'}`}
                                 onClick={() => { setAuthMethod('email'); setError(null); }}
                             >
-                                Email Access
+                                Email
                             </button>
                             <button
-                                className={`flex-1 py-3 text-xs font-black uppercase tracking-widest relative z-10 transition-all duration-300 ${authMethod === 'phone' ? 'text-white' : 'text-white/30 hover:text-white/60'}`}
+                                type="button"
+                                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-500 ${authMethod === 'phone' ? 'bg-white text-black shadow-lg' : 'text-white/30 hover:text-white/60'}`}
                                 onClick={() => { setAuthMethod('phone'); setError(null); }}
                             >
                                 Secure SMS
                             </button>
                         </div>
 
-                        {/* Error/Success Feedbacks */}
+                        {/* Notifications */}
                         <AnimatePresence mode="wait">
-                            {error && (
+                            {(error || message) && (
                                 <motion.div
-                                    initial={{ opacity: 0, height: 0, y: -10 }}
-                                    animate={{ opacity: 1, height: 'auto', y: 0 }}
-                                    exit={{ opacity: 0, height: 0, y: -10 }}
-                                    className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-start gap-3 text-xs font-bold leading-relaxed"
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className={`mb-8 p-4 rounded-xl border flex items-start gap-4 text-xs font-bold ${error
+                                            ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                                            : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
+                                        }`}
                                 >
-                                    <AlertCircle size={16} className="mt-0.5 shrink-0" />
-                                    {error}
-                                </motion.div>
-                            )}
-                            {message && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0, y: -10 }}
-                                    animate={{ opacity: 1, height: 'auto', y: 0 }}
-                                    exit={{ opacity: 0, height: 0, y: -10 }}
-                                    className="mb-6 p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-start gap-3 text-xs font-bold leading-relaxed"
-                                >
-                                    <CheckCircle size={16} className="mt-0.5 shrink-0" />
-                                    {message}
+                                    {error ? <AlertCircle size={16} className="shrink-0" /> : <CheckCircle size={16} className="shrink-0" />}
+                                    <p className="leading-relaxed">{error || message}</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
-                        {/* Form */}
+                        {/* Main Form */}
                         <form className="space-y-4" onSubmit={handleAuth}>
                             <AnimatePresence mode="wait">
                                 {authMethod === 'email' ? (
-                                    <motion.div
-                                        key="email-form"
-                                        initial={{ opacity: 0, x: 10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -10 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="space-y-4"
-                                    >
+                                    <motion.div key="email" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                                         {!isLogin && (
-                                            <div className="relative group">
-                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-coral-400 transition-colors" size={18} />
+                                            <div className="group relative">
                                                 <input
                                                     type="text"
-                                                    placeholder="FULL NAME"
+                                                    placeholder="NAME"
                                                     value={fullName}
                                                     onChange={(e) => setFullName(e.target.value)}
                                                     required={!isLogin}
-                                                    className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-coral-500/50 focus:bg-white/10 transition-all font-bold text-sm tracking-tight"
+                                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 focus:bg-white/[0.05] transition-all font-bold text-xs tracking-widest"
                                                 />
                                             </div>
                                         )}
-                                        <div className="relative group">
-                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-coral-400 transition-colors" size={18} />
+                                        <div className="group relative">
                                             <input
                                                 type="email"
                                                 placeholder="EMAIL ADDRESS"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 required
-                                                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-coral-500/50 focus:bg-white/10 transition-all font-bold text-sm tracking-tight"
+                                                className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 focus:bg-white/[0.05] transition-all font-bold text-xs tracking-widest"
                                             />
                                         </div>
-                                        <div className="relative group">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-coral-400 transition-colors" size={18} />
+                                        <div className="group relative">
                                             <input
                                                 type={showPassword ? "text" : "password"}
                                                 placeholder="PASSWORD"
@@ -351,51 +291,38 @@ export default function LoginPage() {
                                                 onChange={(e) => setPassword(e.target.value)}
                                                 required
                                                 minLength={6}
-                                                className="w-full pl-12 pr-12 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-coral-500/50 focus:bg-white/10 transition-all font-bold text-sm tracking-tight"
+                                                className="w-full pl-6 pr-14 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 focus:bg-white/[0.05] transition-all font-bold text-xs tracking-widest"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                                                className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
                                             >
-                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                             </button>
                                         </div>
                                     </motion.div>
                                 ) : (
-                                    <motion.div
-                                        key="phone-form"
-                                        initial={{ opacity: 0, x: 10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -10 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="space-y-4"
-                                    >
-                                        <div className="relative group">
-                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-coral-400 transition-colors" size={18} />
-                                            <input
-                                                type="tel"
-                                                placeholder="+91 MOBILE NUMBER"
-                                                value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
-                                                required
-                                                disabled={otpSent}
-                                                className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-coral-500/50 focus:bg-white/10 transition-all font-bold text-sm tracking-tight disabled:opacity-50"
-                                            />
-                                        </div>
+                                    <motion.div key="phone" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                                        <input
+                                            type="tel"
+                                            placeholder="+91 NUMBER"
+                                            value={phone}
+                                            onChange={(e) => setPhone(e.target.value)}
+                                            required
+                                            disabled={otpSent}
+                                            className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 transition-all font-bold text-xs tracking-widest disabled:opacity-40"
+                                        />
                                         {otpSent && (
                                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                                                <div className="relative group">
-                                                    <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-coral-400 transition-colors" size={18} />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="VERIFICATION CODE"
-                                                        value={otp}
-                                                        onChange={(e) => setOtp(e.target.value)}
-                                                        required
-                                                        className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-coral-500/50 focus:bg-white/10 transition-all font-bold text-sm tracking-tight"
-                                                    />
-                                                </div>
+                                                <input
+                                                    type="text"
+                                                    placeholder="OTP CODE"
+                                                    value={otp}
+                                                    onChange={(e) => setOtp(e.target.value)}
+                                                    required
+                                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white placeholder:text-white/10 focus:outline-none focus:border-coral-500/50 transition-all font-bold text-xs tracking-widest"
+                                                />
                                             </motion.div>
                                         )}
                                     </motion.div>
@@ -403,96 +330,82 @@ export default function LoginPage() {
                             </AnimatePresence>
 
                             {isLogin && authMethod === 'email' && (
-                                <div className="text-right">
-                                    <button type="button" className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-coral-400 transition-colors">Recover Password</button>
+                                <div className="flex justify-end pt-1">
+                                    <button type="button" className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-coral-400 transition-colors">Forgot Credentials?</button>
                                 </div>
                             )}
 
                             <motion.button
-                                whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full group relative overflow-hidden bg-white text-black font-black uppercase tracking-[0.2em] py-5 rounded-[20px] transition-all hover:shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)] disabled:opacity-50 mt-4"
+                                className="w-full mt-6 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-2xl relative overflow-hidden group shadow-2xl disabled:opacity-50"
                             >
-                                <span className="relative z-10 flex items-center justify-center gap-3">
+                                <span className="relative z-10 flex items-center justify-center gap-4">
                                     {loading ? (
-                                        <Loader2 size={20} className="animate-spin" />
+                                        <Loader2 size={18} className="animate-spin" />
                                     ) : (
                                         <>
-                                            {authMethod === 'phone'
-                                                ? (otpSent ? 'Authenticate' : 'Send Code')
-                                                : (isLogin ? 'Sign In' : 'Initialize')
-                                            }
-                                            <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                                            {authMethod === 'phone' ? (otpSent ? 'Login' : 'Send OTP') : (isLogin ? 'Sign In' : 'Create')}
+                                            <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
                                         </>
                                     )}
                                 </span>
-                                <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-coral-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    initial={false}
-                                />
-                                <span className="absolute inset-0 bg-white group-hover:bg-transparent transition-colors duration-300" />
-                                <span className="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                                    {loading ? <Loader2 size={20} className="animate-spin" /> : (
-                                        <div className="flex items-center gap-3">
-                                            {authMethod === 'phone' ? (otpSent ? 'Authenticate' : 'Send Code') : (isLogin ? 'Sign In' : 'Initialize')}
-                                            <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                                <div className="absolute inset-0 bg-coral-500 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+                                <span className="absolute inset-0 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20">
+                                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
+                                        <div className="flex items-center gap-4">
+                                            {authMethod === 'phone' ? (otpSent ? 'Login' : 'Send OTP') : (isLogin ? 'Sign In' : 'Create')}
+                                            <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-500" />
                                         </div>
                                     )}
                                 </span>
                             </motion.button>
                         </form>
 
-                        {/* Social */}
-                        <div className="mt-10 relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-white/10" />
+                        {/* Social / Footer */}
+                        <div className="mt-12 space-y-8">
+                            <div className="flex items-center gap-4">
+                                <div className="h-px w-full bg-white/5" />
+                                <span className="text-[9px] font-black text-white/10 uppercase tracking-[0.4em] whitespace-nowrap">Secure Gateway</span>
+                                <div className="h-px w-full bg-white/5" />
                             </div>
-                            <div className="relative flex justify-center uppercase">
-                                <span className="bg-[#020617]/0 px-4 text-[10px] font-black text-white/20 tracking-[0.3em] backdrop-blur-md">Secure Login</span>
-                            </div>
-                        </div>
 
-                        <div className="mt-8 flex gap-4">
-                            <motion.button
-                                whileHover={{ scale: 1.05, y: -2 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => handleOAuth('google')}
-                                className="flex-1 flex items-center justify-center gap-3 py-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all font-bold text-xs group"
-                            >
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                                <span className="text-white/60 group-hover:text-white uppercase tracking-widest">Google</span>
-                            </motion.button>
-                        </div>
-
-                        {/* Toggle */}
-                        <div className="mt-10 text-center">
                             <button
-                                onClick={() => {
-                                    setIsLogin(!isLogin);
-                                    setError(null);
-                                    setMessage(null);
-                                    setAuthMethod('email');
-                                }}
-                                className="group inline-flex flex-col items-center"
+                                type="button"
+                                onClick={() => handleOAuth('google')}
+                                className="w-full py-4 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center gap-4 hover:bg-white/10 hover:border-white/20 transition-all group"
                             >
-                                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">
-                                    {isLogin ? "Need an invitation?" : "Returning member?"}
-                                </span>
-                                <span className="text-sm font-black text-white group-hover:text-coral-400 transition-colors uppercase tracking-widest">
-                                    {isLogin ? "Join The Archive" : "Secure Login"}
-                                </span>
-                                <div className="w-0 group-hover:w-full h-[2px] bg-coral-500 mt-1 transition-all duration-500" />
+                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 opacity-60 group-hover:opacity-100 transition-opacity" alt="Google" />
+                                <span className="text-[10px] font-black text-white/40 group-hover:text-white uppercase tracking-[0.2em] transition-colors">Continue with Google</span>
                             </button>
-                        </div>
 
+                            <div className="text-center">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsLogin(!isLogin);
+                                        setError(null);
+                                        setMessage(null);
+                                        setAuthMethod('email');
+                                    }}
+                                    className="group inline-flex flex-col items-center gap-2"
+                                >
+                                    <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] transition-colors group-hover:text-white/40">
+                                        {isLogin ? "No account yet?" : "Already a member?"}
+                                    </span>
+                                    <span className="text-xs font-black text-white group-hover:text-coral-500 transition-colors uppercase tracking-[0.2em] border-b border-white/10 pb-1">
+                                        {isLogin ? "Request Access" : "Secure Portal"}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="mt-12 flex justify-between items-center text-[10px] font-black text-white/10 uppercase tracking-[0.3em] px-8">
-                    <span>© {new Date().getFullYear()} BRONC STUDIO</span>
-                    <div className="flex gap-8">
+                <div className="mt-12 flex justify-between items-center text-[9px] font-black text-white/10 uppercase tracking-[0.4em] px-10">
+                    <span>© {new Date().getFullYear()} Studio Bronc</span>
+                    <div className="flex gap-10">
                         <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
                     </div>
