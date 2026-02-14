@@ -186,7 +186,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                                     key={tab.slug}
                                     onClick={() => setActiveTab(tab.slug)}
                                     className={`px-6 md:px-8 py-2 md:py-2.5 rounded-full text-sm md:text-base font-bold tracking-wide uppercase transition-all relative transition-all duration-300 ${activeTab === tab.slug
-                                        ? 'bg-white text-navy-900 shadow-xl scale-105'
+                                        ? 'bg-white text-navy-900 dark:text-black shadow-xl scale-105'
                                         : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
