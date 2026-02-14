@@ -77,7 +77,7 @@ export default function HomeClient() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-black overflow-x-hidden">
+    <main className="min-h-screen overflow-x-hidden">
       <AmbientBackground />
 
       <HeroVideo />

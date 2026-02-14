@@ -52,7 +52,7 @@ export default function DiscoverMore() {
     if (!loading && products.length === 0) return null;
 
     return (
-        <section className="pt-10 pb-20 px-6 bg-white dark:bg-black/5">
+        <section className="pt-10 pb-20 px-6 bg-transparent dark:bg-black/5">
             <div className="max-w-[1440px] mx-auto">
                 <div className="flex flex-col items-center mb-12 text-center">
                     <div className="relative w-16 h-16 flex items-center justify-center mb-4">
