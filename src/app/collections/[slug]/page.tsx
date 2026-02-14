@@ -153,6 +153,10 @@ export default function CollectionPage() {
 
                 setProducts(data || []);
                 setLoading(false);
+            } else if (node.type === 'world') {
+                // Worlds show TabbedProductShowcase, no direct product fetch needed
+                setProducts([]);
+                setLoading(false);
             }
         };
 

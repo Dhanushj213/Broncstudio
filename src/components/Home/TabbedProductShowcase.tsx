@@ -85,6 +85,25 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                     setTabs(newTabs);
                     setActiveTab(newTabs[0].slug);
                 }
+            } else if (localNode) {
+                // If not in DB but in local taxonomy, use local data
+                setCategoryNode({
+                    id: localNode.id || 'virtual',
+                    name: localNode.name,
+                    slug: localNode.slug,
+                    description: localNode.description,
+                    image_url: localNode.image
+                });
+
+                if (localNode.subcategories && localNode.subcategories.length > 0) {
+                    const newTabs = localNode.subcategories.map((sub: any) => ({
+                        id: sub.id,
+                        label: sub.name,
+                        slug: sub.slug
+                    }));
+                    setTabs(newTabs);
+                    setActiveTab(newTabs[0].slug);
+                }
             }
         };
 

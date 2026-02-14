@@ -1,6 +1,9 @@
-export const getGoogleDriveDirectLink = (url: string): string => {
-    if (!url) return '';
+export const getGoogleDriveDirectLink = (url: string): string | undefined => {
+    if (!url) return undefined;
     try {
+        // Only process if it's a Google Drive URL
+        if (!url.includes('drive.google.com')) return url;
+
         // More robust regex to extract file ID from various Google Drive URL formats
         const fileIdRegex = /[-\w]{25,}/;
         const match = url.match(fileIdRegex);
@@ -15,10 +18,11 @@ export const getGoogleDriveDirectLink = (url: string): string => {
             return `/api/proxy-image?url=${encodeURIComponent(directLink)}`;
         }
 
-        // Return original URL if it's already a direct link or doesn't match Google Drive
+        // Return original URL if it doesn't match Google Drive ID pattern
         return url;
     } catch (e) {
         console.error('Error parsing Google Drive link:', e);
         return url;
     }
 };
+

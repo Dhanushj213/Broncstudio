@@ -53,6 +53,7 @@ export default function ShopClient() {
         sizes: [] as string[],
         brands: [] as string[]
     });
+    const [shopHeroConfig, setShopHeroConfig] = useState<Record<string, string>>({});
 
     const supabase = createClient();
 
@@ -63,28 +64,33 @@ export default function ShopClient() {
 
     // 1. Resolve Taxonomy on Slug Change
     useEffect(() => {
-        const fetchDynamicCollections = async () => {
+        const fetchShopConfigs = async () => {
             try {
                 const { data, error } = await supabase
                     .from('content_blocks')
-                    .select('content')
-                    .eq('section_id', 'shop_page_collections')
-                    .single();
+                    .select('section_id, content')
+                    .in('section_id', ['shop_page_collections', 'shop_hero_images']);
 
-                if (!error && data?.content) {
-                    return data.content as any[];
+                if (!error && data) {
+                    const collections = data.find((b: any) => b.section_id === 'shop_page_collections')?.content;
+                    const heroImages = data.find((b: any) => b.section_id === 'shop_hero_images')?.content;
+                    return { collections: collections as any[], heroImages: (heroImages || {}) as Record<string, string> };
                 }
+
             } catch (err) {
-                console.error('Error fetching dynamic shop collections:', err);
+                console.error('Error fetching dynamic shop configs:', err);
             }
-            return null;
+            return { collections: null, heroImages: {} };
         };
+
 
         // Helper to traverse
         const resolve = async () => {
+            const { collections: dynamicCollections, heroImages } = await fetchShopConfigs();
+            setShopHeroConfig(heroImages);
+
             // A. Root (/shop)
             if (slugArray.length === 0) {
-                const dynamicCollections = await fetchDynamicCollections();
                 const children = dynamicCollections || Object.values(CATEGORY_TAXONOMY).map(c => ({
                     id: c.id,
                     name: c.name,
@@ -93,15 +99,19 @@ export default function ShopClient() {
                     description: c.description
                 }));
 
+                const rootHero = (heroImages as Record<string, string>)['root'] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80';
+
                 setCurrentView({
                     type: 'root' as const,
                     data: { name: 'Shop Worlds', description: 'Explore our curated collections.' },
                     children: children,
                     breadcrumbs: [],
-                    heroImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600\u0026q=80' // Default Root Image
+                    heroImage: getGoogleDriveDirectLink(rootHero)
                 });
+
                 return;
             }
+
 
             const [l1Slug, l2Slug, l3Slug] = slugArray;
 
@@ -124,18 +134,24 @@ export default function ShopClient() {
                         })) || []
                     ) || [];
 
+                    const categoryHero = (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+
                     setCurrentView({
                         type: 'category' as const,
                         data: l1Node,
                         children: flattenedItems,
                         breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
-                        heroImage: l1Node.image
+                        heroImage: getGoogleDriveDirectLink(categoryHero)
                     });
+
                     return;
                 }
 
                 // Standard Category View
+                const categoryHero = (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+
                 setCurrentView({
+
                     type: 'category' as const,
                     data: l1Node,
                     children: l1Node.subcategories?.map((sc: any) => ({
@@ -145,8 +161,9 @@ export default function ShopClient() {
                         description: sc.description || `Browse ${sc.name}`
                     })) || [],
                     breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
-                    heroImage: l1Node.image
+                    heroImage: getGoogleDriveDirectLink(categoryHero)
                 });
+
                 return;
             }
 
@@ -158,7 +175,11 @@ export default function ShopClient() {
             }
 
             if (slugArray.length === 2) {
+                const subHeroLink = `${l1Node.slug}/${l2Node.slug}`;
+                const subHero = (heroImages as Record<string, string>)[subHeroLink] || (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+
                 setCurrentView({
+
                     type: 'subcategory' as const,
                     data: l2Node,
                     children: l2Node.items?.map((item: any) => ({
@@ -171,8 +192,9 @@ export default function ShopClient() {
                         { label: l1Node.name, href: `/shop/${l1Node.slug}` },
                         { label: l2Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}` }
                     ],
-                    heroImage: l1Node.image // Inherit Parent Image
+                    heroImage: getGoogleDriveDirectLink(subHero)
                 });
+
                 return;
             }
 
@@ -183,7 +205,11 @@ export default function ShopClient() {
                 return;
             }
 
+            const subHeroLink = `${l1Node.slug}/${l2Node.slug}`;
+            const itemHero = (heroImages as Record<string, string>)[subHeroLink] || (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+
             setCurrentView({
+
                 type: 'item' as const,
                 data: l3Node,
                 children: [], // No deeper levels
@@ -192,8 +218,9 @@ export default function ShopClient() {
                     { label: l2Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}` },
                     { label: l3Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}/${l3Node.slug}` }
                 ],
-                heroImage: l1Node.image // Inherit Parent Image
+                heroImage: getGoogleDriveDirectLink(itemHero)
             });
+
         };
 
         resolve();
@@ -415,21 +442,21 @@ export default function ShopClient() {
 
                                             {/* Content */}
                                             <div className="relative z-10 p-8">
-                                                <div className="w-12 h-12 mb-4 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-lg group-hover:scale-110 transition-transform duration-500">
+                                                <div className="w-12 h-12 mb-4 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white shadow-lg group-hover:scale-110 group-hover:bg-coral-500/20 group-hover:border-coral-500/50 transition-all duration-500">
                                                     <LayoutGrid size={20} />
                                                 </div>
 
-                                                <h3 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2 leading-none drop-shadow-lg">
+                                                <h3 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2 leading-none drop-shadow-lg transition-all duration-500 group-hover:text-coral-500 group-hover:-translate-y-2">
                                                     {child.name}
                                                 </h3>
 
-                                                <p className="text-sm font-medium text-white/80 line-clamp-2 mb-6 drop-shadow-md">
+                                                <p className="text-sm font-medium text-white/80 line-clamp-2 mb-6 drop-shadow-md transition-all duration-500 group-hover:text-white group-hover:-translate-y-1">
                                                     {child.description || 'Explore Collection'}
                                                 </p>
 
-                                                <div className="flex items-center gap-3 text-white/90 font-bold uppercase tracking-widest text-xs group-hover:gap-5 transition-all duration-300">
+                                                <div className="flex items-center gap-3 text-white/90 font-bold uppercase tracking-widest text-xs transition-all duration-500 group-hover:gap-5 group-hover:text-coral-500">
                                                     <span>Explore World</span>
-                                                    <span className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center">
+                                                    <span className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:bg-coral-500 group-hover:text-white group-hover:translate-x-1">
                                                         &rarr;
                                                     </span>
                                                 </div>

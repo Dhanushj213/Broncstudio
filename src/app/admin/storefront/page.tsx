@@ -22,6 +22,8 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
+import { CATEGORY_TAXONOMY } from '@/data/categories';
+
 
 /* 
  * NOTE: This page relies on a 'content_blocks' table in Supabase.
@@ -106,6 +108,9 @@ export default function StorefrontPage() {
         visual_urls: ['', '', ''],
         headline: 'Capturing Moments,<br />Creating Memories'
     });
+
+    const [shopHeroImages, setShopHeroImages] = useState<Record<string, string>>({});
+
 
     const [activeHeroTab, setActiveHeroTab] = useState<'desktop' | 'mobile'>('desktop');
     const [activeSection, setActiveSection] = useState('hero');
@@ -198,6 +203,18 @@ export default function StorefrontPage() {
                 visual_urls: loginData.content.visual_urls || (loginData.content.visual_url ? [loginData.content.visual_url, '', ''] : ['', '', ''])
             }));
         }
+
+        // Fetch Shop Hero Images
+        const { data: shopHeroData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'shop_hero_images')
+            .single();
+
+        if (shopHeroData && shopHeroData.content) {
+            setShopHeroImages(shopHeroData.content);
+        }
+
         setLoading(false);
     };
 
@@ -230,6 +247,13 @@ export default function StorefrontPage() {
             updated_at: new Date().toISOString()
         };
 
+        const shopHeroPayload = {
+            section_id: 'shop_hero_images',
+            content: shopHeroImages,
+            updated_at: new Date().toISOString()
+        };
+
+
         const { error: heroErr } = await supabase
             .from('content_blocks')
             .upsert(heroPayload, { onConflict: 'section_id' });
@@ -246,8 +270,13 @@ export default function StorefrontPage() {
             .from('content_blocks')
             .upsert(loginPayload, { onConflict: 'section_id' });
 
-        if (heroErr || bentoErr || shopErr || loginErr) {
-            console.error(heroErr || bentoErr || shopErr || loginErr);
+        const { error: shopHeroErr } = await supabase
+            .from('content_blocks')
+            .upsert(shopHeroPayload, { onConflict: 'section_id' });
+
+        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr) {
+            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr);
+
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 3000);
         } else {
@@ -305,9 +334,11 @@ export default function StorefrontPage() {
 
     const NAVIGATION = [
         { id: 'hero', label: 'Hero Section', icon: <Sparkles size={18} /> },
+        { id: 'shop_heroes', label: 'Shop Hero Banners', icon: <ImageIcon size={18} /> },
         { id: 'bento', label: 'Department Bento', icon: <Grid size={18} /> },
         { id: 'shop', label: 'Shop Collections', icon: <ShoppingBag size={18} /> },
         { id: 'login', label: 'Login Overlay', icon: <UserCircle size={18} /> },
+
     ];
 
     return (
@@ -559,11 +590,13 @@ export default function StorefrontPage() {
                                                         muted loop autoPlay playsInline
                                                     />
                                                 ) : (
-                                                    <img src={getGoogleDriveDirectLink(heroContent.poster_url)} className="w-full h-full object-cover opacity-50" alt="" />
+                                                    getGoogleDriveDirectLink(heroContent.poster_url) && (
+                                                        <img src={getGoogleDriveDirectLink(heroContent.poster_url)} className="w-full h-full object-cover opacity-50" alt="" />
+                                                    )
                                                 )
                                             ) : (
                                                 <div className="w-full h-full overflow-hidden bg-navy-800">
-                                                    {heroContent.images[0] && (
+                                                    {heroContent.images[0] && getGoogleDriveDirectLink(heroContent.images[0]) && (
                                                         <img src={getGoogleDriveDirectLink(heroContent.images[0])} className="w-full h-full object-cover" alt="" />
                                                     )}
                                                 </div>
@@ -595,6 +628,104 @@ export default function StorefrontPage() {
                         </div>
                     </section>
 
+                    {/* SHOP HERO BANNERS SECTION */}
+                    <section id="shop_heroes" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-cyan-500 dark:border-cyan-500/50 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-cyan-500 flex items-center justify-center text-white shadow-xl">
+                                <ImageIcon size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Shop Hero Banners</h2>
+                                <p className="text-[10px] font-black text-cyan-600/70 dark:text-cyan-400/70 uppercase tracking-[0.2em]">Hero Images for Shop levels</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 shadow-xl space-y-8">
+                            {/* Root Shop Hero */}
+                            <div className="space-y-4 pb-8 border-b border-gray-100 dark:border-white/5">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Main Shop Hero</h3>
+                                        <p className="text-xs text-gray-400 font-bold">Image for the root /shop page</p>
+                                    </div>
+                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                        {getGoogleDriveDirectLink(shopHeroImages['root'] || '') && (
+                                            <img src={getGoogleDriveDirectLink(shopHeroImages['root'] || '')} className="w-full h-full object-cover" alt="" />
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    type="url"
+                                    value={shopHeroImages['root'] || ''}
+                                    onChange={e => setShopHeroImages({ ...shopHeroImages, root: e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-cyan-500 rounded-2xl outline-none font-bold text-sm shadow-sm transition-all"
+                                    placeholder="Paste Main Shop Hero Link..."
+                                />
+                            </div>
+
+                            {/* Category Heroes */}
+                            <div className="space-y-10">
+                                {Object.values(CATEGORY_TAXONOMY).map(cat => (
+                                    <div key={cat.slug} className="space-y-6">
+                                        <div className="flex items-center gap-2">
+                                            <div className="px-3 py-1 bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400 text-[10px] font-black uppercase tracking-widest rounded-full">
+                                                Category: {cat.name}
+                                            </div>
+                                            <div className="h-px flex-1 bg-gray-100 dark:bg-white/5" />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            {/* Category Level Image */}
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <label className="text-[10px] font-black text-navy-900 dark:text-white uppercase tracking-widest">
+                                                        {cat.name} Hero Banner
+                                                    </label>
+                                                    <div className="w-20 h-10 rounded-lg bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
+                                                        {getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '') && (
+                                                            <img src={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '')} className="w-full h-full object-cover" alt="" />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    type="url"
+                                                    value={shopHeroImages[cat.slug] || ''}
+                                                    onChange={e => setShopHeroImages({ ...shopHeroImages, [cat.slug]: e.target.value })}
+                                                    className="w-full text-navy-900 dark:text-white px-3 py-2 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-cyan-500 rounded-xl outline-none text-xs font-bold shadow-sm transition-all"
+                                                    placeholder={`${cat.name} image link...`}
+                                                />
+                                            </div>
+
+                                            {/* Subcategories (If any) */}
+                                            {cat.subcategories && cat.subcategories.map((sub: any) => (
+                                                <div key={sub.slug} className="space-y-3">
+                                                    <div className="flex items-center justify-between gap-4">
+                                                        <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                                                            Sub: {sub.name} <ChevronRight size={10} /> Hero
+                                                        </label>
+                                                        <div className="w-16 h-8 rounded bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
+                                                            {getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '') && (
+                                                                <img src={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '')} className="w-full h-full object-cover" alt="" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <input
+                                                        type="url"
+                                                        value={shopHeroImages[`${cat.slug}/${sub.slug}`] || ''}
+                                                        onChange={e => setShopHeroImages({ ...shopHeroImages, [`${cat.slug}/${sub.slug}`]: e.target.value })}
+                                                        className="w-full text-navy-900 dark:text-white px-3 py-1.5 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-white/10 focus:border-cyan-500 rounded-lg outline-none text-[10px] font-bold shadow-sm transition-all"
+                                                        placeholder={`${sub.name} sub-hero link...`}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+
                     {/* BENTO GRID SECTION */}
                     <section id="bento" className="scroll-mt-32 space-y-6">
                         <div className="flex items-center gap-4 border-b-2 border-orange-500 dark:border-orange-500/50 pb-4">
@@ -613,11 +744,13 @@ export default function StorefrontPage() {
                                     <div className="flex gap-6">
                                         {/* Image Preview */}
                                         <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-white/5 border border-gray-100 dark:border-white/10">
-                                            <img
-                                                src={getGoogleDriveDirectLink(tile.image)}
-                                                className="w-full h-full object-cover transition-transform group-hover/card:scale-110 duration-700"
-                                                alt=""
-                                            />
+                                            {getGoogleDriveDirectLink(tile.image) && (
+                                                <img
+                                                    src={getGoogleDriveDirectLink(tile.image)}
+                                                    className="w-full h-full object-cover transition-transform group-hover/card:scale-110 duration-700"
+                                                    alt=""
+                                                />
+                                            )}
                                         </div>
 
                                         {/* Inputs Grouped */}
@@ -811,7 +944,9 @@ export default function StorefrontPage() {
                                                         />
                                                         {url && (
                                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full overflow-hidden border border-gray-200">
-                                                                <img src={getGoogleDriveDirectLink(url)} className="w-full h-full object-cover" alt="" />
+                                                                {getGoogleDriveDirectLink(url) && (
+                                                                    <img src={getGoogleDriveDirectLink(url)} className="w-full h-full object-cover" alt="" />
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
