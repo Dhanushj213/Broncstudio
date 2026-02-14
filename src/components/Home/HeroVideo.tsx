@@ -217,45 +217,41 @@ export default function HeroVideo() {
                             {/* Category Pop-out Buttons */}
                             <AnimatePresence>
                                 {isHovered && !isMobile && (
-                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                        {CATEGORIES.map((cat, idx) => {
-                                            // Circular arrangement coordinates
-                                            const angle = (idx * (360 / CATEGORIES.length)) * (Math.PI / 180);
-                                            const radius = 160;
-                                            const x = Math.cos(angle) * radius;
-                                            const y = Math.sin(angle) * radius;
-
-                                            return (
-                                                <motion.div
-                                                    key={cat.name}
-                                                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        scale: 1,
-                                                        x: x,
-                                                        y: y,
-                                                        transition: {
-                                                            type: 'spring',
-                                                            stiffness: 260,
-                                                            damping: 20,
-                                                            delay: idx * 0.05
-                                                        }
-                                                    }}
-                                                    exit={{ opacity: 0, scale: 0, x: 0, y: 0, transition: { duration: 0.2 } }}
-                                                    className="absolute pointer-events-auto"
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-12 flex items-center justify-center gap-4 pointer-events-none">
+                                        {CATEGORIES.map((cat, idx) => (
+                                            <motion.div
+                                                key={cat.name}
+                                                initial={{ opacity: 0, y: -20, scale: 0.8 }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    y: 0,
+                                                    scale: 1,
+                                                    transition: {
+                                                        type: 'spring',
+                                                        stiffness: 300,
+                                                        damping: 25,
+                                                        delay: idx * 0.05
+                                                    }
+                                                }}
+                                                exit={{
+                                                    opacity: 0,
+                                                    y: -10,
+                                                    scale: 0.9,
+                                                    transition: { duration: 0.2 }
+                                                }}
+                                                className="pointer-events-auto"
+                                            >
+                                                <Link
+                                                    href={cat.link}
+                                                    className="group/cat flex flex-col items-center justify-center w-24 h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 transition-all duration-300 hover:bg-white/20 hover:scale-110 hover:border-white/30 shadow-2xl"
                                                 >
-                                                    <Link
-                                                        href={cat.link}
-                                                        className="group/cat flex flex-col items-center justify-center w-24 h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 transition-all duration-300 hover:bg-white/20 hover:scale-110 hover:border-white/30 shadow-2xl"
-                                                    >
-                                                        <cat.icon className="w-6 h-6 text-white mb-2 transition-transform group-hover/cat:scale-110" />
-                                                        <span className="text-[10px] text-white font-medium uppercase tracking-tighter text-center leading-tight">
-                                                            {cat.name}
-                                                        </span>
-                                                    </Link>
-                                                </motion.div>
-                                            );
-                                        })}
+                                                    <cat.icon className="w-6 h-6 text-white mb-2 transition-transform group-hover/cat:scale-110" />
+                                                    <span className="text-[10px] text-white font-medium uppercase tracking-tighter text-center leading-tight">
+                                                        {cat.name}
+                                                    </span>
+                                                </Link>
+                                            </motion.div>
+                                        ))}
                                     </div>
                                 )}
                             </AnimatePresence>
