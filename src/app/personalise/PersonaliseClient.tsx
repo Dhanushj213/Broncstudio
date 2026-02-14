@@ -7,6 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PERSONALIZATION_TAXONOMY } from '@/lib/personalization';
+import AmbientBackground from '@/components/UI/AmbientBackground';
+
 
 // ----------------------------------------------------------------------
 // TYPES
@@ -173,41 +175,62 @@ export default function PersonaliseListingPage() {
     const categories = ['All', ...Object.keys(PERSONALIZATION_TAXONOMY)];
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 pt-[var(--header-height)]">
+        <div className="relative min-h-screen bg-background pt-[220px] -mt-[120px] pb-20 overflow-hidden">
+            <AmbientBackground />
 
-            {/* HEROBANNER - Premium Mobile Entrance */}
-            <div className="relative overflow-hidden bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 py-16 lg:py-24 px-6">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-[120px] rounded-full" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 blur-[120px] rounded-full" />
+            {/* HERO BANNER IMAGE */}
+            <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
+                <div className="absolute inset-0 bg-black/50 z-10" />
+                <Image
+                    src="https://images.unsplash.com/photo-1513346038313-05b1c5905d53?w=1600&q=80"
+                    alt="Custom Studio Hero"
+                    fill
+                    className="object-cover"
+                    priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-20" />
+            </div>
 
-                <div className="max-w-7xl mx-auto text-center relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 mb-6"
-                    >
-                        <Sparkles size={12} className="text-yellow-500" /> Custom Design Studio
-                    </motion.div>
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-5xl lg:text-7xl font-black mb-6 tracking-tight dark:text-white"
-                    >
-                        Create Your <span className="text-blue-600">Own</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-lg lg:text-xl text-neutral-500 max-w-2xl mx-auto font-medium"
-                    >
-                        Premium custom apparel and accessories. Select a base product and make it uniquely yours.
-                    </motion.p>
+            {/* Background Blob */}
+            <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-cyan-500/10 opacity-40 blur-3xl pointer-events-none z-0" />
+
+            {/* Breadcrumbs */}
+            <div className="relative z-40 px-6 py-4 mt-8">
+                <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-full border border-white/20 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 shadow-sm">
+                    <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
+                    <span className="opacity-40">/</span>
+                    <span className="text-blue-600">Personalise</span>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+            {/* Hero Title & Tagline */}
+            <div className="relative z-30 max-w-[1400px] mx-auto px-6 pt-4 pb-12 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white/80 mb-6 mx-auto"
+                >
+                    <Sparkles size={12} className="text-yellow-400" /> Custom Design Studio
+                </motion.div>
+                <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-5xl lg:text-7xl font-black mb-6 tracking-tight text-white drop-shadow-2xl"
+                >
+                    Create Your <span className="text-blue-400">Own</span>
+                </motion.h1>
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-medium drop-shadow-lg"
+                >
+                    Premium custom apparel and accessories. Select a base product and make it uniquely yours.
+                </motion.p>
+            </div>
+
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
                 <div className="flex flex-col lg:flex-row gap-12">
 
                     {/* SIDEBAR (Desktop) */}
@@ -273,7 +296,7 @@ export default function PersonaliseListingPage() {
                     <div className="flex-1">
 
                         {/* SEARCH & MOBILE FILTERS (Premium Redux) */}
-                        <div className="sticky top-[var(--header-height)] z-30 lg:static bg-neutral-50/80 dark:bg-neutral-950/80 backdrop-blur-xl -mx-4 px-4 py-4 lg:p-0 lg:bg-transparent lg:backdrop-blur-none lg:mb-10 lg:z-auto">
+                        <div className="sticky top-[var(--header-height)] z-30 lg:static bg-white/50 dark:bg-black/50 backdrop-blur-xl -mx-4 px-4 py-4 lg:p-0 lg:bg-transparent lg:backdrop-blur-none lg:mb-10 lg:z-auto">
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                                 {/* Search Bar */}
                                 <div className={`relative flex-1 group transition-all duration-300 ${isSearchFocused ? 'ring-2 ring-blue-600 rounded-2xl' : ''}`}>
