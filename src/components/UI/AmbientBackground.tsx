@@ -22,7 +22,7 @@ export default function AmbientBackground({ className = "" }: AmbientBackgroundP
                     repeat: Infinity,
                     ease: "linear"
                 }}
-                className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-200/30 dark:hidden blur-[100px]"
+                className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-purple-100/10 dark:hidden blur-[100px]"
             />
 
             <motion.div

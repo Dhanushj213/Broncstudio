@@ -102,21 +102,21 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                         animate={{ x: 0 }}
                         exit={{ x: '-100%' }}
                         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                        className="fixed inset-y-0 left-0 z-[1002] w-full max-w-[340px] bg-white/80 dark:bg-black/80 backdrop-blur-2xl shadow-2xl flex flex-col border-r border-white/20"
+                        className="fixed inset-y-0 left-0 z-[1002] w-full max-w-[340px] bg-gradient-to-b from-gray-50 to-gray-200 dark:from-zinc-900 dark:to-black backdrop-blur-3xl shadow-[10px_0_50px_rgba(0,0,0,0.3)] flex flex-col border-r border-white/10"
                     >
-                        {/* Colorful Header - Now Transparent/Glassy */}
-                        <div className="relative overflow-hidden p-6 bg-transparent text-navy-900 dark:text-white">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-coral-500/20 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none" />
+                        {/* Colorful Header */}
+                        <div className="relative overflow-hidden p-8 border-b border-black/5 dark:border-white/5 shadow-[inset_0_-1px_0_rgba(255,255,255,0.1)]">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-coral-500/10 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none" />
                             <div className="flex items-center justify-between relative z-10">
                                 <div>
-                                    <h2 className="font-heading text-2xl font-bold tracking-tight">Menu</h2>
-                                    <p className="text-navy-600 dark:text-gray-400 text-sm mt-1">Discover your world.</p>
+                                    <h2 className="font-heading text-3xl font-bold tracking-tight text-navy-900 dark:text-white drop-shadow-sm">Menu</h2>
+                                    <p className="text-navy-600/70 dark:text-gray-400 text-sm mt-1 font-medium italic">Discover your world.</p>
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="p-2 bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 rounded-full transition-colors backdrop-blur-sm"
+                                    className="p-3 bg-white/50 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 rounded-2xl shadow-[4px_4px_10px_rgba(0,0,0,0.1),-2px_-2px_10px_rgba(255,255,255,0.5)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] transition-all active:shadow-inner"
                                 >
-                                    <X size={20} />
+                                    <X size={20} className="text-navy-900 dark:text-white" />
                                 </button>
                             </div>
                         </div>
@@ -135,17 +135,17 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                     <Link
                                         href="/"
                                         onClick={onClose}
-                                        className="block"
+                                        className="block px-2"
                                     >
                                         <motion.div
-                                            whileHover={buttonHoverEffect}
+                                            whileHover={{ x: 4 }}
                                             whileTap={tapEffect}
-                                            className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.04] transition-all duration-300 group"
+                                            className="flex items-center gap-4 p-4 rounded-3xl bg-white/50 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[8px_8px_16px_rgba(0,0,0,0.05),-4px_-4px_16px_rgba(255,255,255,0.8)] dark:shadow-[8px_8px_16px_rgba(0,0,0,0.4),-4px_-4px_16px_rgba(255,255,255,0.02)] transition-all duration-300 group"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 text-muted flex items-center justify-center group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]">
-                                                <HomeIcon size={20} />
+                                            <div className="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-zinc-800 shadow-inner flex items-center justify-center text-navy-900 dark:text-white group-hover:bg-navy-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-navy-900 transition-all duration-300">
+                                                <HomeIcon size={22} />
                                             </div>
-                                            <span className="font-bold text-primary text-lg">Home</span>
+                                            <span className="font-bold text-navy-900 dark:text-white text-lg">Home</span>
                                         </motion.div>
                                     </Link>
                                 </motion.div>
@@ -154,17 +154,17 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                     <Link
                                         href="/shop"
                                         onClick={onClose}
-                                        className="block"
+                                        className="block px-2"
                                     >
                                         <motion.div
-                                            whileHover={buttonHoverEffect}
+                                            whileHover={{ x: 4 }}
                                             whileTap={tapEffect}
-                                            className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.04] transition-all duration-300 group"
+                                            className="flex items-center gap-4 p-4 rounded-3xl bg-white/50 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[8px_8px_16px_rgba(0,0,0,0.05),-4px_-4px_16px_rgba(255,255,255,0.8)] dark:shadow-[8px_8px_16px_rgba(0,0,0,0.4),-4px_-4px_16px_rgba(255,255,255,0.02)] transition-all duration-300 group"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 text-purple-600 dark:text-purple-400 flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.5)]">
-                                                <Globe size={20} />
+                                            <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/20 shadow-inner flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
+                                                <Globe size={22} />
                                             </div>
-                                            <span className="font-bold text-primary text-lg">Worlds</span>
+                                            <span className="font-bold text-navy-900 dark:text-white text-lg">Worlds</span>
                                         </motion.div>
                                     </Link>
                                 </motion.div>
@@ -173,23 +173,23 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                     <Link
                                         href="/personalise"
                                         onClick={onClose}
-                                        className="block"
+                                        className="block px-2"
                                     >
                                         <motion.div
-                                            whileHover={buttonHoverEffect}
+                                            whileHover={{ x: 4 }}
                                             whileTap={tapEffect}
-                                            className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/[0.04] transition-all duration-300 group"
+                                            className="flex items-center gap-4 p-4 rounded-3xl bg-white/50 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[8px_8px_16px_rgba(0,0,0,0.05),-4px_-4px_16px_rgba(255,255,255,0.8)] dark:shadow-[8px_8px_16px_rgba(0,0,0,0.4),-4px_-4px_16px_rgba(255,255,255,0.02)] transition-all duration-300 group"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 text-amber-600 dark:text-amber-400 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 group-hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-                                                <Sparkles size={20} />
+                                            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-900/20 shadow-inner flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                                                <Sparkles size={22} />
                                             </div>
-                                            <span className="font-bold text-primary text-lg">Personalise</span>
+                                            <span className="font-bold text-navy-900 dark:text-white text-lg">Personalise</span>
                                         </motion.div>
                                     </Link>
                                 </motion.div>
                             </div>
 
-                            <motion.div variants={itemVariants} className="h-px bg-divider mx-4 mb-6" />
+                            <motion.div variants={itemVariants} className="h-px bg-black/5 dark:bg-white/5 shadow-[0_1px_0_rgba(255,255,255,0.5)] dark:shadow-[0_1px_0_rgba(255,255,255,0.05)] mx-4 mb-6" />
 
                             <motion.p variants={itemVariants} className="px-4 text-xs font-bold uppercase tracking-widest text-muted mb-2">Departments</motion.p>
 
@@ -204,22 +204,22 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                             <Link
                                                 href={dept.href}
                                                 onClick={onClose}
-                                                className="block"
+                                                className="block px-2"
                                             >
                                                 <motion.div
-                                                    whileHover={buttonHoverEffect}
+                                                    whileHover={{ x: 4 }}
                                                     whileTap={tapEffect}
-                                                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/[0.04] transition-all duration-300 group"
+                                                    className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/50 dark:hover:bg-white/5 transition-all duration-300 group"
                                                 >
                                                     <div className="flex items-center gap-4">
-                                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] shadow-sm bg-gray-100 dark:bg-white/10 ${colorClass.split(' ')[0]} group-hover:text-white`}>
-                                                            <Icon size={18} />
+                                                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 shadow-[2px_2px_5px_rgba(0,0,0,0.1),-1px_-1px_5px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.4),-2px_-2px_10px_rgba(255,255,255,0.05)] bg-gray-100 dark:bg-zinc-800 ${colorClass.split(' ')[0]} group-hover:scale-105`}>
+                                                            <Icon size={20} />
                                                         </div>
-                                                        <span className="font-medium text-secondary group-hover:text-primary transition-colors">
+                                                        <span className="font-bold text-navy-900/80 dark:text-white/80 group-hover:text-navy-900 dark:group-hover:text-white transition-colors">
                                                             {dept.label}
                                                         </span>
                                                     </div>
-                                                    <ChevronRight size={16} className="text-muted group-hover:text-primary transition-all duration-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0" />
+                                                    <ChevronRight size={16} className="text-navy-900/30 dark:text-white/20 group-hover:text-navy-900 dark:group-hover:text-white transition-all duration-300" />
                                                 </motion.div>
                                             </Link>
                                         </motion.div>
@@ -229,35 +229,37 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
 
                             <motion.div variants={itemVariants} className="h-px bg-divider mx-4 my-6" />
 
-                            <motion.div variants={itemVariants}>
+                            <motion.div variants={itemVariants} className="pt-4 px-2">
                                 <Link
                                     href="/collections/sale"
                                     onClick={onClose}
                                     className="block"
                                 >
                                     <motion.div
-                                        whileHover={buttonHoverEffect}
+                                        whileHover={{ scale: 1.02 }}
                                         whileTap={tapEffect}
-                                        className="flex items-center gap-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/10 hover:bg-red-100 dark:hover:bg-red-900/20 transition-all group"
+                                        className="flex items-center gap-4 p-4 rounded-3xl bg-red-500 text-white shadow-[0_10px_20px_rgba(239,68,68,0.3)] dark:shadow-[0_10px_20px_rgba(239,68,68,0.2)] group"
                                     >
-                                        <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <Tag size={18} />
+                                        <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                                            <Tag size={22} />
                                         </div>
-                                        <span className="font-bold text-red-600 text-lg">Sale</span>
+                                        <div>
+                                            <span className="block font-bold text-xl uppercase tracking-tighter">Big Sale</span>
+                                            <span className="text-xs font-medium opacity-80 uppercase tracking-widest">Limited offers only</span>
+                                        </div>
                                     </motion.div>
                                 </Link>
                             </motion.div>
 
                         </motion.div>
 
-                        {/* Bottom Actions (Profile & Utilities) */}
                         <motion.div
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.4, type: "spring", stiffness: 300, damping: 25 }}
-                            className="p-4 bg-transparent border-t border-gray-200 dark:border-white/10"
+                            className="p-6 bg-gray-100/50 dark:bg-zinc-900/50 border-t border-black/5 dark:border-white/5"
                         >
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-4">
                                 <motion.button
                                     whileHover={{ y: -4, transition: { type: "spring" as const, stiffness: 400, damping: 10 } }}
                                     whileTap={tapEffect}
@@ -265,10 +267,10 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                         onClose();
                                         openWishlist();
                                     }}
-                                    className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-surface-2 hover:bg-coral-50 dark:hover:bg-coral-900/20 hover:text-coral-600 transition-colors text-secondary"
+                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_15px_rgba(0,0,0,0.4),-2px_-2px_15px_rgba(255,255,255,0.02)] hover:text-coral-600 transition-colors text-navy-900 dark:text-white"
                                 >
                                     <Heart size={20} />
-                                    <span className="text-xs font-bold">Wishlist</span>
+                                    <span className="text-xs font-bold uppercase tracking-widest">Wishlist</span>
                                 </motion.button>
                                 <Link
                                     href="/cart"
@@ -278,25 +280,26 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                     <motion.div
                                         whileHover={{ y: -4, transition: { type: "spring" as const, stiffness: 400, damping: 10 } }}
                                         whileTap={tapEffect}
-                                        className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-surface-2 hover:bg-coral-50 dark:hover:bg-coral-900/20 hover:text-coral-600 transition-colors text-secondary"
+                                        className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_15px_rgba(0,0,0,0.4),-2px_-2px_15px_rgba(255,255,255,0.02)] hover:text-blue-600 transition-colors text-navy-900 dark:text-white"
                                     >
                                         <ShoppingBag size={20} />
-                                        <span className="text-xs font-bold">Bag</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest">Bag</span>
                                     </motion.div>
                                 </Link>
                             </div>
 
                             <motion.div
-                                whileHover={{ scale: 1.02, transition: { type: "spring" as const, stiffness: 400, damping: 10 } }}
+                                className="mt-4"
+                                whileHover={{ scale: 1.02 }}
                                 whileTap={tapEffect}
                             >
                                 <Link
                                     href={currentUser ? "/profile" : "/login"}
                                     onClick={onClose}
-                                    className="mt-3 flex items-center justify-center gap-2 p-3 rounded-xl bg-black text-white dark:bg-white dark:text-black hover:opacity-90 transition-opacity font-bold text-sm shadow-lg shadow-black/10 dark:shadow-white/5"
+                                    className="flex items-center justify-center gap-3 p-4 rounded-2xl bg-navy-900 text-white dark:bg-white dark:text-black font-bold shadow-xl shadow-navy-900/20 dark:shadow-white/10"
                                 >
-                                    <User size={18} />
-                                    <span>{currentUser ? 'My Profile' : 'Login / Sign Up'}</span>
+                                    <User size={20} />
+                                    <span className="uppercase tracking-widest text-sm">{currentUser ? 'My Profile' : 'Login / Sign Up'}</span>
                                 </Link>
                             </motion.div>
                         </motion.div>

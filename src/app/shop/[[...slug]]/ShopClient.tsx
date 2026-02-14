@@ -331,23 +331,36 @@ export default function ShopClient() {
 
     // Dynamic Gradient based on type
     const heroGradient = currentView.type === 'root'
-        ? 'from-blue-500/10 via-purple-500/5 to-coral-500/10'
+        ? 'from-blue-500/10 via-teal-500/5 to-coral-500/10'
         : 'from-emerald-500/10 via-teal-500/5 to-blue-500/10';
 
     return (
-        <div className="relative min-h-screen bg-background pt-[220px] -mt-[120px] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-page pt-[140px] md:pt-[220px] -mt-[80px] md:-mt-[120px] pb-20">
             <AmbientBackground />
 
             {/* HERO BANNER IMAGE (If Available) */}
             {currentView.heroImage && (
-                <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
-                    <div className="absolute inset-0 bg-black/40 z-10" />
+                <div
+                    className="absolute top-0 left-0 right-0 h-[550px] md:h-[750px] z-0 overflow-hidden"
+                    style={{
+                        maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)'
+                    }}
+                >
+                    {/* Primary Overlay Tint - Darker at top, transparent at bottom */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-transparent z-10" />
+
+                    {/* Bottom-up Background Blend - Stronger fade into page color */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-page via-page/40 to-transparent z-20" />
+
+                    {/* Side Vignettes for cinematic feel */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-page/20 via-transparent to-page/20 z-20 opacity-30" />
+
                     <img
                         src={currentView.heroImage}
                         alt="Collection Hero"
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-20" />
                 </div>
             )}
 

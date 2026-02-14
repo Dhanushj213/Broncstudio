@@ -42,12 +42,6 @@ const resolveMetadata = async (slugArray: string[]) => {
     }
 
     // 4. Level 3 (Item / Product Type)
-    // Note: If it's a specific PRODUCT page, we might need to fetch from DB if the slug structure matches products.
-    // However, currently the routing seems to be Category -> Subcategory -> ProductType (taxonomy).
-    // If the leaf is actually a PRODUCT slug (e.g. /shop/category/subcategory/product-slug), we need DB fetch.
-
-    // In ShopClient.tsx, it treats Level 3 as 'item' taxonomy node or potentially a product?
-    // Let's look at ShopClient logic: it matches `l2Node.items?.find`. So it is taxonomy.
     const l3Node = l2Node.items?.find((item: any) => item.slug === l3Slug);
     if (l3Node) {
         return {
@@ -56,10 +50,6 @@ const resolveMetadata = async (slugArray: string[]) => {
             image: l1Node.image
         };
     }
-
-    // If NOT in taxonomy, it might be a Product Detail Page (if you support /shop/cat/sub/product-slug)
-    // But ShopClient logic seems strictly taxonomy based for layout?
-    // Let's assume strict taxonomy for now based on previous code.
 
     return null;
 }

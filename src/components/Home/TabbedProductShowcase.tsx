@@ -172,31 +172,25 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
     if (!categoryNode) return null; // Or skeleton
 
     return (
-        <section className="py-16 md:py-24 bg-white dark:bg-black/5">
+        <section className="py-16 md:py-24 bg-transparent">
             <div className="container-premium max-w-[1400px] mx-auto px-6">
 
 
 
                 {/* Tabs */}
                 {tabs.length > 0 && (
-                    <div className="flex justify-center mb-12">
-                        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 border-b border-gray-100 dark:border-white/10 px-8">
+                    <div className="flex justify-center mb-12 relative z-40">
+                        <div className="inline-flex items-center p-1.5 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10 shadow-2xl">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.slug}
                                     onClick={() => setActiveTab(tab.slug)}
-                                    className={`pb-4 text-base md:text-lg font-bold tracking-wide uppercase transition-all relative ${activeTab === tab.slug
-                                        ? 'text-navy-900 dark:text-white'
-                                        : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
+                                    className={`px-6 md:px-8 py-2 md:py-2.5 rounded-full text-sm md:text-base font-bold tracking-wide uppercase transition-all relative transition-all duration-300 ${activeTab === tab.slug
+                                        ? 'bg-white text-navy-900 shadow-xl scale-105'
+                                        : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                 >
                                     {tab.label}
-                                    {activeTab === tab.slug && (
-                                        <motion.div
-                                            layoutId="activeTabIndicator"
-                                            className="absolute bottom-0 left-0 right-0 h-1 bg-navy-900 dark:bg-white rounded-t-full"
-                                        />
-                                    )}
                                 </button>
                             ))}
                         </div>
