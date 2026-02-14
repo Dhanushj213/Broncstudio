@@ -84,7 +84,7 @@ export default function HomeClient() {
 
       {/* Department BentoGrid */}
       <div id="worlds" className="relative pt-6 pb-4 text-center scroll-mt-[var(--header-height)]">
-        <h1 className="text-4xl md:text-5xl font-cursive text-[#891d12] mb-4 animate-fade-in-up">
+        <h1 className="text-3xl font-cursive md:font-sans md:text-sm md:font-bold md:tracking-[0.2em] md:uppercase text-[#891d12] mb-4 animate-fade-in-up">
           Shop By Categories
         </h1>
         <DepartmentBentoGrid />
