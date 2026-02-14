@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { X, ChevronRight, User, Heart, ShoppingBag, Globe, Sparkles, Home as HomeIcon, Tag, LayoutGrid, Gift, Monitor, Shirt, Pencil, PawPrint } from 'lucide-react';
+import { useUI } from '@/context/UIContext';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { DEPARTMENT_TAXONOMY } from '@/data/categories';
 
@@ -12,6 +13,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
+    const { openWishlist } = useUI();
     // Prevent scrolling when menu is open
     React.useEffect(() => {
         if (isOpen) {
@@ -176,14 +178,16 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                         {/* Bottom Actions (Profile & Utilities) */}
                         <div className="p-4 bg-transparent border-t border-gray-200 dark:border-white/10">
                             <div className="grid grid-cols-2 gap-3">
-                                <Link
-                                    href="/wishlist"
-                                    onClick={onClose}
+                                <button
+                                    onClick={() => {
+                                        onClose();
+                                        openWishlist();
+                                    }}
                                     className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-surface-2 hover:bg-coral-50 dark:hover:bg-coral-900/20 hover:text-coral-600 transition-colors text-secondary"
                                 >
                                     <Heart size={20} />
                                     <span className="text-xs font-bold">Wishlist</span>
-                                </Link>
+                                </button>
                                 <Link
                                     href="/cart"
                                     onClick={onClose}
