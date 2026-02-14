@@ -19,7 +19,17 @@ interface HeroContent {
     button_link: string;
 }
 
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Box, Shirt, Heart, Home as HomeIcon, Smartphone, Watch, Dog } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const CATEGORIES = [
+    { name: 'Stationary & Toys', icon: Box, link: '/shop/stationary-toys' },
+    { name: 'Clothing', icon: Shirt, link: '/shop/clothing' },
+    { name: 'Lifestyle', icon: Heart, link: '/shop/lifestyle' },
+    { name: 'Home & Tech', icon: Smartphone, link: '/shop/home-tech' },
+    { name: 'Accessories', icon: Watch, link: '/shop/accessories' },
+    { name: 'Pets', icon: Dog, link: '/shop/pets' },
+];
 
 export default function HeroVideo() {
     const [content, setContent] = useState<HeroContent>({
@@ -35,6 +45,7 @@ export default function HeroVideo() {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -184,8 +195,8 @@ export default function HeroVideo() {
 
             {/* Content Overlay - Centered/Bottom Biased */}
             {!isLoading && (processedContent.heading || processedContent.subheading || content.button_text) && (
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-32 md:pb-48 px-6 text-center z-10 transition-all">
-                    <div className="animate-fade-in-up">
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-32 md:pb-48 px-6 text-center z-10">
+                    <div className="animate-fade-in-up relative">
                         {processedContent.subheading && (
                             <span className="text-white text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-6 block drop-shadow-md opacity-80">
                                 {processedContent.subheading}
@@ -196,19 +207,75 @@ export default function HeroVideo() {
                                 {processedContent.heading}
                             </h2>
                         )}
-                        {content.button_text && (
-                            <Link
-                                href={content.button_link || '#'}
-                                className="group/btn relative inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full text-xs font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] overflow-hidden"
-                            >
-                                <span className="relative z-10">{content.button_text}</span>
-                                <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-500 group-hover/btn:translate-x-2" />
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                            </Link>
-                        )}
+
+                        {/* Interactive Button Section */}
+                        <div
+                            className="relative flex items-center justify-center"
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
+                            {/* Category Pop-out Buttons */}
+                            <AnimatePresence>
+                                {isHovered && !isMobile && (
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        {CATEGORIES.map((cat, idx) => {
+                                            // Circular arrangement coordinates
+                                            const angle = (idx * (360 / CATEGORIES.length)) * (Math.PI / 180);
+                                            const radius = 160;
+                                            const x = Math.cos(angle) * radius;
+                                            const y = Math.sin(angle) * radius;
+
+                                            return (
+                                                <motion.div
+                                                    key={cat.name}
+                                                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        scale: 1,
+                                                        x: x,
+                                                        y: y,
+                                                        transition: {
+                                                            type: 'spring',
+                                                            stiffness: 260,
+                                                            damping: 20,
+                                                            delay: idx * 0.05
+                                                        }
+                                                    }}
+                                                    exit={{ opacity: 0, scale: 0, x: 0, y: 0, transition: { duration: 0.2 } }}
+                                                    className="absolute pointer-events-auto"
+                                                >
+                                                    <Link
+                                                        href={cat.link}
+                                                        className="group/cat flex flex-col items-center justify-center w-24 h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 transition-all duration-300 hover:bg-white/20 hover:scale-110 hover:border-white/30 shadow-2xl"
+                                                    >
+                                                        <cat.icon className="w-6 h-6 text-white mb-2 transition-transform group-hover/cat:scale-110" />
+                                                        <span className="text-[10px] text-white font-medium uppercase tracking-tighter text-center leading-tight">
+                                                            {cat.name}
+                                                        </span>
+                                                    </Link>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </AnimatePresence>
+
+                            {/* Main Shop Now Button */}
+                            {content.button_text && (
+                                <Link
+                                    href={content.button_link || '#'}
+                                    className="group/btn relative z-20 inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-12 py-5 rounded-full text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] overflow-hidden"
+                                >
+                                    <span className="relative z-10">{content.button_text}</span>
+                                    <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-500 group-hover/btn:translate-x-2" />
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
         </section>
     );
 }
+
