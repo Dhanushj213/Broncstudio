@@ -55,7 +55,7 @@ export default function Header() {
     return (
         <>
             <header
-                className={`sticky top-0 z-[100] w-full transition-all duration-300 ${isScrolled ? 'h-[60px] shadow-sm bg-black/80 backdrop-blur-md' : (pathname === '/' ? 'h-[72px] bg-transparent' : 'h-[72px] bg-black')}`}
+                className={`sticky top-0 z-[100] w-full transition-all duration-300 ${isScrolled ? 'h-[60px] shadow-sm bg-black/80 backdrop-blur-md' : 'h-[72px] bg-black'}`}
                 onMouseLeave={() => setActiveDepartment(null)}
             >
                 <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between relative">
