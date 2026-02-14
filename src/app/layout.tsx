@@ -21,7 +21,7 @@ import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
 const greatVibes = localFont({
-  src: "../../public/Great_Vibes/GreatVibes-Regular.ttf",
+  src: "./fonts/Great_Vibes/GreatVibes-Regular.ttf",
   variable: "--font-great-vibes",
 });
 
