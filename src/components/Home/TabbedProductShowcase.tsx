@@ -180,18 +180,26 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                 {/* Tabs */}
                 {tabs.length > 0 && (
                     <div className="flex justify-center mb-12 relative z-40">
-                        <div className="inline-flex items-center p-1.5 bg-black/40 backdrop-blur-2xl rounded-full border border-white/10 shadow-2xl">
+                        <div className="inline-flex items-center p-2 bg-black/40 backdrop-blur-3xl rounded-[24px] border border-white/10 shadow-2xl overflow-hidden">
                             {tabs.map((tab) => (
-                                <button
-                                    key={tab.slug}
-                                    onClick={() => setActiveTab(tab.slug)}
-                                    className={`px-6 md:px-8 py-2 md:py-2.5 rounded-full text-sm md:text-base font-bold tracking-wide uppercase transition-all relative transition-all duration-300 ${activeTab === tab.slug
-                                        ? 'bg-white text-navy-900 dark:text-black shadow-xl scale-105'
-                                        : 'text-white/70 hover:text-white hover:bg-white/5'
-                                        }`}
-                                >
-                                    {tab.label}
-                                </button>
+                                <div key={tab.slug} className="relative w-[110px] h-[48px] md:w-[150px] md:h-[52px] flex items-center justify-center">
+                                    {activeTab === tab.slug && (
+                                        <motion.div
+                                            layoutId="activeTabPill"
+                                            className="absolute inset-0 bg-white dark:bg-white rounded-[18px] shadow-[0_10px_25px_rgba(0,0,0,0.4),inset_0_2px_4px_rgba(255,255,255,0.8)] z-0"
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+                                    <button
+                                        onClick={() => setActiveTab(tab.slug)}
+                                        className={`relative z-10 w-full h-full flex items-center justify-center text-sm md:text-base font-bold tracking-widest uppercase transition-colors duration-300 ${activeTab === tab.slug
+                                            ? 'text-black'
+                                            : 'text-white/60 hover:text-white'
+                                            }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                </div>
                             ))}
                         </div>
                     </div>
