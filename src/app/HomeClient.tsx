@@ -83,10 +83,10 @@ export default function HomeClient() {
       <HeroVideo />
 
       {/* Department BentoGrid */}
-      <div id="worlds" className="relative pt-6 pb-4 text-center scroll-mt-[var(--header-height)]">
-        <h1 className="text-sm font-bold tracking-[0.2em] text-[#891d12] uppercase mb-4 animate-fade-in-up">
+      <div id="worlds" className="relative pt-6 pb-2 text-center scroll-mt-[var(--header-height)]">
+        <h2 className="text-4xl font-signature text-[#891d12] mb-1 animate-fade-in-up">
           Shop By Categories
-        </h1>
+        </h2>
         <DepartmentBentoGrid />
       </div>
 

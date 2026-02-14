@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, Inter, Baloo_2, Nunito } from "next/font/google";
+import { Poppins, Inter, Baloo_2, Nunito, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import MobileNav from "@/components/Header/MobileNav";
@@ -41,6 +41,12 @@ const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+});
+
+const dancingScript = Dancing_Script({
+  variable: "--font-signature",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -135,7 +141,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} antialiased`}
+        className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} ${dancingScript.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
