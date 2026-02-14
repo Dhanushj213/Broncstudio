@@ -195,7 +195,7 @@ export default function HeroVideo() {
 
             {/* Content Overlay - Centered/Bottom Biased */}
             {!isLoading && (processedContent.heading || processedContent.subheading || content.button_text) && (
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-32 md:pb-48 px-6 text-center z-10">
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-20 md:pb-48 px-6 text-center z-10">
                     <div className="animate-fade-in-up relative">
                         {processedContent.subheading && (
                             <span className="text-white text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-6 block drop-shadow-md opacity-80">
