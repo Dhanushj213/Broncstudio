@@ -88,7 +88,7 @@ const config: Config = {
             fontFamily: {
                 heading: ['var(--font-heading)', 'sans-serif'],
                 sans: ['var(--font-sans)', 'sans-serif'],
-                signature: ['var(--font-signature)', 'cursive'],
+                cursive: ['var(--font-great-vibes)', 'cursive'],
             },
             backdropBlur: {
                 'premium': '18px',

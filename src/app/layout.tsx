@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Poppins, Inter, Baloo_2, Nunito, Great_Vibes } from "next/font/google";
+import localFont from "next/font/local";
+import { Poppins, Inter, Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import MobileNav from "@/components/Header/MobileNav";
@@ -18,6 +19,11 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
+
+const greatVibes = localFont({
+  src: "../../public/Great_Vibes/GreatVibes-Regular.ttf",
+  variable: "--font-great-vibes",
+});
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -43,13 +49,8 @@ const nunito = Nunito({
   weight: ["400", "600", "700"],
 });
 
-const greatVibes = Great_Vibes({
-  variable: "--font-signature",
-  subsets: ["latin"],
-  weight: ["400"],
-});
-
 export const metadata: Metadata = {
+  // ... existing metadata ...
   metadataBase: new URL('https://broncstudio.com'),
   title: {
     default: "BroncStudio | Premium Apparel, Tech & Home Essentials",
@@ -111,6 +112,7 @@ export const metadata: Metadata = {
 };
 
 const jsonLd = {
+  // ... existing jsonLd ...
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "BroncStudio",
