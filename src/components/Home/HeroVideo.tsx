@@ -260,7 +260,7 @@ export default function HeroVideo() {
                             {content.button_text && (
                                 <Link
                                     href={content.button_link || '#'}
-                                    className="group/btn relative z-20 inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-12 py-5 rounded-full text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] overflow-hidden"
+                                    className="group/btn relative z-20 inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-12 py-5 rounded-[18px] text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden"
                                 >
                                     <span className="relative z-10">{content.button_text}</span>
                                     <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-500 group-hover/btn:translate-x-2" />
