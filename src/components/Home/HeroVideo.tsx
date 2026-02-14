@@ -19,6 +19,8 @@ interface HeroContent {
     button_link: string;
 }
 
+import { ArrowRight } from 'lucide-react';
+
 export default function HeroVideo() {
     const [content, setContent] = useState<HeroContent>({
         type: 'video',
@@ -128,7 +130,14 @@ export default function HeroVideo() {
     }, [content.type, validImages]);
 
     return (
-        <section className="relative w-full h-screen overflow-hidden bg-black group">
+        <section
+            className="relative w-full overflow-hidden bg-black group"
+            style={{
+                height: isMobile
+                    ? 'calc(100vh - 104px - 4rem - env(safe-area-inset-bottom))'
+                    : 'calc(100vh - 104px)'
+            }}
+        >
             {/* Background Content */}
             {content.type === 'video' ? (
                 processedContent.video_url ? (
@@ -164,7 +173,6 @@ export default function HeroVideo() {
                         </div>
                     ))}
                     {/* Fallback if no valid images are found */}
-                    {/* Fallback if no valid images are found */}
                     {validImages.length === 0 && (
                         <div className="min-w-full w-full h-full bg-black flex items-center justify-center" />
                     )}
@@ -172,28 +180,30 @@ export default function HeroVideo() {
             )}
 
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none" />
 
             {/* Content Overlay - Centered/Bottom Biased */}
             {!isLoading && (processedContent.heading || processedContent.subheading || content.button_text) && (
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-24 md:pb-40 px-6 text-center z-10 transition-all">
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-32 md:pb-48 px-6 text-center z-10 transition-all">
                     <div className="animate-fade-in-up">
                         {processedContent.subheading && (
-                            <span className="text-white text-xs font-bold uppercase tracking-[0.2em] mb-4 block drop-shadow-md opacity-90">
+                            <span className="text-white text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-6 block drop-shadow-md opacity-80">
                                 {processedContent.subheading}
                             </span>
                         )}
                         {processedContent.heading && (
-                            <h2 className="text-white text-5xl md:text-9xl font-serif font-medium italic mb-10 drop-shadow-lg leading-tight text-center">
+                            <h2 className="text-white text-4xl md:text-8xl font-serif font-medium italic mb-12 drop-shadow-2xl leading-[1.1] text-center max-w-4xl mx-auto">
                                 {processedContent.heading}
                             </h2>
                         )}
                         {content.button_text && (
                             <Link
                                 href={content.button_link || '#'}
-                                className="inline-block bg-white text-black px-12 py-4 rounded-full text-sm font-bold uppercase tracking-widest hover:bg-[#891d12] hover:text-white transition-all transform hover:scale-110 shadow-2xl"
+                                className="group/btn relative inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full text-xs font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] overflow-hidden"
                             >
-                                {content.button_text}
+                                <span className="relative z-10">{content.button_text}</span>
+                                <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-500 group-hover/btn:translate-x-2" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
                             </Link>
                         )}
                     </div>
