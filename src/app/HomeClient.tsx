@@ -112,26 +112,26 @@ export default function HomeClient() {
       <section className="py-16 px-6">
         <div className="max-w-[1440px] mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="relative group p-8 rounded-[32px] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] text-center transition-transform duration-500 hover:-translate-y-2 hover:bg-white/10">
-              <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center text-blue-300 mb-6 shadow-inner ring-1 ring-white/20">
+            <div className="relative group p-8 rounded-[32px] bg-zinc-100 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] text-center transition-transform duration-500 hover:-translate-y-2 hover:bg-white dark:hover:bg-white/10">
+              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-white dark:bg-white/10 text-blue-600 dark:text-blue-300 shadow-[0_4px_10px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)] dark:shadow-inner dark:ring-1 dark:ring-white/20">
                 <Sparkles size={28} />
               </div>
-              <h3 className="text-xl font-heading font-bold text-white mb-3 tracking-wide">Curated Collections</h3>
-              <p className="text-gray-200 font-medium leading-relaxed">Handpicked items that tell a story and spark joy.</p>
+              <h3 className="text-xl font-heading font-bold mb-3 tracking-wide text-navy-900 dark:text-white">Curated Collections</h3>
+              <p className="font-medium leading-relaxed text-gray-600 dark:text-gray-200">Handpicked items that tell a story and spark joy.</p>
             </div>
-            <div className="relative group p-8 rounded-[32px] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] text-center transition-transform duration-500 hover:-translate-y-2 hover:bg-white/10">
-              <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center text-rose-300 mb-6 shadow-inner ring-1 ring-white/20">
+            <div className="relative group p-8 rounded-[32px] bg-zinc-100 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] text-center transition-transform duration-500 hover:-translate-y-2 hover:bg-white dark:hover:bg-white/10">
+              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-white dark:bg-white/10 text-rose-600 dark:text-rose-300 shadow-[0_4px_10px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)] dark:shadow-inner dark:ring-1 dark:ring-white/20">
                 <Heart size={28} />
               </div>
-              <h3 className="text-xl font-heading font-bold text-white mb-3 tracking-wide">Emotionally Crafted</h3>
-              <p className="text-gray-200 font-medium leading-relaxed">Designs that connect with your personal style and moments.</p>
+              <h3 className="text-xl font-heading font-bold mb-3 tracking-wide text-navy-900 dark:text-white">Emotionally Crafted</h3>
+              <p className="font-medium leading-relaxed text-gray-600 dark:text-gray-200">Designs that connect with your personal style and moments.</p>
             </div>
-            <div className="relative group p-8 rounded-[32px] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] text-center transition-transform duration-500 hover:-translate-y-2 hover:bg-white/10">
-              <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center text-emerald-300 mb-6 shadow-inner ring-1 ring-white/20">
+            <div className="relative group p-8 rounded-[32px] bg-zinc-100 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)] text-center transition-transform duration-500 hover:-translate-y-2 hover:bg-white dark:hover:bg-white/10">
+              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-6 bg-white dark:bg-white/10 text-emerald-600 dark:text-emerald-300 shadow-[0_4px_10px_rgba(0,0,0,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)] dark:shadow-inner dark:ring-1 dark:ring-white/20">
                 <ShieldCheck size={28} />
               </div>
-              <h3 className="text-xl font-heading font-bold text-white mb-3 tracking-wide">Premium Quality</h3>
-              <p className="text-gray-200 font-medium leading-relaxed">Materials and finish that feel as good as they look.</p>
+              <h3 className="text-xl font-heading font-bold mb-3 tracking-wide text-navy-900 dark:text-white">Premium Quality</h3>
+              <p className="font-medium leading-relaxed text-gray-600 dark:text-gray-200">Materials and finish that feel as good as they look.</p>
             </div>
           </div>
         </div>
