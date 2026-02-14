@@ -5,17 +5,15 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import GlassCard from '@/components/UI/GlassCard';
 import AmbientBackground from '@/components/UI/AmbientBackground';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useUI } from '@/context/UIContext';
+import { motion } from 'framer-motion';
 import ProductCard from '@/components/Product/ProductCard';
 import { createClient } from '@/utils/supabase/client';
-import { LayoutGrid, SlidersHorizontal, X } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 import BrandLoader from '@/components/UI/BrandLoader';
 import { FLAT_TAXONOMY, FlatNode } from '@/data/flatTaxonomy';
-import FilterSidebar from '@/components/Collection/FilterSidebar';
 import SortBar, { SortOption } from '@/components/Collection/SortBar';
-import ActiveFilters from '@/components/Collection/ActiveFilters';
 import TabbedProductShowcase from '@/components/Home/TabbedProductShowcase';
+import { DBProduct, TaxonomyCategory, TaxonomySubcategory, TaxonomyItem } from '@/types/shop';
 
 // This page handles ALL levels: World, Category, and Leaf Item
 export default function CollectionPage() {
@@ -23,15 +21,12 @@ export default function CollectionPage() {
     const slug = params?.slug as string;
 
     const [node, setNode] = useState<FlatNode | null>(null);
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<DBProduct[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Filter & Sort State
-    const [filters, setFilters] = useState<Record<string, string[]>>({});
     const [sortOption, setSortOption] = useState<SortOption>('featured');
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
     // 1. Resolve Node from Flat Taxonomy OR Curated DB
     useEffect(() => {
@@ -77,7 +72,7 @@ export default function CollectionPage() {
         };
 
         resolveData();
-    }, [slug]);
+    }, [slug, supabase]);
 
     // 2. Fetch Products
     useEffect(() => {
@@ -97,9 +92,10 @@ export default function CollectionPage() {
                     console.error("Error fetching products:", error);
                 } else if (data) {
                     // Filter where curated_section_ids includes our slug
-                    const filtered = data.filter((p: any) =>
-                        p.metadata?.curated_section_ids?.includes(node.data.slug)
-                    );
+                    const filtered = data.filter((p: DBProduct) => {
+                        const metadata = p.metadata as { curated_section_ids?: string[] };
+                        return metadata?.curated_section_ids?.includes((node.data as { slug: string }).slug);
+                    });
                     setProducts(filtered);
                 }
                 setLoading(false);
@@ -110,14 +106,14 @@ export default function CollectionPage() {
             if (node.type === 'item' || node.type === 'category') {
                 const targetSlug = node.data.slug;
 
-                // 1. Get Category ID
-                const { data: catData, error: catError } = await supabase
+                // Fetch the main category (World/Level 1)
+                const { data: catData } = await supabase
                     .from('categories')
-                    .select('id')
+                    .select('*, children:categories(*)') // Self-join for immediate children
                     .eq('slug', targetSlug)
                     .single();
 
-                if (catError || !catData) {
+                if (!catData) {
                     setLoading(false);
                     return;
                 }
@@ -129,7 +125,7 @@ export default function CollectionPage() {
                     productQuery = productQuery.eq('category_id', catData.id);
                 } else {
                     // Category: Match children items
-                    const childSlugs = node.data.items?.map((i: any) => i.slug) || [];
+                    const childSlugs = (node.data as TaxonomySubcategory).items?.map((i: TaxonomyItem) => i.slug) || [];
                     if (childSlugs.length > 0) {
                         const { data: childrenCats } = await supabase
                             .from('categories')
@@ -161,32 +157,11 @@ export default function CollectionPage() {
         };
 
         fetchProducts();
-    }, [node]);
+    }, [node, supabase]);
 
     // 3. Client-Side Filtering & Sorting
     const filteredProducts = useMemo(() => {
-        let result = [...products];
-
-        // Filter: Price (Mock Logic - actual would parse "$50 - $100")
-        if (filters.price?.length) {
-            // Very basic implementation for demo
-        }
-
-        // Filter: Color
-        if (filters.color?.length) {
-            result = result.filter(p => {
-                const pColor = p.metadata?.color || p.metadata?.colors?.[0]?.name;
-                return filters.color.includes(pColor);
-            });
-        }
-
-        // Filter: Size
-        if (filters.size?.length) {
-            result = result.filter(p => {
-                const pSizes = p.metadata?.sizes || [];
-                return filters.size.some(s => pSizes.includes(s));
-            });
-        }
+        const result = [...products];
 
         // Sort
         switch (sortOption) {
@@ -210,39 +185,7 @@ export default function CollectionPage() {
         }
 
         return result;
-    }, [products, filters, sortOption]);
-
-
-    // Handlers
-    const handleFilterChange = (type: string, value: string) => {
-        setFilters(prev => {
-            const current = prev[type] || [];
-            if (current.includes(value)) {
-                const updated = current.filter(v => v !== value);
-                if (updated.length === 0) {
-                    const { [type]: _, ...rest } = prev;
-                    return rest;
-                }
-                return { ...prev, [type]: updated };
-            } else {
-                return { ...prev, [type]: [...current, value] };
-            }
-        });
-    };
-
-    const removeFilter = (key: string, value: string) => {
-        setFilters(prev => {
-            const current = prev[key] || [];
-            const updated = current.filter(v => v !== value);
-            if (updated.length === 0) {
-                const { [key]: _, ...rest } = prev;
-                return rest;
-            }
-            return { ...prev, [key]: updated };
-        });
-    };
-
-    const clearAllFilters = () => setFilters({});
+    }, [products, sortOption]);
 
 
     if (loading) return <BrandLoader text="Loading Collection..." />;
@@ -261,11 +204,11 @@ export default function CollectionPage() {
     }
 
     // Determine content type
-    let children: any[] = [];
+    let children: TaxonomySubcategory[] | TaxonomyItem[] = [];
     if (node.type === 'world') {
-        children = node.data.subcategories || [];
+        children = (node.data as TaxonomyCategory).subcategories || [];
     } else if (node.type === 'category') {
-        children = node.data.items || [];
+        children = (node.data as TaxonomySubcategory).items || [];
     }
 
     const showCards = children.length > 0;
@@ -296,7 +239,7 @@ export default function CollectionPage() {
                             <span>/</span>
                         </>
                     )}
-                    <span className="text-primary">{node.data.name}</span>
+                    <span className="text-primary">{(node.data as { name: string }).name}</span>
                 </div>
             </div>
 
@@ -320,7 +263,7 @@ export default function CollectionPage() {
                                 animate={{ opacity: 1 }}
                                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
                             >
-                                {children.map((child: any, idx: number) => (
+                                {children.map((child, idx: number) => (
                                     <Link key={idx} href={`/collections/${child.slug}`}>
                                         <GlassCard className="p-8 h-full flex flex-col items-center justify-center text-center hover:border-coral-500/30 transition-colors">
                                             <LayoutGrid size={32} className="text-coral-500 mb-4" />
@@ -344,15 +287,15 @@ export default function CollectionPage() {
                                         <div className="space-y-1">
                                             {(() => {
                                                 // Determine Sidebar Items
-                                                let sidebarItems: any[] = [];
+                                                let sidebarItems: TaxonomyItem[] = [];
                                                 let parentSlug = slug;
 
                                                 if (node.type === 'category') {
-                                                    sidebarItems = node.data.items || [];
+                                                    sidebarItems = (node.data as TaxonomySubcategory).items || [];
                                                     parentSlug = slug;
                                                 } else if (node.type === 'item' && node.parent?.slug) {
                                                     const parentNode = FLAT_TAXONOMY[node.parent.slug];
-                                                    sidebarItems = parentNode?.data?.items || [];
+                                                    sidebarItems = (parentNode?.data as TaxonomySubcategory)?.items || [];
                                                     parentSlug = node.parent.slug;
                                                 }
 

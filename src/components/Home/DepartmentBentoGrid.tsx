@@ -176,7 +176,7 @@ export default function DepartmentBentoGrid() {
                             <Link href={tile.href} className="block h-full w-full relative z-10">
                                 <div className="absolute inset-0">
                                     <img
-                                        src={getGoogleDriveDirectLink(tile.image)}
+                                        src={getGoogleDriveDirectLink(tile.image) || '/images/placeholder.jpg'}
                                         alt={tile.title}
                                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />

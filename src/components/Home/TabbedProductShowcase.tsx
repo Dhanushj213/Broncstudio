@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import ProductCard from '@/components/Product/ProductCard';
 import { createClient } from '@/utils/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { CATEGORY_TAXONOMY } from '@/data/categories';
+import { TaxonomyCategory, TaxonomySubcategory, TaxonomyItem, DBProduct, ShopProduct } from '@/types/shop';
 
 interface TabbedProductShowcaseProps {
     categorySlug?: string;
@@ -14,22 +16,23 @@ interface TabbedProductShowcaseProps {
 export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' }: TabbedProductShowcaseProps) {
     const [activeTab, setActiveTab] = useState('');
     const [tabs, setTabs] = useState<{ id: string; label: string; slug: string }[]>([]);
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<ShopProduct[]>([]);
     const [loading, setLoading] = useState(false);
-    const [categoryNode, setCategoryNode] = useState<any>(null); // DB Data
-    const supabase = createClient();
+    const [categoryNode, setCategoryNode] = useState<Partial<TaxonomyCategory> | null>(null); // DB Data
+    const supabase = useMemo(() => createClient(), []);
 
     // 1. Resolve Category & Tabs from DB
     useEffect(() => {
         const fetchCategoryData = async () => {
+            let targetSlug = categorySlug;
+
             // Check local taxonomy for legacy_slug to ensure we query DB with the right key
             // This allows us to strictly rename the frontend without migrating the DB immediately
-            let targetSlug = categorySlug;
 
             // Try to find the node in local taxonomy to see if it has a legacy override
             // Iterate over values since we don't have the key directly here (unless categorySlug matches)
             // But usually categorySlug matches the key.
-            const localNode = Object.values(require('@/data/categories').CATEGORY_TAXONOMY).find((c: any) => c.slug === categorySlug || c.legacy_slug === categorySlug) as any;
+            const localNode = (Object.values(CATEGORY_TAXONOMY) as TaxonomyCategory[]).find((c: TaxonomyCategory) => c.slug === categorySlug || c.legacy_slug === categorySlug);
 
             if (localNode && localNode.db_slug) {
                 targetSlug = localNode.db_slug;
@@ -42,7 +45,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
             }
 
             // Fetch the main category (World/Level 1)
-            const { data: catData, error } = await supabase
+            const { data: catData } = await supabase
                 .from('categories')
                 .select('*, children:categories(*)') // Self-join for immediate children
                 .eq('slug', targetSlug)
@@ -56,7 +59,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
 
                     // USE LOCAL SUBCATEGORIES IF AVAILABLE (e.g. Men, Women, Kids)
                     if (localNode.subcategories && localNode.subcategories.length > 0) {
-                        const newTabs = localNode.subcategories.map((sub: any) => ({
+                        const newTabs = localNode.subcategories.map((sub: TaxonomySubcategory) => ({
                             id: sub.id, // Virtual ID or whatever
                             label: sub.name,
                             slug: sub.slug
@@ -77,7 +80,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                     .order('name');
 
                 if (children && children.length > 0) {
-                    const newTabs = children.map((sub: any) => ({
+                    const newTabs = children.map((sub: { id: string; name: string; slug: string }) => ({
                         id: sub.id,
                         label: sub.name,
                         slug: sub.slug
@@ -96,7 +99,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                 });
 
                 if (localNode.subcategories && localNode.subcategories.length > 0) {
-                    const newTabs = localNode.subcategories.map((sub: any) => ({
+                    const newTabs = localNode.subcategories.map((sub: TaxonomySubcategory) => ({
                         id: sub.id,
                         label: sub.name,
                         slug: sub.slug
@@ -108,7 +111,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
         };
 
         fetchCategoryData();
-    }, [categorySlug]);
+    }, [categorySlug, supabase]);
 
     // 2. Fetch Products for Active Tab
     useEffect(() => {
@@ -120,18 +123,18 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
             let targetIds: string[] = [];
 
             // Determine if activeTab is a "Virtual" tab from local taxonomy
-            const localNode = Object.values(require('@/data/categories').CATEGORY_TAXONOMY).find((c: any) => c.slug === categorySlug || c.legacy_slug === categorySlug) as any;
-            const virtualSub = localNode?.subcategories?.find((s: any) => s.slug === activeTab);
+            const localNode = (Object.values(CATEGORY_TAXONOMY) as TaxonomyCategory[]).find((c: TaxonomyCategory) => c.slug === categorySlug || c.legacy_slug === categorySlug);
+            const virtualSub = localNode?.subcategories?.find((s: TaxonomySubcategory) => s.slug === activeTab);
 
             if (virtualSub && virtualSub.items) {
-                const itemSlugs = virtualSub.items.map((i: any) => i.slug);
+                const itemSlugs = virtualSub.items.map((i: TaxonomyItem) => i.slug);
                 const { data: childCats } = await supabase.from('categories').select('id').in('slug', itemSlugs);
-                if (childCats && childCats.length > 0) targetIds = childCats.map((c: any) => c.id);
+                if (childCats && childCats.length > 0) targetIds = childCats.map((c: { id: string }) => c.id);
             } else {
                 const { data: tabCat } = await supabase.from('categories').select('id').eq('slug', activeTab).single();
                 if (tabCat) {
                     const { data: subChildren } = await supabase.from('categories').select('id').eq('parent_id', tabCat.id);
-                    targetIds = [tabCat.id, ...(subChildren?.map((c: any) => c.id) || [])];
+                    targetIds = [tabCat.id, ...(subChildren?.map((c: { id: string }) => c.id) || [])];
                 }
             }
 
@@ -143,7 +146,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                     .limit(8);
 
                 if (prods) {
-                    setProducts(prods.map((p: any) => ({
+                    setProducts(prods.map((p: DBProduct) => ({
                         id: p.id,
                         name: p.name,
                         brand: 'BroncStudio',
@@ -164,7 +167,7 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
         };
 
         fetchProducts();
-    }, [activeTab, categorySlug]);
+    }, [activeTab, categorySlug, supabase]);
 
     if (!categoryNode) return null; // Or skeleton
 

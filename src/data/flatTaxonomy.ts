@@ -1,8 +1,9 @@
 import { CATEGORY_TAXONOMY } from './categories';
+import { TaxonomyCategory, TaxonomySubcategory, TaxonomyItem } from '@/types/shop';
 
 export interface FlatNode {
     type: 'world' | 'category' | 'item' | 'curated';
-    data: any;
+    data: TaxonomyCategory | TaxonomySubcategory | TaxonomyItem | Record<string, unknown>;
     // Parent info for breadcrumbs
     parent?: { name: string; slug: string };
 }
@@ -11,12 +12,12 @@ export interface FlatNode {
 const generateFlatTaxonomy = () => {
     const map: Record<string, FlatNode> = {};
 
-    Object.values(CATEGORY_TAXONOMY).forEach((world: any) => {
+    (Object.values(CATEGORY_TAXONOMY) as TaxonomyCategory[]).forEach((world) => {
         // 1. World Level
         map[world.slug] = { type: 'world', data: world };
 
         // 2. Category Level
-        world.subcategories?.forEach((sub: any) => {
+        world.subcategories?.forEach((sub: TaxonomySubcategory) => {
             map[sub.slug] = {
                 type: 'category',
                 data: sub,
@@ -24,7 +25,7 @@ const generateFlatTaxonomy = () => {
             };
 
             // 3. Item Level
-            sub.items?.forEach((item: any) => {
+            sub.items?.forEach((item: TaxonomyItem) => {
                 map[item.slug] = {
                     type: 'item',
                     data: item,

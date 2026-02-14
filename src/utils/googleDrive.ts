@@ -1,5 +1,5 @@
-export const getGoogleDriveDirectLink = (url: string): string | undefined => {
-    if (!url) return undefined;
+export const getGoogleDriveDirectLink = (url: string | undefined): string => {
+    if (!url) return '';
     try {
         // Only process if it's a Google Drive URL
         if (!url.includes('drive.google.com')) return url;

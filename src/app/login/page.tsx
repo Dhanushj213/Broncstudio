@@ -211,7 +211,7 @@ export default function LoginPage() {
                                 className="absolute inset-0"
                             >
                                 <Image
-                                    src={getGoogleDriveDirectLink(loginConfig.visual_urls.filter(url => url !== '')[currentIndex] || loginConfig.visual_urls[0])}
+                                    src={getGoogleDriveDirectLink(loginConfig.visual_urls.filter(url => url !== '')[currentIndex] || loginConfig.visual_urls[0]) || '/images/placeholder.jpg'}
                                     alt="Visual"
                                     fill
                                     className="object-cover"

@@ -158,7 +158,7 @@ export default function HeroVideo() {
                         loop
                         muted
                         playsInline
-                        poster={processedContent.poster_url}
+                        poster={processedContent.poster_url || '/images/placeholder.jpg'}
                         key={processedContent.video_url} // Force reload on url change
                     >
                         <source src={processedContent.video_url} type="video/mp4" />
