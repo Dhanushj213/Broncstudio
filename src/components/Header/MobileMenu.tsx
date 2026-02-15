@@ -164,7 +164,7 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                             <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/20 shadow-inner flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300">
                                                 <Globe size={22} />
                                             </div>
-                                            <span className="font-bold text-navy-900 dark:text-white text-lg">Worlds</span>
+                                            <span className="font-bold text-navy-900 dark:text-white text-lg">Categories</span>
                                         </motion.div>
                                     </Link>
                                 </motion.div>
