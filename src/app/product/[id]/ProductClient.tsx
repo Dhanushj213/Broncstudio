@@ -3,8 +3,6 @@
 import React from 'react';
 import ProductGallery from '@/components/Product/Page/ProductGallery';
 import ProductInfo from '@/components/Product/Page/ProductInfo';
-import StickyActionBar from '@/components/Product/Page/StickyActionBar';
-import MiniTrustStrip from '@/components/Product/Page/MiniTrustStrip';
 import ShopTheLook from '@/components/Product/ShopTheLook';
 import ProductShowcase from '@/components/Home/ProductShowcase';
 import { getProductImage } from '@/utils/sampleImages';
@@ -128,7 +126,7 @@ export default function ProductClient() {
     }
 
     return (
-        <main className="bg-background min-h-screen pb-8 md:pb-0 pt-[var(--header-height)]">
+        <main className="bg-background min-h-screen pb-8 md:pb-0">
             {/* Main Product Section */}
             <div className="max-w-[1200px] mx-auto px-0 md:px-6 pt-0 md:pt-12 mb-12 md:mb-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-16 items-start">
@@ -171,18 +169,6 @@ export default function ProductClient() {
                 />
             )}
 
-            {/* Trust Strip */}
-            <MiniTrustStrip />
-
-            {/* Mobile Sticky Bar */}
-            <StickyActionBar
-                price={product.price}
-                originalPrice={product.compare_at_price}
-                productName={product.name}
-                productImage={product.images?.[0] || product.image_url || '/images/placeholder.jpg'}
-                onAddToCart={handleAddFromSticky}
-                onBuyNow={handleBuyNow}
-            />
         </main>
     );
 }

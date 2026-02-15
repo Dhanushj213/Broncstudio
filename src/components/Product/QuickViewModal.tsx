@@ -17,34 +17,45 @@ export default function QuickViewModal() {
 
     const product = quickViewProduct;
 
+    // Derived State
+    const meta = product?.metadata || {};
+    const stockStatus = meta.stock_status || product?.stock_status || 'in_stock';
+    const inStock = stockStatus !== 'out_of_stock';
+
+    const colors = meta.colors || product?.colors || [];
+    const sizes = meta.sizes || product?.sizes || []; // Fallback if needed
+    const hasColors = colors.length > 0;
+    const hasSizes = sizes.length > 0;
+
+    // Reset state when product changes
     // Reset state when product changes
     useEffect(() => {
         if (product) {
-            setSelectedSize('');
+            // No auto-selection, force user to choose
             setSelectedColor('');
+            setSelectedSize('');
             setError('');
-            // Auto-select first color if available
-            if (product.colors && product.colors.length > 0) {
-                setSelectedColor(product.colors[0]);
-            }
         }
     }, [product]);
 
     const handleAddToBag = () => {
-        if (!selectedSize) {
-            const msg = userName ? `${userName}, please select a size.` : 'Please select a size.';
+        if (hasColors && !selectedColor) {
+            const msg = 'Please select a color.';
             setError(msg);
             return;
         }
-        addToCart(product, selectedSize); // In real app, pass selectedColor too
+
+        if (hasSizes && !selectedSize) {
+            const msg = 'Please select a size.';
+            setError(msg);
+            return;
+        }
+
+        addToCart({ ...product, color: selectedColor }, selectedSize);
         closeQuickView();
     };
 
     if (!product) return null;
-
-    // Derived State
-    const inStock = product.stock_status !== 'out_of_stock'; // detailed stock logic if available
-    const hasColors = product.colors && product.colors.length > 0;
 
     return (
         <AnimatePresence>
@@ -139,53 +150,62 @@ export default function QuickViewModal() {
                                         Color: <span className="text-gray-500 font-normal capitalize">{selectedColor}</span>
                                     </span>
                                     <div className="flex flex-wrap gap-2">
-                                        {product.colors?.map((color: string) => (
-                                            <button
-                                                key={color}
-                                                onClick={() => setSelectedColor(color)}
-                                                className={clsx(
-                                                    "w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center",
-                                                    selectedColor === color
-                                                        ? "border-navy-900 dark:border-white scale-110"
-                                                        : "border-gray-200 dark:border-white/10 hover:border-gray-300"
-                                                )}
-                                                style={{ backgroundColor: color.toLowerCase().replace(' ', '') }}
-                                                title={color}
-                                            >
-                                                {selectedColor === color && (
-                                                    <Check size={12} className={clsx(color.toLowerCase() === 'white' ? "text-black" : "text-white")} />
-                                                )}
-                                            </button>
-                                        ))}
+                                        {colors.map((colorItem: any) => {
+                                            // Handle both simple string or object {name, value/hex}
+                                            const isObject = typeof colorItem === 'object';
+                                            const colorName = isObject ? colorItem.name : colorItem;
+                                            const colorValue = isObject ? (colorItem.hex || colorItem.value || colorItem.name) : colorItem;
+
+                                            return (
+                                                <button
+                                                    key={colorName}
+                                                    onClick={() => setSelectedColor(colorName)}
+                                                    className={clsx(
+                                                        "w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center",
+                                                        selectedColor === colorName
+                                                            ? "border-navy-900 dark:border-white scale-110"
+                                                            : "border-gray-200 dark:border-white/10 hover:border-gray-300"
+                                                    )}
+                                                    style={{ backgroundColor: colorValue }}
+                                                    title={colorName}
+                                                >
+                                                    {selectedColor === colorName && (
+                                                        <Check size={12} className={clsx(colorName.toLowerCase() === 'white' ? "text-black" : "text-white")} />
+                                                    )}
+                                                </button>
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             )}
 
                             {/* Size Selector */}
-                            <div className="mb-8">
-                                <div className="flex justify-between items-center mb-3">
-                                    <span className="text-xs font-bold uppercase tracking-wider text-navy-900 dark:text-white">
-                                        Size: <span className="text-red-500 font-normal normal-case">{error}</span>
-                                    </span>
-                                    <button className="text-xs text-coral-500 font-bold hover:underline">Size Guide</button>
+                            {hasSizes && (
+                                <div className="mb-8">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-navy-900 dark:text-white">
+                                            Size: <span className="text-red-500 font-normal normal-case">{error}</span>
+                                        </span>
+                                        <button className="text-xs text-coral-500 font-bold hover:underline">Size Guide</button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {sizes.map((size: string) => (
+                                            <button
+                                                key={size}
+                                                onClick={() => { setSelectedSize(size); setError(''); }}
+                                                className={clsx(
+                                                    "min-w-[48px] h-10 px-3 rounded border text-sm font-bold transition-all",
+                                                    selectedSize === size
+                                                        ? "bg-navy-900 text-white border-navy-900 dark:bg-white dark:text-slate-900"
+                                                        : "bg-transparent text-gray-600 border-gray-200 hover:border-navy-900 dark:text-gray-300 dark:border-white/10 dark:hover:border-white"
+                                                )}
+                                            >
+                                                {size}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
-                                        <button
-                                            key={size}
-                                            onClick={() => { setSelectedSize(size); setError(''); }}
-                                            className={clsx(
-                                                "min-w-[48px] h-10 px-3 rounded border text-sm font-bold transition-all",
-                                                selectedSize === size
-                                                    ? "bg-navy-900 text-white border-navy-900 dark:bg-white dark:text-slate-900"
-                                                    : "bg-transparent text-gray-600 border-gray-200 hover:border-navy-900 dark:text-gray-300 dark:border-white/10 dark:hover:border-white"
-                                            )}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            )}
 
                             {/* Actions */}
                             <div className="mt-auto space-y-3">

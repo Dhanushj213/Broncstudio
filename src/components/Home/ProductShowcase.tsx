@@ -11,6 +11,7 @@ interface Product {
     originalPrice?: number;
     image: string;
     badge?: string;
+    metadata?: any;
 }
 
 interface ProductShowcaseProps {
@@ -45,7 +46,7 @@ export default function ProductShowcase({
                 {layout === 'grid' ? (
                     <div className={`grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-6 md:gap-x-6 md:gap-y-8 px-3 ${fullWidth ? 'md:px-8' : 'md:px-0'}`}>
                         {products.map((product) => (
-                            <ProductCard key={product.id} {...product} />
+                            <ProductCard key={product.id} {...product} metadata={product.metadata} />
                         ))}
                     </div>
                 ) : (
@@ -57,7 +58,7 @@ export default function ProductShowcase({
                             <div className="flex gap-3 md:gap-6">
                                 {products.map((product) => (
                                     <div key={product.id} className="w-[65vw] flex-shrink-0 sm:w-[45vw] md:w-auto md:min-w-[320px] snap-start">
-                                        <ProductCard {...product} />
+                                        <ProductCard {...product} metadata={product.metadata} />
                                     </div>
                                 ))}
                             </div>

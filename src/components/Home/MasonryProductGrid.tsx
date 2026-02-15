@@ -47,6 +47,7 @@ export default function MasonryProductGrid({ products, title = "Featured Collect
                                 // Pass secondary image if available (Assuming full product object has images array)
                                 secondaryImage={product.images?.[1]}
                                 badge={product.badge}
+                                metadata={product.metadata}
                             />
                         </motion.div>
                     ))}

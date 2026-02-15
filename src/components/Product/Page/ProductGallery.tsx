@@ -41,36 +41,45 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                 <div
                     ref={scrollContainerRef}
                     onScroll={handleScroll}
-                    className="flex md:hidden overflow-x-auto snap-x snap-mandatory no-scrollbar w-full aspect-[4/5] bg-surface-2 md:rounded-3xl"
+                    className="flex md:hidden overflow-x-auto snap-x snap-mandatory no-scrollbar w-full aspect-[3/4] bg-surface-2"
                 >
                     {images.map((img, idx) => (
-                        <div key={idx} className="w-full h-full flex-shrink-0 snap-center p-0">
+                        <div key={idx} className="w-full h-full flex-shrink-0 snap-center p-4">
                             <img
                                 src={img}
                                 alt={`View ${idx}`}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover rounded-2xl shadow-sm"
                             />
                         </div>
                     ))}
                 </div>
 
-                {/* Desktop: Single Image Stage */}
-                <div className="hidden md:block w-full aspect-[4/5] bg-surface-2 rounded-3xl overflow-hidden relative">
+                {/* Desktop: Single Image Stage with Zoom */}
+                <div
+                    className="hidden md:block w-full aspect-[3/4] bg-surface-2 rounded-3xl overflow-hidden relative cursor-zoom-in group"
+                    onMouseMove={(e) => {
+                        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                        const x = ((e.clientX - left) / width) * 100;
+                        const y = ((e.clientY - top) / height) * 100;
+                        e.currentTarget.style.setProperty('--zoom-x', `${x}%`);
+                        e.currentTarget.style.setProperty('--zoom-y', `${y}%`);
+                    }}
+                >
                     <AnimatePresence mode="wait">
                         <motion.img
                             key={activeIndex}
-                            initial={{ opacity: 0, scale: 1.05 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
+                            transition={{ duration: 0.4 }}
                             src={images[activeIndex]}
                             alt="Main product view"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-200 ease-out group-hover:scale-[2] origin-[var(--zoom-x)_var(--zoom-y)]"
                         />
                     </AnimatePresence>
 
-                    {/* Zoom Hint */}
-                    <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Zoom Hint (Hidden on hover) */}
+                    <div className="absolute bottom-6 right-6 opacity-100 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
                         <div className="bg-black/60 dark:bg-white/10 backdrop-blur-xl p-3 rounded-2xl border border-white/20">
                             <Maximize2 size={20} className="text-white" />
                         </div>

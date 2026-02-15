@@ -27,6 +27,7 @@ const mapProduct = (p: any) => ({
   image: p.images?.[0] || '/images/placeholder.jpg',
   secondaryImage: p.images?.[1], // Pass 2nd image for hover
   badge: undefined, // Logic can be added later
+  metadata: p.metadata,
 });
 
 export default function HomeClient() {

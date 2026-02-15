@@ -67,6 +67,23 @@ export default function CollectionPage() {
                 }
             }
 
+            // C. Special Case: Sale
+            if (slug === 'sale') {
+                setNode({
+                    type: 'curated',
+                    data: {
+                        name: 'Sale',
+                        slug: 'sale',
+                        description: 'Exclusive deals and discounts on premium items.',
+                        image: '/images/hero-sale.jpg', // Placeholder
+                        items: []
+                    },
+                    parent: { name: 'Home', slug: '' }
+                });
+                setLoading(false);
+                return;
+            }
+
             setNode(null);
             setLoading(false);
         };
@@ -83,7 +100,22 @@ export default function CollectionPage() {
 
             // Case A: Curated Collection
             if (node.type === 'curated') {
-                // Fetch ALL products (optimized select) then filter in memory/JS for reliability with JSON arrays
+                if ((node.data as any).slug === 'sale') {
+                    // Fetch products with discounts
+                    const { data: saleData } = await supabase
+                        .from('products')
+                        .select('id, name, price, compare_at_price, images, stock_status, created_at, category_id, metadata')
+                        .not('compare_at_price', 'is', null);
+
+                    if (saleData) {
+                        const validSale = saleData.filter((p: any) => p.compare_at_price > p.price);
+                        setProducts(validSale);
+                    }
+                    setLoading(false);
+                    return;
+                }
+
+                // Normal Curated Collection
                 const { data, error } = await supabase
                     .from('products')
                     .select('id, name, price, compare_at_price, images, stock_status, created_at, category_id, metadata');
@@ -212,7 +244,7 @@ export default function CollectionPage() {
     }
 
     const showCards = children.length > 0;
-    const showProducts = node.type === 'item' || node.type === 'category'; // 'category' can show both subs and products ideally, but sticking to logic
+    const showProducts = node.type === 'item' || node.type === 'category' || node.type === 'curated';
 
     // Dynamic Gradient
     const heroGradient = node.type === 'world'

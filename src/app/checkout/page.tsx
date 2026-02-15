@@ -39,6 +39,12 @@ export default function CheckoutPage() {
     const [isWalletApplied, setIsWalletApplied] = useState(false);
     const [walletLoading, setWalletLoading] = useState(true);
 
+    // Pincode Serviceability State
+    const [isServiceable, setIsServiceable] = useState(true);
+    const [codAvailable, setCodAvailable] = useState(true);
+    const [prepaidAvailable, setPrepaidAvailable] = useState(true);
+    const [serviceabilityMessage, setServiceabilityMessage] = useState('');
+
     // Coupon State
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number; type?: 'percentage' | 'fixed_amount' | 'free_shipping' } | null>(null);
@@ -235,21 +241,47 @@ export default function CheckoutPage() {
 
     const lookupPincode = async (pincode: string) => {
         setPincodeLoading(true);
+        setServiceabilityMessage('');
+        setIsServiceable(true);
+        setCodAvailable(true);
+        setPrepaidAvailable(true);
+
         try {
-            const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+            const response = await fetch(`/api/pincode?code=${pincode}`);
             const data = await response.json();
 
-            if (data && data[0] && data[0].Status === 'Success') {
-                const details = data[0].PostOffice[0];
+            if (data.serviceable) {
                 setFormData(prev => ({
                     ...prev,
-                    city: details.District,
-                    state: details.State,
-                    country: 'India' // Reset country just in case
+                    city: data.city || prev.city,
+                    state: data.state || prev.state,
+                    country: 'India'
                 }));
+
+                setIsServiceable(true);
+                setCodAvailable(data.cod_available);
+                setPrepaidAvailable(data.prepaid_available);
+
+                if (!data.cod_available && paymentMethod === 'cod') {
+                    setPaymentMethod('upi');
+                    toast.info("COD is not available for this pincode. Payment method switched to UPI.");
+                }
+
+                if (!data.cod_available) {
+                    setServiceabilityMessage('Prepaid Only');
+                } else {
+                    setServiceabilityMessage('COD Available');
+                }
+
+            } else {
+                setIsServiceable(false);
+                setServiceabilityMessage('Sorry, shipping not available to this pincode.');
+                setFormData(prev => ({ ...prev, city: '', state: '' })); // Clear invalid city/state
             }
         } catch (error) {
             console.error("Failed to fetch pincode details:", error);
+            setIsServiceable(false);
+            setServiceabilityMessage('Unable to verify pincode.');
         } finally {
             setPincodeLoading(false);
         }
@@ -434,6 +466,11 @@ export default function CheckoutPage() {
 
         if (isWalletApplied && paymentMethod === 'cod') {
             alert("Wallet cannot be used with COD.");
+            return;
+        }
+
+        if (!isServiceable) {
+            alert("Shipping is not available to this pincode. Please enter a valid pincode.");
             return;
         }
 
@@ -743,9 +780,17 @@ export default function CheckoutPage() {
                                         value={formData.pincode}
                                         onChange={handleInputChange}
                                         maxLength={6}
-                                        className="w-full px-4 py-3 rounded-xl border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary transition-colors"
+                                        className={`w-full px-4 py-3 rounded-xl border bg-surface-2 text-primary focus:outline-none transition-colors ${!isServiceable
+                                            ? 'border-red-500 focus:border-red-500'
+                                            : 'border-subtle focus:border-primary'
+                                            }`}
                                         placeholder="560001"
                                     />
+                                    {serviceabilityMessage && (
+                                        <p className={`text-xs mt-1 ${isServiceable ? 'text-green-600' : 'text-red-500'}`}>
+                                            {serviceabilityMessage}
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-secondary mb-1 flex justify-between">City (Auto-detected)</label>
@@ -812,6 +857,10 @@ export default function CheckoutPage() {
 
                                 <div
                                     onClick={() => {
+                                        if (!codAvailable) {
+                                            toast.error("Cash on Delivery is not available for this pincode.");
+                                            return;
+                                        }
                                         if (isWalletApplied) {
                                             alert("Wallet cannot be used with Cash on Delivery.");
                                             return;
@@ -820,7 +869,7 @@ export default function CheckoutPage() {
                                     }}
                                     className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'cod'
                                         ? 'border-primary bg-surface-2'
-                                        : isWalletApplied ? 'opacity-50 cursor-not-allowed border-subtle' : 'border-subtle hover:border-primary/50'
+                                        : (!codAvailable || isWalletApplied) ? 'opacity-50 cursor-not-allowed border-subtle' : 'border-subtle hover:border-primary/50'
                                         }`}
                                 >
                                     <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
@@ -830,6 +879,7 @@ export default function CheckoutPage() {
                                         <p className="font-bold text-primary">Cash on Delivery</p>
                                         <p className="text-xs text-secondary">Pay when it arrives</p>
                                         {isWalletApplied && <p className="text-[10px] text-red-500 font-bold">Not available with Wallet</p>}
+                                        {!codAvailable && <p className="text-[10px] text-red-500 font-bold">Not available for this pincode</p>}
                                     </div>
                                     {paymentMethod === 'cod' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
                                 </div>

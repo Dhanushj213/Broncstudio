@@ -19,6 +19,7 @@ interface ProductProps {
     image: string;
     badge?: string;
     secondaryImage?: string; // New prop for hover effect
+    metadata?: any; // For Quick View details
 }
 
 export default function ProductCard(props: ProductProps) {
