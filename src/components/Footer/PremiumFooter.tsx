@@ -1,14 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { createBrowserClient } from '@supabase/ssr';
 import {
     Lock, Truck, RotateCcw, MapPin,
     Instagram, Facebook, Youtube, Twitter,
     ChevronDown, CreditCard, Wallet,
-    Crown, Leaf, BookOpen, Newspaper, Percent, Sparkles, HelpCircle
+    Crown, Leaf, BookOpen, Newspaper, Percent, Sparkles, HelpCircle, Mail, Phone
 } from 'lucide-react';
 import { useToast } from '@/context/ToastContext';
 
@@ -31,6 +32,34 @@ export default function PremiumFooter() {
     const { addToast } = useToast();
     const [email, setEmail] = React.useState('');
     const [isSubscribing, setIsSubscribing] = React.useState(false);
+    const [socialLinks, setSocialLinks] = useState({
+        instagram: '',
+        facebook: '',
+        youtube: '',
+        twitter: '',
+        gmail: '',
+        phone: '',
+        secondaryPhone: ''
+    });
+
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        const fetchSocialLinks = async () => {
+            const { data } = await supabase
+                .from('content_blocks')
+                .select('*')
+                .eq('section_id', 'global_social_links')
+                .single();
+            if (data && data.content) {
+                setSocialLinks(data.content);
+            }
+        };
+        fetchSocialLinks();
+    }, []);
 
     if (pathname === '/login') return null;
 
@@ -39,12 +68,29 @@ export default function PremiumFooter() {
         if (!email) return;
 
         setIsSubscribing(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        addToast('Thank you for subscribing', 'subscribe');
-        setEmail('');
-        setIsSubscribing(false);
+        try {
+            const { error } = await supabase
+                .from('subscribers')
+                .insert([{ email, created_at: new Date().toISOString() }]);
+
+            if (error) {
+                if (error.code === '23505') { // Unique violation
+                    addToast('You are already subscribed!', 'info');
+                } else {
+                    console.error('Subscription error:', error);
+                    addToast('Failed to subscribe. Please try again.', 'error');
+                }
+            } else {
+                addToast('Thank you for subscribing!', 'subscribe');
+                setEmail('');
+            }
+        } catch (err) {
+            console.error('Subscription exception:', err);
+            addToast('An unexpected error occurred.', 'error');
+        } finally {
+            setIsSubscribing(false);
+        }
     };
 
     return (
@@ -196,10 +242,36 @@ export default function PremiumFooter() {
                         <div className="pt-4">
                             <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Follow the world</h4>
                             <div className="flex gap-4">
-                                <a href="https://www.instagram.com/broncstudio?igsh=dWNkZXFjaXdvMDMz" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Instagram size={16} /></a>
-                                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Facebook size={16} /></a>
-                                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Youtube size={16} /></a>
-                                <a href="#" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors"><Twitter size={16} /></a>
+                                {socialLinks.instagram && (
+                                    <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors">
+                                        <Instagram size={16} />
+                                    </a>
+                                )}
+                                {socialLinks.facebook && (
+                                    <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors">
+                                        <Facebook size={16} />
+                                    </a>
+                                )}
+                                {socialLinks.youtube && (
+                                    <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors">
+                                        <Youtube size={16} />
+                                    </a>
+                                )}
+                                {socialLinks.twitter && (
+                                    <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors">
+                                        <Twitter size={16} />
+                                    </a>
+                                )}
+                                {socialLinks.gmail && (
+                                    <a href={`mailto:${socialLinks.gmail}`} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors">
+                                        <Mail size={16} />
+                                    </a>
+                                )}
+                                {socialLinks.phone && (
+                                    <a href={`tel:${socialLinks.phone}`} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 hover:text-white transition-colors">
+                                        <Phone size={16} />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>

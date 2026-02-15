@@ -13,6 +13,8 @@ import {
     Sparkles,
     MousePointer2,
     Globe,
+    Leaf,
+    Newspaper,
     Smartphone,
     ExternalLink,
     Grid,
@@ -75,6 +77,37 @@ interface LoginContent {
     headline: string;
 }
 
+interface SocialLinksContent {
+    instagram: string;
+    facebook: string;
+    youtube: string;
+    twitter: string;
+    gmail: string;
+    phone: string;
+    secondaryPhone: string;
+    address: string;
+}
+
+interface SustainabilityContent {
+    proudly_indian_image: string;
+    title: string;
+    text: string;
+}
+
+interface PressItem {
+    id: string;
+    name: string;
+    logo: string;
+    quote: string;
+    date: string;
+}
+
+interface LookbookItem {
+    id: string;
+    image: string;
+    user: string;
+}
+
 export default function StorefrontPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -110,6 +143,31 @@ export default function StorefrontPage() {
     });
 
     const [shopHeroImages, setShopHeroImages] = useState<Record<string, string>>({});
+
+    // Social Links State
+    const [socialLinks, setSocialLinks] = useState<SocialLinksContent>({
+        instagram: '',
+        facebook: '',
+        youtube: '',
+        twitter: '',
+        gmail: '',
+        phone: '',
+        secondaryPhone: '',
+        address: ''
+    });
+
+    // Sustainability Content State
+    const [sustainabilityContent, setSustainabilityContent] = useState<SustainabilityContent>({
+        proudly_indian_image: '',
+        title: 'Proudly Indian.',
+        text: 'Every thread tells a story of Indian heritage. By choosing Broncstudio, you\'re supporting local textile communities in Tamil Nadu and Karnataka.'
+    });
+
+    // Press Content State
+    const [pressItems, setPressItems] = useState<PressItem[]>([]);
+
+    // Lookbook Content State
+    const [lookbookItems, setLookbookItems] = useState<LookbookItem[]>([]);
 
 
     const [activeHeroTab, setActiveHeroTab] = useState<'desktop' | 'mobile'>('desktop');
@@ -215,6 +273,38 @@ export default function StorefrontPage() {
             setShopHeroImages(shopHeroData.content);
         }
 
+        // Fetch Social Links
+        const { data: socialData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'global_social_links')
+            .single();
+        if (socialData && socialData.content) setSocialLinks(socialData.content);
+
+        // Fetch Sustainability Content
+        const { data: sustData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'sustainability_content')
+            .single();
+        if (sustData && sustData.content) setSustainabilityContent(sustData.content);
+
+        // Fetch Press Content
+        const { data: pressData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'press_content')
+            .single();
+        if (pressData && pressData.content) setPressItems(pressData.content);
+
+        // Fetch Lookbook Content
+        const { data: lookbookData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'lookbook_content')
+            .single();
+        if (lookbookData && lookbookData.content) setLookbookItems(lookbookData.content);
+
         setLoading(false);
     };
 
@@ -253,6 +343,30 @@ export default function StorefrontPage() {
             updated_at: new Date().toISOString()
         };
 
+        const socialPayload = {
+            section_id: 'global_social_links',
+            content: socialLinks,
+            updated_at: new Date().toISOString()
+        };
+
+        const sustPayload = {
+            section_id: 'sustainability_content',
+            content: sustainabilityContent,
+            updated_at: new Date().toISOString()
+        };
+
+        const pressPayload = {
+            section_id: 'press_content',
+            content: pressItems,
+            updated_at: new Date().toISOString()
+        };
+
+        const lookbookPayload = {
+            section_id: 'lookbook_content',
+            content: lookbookItems,
+            updated_at: new Date().toISOString()
+        };
+
 
         const { error: heroErr } = await supabase
             .from('content_blocks')
@@ -274,8 +388,13 @@ export default function StorefrontPage() {
             .from('content_blocks')
             .upsert(shopHeroPayload, { onConflict: 'section_id' });
 
-        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr) {
-            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr);
+        const { error: socialErr } = await supabase.from('content_blocks').upsert(socialPayload, { onConflict: 'section_id' });
+        const { error: sustErr } = await supabase.from('content_blocks').upsert(sustPayload, { onConflict: 'section_id' });
+        const { error: pressErr } = await supabase.from('content_blocks').upsert(pressPayload, { onConflict: 'section_id' });
+        const { error: lookbookErr } = await supabase.from('content_blocks').upsert(lookbookPayload, { onConflict: 'section_id' });
+
+        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr) {
+            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr);
 
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 3000);
@@ -337,6 +456,11 @@ export default function StorefrontPage() {
         { id: 'shop_heroes', label: 'Shop Hero Banners', icon: <ImageIcon size={18} /> },
         { id: 'bento', label: 'Department Bento', icon: <Grid size={18} /> },
         { id: 'shop', label: 'Shop Collections', icon: <ShoppingBag size={18} /> },
+        { id: 'special_heroes', label: 'Special Pages', icon: <Sparkles size={18} /> },
+        { id: 'social_links', label: 'Social & Contact', icon: <Globe size={18} /> },
+        { id: 'sustainability', label: 'Sustainability', icon: <Leaf size={18} /> },
+        { id: 'press', label: 'Press', icon: <Newspaper size={18} /> },
+        { id: 'lookbook', label: 'Lookbook', icon: <ShoppingBag size={18} /> },
         { id: 'login', label: 'Login Overlay', icon: <UserCircle size={18} /> },
 
     ];
@@ -628,6 +752,86 @@ export default function StorefrontPage() {
                         </div>
                     </section>
 
+                    {/* SPECIAL PAGES HERO BANNERS SECTION */}
+                    <section id="special_heroes" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-emerald-500 dark:border-emerald-500/50 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shadow-xl">
+                                <Sparkles size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Special Pages</h2>
+                                <p className="text-[10px] font-black text-emerald-600/70 dark:text-emerald-400/70 uppercase tracking-[0.2em]">Heroes for New Arrivals, Bestsellers & Sustainability</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 shadow-xl space-y-8">
+                            {/* New Arrivals */}
+                            <div className="space-y-4 pb-8 border-b border-gray-100 dark:border-white/5">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">New Arrivals</h3>
+                                        <p className="text-xs text-gray-400 font-bold">Hero Image for /shop/new-arrivals</p>
+                                    </div>
+                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                        {getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '') && (
+                                            <img src={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '')} className="w-full h-full object-cover" alt="" />
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    type="url"
+                                    value={shopHeroImages['new-arrivals'] || ''}
+                                    onChange={e => setShopHeroImages({ ...shopHeroImages, 'new-arrivals': e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-emerald-500 rounded-2xl outline-none font-bold text-sm shadow-sm transition-all"
+                                    placeholder="Paste New Arrivals Hero Link..."
+                                />
+                            </div>
+
+                            {/* Bestsellers */}
+                            <div className="space-y-4 pb-8 border-b border-gray-100 dark:border-white/5">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Bestsellers</h3>
+                                        <p className="text-xs text-gray-400 font-bold">Hero Image for /shop/bestsellers</p>
+                                    </div>
+                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                        {getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '') && (
+                                            <img src={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '')} className="w-full h-full object-cover" alt="" />
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    type="url"
+                                    value={shopHeroImages['bestsellers'] || ''}
+                                    onChange={e => setShopHeroImages({ ...shopHeroImages, 'bestsellers': e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-emerald-500 rounded-2xl outline-none font-bold text-sm shadow-sm transition-all"
+                                    placeholder="Paste Bestsellers Hero Link..."
+                                />
+                            </div>
+
+                            {/* Sustainability */}
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Sustainability</h3>
+                                        <p className="text-xs text-gray-400 font-bold">Hero Image for /sustainability</p>
+                                    </div>
+                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                        {getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '') && (
+                                            <img src={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '')} className="w-full h-full object-cover" alt="" />
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    type="url"
+                                    value={shopHeroImages['sustainability'] || ''}
+                                    onChange={e => setShopHeroImages({ ...shopHeroImages, 'sustainability': e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-emerald-500 rounded-2xl outline-none font-bold text-sm shadow-sm transition-all"
+                                    placeholder="Paste Sustainability Hero Link..."
+                                />
+                            </div>
+                        </div>
+                    </section>
                     {/* SHOP HERO BANNERS SECTION */}
                     <section id="shop_heroes" className="scroll-mt-32 space-y-6">
                         <div className="flex items-center gap-4 border-b-2 border-cyan-500 dark:border-cyan-500/50 pb-4">
@@ -1016,11 +1220,251 @@ export default function StorefrontPage() {
                             </div>
                         </div>
                     </section>
-                </form>
-            </div>
+                    {/* SOCIAL LINKS SECTION */}
+                    <section id="social_links" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 dark:border-white/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 dark:bg-white/10 flex items-center justify-center text-white shadow-xl">
+                                <Globe size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Social Media</h2>
+                                <p className="text-[10px] font-black text-navy-500 dark:text-gray-400 uppercase tracking-[0.2em]">Contact & Socials</p>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {(['instagram', 'facebook', 'youtube', 'twitter', 'gmail'] as const).map(platform => (
+                                <div key={platform} className="space-y-2">
+                                    <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">{platform}</label>
+                                    <input
+                                        type="text"
+                                        value={socialLinks[platform]}
+                                        onChange={e => setSocialLinks({ ...socialLinks, [platform]: e.target.value })}
+                                        className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                        placeholder={`Enter ${platform} URL`}
+                                    />
+                                </div>
+                            ))}
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Phone Number</label>
+                                <input
+                                    type="text"
+                                    value={socialLinks.phone}
+                                    onChange={e => setSocialLinks({ ...socialLinks, phone: e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                    placeholder="e.g. +91 9876543210"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Secondary Phone</label>
+                                <input
+                                    type="text"
+                                    value={socialLinks.secondaryPhone}
+                                    onChange={e => setSocialLinks({ ...socialLinks, secondaryPhone: e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                    placeholder="Optional"
+                                />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Office Address</label>
+                                <textarea
+                                    value={socialLinks.address || ''}
+                                    onChange={e => setSocialLinks({ ...socialLinks, address: e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all min-h-[100px]"
+                                    placeholder="Enter full office address..."
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* SUSTAINABILITY SECTION */}
+                    <section id="sustainability" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 dark:border-white/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 dark:bg-white/10 flex items-center justify-center text-white shadow-xl">
+                                <Leaf size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Sustainability</h2>
+                                <p className="text-[10px] font-black text-navy-500 dark:text-gray-400 uppercase tracking-[0.2em]">Proudly Indian Content</p>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 space-y-8">
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Proudly Indian Image</label>
+                                <input
+                                    type="text"
+                                    value={sustainabilityContent.proudly_indian_image}
+                                    onChange={e => setSustainabilityContent({ ...sustainabilityContent, proudly_indian_image: e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                    placeholder="Image URL"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Title</label>
+                                <input
+                                    type="text"
+                                    value={sustainabilityContent.title}
+                                    onChange={e => setSustainabilityContent({ ...sustainabilityContent, title: e.target.value })}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Text</label>
+                                <textarea
+                                    value={sustainabilityContent.text}
+                                    onChange={e => setSustainabilityContent({ ...sustainabilityContent, text: e.target.value })}
+                                    rows={4}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* PRESS SECTION */}
+                    <section id="press" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 dark:border-white/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 dark:bg-white/10 flex items-center justify-center text-white shadow-xl">
+                                <Newspaper size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Press</h2>
+                                <p className="text-[10px] font-black text-navy-500 dark:text-gray-400 uppercase tracking-[0.2em]">Media Mentions</p>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 space-y-6">
+                            {pressItems.map((item, idx) => (
+                                <div key={idx} className="bg-gray-50 dark:bg-white/5 p-6 rounded-xl space-y-4 border border-gray-200 dark:border-white/10">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="font-bold text-navy-900 dark:text-white">Press Item #{idx + 1}</h4>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPressItems(pressItems.filter((_, i) => i !== idx))}
+                                            className="text-red-500 hover:text-red-600 font-bold text-xs uppercase"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Publication Name"
+                                            value={item.name}
+                                            onChange={e => {
+                                                const newItems = [...pressItems];
+                                                newItems[idx].name = e.target.value;
+                                                setPressItems(newItems);
+                                            }}
+                                            className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Logo URL"
+                                            value={item.logo}
+                                            onChange={e => {
+                                                const newItems = [...pressItems];
+                                                newItems[idx].logo = e.target.value;
+                                                setPressItems(newItems);
+                                            }}
+                                            className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Date"
+                                            value={item.date}
+                                            onChange={e => {
+                                                const newItems = [...pressItems];
+                                                newItems[idx].date = e.target.value;
+                                                setPressItems(newItems);
+                                            }}
+                                            className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl"
+                                        />
+                                        <textarea
+                                            placeholder="Quote"
+                                            value={item.quote}
+                                            onChange={e => {
+                                                const newItems = [...pressItems];
+                                                newItems[idx].quote = e.target.value;
+                                                setPressItems(newItems);
+                                            }}
+                                            className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl md:col-span-2"
+                                            rows={2}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={() => setPressItems([...pressItems, { id: Date.now().toString(), name: '', logo: '', quote: '', date: '' }])}
+                                className="w-full py-4 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/20 text-gray-400 font-bold hover:border-navy-500 hover:text-navy-500 transition-colors"
+                            >
+                                + Add Press Item
+                            </button>
+                        </div>
+                    </section>
+
+                    {/* LOOKBOOK SECTION */}
+                    <section id="lookbook" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 dark:border-white/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 dark:bg-white/10 flex items-center justify-center text-white shadow-xl">
+                                <ShoppingBag size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Lookbook</h2>
+                                <p className="text-[10px] font-black text-navy-500 dark:text-gray-400 uppercase tracking-[0.2em]">Customer Styles</p>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 space-y-6">
+                            {lookbookItems.map((item, idx) => (
+                                <div key={idx} className="bg-gray-50 dark:bg-white/5 p-6 rounded-xl space-y-4 border border-gray-200 dark:border-white/10 flex items-center gap-4">
+                                    <div className="w-20 h-20 rounded-lg bg-gray-200 shrink-0 overflow-hidden">
+                                        {item.image && <img src={getGoogleDriveDirectLink(item.image)} className="w-full h-full object-cover" />}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Image URL"
+                                            value={item.image}
+                                            onChange={e => {
+                                                const newItems = [...lookbookItems];
+                                                newItems[idx].image = e.target.value;
+                                                setLookbookItems(newItems);
+                                            }}
+                                            className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="User Handle"
+                                            value={item.user}
+                                            onChange={e => {
+                                                const newItems = [...lookbookItems];
+                                                newItems[idx].user = e.target.value;
+                                                setLookbookItems(newItems);
+                                            }}
+                                            className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setLookbookItems(lookbookItems.filter((_, i) => i !== idx))}
+                                        className="text-red-500 hover:text-red-600 p-2"
+                                    >
+                                        <Trash2 size={20} />
+                                    </button>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={() => setLookbookItems([...lookbookItems, { id: Date.now().toString(), image: '', user: '' }])}
+                                className="w-full py-4 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/20 text-gray-400 font-bold hover:border-navy-500 hover:text-navy-500 transition-colors"
+                            >
+                                + Add Lookbook Item
+                            </button>
+                        </div>
+                    </section>
+                </form >
+            </div >
 
             {/* Floating Mobile/Tablet Save Prompt */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-gray-100 dark:border-white/10 flex items-center justify-between lg:hidden z-[100] shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.1)]">
+            < div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-gray-100 dark:border-white/10 flex items-center justify-between lg:hidden z-[100] shadow-[0_-20px_50px_-10px_rgba(0,0,0,0.1)]" >
                 <div className="flex flex-col">
                     <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest leading-none">Global Status</span>
                     <span className="text-xs font-black text-navy-900 dark:text-white mt-1 flex items-center gap-2">
@@ -1036,7 +1480,7 @@ export default function StorefrontPage() {
                     {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                     SYNC NOW
                 </button>
-            </div>
+            </div >
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
@@ -1075,6 +1519,6 @@ export default function StorefrontPage() {
                 }
             `}</style>
 
-        </div>
+        </div >
     );
 }

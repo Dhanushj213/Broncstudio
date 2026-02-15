@@ -1,22 +1,65 @@
 'use client';
 
-import React from 'react';
+import { createClient } from '@/utils/supabase/client';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Leaf, Droplets, Sun, Recycle } from 'lucide-react';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function SustainabilityPage() {
+    const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2000&auto=format&fit=crop');
+    const [proudlyIndian, setProudlyIndian] = useState({
+        image: 'https://images.unsplash.com/photo-1628148601679-0522197305b0?q=80&w=1000&auto=format&fit=crop',
+        title: 'Proudly Indian.',
+        text: 'Every thread tells a story of Indian heritage. By choosing Broncstudio, you\'re supporting local textile communities in Tamil Nadu and Karnataka.'
+    });
+    const supabase = createClient();
+
+    useEffect(() => {
+        const fetchHero = async () => {
+            const { data: heroData } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'shop_hero_images')
+                .single();
+
+            if (heroData?.content) {
+                const dynamicHero = (heroData.content as Record<string, string>)['sustainability'];
+                if (dynamicHero) setHeroImage(dynamicHero);
+            }
+
+            // Fetch Proudly Indian Content
+            const { data: sustData } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'sustainability_content')
+                .single();
+
+            if (sustData?.content) {
+                setProudlyIndian({
+                    image: sustData.content.proudly_indian_image || proudlyIndian.image,
+                    title: sustData.content.title || proudlyIndian.title,
+                    text: sustData.content.text || proudlyIndian.text
+                });
+            }
+        };
+        fetchHero();
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#FAF9F7] dark:bg-black pb-20 pt-[var(--header-height)]">
             <AmbientBackground />
 
             {/* Hero */}
             <div className="relative h-[60vh] overflow-hidden flex items-center justify-center text-center px-6 bg-emerald-950">
-                <img
-                    src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2000&auto=format&fit=crop"
-                    alt="Nature"
-                    className="absolute inset-0 w-full h-full object-cover opacity-60"
-                />
+                {heroImage && (
+                    <img
+                        src={getGoogleDriveDirectLink(heroImage)}
+                        alt="Nature"
+                        className="absolute inset-0 w-full h-full object-cover opacity-60"
+                    />
+                )}
                 <div className="absolute inset-0 bg-black/40" />
 
                 <div className="relative z-10 text-white max-w-3xl mx-auto">
@@ -71,16 +114,18 @@ export default function SustainabilityPage() {
             <div className="bg-white dark:bg-black py-24 border-y border-gray-100 dark:border-white/10">
                 <div className="container-premium max-w-[1000px] mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
                     <div className="md:w-1/2">
-                        <img
-                            src="https://images.unsplash.com/photo-1628148601679-0522197305b0?q=80&w=1000&auto=format&fit=crop"
-                            alt="Artisans"
-                            className="rounded-3xl shadow-lg w-full"
-                        />
+                        {proudlyIndian.image && (
+                            <img
+                                src={getGoogleDriveDirectLink(proudlyIndian.image)}
+                                alt="Artisans"
+                                className="rounded-3xl shadow-lg w-full"
+                            />
+                        )}
                     </div>
                     <div className="md:w-1/2">
-                        <h2 className="text-4xl font-heading font-bold text-navy-900 dark:text-white mb-6">Proudly Indian.</h2>
+                        <h2 className="text-4xl font-heading font-bold text-navy-900 dark:text-white mb-6">{proudlyIndian.title}</h2>
                         <p className="text-gray-600 dark:text-gray-400 text-lg mb-6 leading-relaxed">
-                            Every thread tells a story of Indian heritage. By choosing Broncstudio, you're supporting local textile communities in Tamil Nadu and Karnataka.
+                            {proudlyIndian.text}
                         </p>
                         <div className="flex gap-4">
                             <div className="px-4 py-2 bg-gray-100 dark:bg-white/10 rounded-lg text-sm font-bold text-navy-900 dark:text-white">100% Homegrown</div>

@@ -1,10 +1,86 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import InfoPage from '@/components/Layout/InfoPage';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { createBrowserClient } from '@supabase/ssr';
 
 export default function ContactClient() {
+    const [contactInfo, setContactInfo] = useState({
+        gmail: 'broncstudio@gmail.com',
+        phone: '+91 98765xxxxx',
+        secondaryPhone: ''
+    });
+
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        const fetchContactInfo = async () => {
+            const { data } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'global_social_links')
+                .single();
+
+            if (data?.content) {
+                setContactInfo(prev => ({
+                    ...prev,
+                    gmail: data.content.gmail || prev.gmail,
+                    phone: data.content.phone || prev.phone,
+                    secondaryPhone: data.content.secondaryPhone || '',
+                    address: data.content.address || prev.address
+                }));
+            }
+        };
+        fetchContactInfo();
+    }, []);
+
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+    const [submitting, setSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setSubmitStatus('idle');
+
+        try {
+            const { error } = await supabase
+                .from('contact_messages')
+                .insert([{
+                    name: formData.name,
+                    email: formData.email,
+                    message: formData.message,
+                    created_at: new Date().toISOString()
+                }]);
+
+            if (error) {
+                console.error('Error submitting message:', error);
+                setSubmitStatus('error');
+            } else {
+                setSubmitStatus('success');
+                setFormData({ name: '', email: '', message: '' });
+                setTimeout(() => setSubmitStatus('idle'), 5000);
+            }
+        } catch (err) {
+            console.error('Exception submitting message:', err);
+            setSubmitStatus('error');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     return (
         <InfoPage title="Contact Us">
             <div className="grid md:grid-cols-2 gap-12">
@@ -22,7 +98,7 @@ export default function ContactClient() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-primary">Email Us</h4>
-                                <p className="text-secondary">broncstudio@gmail.com</p>
+                                <a href={`mailto:${contactInfo.gmail}`} className="text-secondary hover:text-primary transition-colors">{contactInfo.gmail}</a>
                                 <p className="text-secondary text-sm">We'll respond within 24 hours.</p>
                             </div>
                         </div>
@@ -33,7 +109,10 @@ export default function ContactClient() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-primary">Call Us</h4>
-                                <p className="text-secondary">+91 98765xxxxx</p>
+                                <a href={`tel:${contactInfo.phone}`} className="text-secondary hover:text-primary transition-colors block">{contactInfo.phone}</a>
+                                {contactInfo.secondaryPhone && (
+                                    <a href={`tel:${contactInfo.secondaryPhone}`} className="text-secondary hover:text-primary transition-colors block">{contactInfo.secondaryPhone}</a>
+                                )}
                                 <p className="text-secondary text-sm">Mon–Sat, 9am–6pm IST.</p>
                             </div>
                         </div>
@@ -44,8 +123,8 @@ export default function ContactClient() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-primary">Office</h4>
-                                <p className="text-secondary">
-                                    403, Sri Krishna Kruthi CR Pride, Nagashettyhalli, Sanjaynagar main road, Bengaluru - 560094
+                                <p className="text-secondary whitespace-pre-line">
+                                    {contactInfo.address}
                                 </p>
                             </div>
                         </div>
@@ -55,23 +134,63 @@ export default function ContactClient() {
                 {/* Form */}
                 <div className="bg-card p-8 rounded-2xl shadow-lg border border-subtle">
                     <h3 className="text-xl font-bold text-primary mb-6">Send a Message</h3>
-                    <form className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-bold text-primary mb-1">Name</label>
-                            <input type="text" className="w-full px-4 py-2 rounded-lg border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500" />
+                    {submitStatus === 'success' ? (
+                        <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-xl flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+                                <Mail size={16} />
+                            </div>
+                            <div>
+                                <h4 className="font-bold">Message Sent!</h4>
+                                <p className="text-sm">Thank you for contacting us. We will get back to you shortly.</p>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-bold text-primary mb-1">Email</label>
-                            <input type="email" className="w-full px-4 py-2 rounded-lg border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-primary mb-1">Message</label>
-                            <textarea rows={4} className="w-full px-4 py-2 rounded-lg border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary"></textarea>
-                        </div>
-                        <button className="w-full bg-black dark:bg-white text-white dark:text-black font-bold py-3 rounded-lg hover:bg-coral-500 dark:hover:bg-coral-400 transition-colors">
-                            Send Message
-                        </button>
-                    </form>
+                    ) : (
+                        <form className="space-y-4" onSubmit={handleSubmit}>
+                            <div>
+                                <label className="block text-sm font-bold text-primary mb-1">Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full px-4 py-2 rounded-lg border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-primary mb-1">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full px-4 py-2 rounded-lg border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-primary mb-1">Message</label>
+                                <textarea
+                                    name="message"
+                                    rows={4}
+                                    value={formData.message}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full px-4 py-2 rounded-lg border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary"
+                                ></textarea>
+                            </div>
+                            {submitStatus === 'error' && (
+                                <p className="text-red-500 text-sm">Failed to send message. Please try again.</p>
+                            )}
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="w-full bg-black dark:bg-white text-white dark:text-black font-bold py-3 rounded-lg hover:bg-coral-500 dark:hover:bg-coral-400 transition-colors disabled:opacity-50 disabled:cursor-wait"
+                            >
+                                {submitting ? 'Sending...' : 'Send Message'}
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
         </InfoPage>

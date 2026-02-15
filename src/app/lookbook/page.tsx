@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Instagram, ShoppingBag } from 'lucide-react';
 import { getProductImage } from '@/utils/sampleImages';
+import { createBrowserClient } from '@supabase/ssr';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
-const LOOKS = [
+const LOOKS_DEFAULTS = [
     { id: 1, image: getProductImage(1), user: '@momlife_adventures' },
     { id: 2, image: getProductImage(2), user: '@little.explorers' },
     { id: 3, image: getProductImage(3), user: '@broncstudio' },
@@ -17,6 +19,26 @@ const LOOKS = [
 ];
 
 export default function LookbookPage() {
+    const [looks, setLooks] = useState<any[]>(LOOKS_DEFAULTS);
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        const fetchLooks = async () => {
+            const { data } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'lookbook_content')
+                .single();
+            if (data && data.content && Array.isArray(data.content) && data.content.length > 0) {
+                setLooks(data.content);
+            }
+        };
+        fetchLooks();
+    }, []);
+
     return (
         <div className="min-h-screen bg-background pt-[var(--header-height)] pb-20">
             <AmbientBackground />
@@ -37,13 +59,19 @@ export default function LookbookPage() {
 
                 {/* Masonry Grid */}
                 <div className="columns-1 md:columns-3 lg:columns-4 gap-6 space-y-6">
-                    {LOOKS.map(look => (
+                    {looks.map(look => (
                         <div key={look.id} className="relative group break-inside-avoid rounded-2xl overflow-hidden bg-surface-2">
-                            <img
-                                src={look.image}
-                                alt={`Look by ${look.user}`}
-                                className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
+                            {look.image ? (
+                                <img
+                                    src={look.image.startsWith('http') ? getGoogleDriveDirectLink(look.image) : look.image}
+                                    alt={`Look by ${look.user}`}
+                                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
+                            ) : (
+                                <div className="w-full h-64 bg-gray-200 dark:bg-white/10 flex items-center justify-center">
+                                    <ShoppingBag className="text-gray-400" />
+                                </div>
+                            )}
 
                             {/* Overlay */}
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-6">

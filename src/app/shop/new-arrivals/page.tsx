@@ -7,6 +7,7 @@ import ProductCard from '@/components/Product/ProductCard';
 import BrandLoader from '@/components/UI/BrandLoader';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { ArrowLeft, Sparkles } from 'lucide-react';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function NewArrivalsPage() {
     const router = useRouter();
@@ -14,10 +15,23 @@ export default function NewArrivalsPage() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop');
 
     useEffect(() => {
         const fetchNewArrivals = async () => {
             setLoading(true);
+
+            // 0. Fetch Dynamic Hero Image
+            const { data: heroData } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'shop_hero_images')
+                .single();
+
+            if (heroData?.content) {
+                const dynamicHero = (heroData.content as Record<string, string>)['new-arrivals'];
+                if (dynamicHero) setHeroImage(dynamicHero);
+            }
 
             // 1. Fetch Manual "new-arrival" tag
             const { data: manualData } = await supabase
@@ -54,7 +68,7 @@ export default function NewArrivalsPage() {
             {/* Hero Section */}
             <div className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center text-center">
                 <img
-                    src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
+                    src={getGoogleDriveDirectLink(heroImage)}
                     alt="New Arrivals"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

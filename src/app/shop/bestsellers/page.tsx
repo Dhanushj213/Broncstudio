@@ -7,6 +7,7 @@ import ProductCard from '@/components/Product/ProductCard';
 import BrandLoader from '@/components/UI/BrandLoader';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { ArrowLeft, TrendingUp } from 'lucide-react';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function BestsellersPage() {
     const router = useRouter();
@@ -14,10 +15,23 @@ export default function BestsellersPage() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1529139574466-a302d2052505?q=80&w=2070&auto=format&fit=crop');
 
     useEffect(() => {
         const fetchBestsellers = async () => {
             setLoading(true);
+
+            // 0. Fetch Dynamic Hero Image
+            const { data: heroData } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'shop_hero_images')
+                .single();
+
+            if (heroData?.content) {
+                const dynamicHero = (heroData.content as Record<string, string>)['bestsellers'];
+                if (dynamicHero) setHeroImage(dynamicHero);
+            }
 
             // Fetch random products to simulate "Popular" (since no sales data)
             // Ideally we would order by 'sales_count' desc
@@ -51,7 +65,7 @@ export default function BestsellersPage() {
             {/* Hero Section */}
             <div className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center text-center">
                 <img
-                    src="https://images.unsplash.com/photo-1529139574466-a302d2052505?q=80&w=2070&auto=format&fit=crop"
+                    src={getGoogleDriveDirectLink(heroImage)}
                     alt="Bestsellers"
                     className="absolute inset-0 w-full h-full object-cover"
                 />

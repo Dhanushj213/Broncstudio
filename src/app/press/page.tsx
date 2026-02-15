@@ -1,11 +1,33 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import AmbientBackground from '@/components/UI/AmbientBackground';
+import { createBrowserClient } from '@supabase/ssr';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
-const FEATURES: { name: string; logo: string; quote: string; date: string }[] = [];
+const FEATURES_DEFAULTS: { name: string; logo: string; quote: string; date: string }[] = [];
 
 export default function PressPage() {
+    const [features, setFeatures] = useState(FEATURES_DEFAULTS);
+    const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    useEffect(() => {
+        const fetchPress = async () => {
+            const { data } = await supabase
+                .from('content_blocks')
+                .select('content')
+                .eq('section_id', 'press_content')
+                .single();
+            if (data && data.content) {
+                setFeatures(data.content);
+            }
+        };
+        fetchPress();
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#FAF9F7] dark:bg-black pb-20 pt-[var(--header-height)]">
             <AmbientBackground />
@@ -17,14 +39,18 @@ export default function PressPage() {
                 </h1>
 
                 <div className="grid gap-12">
-                    {FEATURES.map((feature, i) => (
+                    {features.map((feature, i) => (
                         <div key={i} className="bg-white dark:bg-white/5 p-12 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-center gap-12 text-left group">
                             <div className="w-full md:w-1/3 flex items-center justify-center p-6 bg-gray-50 dark:bg-white/10 rounded-2xl h-40">
-                                <img
-                                    src={feature.logo}
-                                    alt={feature.name}
-                                    className="max-h-12 max-w-full opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0 dark:invert"
-                                />
+                                {feature.logo ? (
+                                    <img
+                                        src={getGoogleDriveDirectLink(feature.logo)}
+                                        alt={feature.name}
+                                        className="max-h-12 max-w-full opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0 dark:invert"
+                                    />
+                                ) : (
+                                    <span className="text-gray-400 font-bold text-xl">{feature.name}</span>
+                                )}
                             </div>
                             <div className="w-full md:w-2/3">
                                 <blockquote className="text-2xl font-heading font-medium text-navy-900 dark:text-white mb-4 leading-normal">

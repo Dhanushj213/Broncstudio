@@ -63,6 +63,79 @@ export default function CheckoutPage() {
         country: 'India'
     });
 
+    // OTP Auth State
+    const [otpSent, setOtpSent] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [isOtpVerified, setIsOtpVerified] = useState(false);
+    const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+    const [isGuest, setIsGuest] = useState(true);
+
+    const handleSendOtp = async () => {
+        if (formData.phone.length !== 10) {
+            toast.error("Invalid Phone", { description: "Please enter a valid 10-digit phone number." });
+            return;
+        }
+
+        setIsVerifyingOtp(true);
+        const { error } = await supabase.auth.signInWithOtp({
+            phone: '+91' + formData.phone,
+        });
+
+        setIsVerifyingOtp(false);
+
+        if (error) {
+            console.error("OTP Error:", error);
+            toast.error("Failed to send OTP", { description: error.message });
+        } else {
+            setOtpSent(true);
+            toast.success("OTP Sent!", { description: "Please check your mobile number." });
+        }
+    };
+
+    const handleVerifyOtp = async () => {
+        if (otp.length !== 6) {
+            toast.error("Invalid OTP", { description: "Please enter a 6-digit OTP." });
+            return;
+        }
+
+        setIsVerifyingOtp(true);
+        const { data, error } = await supabase.auth.verifyOtp({
+            phone: '+91' + formData.phone,
+            token: otp,
+            type: 'sms',
+        });
+
+        if (error) {
+            setIsVerifyingOtp(false);
+            console.error("Verify Error:", error);
+            toast.error("Verification Failed", { description: error.message });
+        } else {
+            // Successful Login/Signup
+            setIsOtpVerified(true);
+            setIsGuest(false); // User is now logged in
+            setOtpSent(false); // Hide OTP field
+            toast.success("Verified!", { description: "Mobile number verified successfully." });
+
+            // Update User Profile with Name/Email if provided
+            if (data.user) {
+                const updates: any = {};
+                if (formData.name) updates.data = { ...updates.data, full_name: formData.name };
+                if (formData.email) updates.email = formData.email; // This might trigger email change confirmation flow
+
+                // Generally better to just update metadata for name
+                if (formData.name) {
+                    await supabase.auth.updateUser({
+                        data: { full_name: formData.name }
+                    });
+                }
+
+                // If we want to capture email, we might just store it in the order or profile table, 
+                // changing auth email usually requires re-verification.
+            }
+            setIsVerifyingOtp(false);
+        }
+    };
+
     const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
     const [selectedAddressIndex, setSelectedAddressIndex] = useState<number | null>(null);
 
@@ -76,6 +149,8 @@ export default function CheckoutPage() {
         const fetchUserAndAddresses = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
+                setIsGuest(false); // User is logged in
+                setIsOtpVerified(true); // Implicitly verified if logged in
                 setFormData(prev => ({
                     ...prev,
                     email: user.email || '',
@@ -340,6 +415,13 @@ export default function CheckoutPage() {
             return;
         }
 
+        if (isGuest && !isOtpVerified) {
+            alert("Please verify your phone number using OTP to proceed.");
+            // Scroll to phone field
+            document.querySelector("input[name='phone']")?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
         if (formData.pincode.length !== 6) {
             alert("Please enter a valid 6-digit pincode.");
             return;
@@ -510,15 +592,65 @@ export default function CheckoutPage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-secondary mb-1">Phone Number (10 digits)</label>
-                                    <input
-                                        type="tel"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        maxLength={10}
-                                        className="w-full px-4 py-3 rounded-xl border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary transition-colors"
-                                        placeholder="9876543210"
-                                    />
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="tel"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            maxLength={10}
+                                            disabled={isOtpVerified || otpSent} // Disable if verified or OTP sent (waiting for code)
+                                            className={`w-full px-4 py-3 rounded-xl border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary transition-colors ${isOtpVerified ? 'opacity-75 cursor-not-allowed' : ''}`}
+                                            placeholder="9876543210"
+                                        />
+                                        {isGuest && !isOtpVerified && !otpSent && (
+                                            <button
+                                                onClick={handleSendOtp}
+                                                disabled={formData.phone.length !== 10 || isVerifyingOtp}
+                                                className="px-4 py-3 bg-primary text-background font-bold rounded-xl hover:bg-coral-500 transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {isVerifyingOtp ? <Loader2 className="animate-spin" size={20} /> : 'Verify'}
+                                            </button>
+                                        )}
+                                        {isOtpVerified && (
+                                            <div className="flex items-center justify-center px-4 text-green-500 bg-green-100 rounded-xl shrink-0">
+                                                <CheckCircle2 size={24} />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* OTP Input Section */}
+                                    {otpSent && !isOtpVerified && (
+                                        <div className="mt-4 animate-scale-in">
+                                            <label className="block text-sm font-medium text-secondary mb-1">Enter OTP</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={otp}
+                                                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                                    maxLength={6}
+                                                    className="w-full px-4 py-3 rounded-xl border border-subtle bg-surface-2 text-primary focus:outline-none focus:border-primary transition-colors font-mono text-lg tracking-widest text-center"
+                                                    placeholder="000000"
+                                                />
+                                                <button
+                                                    onClick={handleVerifyOtp}
+                                                    disabled={otp.length !== 6 || isVerifyingOtp}
+                                                    className="px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    {isVerifyingOtp ? <Loader2 className="animate-spin" size={20} /> : 'Submit'}
+                                                </button>
+                                                <button
+                                                    onClick={() => setOtpSent(false)}
+                                                    className="px-3 py-3 text-secondary hover:text-primary transition-colors"
+                                                >
+                                                    Edit
+                                                </button>
+                                            </div>
+                                            <p className="text-xs text-secondary mt-2">
+                                                By verifying, you agree to create an account with us.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-secondary mb-1">Secondary Phone Number (Optional)</label>
