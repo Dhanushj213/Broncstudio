@@ -14,6 +14,8 @@ export interface QuickViewProductData {
     colors?: string[];
     stock_status?: string;
     badge?: string;
+    sizes?: string[];
+    metadata?: any;
 }
 
 interface UIContextType {
