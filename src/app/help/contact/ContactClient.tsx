@@ -9,7 +9,8 @@ export default function ContactClient() {
     const [contactInfo, setContactInfo] = useState({
         gmail: 'broncstudio@gmail.com',
         phone: '+91 98765xxxxx',
-        secondaryPhone: ''
+        secondaryPhone: '',
+        address: ''
     });
 
     const supabase = createBrowserClient(
