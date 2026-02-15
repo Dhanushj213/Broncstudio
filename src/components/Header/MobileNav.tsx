@@ -34,24 +34,24 @@ const MobileNav = () => {
                     // Common Content - Strictly Centered
                     const Content = () => (
                         <div className="flex flex-col items-center justify-center w-full h-full gap-1">
-                            {/* Animated Background Indicator */}
-                            {isItemActive && (
+                            {/* Animated Background Indicator - REMOVED per user request */}
+                            {/* {isItemActive && (
                                 <motion.div
                                     layoutId="nav-pill"
-                                    className="absolute inset-0 -top-2 -bottom-2 w-14 mx-auto bg-gradient-to-b from-coral-500/15 to-transparent rounded-full blur-md"
+                                    className="absolute inset-0 -top-2 -bottom-2 w-14 mx-auto bg-gradient-to-b from-red-600/20 to-transparent rounded-full blur-md"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                 />
-                            )}
+                            )} */}
 
                             <div className="relative z-10">
                                 <item.icon
                                     size={22} // Unified Size
                                     strokeWidth={isItemActive ? 2.5 : 1.5}
                                     className={`transition-all duration-200 ${isItemActive
-                                        ? 'text-coral-500 drop-shadow-[0_0_12px_rgba(255,100,100,0.5)]'
+                                        ? 'text-[#8f190d]'
                                         : 'text-white'
                                         }`}
                                 />

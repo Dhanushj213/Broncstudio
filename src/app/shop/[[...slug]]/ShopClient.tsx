@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { useUI } from '@/context/UIContext';
 import ProductCard from '@/components/Product/ProductCard';
 import { createClient } from '@/utils/supabase/client';
-import { Filter } from 'lucide-react';
+import { Filter, ArrowRight } from 'lucide-react';
 import BrandLoader from '@/components/UI/BrandLoader';
 import TabbedProductShowcase from '@/components/Home/TabbedProductShowcase';
 
@@ -76,15 +76,10 @@ export default function ShopClient() {
 
             // A. Root (/shop)
             if (slugArray.length === 0) {
-                const children = dynamicCollections || Object.values(CATEGORY_TAXONOMY).map(c => ({
-                    id: c.id,
-                    name: c.name,
-                    image: c.image, // Ensure image exists in taxonomy
-                    slug: c.slug,
-                    description: c.description
-                }));
+                // Only use dynamic collections from DB. If empty, show nothing key.
+                const children = dynamicCollections || [];
 
-                const rootHero = (heroImages as Record<string, string>)['root'] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80';
+                const rootHero = (heroImages as Record<string, string>)['root'] || '';
 
                 setCurrentView({
                     type: 'root' as const,
@@ -119,7 +114,7 @@ export default function ShopClient() {
                         })) || []
                     ) || [];
 
-                    const categoryHero = (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+                    const categoryHero = (heroImages as Record<string, string>)[l1Node.slug] || '';
 
                     setCurrentView({
                         type: 'category' as const,
@@ -139,7 +134,7 @@ export default function ShopClient() {
                 }
 
                 // Standard Category View
-                const categoryHero = (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+                const categoryHero = (heroImages as Record<string, string>)[l1Node.slug] || '';
 
                 setCurrentView({
                     type: 'category' as const,
@@ -167,7 +162,7 @@ export default function ShopClient() {
 
             if (slugArray.length === 2) {
                 const subHeroLink = `${l1Node.slug}/${l2Node.slug}`;
-                const subHero = (heroImages as Record<string, string>)[subHeroLink] || (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+                const subHero = (heroImages as Record<string, string>)[subHeroLink] || (heroImages as Record<string, string>)[l1Node.slug] || '';
 
                 setCurrentView({
                     type: 'subcategory' as const,
@@ -197,7 +192,7 @@ export default function ShopClient() {
             }
 
             const subHeroLink = `${l1Node.slug}/${l2Node.slug}`;
-            const itemHero = (heroImages as Record<string, string>)[subHeroLink] || (heroImages as Record<string, string>)[l1Node.slug] || l1Node.image;
+            const itemHero = (heroImages as Record<string, string>)[subHeroLink] || (heroImages as Record<string, string>)[l1Node.slug] || '';
 
             setCurrentView({
                 type: 'item' as const,
@@ -419,12 +414,21 @@ export default function ShopClient() {
                         >
                             {currentView.children.map((child, idx) => (
                                 <Link key={idx} href={`/shop/${child.slug}`} className="group relative block h-full">
-                                    <GlassCard className="relative h-full min-h-[400px] flex flex-col justify-end overflow-hidden rounded-[2rem] bg-transparent hover:border-white/50 transition-all duration-500" disableTilt>
-                                        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${getGoogleDriveDirectLink(child.image) || '/images/placeholder.jpg'})` }} />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60" />
-                                        <div className="relative z-10 p-8">
-                                            <h3 className="text-3xl font-heading font-bold text-white mb-2">{child.name}</h3>
-                                            <p className="text-sm text-white/80 line-clamp-2">{child.description}</p>
+                                    <GlassCard
+                                        className="relative h-full min-h-[400px] flex flex-col justify-end overflow-hidden rounded-[2rem] bg-gray-900/10 border border-white/20 shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.8)] hover:scale-[1.02] hover:border-white/40 transition-all duration-500 ease-out"
+                                        disableTilt
+                                    >
+                                        <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url(${getGoogleDriveDirectLink(child.image) || '/images/placeholder.jpg'})` }} />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+
+                                        <div className="relative z-10 p-8 transform transition-transform duration-500 group-hover:-translate-y-2">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h3 className="text-4xl font-heading font-black text-white group-hover:text-[#8f190d] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] tracking-wide transition-colors duration-300">{child.name}</h3>
+                                                <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+                                                    <ArrowRight className="text-white group-hover:text-[#8f190d] transition-colors duration-300" size={24} />
+                                                </div>
+                                            </div>
+                                            <p className="text-lg text-gray-200 font-medium line-clamp-2 drop-shadow-md opacity-90 group-hover:opacity-100 transition-opacity">{child.description}</p>
                                         </div>
                                     </GlassCard>
                                 </Link>
