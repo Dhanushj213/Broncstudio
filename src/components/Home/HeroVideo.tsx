@@ -21,6 +21,7 @@ interface HeroContent {
 
 import { ArrowRight, Box, Shirt, Heart, Home as HomeIcon, Smartphone, Watch, Dog } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MagneticButton from '@/components/UI/MagneticButton';
 
 const CATEGORIES = [
     { name: 'Stationary & Toys', icon: Box, link: '/shop/stationary-toys' },
@@ -258,14 +259,20 @@ export default function HeroVideo() {
 
                             {/* Main Shop Now Button */}
                             {content.button_text && (
-                                <Link
-                                    href={content.button_link || '#'}
-                                    className="group/btn relative z-20 inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-12 py-5 rounded-[18px] text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden"
+                                <MagneticButton
+                                    strength={40}
+                                    radius={200}
+                                    className={isMobile ? 'pointer-events-none translate-x-0 translate-y-0' : ''}
                                 >
-                                    <span className="relative z-10">{content.button_text}</span>
-                                    <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-500 group-hover/btn:translate-x-2" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                                </Link>
+                                    <Link
+                                        href={content.button_link || '#'}
+                                        className="group/btn relative z-20 inline-flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/20 text-white px-12 py-5 rounded-[18px] text-sm font-bold uppercase tracking-[0.3em] transition-all duration-500 hover:bg-white hover:text-black hover:scale-105 hover:shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden"
+                                    >
+                                        <span className="relative z-10">{content.button_text}</span>
+                                        <ArrowRight className="relative z-10 w-4 h-4 transition-transform duration-500 group-hover/btn:translate-x-2" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+                                    </Link>
+                                </MagneticButton>
                             )}
                         </div>
                     </div>
