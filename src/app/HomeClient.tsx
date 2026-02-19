@@ -96,7 +96,7 @@ export default function HomeClient() {
         <MasonryProductGrid
           products={newArrivals}
           title="Fresh Drops"
-          subtitle="The latest additions to our collection. Get them before they're gone."
+          subtitle="Get them before they're gone."
         />
       )}
 
