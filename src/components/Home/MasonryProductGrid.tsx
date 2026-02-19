@@ -10,7 +10,7 @@ interface MasonryProductGridProps {
     subtitle?: string;
 }
 
-export default function MasonryProductGrid({ products, title = "Featured Collection", subtitle = "Our most loved pieces, curated just for you." }: MasonryProductGridProps) {
+export default function MasonryProductGrid({ products, title = "Featured Collection", subtitle = "Our most loved pieces." }: MasonryProductGridProps) {
     if (!products || products.length === 0) return null;
 
     return (
