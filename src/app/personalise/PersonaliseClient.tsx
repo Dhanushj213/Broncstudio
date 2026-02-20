@@ -206,6 +206,11 @@ export default function PersonaliseListingPage() {
                     <div className="absolute inset-0 bg-navy-900" />
                 )}
                 <div className="absolute inset-0 bg-black/40 dark:bg-black/60 z-10" />
+
+                {/* Transparency Gradient for text lifting */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20 z-10" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.4)_0%,transparent_70%)] z-10" />
+
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-10" />
 
                 {/* Content inside Hero for proper merging effect */}
