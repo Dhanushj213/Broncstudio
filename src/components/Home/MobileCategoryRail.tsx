@@ -2,23 +2,24 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // 14 Specific items requested by User
 const RAIL_ITEMS = [
-    { label: 'Men', href: '/collections/men', img: 'https://images.unsplash.com/photo-1516257984-b1b4d8c92305?w=500&q=80' },
-    { label: 'Women', href: '/collections/women', img: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80' },
-    { label: 'Kids', href: '/collections/kids-clothing', img: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=500&q=80' },
-    { label: 'Accessories', href: '/collections/style-extras', img: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80' },
-    { label: 'Books', href: '/collections/kids-books', img: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500&q=80' },
-    { label: 'Pets', href: '/collections/pets', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&q=80' },
-    { label: 'Stationery', href: '/collections/stationery', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&q=80' },
-    { label: 'Toys', href: '/collections/toys-activities', img: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&q=80' },
-    { label: 'Drinkware', href: '/collections/drinkware', img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500&q=80' },
-    { label: 'Lifestyle', href: '/shop/lifestyle', img: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=500&q=80' },
-    { label: 'Desk', href: '/collections/desk-essentials', img: 'https://images.unsplash.com/photo-1505330622279-bf7d7fc918f4?w=500&q=80' },
-    { label: 'Decor', href: '/collections/home-decor', img: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=500&q=80' },
-    { label: 'Magnets', href: '/collections/magnets', img: 'https://images.unsplash.com/photo-1596495370355-467332247aa6?w=500&q=80' },
-    { label: 'Posters', href: '/collections/posters', img: 'https://images.unsplash.com/photo-1577083552431-6e5fd01988ec?w=500&q=80' },
+    { label: 'Men', href: '/collections/men', img: '' },
+    { label: 'Women', href: '/collections/women', img: '' },
+    { label: 'Kids', href: '/collections/kids-clothing', img: '' },
+    { label: 'Accessories', href: '/collections/style-extras', img: '' },
+    { label: 'Books', href: '/collections/kids-books', img: '' },
+    { label: 'Pets', href: '/collections/pets', img: '' },
+    { label: 'Stationery', href: '/collections/stationery', img: '' },
+    { label: 'Toys', href: '/collections/toys-activities', img: '' },
+    { label: 'Drinkware', href: '/collections/drinkware', img: '' },
+    { label: 'Lifestyle', href: '/shop/lifestyle', img: '' },
+    { label: 'Desk', href: '/collections/desk-essentials', img: '' },
+    { label: 'Decor', href: '/collections/home-decor', img: '' },
+    { label: 'Magnets', href: '/collections/magnets', img: '' },
+    { label: 'Posters', href: '/collections/posters', img: '' },
 ];
 
 export default function MobileCategoryRail() {
@@ -46,11 +47,18 @@ export default function MobileCategoryRail() {
                         {RAIL_ITEMS.map((item) => (
                             <Link key={item.label} href={item.href} className="flex flex-col items-center gap-2 min-w-[80px] snap-start group">
                                 <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gray-100 shadow-md transition-transform group-active:scale-95 relative">
-                                    <img
-                                        src={item.img}
-                                        alt={item.label}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    {item.img ? (
+                                        <Image
+                                            src={item.img}
+                                            alt={item.label}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-navy-900/5 flex items-center justify-center text-xs text-navy-900/20 font-bold">
+                                            {item.label[0]}
+                                        </div>
+                                    )}
                                     {/* Subtle inner border for definition */}
                                     <div className="absolute inset-0 rounded-2xl border border-black/5 dark:border-white/10 pointer-events-none"></div>
                                 </div>

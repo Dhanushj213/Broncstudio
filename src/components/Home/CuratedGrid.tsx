@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
@@ -50,10 +51,12 @@ export default function CuratedGrid() {
                             className="group relative flex-shrink-0 w-[45vw] md:w-[320px] snap-start aspect-[4/5] overflow-hidden rounded-[20px] md:rounded-[32px] shadow-sm hover:shadow-2xl transition-all duration-500"
                         >
                             {/* Image with Zoom Effect */}
-                            <img
+                            <Image
                                 src={getGoogleDriveDirectLink(item.image_url)}
                                 alt={item.title}
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 320px"
+                                className="object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
 
                             {/* Floating Glass Card at Bottom */}

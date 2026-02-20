@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { X, ShoppingBag, Check, AlertCircle } from 'lucide-react';
@@ -76,10 +77,12 @@ export default function QuickViewModal() {
                 >
                     {/* LEFT: Image Section (Full Height on Desktop) */}
                     <div className="w-full md:w-1/2 bg-gray-100 dark:bg-black/20 relative md:h-auto h-[35vh] shrink-0">
-                        <img
+                        <Image
                             src={product.image}
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            className="object-cover"
                         />
                         {/* Sold Out Seal */}
                         {(product.badge === 'Sold Out' || product.is_sold_out) ? (

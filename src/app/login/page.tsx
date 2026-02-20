@@ -36,11 +36,7 @@ export default function LoginPage() {
 
     // Login Content Config
     const [loginConfig, setLoginConfig] = useState({
-        visual_urls: [
-            'https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?q=80&w=2070&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2071&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop'
-        ],
+        visual_urls: ['', '', ''],
         headline: 'Capturing Moments,<br />Creating Memories'
     });
 
@@ -210,14 +206,18 @@ export default function LoginPage() {
                                 transition={{ duration: 1.5 }}
                                 className="absolute inset-0"
                             >
-                                <Image
-                                    src={getGoogleDriveDirectLink(loginConfig.visual_urls.filter(url => url !== '')[currentIndex] || loginConfig.visual_urls[0]) || '/images/placeholder.jpg'}
-                                    alt="Visual"
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                    unoptimized={loginConfig.visual_urls[currentIndex]?.startsWith('http')}
-                                />
+                                {loginConfig.visual_urls.filter(url => url !== '')[currentIndex] ? (
+                                    <Image
+                                        src={getGoogleDriveDirectLink(loginConfig.visual_urls.filter(url => url !== '')[currentIndex])}
+                                        alt="Visual"
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                        unoptimized={loginConfig.visual_urls[currentIndex]?.startsWith('http')}
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 bg-gradient-to-br from-navy-900 to-black opacity-60" />
+                                )}
                             </motion.div>
                         </AnimatePresence>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
@@ -368,14 +368,14 @@ export default function LoginPage() {
                                 onClick={() => handleOAuth('google')}
                                 className="flex items-center justify-center gap-2 py-[18px] bg-transparent border border-white/10 rounded-[14px] hover:bg-white/5 transition-all group"
                             >
-                                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+                                <Image src="https://www.svgrepo.com/show/475656/google-color.svg" width={20} height={20} alt="Google" />
                                 <span className="text-sm font-semibold text-white">Google</span>
                             </button>
                             <button
                                 type="button"
                                 className="flex items-center justify-center gap-2 py-[18px] bg-transparent border border-white/10 rounded-[14px] hover:bg-white/5 transition-all group"
                             >
-                                <img src="https://www.svgrepo.com/show/511330/apple-173.svg" className="w-5 h-5 invert opacity-100" alt="Apple" />
+                                <Image src="https://www.svgrepo.com/show/511330/apple-173.svg" width={20} height={20} className="invert opacity-100" alt="Apple" />
                                 <span className="text-sm font-semibold text-white">Apple</span>
                             </button>
                         </div>

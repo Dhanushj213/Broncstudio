@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './ShopByCategory.module.css';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const categories = [
     { id: 'kids-books', label: 'Kids Books', img: 'https://childhood101.com/wp-content/uploads/2016/05/Beautiful-childrens-books.jpg' },
@@ -21,7 +22,9 @@ const ShopByCategory = () => {
                         <Link key={cat.id} href={`/category/${cat.id}`} className={styles.categoryCard}>
                             <div className={styles.imageWrapper}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={cat.img} alt={cat.label} />
+                                <div className="relative w-full aspect-square md:aspect-video rounded-xl overflow-hidden shadow-sm">
+                                    <Image src={cat.img} alt={cat.label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                </div>
                             </div>
                             <span className={styles.label}>{cat.label}</span>
                         </Link>

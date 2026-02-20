@@ -15,7 +15,7 @@ export default function WishlistPage() {
             id: '1',
             name: 'Little Explorer T-Shirt',
             price: 799,
-            image: 'https://images.unsplash.com/photo-1519457431-44d59405d6e6?auto=format&fit=crop&w=800&q=80',
+            image: '',
             badge: 'New'
         },
         {
@@ -23,7 +23,7 @@ export default function WishlistPage() {
             name: 'Premium Canvas Sneaker',
             price: 1299,
             originalPrice: 1599,
-            image: 'https://images.unsplash.com/photo-1503919545874-8621bfdfafa4?auto=format&fit=crop&w=800&q=80'
+            image: ''
         }
     ];
 

@@ -5,7 +5,7 @@ export const CATEGORY_TAXONOMY = {
         slug: 'kids', // RENAMED
         legacy_slug: 'little-legends', // FOR DB MAPPING
         description: 'Curiosity & Play.',
-        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
+        image: '',
         subcategories: [
             {
                 id: 'books',
@@ -47,7 +47,7 @@ export const CATEGORY_TAXONOMY = {
         slug: 'clothing', // RENAMED
         legacy_slug: 'everyday-icons',
         description: 'Fashion for Everyone.',
-        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80',
+        image: '',
         subcategories: [
             {
                 id: 'clothing-men',
@@ -94,7 +94,7 @@ export const CATEGORY_TAXONOMY = {
         db_slug: 'gifts', // DB Mapping
         legacy_slug: 'little-luxuries',
         description: 'Small Joys & Gifting.',
-        image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
+        image: '',
         subcategories: [
             {
                 id: 'drinkware',
@@ -127,7 +127,7 @@ export const CATEGORY_TAXONOMY = {
         slug: 'home', // RENAMED
         legacy_slug: 'space-stories',
         description: 'Decor & Comfort.',
-        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+        image: '',
         subcategories: [
             {
                 id: 'home-decor',
@@ -158,7 +158,7 @@ export const CATEGORY_TAXONOMY = {
         slug: 'accessories', // RENAMED
         legacy_slug: 'style-extras',
         description: 'Style Extras.',
-        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
+        image: '',
         subcategories: [
             {
                 id: 'headwear',
@@ -198,7 +198,7 @@ export const CATEGORY_TAXONOMY = {
         slug: 'pets',
         legacy_slug: 'pets',
         description: 'Furry Friends.',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
+        image: '',
         subcategories: [
             {
                 id: 'pet-essentials',

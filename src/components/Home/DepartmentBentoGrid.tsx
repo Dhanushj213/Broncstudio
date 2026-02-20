@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Loader2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
@@ -38,7 +39,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Clothing',
         subtitle: 'Trending',
         href: '/shop/clothing',
-        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
         color: 'bg-green-100',
@@ -48,7 +49,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Women',
         subtitle: 'For Her',
         href: '/shop/clothing/women',
-        image: 'https://images.unsplash.com/photo-1525845859779-54d477ff291f?w=600&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-2',
         color: 'bg-orange-50',
@@ -58,7 +59,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Stationery & Play',
         subtitle: 'Curiosity',
         href: '/shop/kids',
-        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
         color: 'bg-blue-50',
@@ -68,7 +69,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Accessories',
         subtitle: 'Extras',
         href: '/shop/accessories',
-        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
         color: 'bg-purple-100',
@@ -78,7 +79,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Men',
         subtitle: 'Menswear',
         href: '/shop/clothing/men',
-        image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
         color: 'bg-stone-100',
@@ -88,7 +89,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Pets',
         subtitle: 'Furry Friends',
         href: '/shop/pets',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
         color: 'bg-amber-100',
@@ -98,7 +99,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Lifestyle',
         subtitle: 'Small Joys',
         href: '/shop/lifestyle',
-        image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
+        image: '',
         colSpan: 'col-span-6 md:col-span-3',
         rowSpan: 'row-span-1',
         color: 'bg-rose-50',
@@ -108,7 +109,7 @@ const DEFAULT_TILES: BentoTile[] = [
         title: 'Home',
         subtitle: 'Decor',
         href: '/shop/home',
-        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80',
+        image: '',
         colSpan: 'col-span-12',
         rowSpan: 'row-span-1',
         color: 'bg-indigo-100',
@@ -175,10 +176,12 @@ export default function DepartmentBentoGrid() {
                         >
                             <Link href={tile.href} className="block h-full w-full relative z-10">
                                 <div className="absolute inset-0">
-                                    <img
+                                    <Image
                                         src={getGoogleDriveDirectLink(tile.image) || '/images/placeholder.jpg'}
                                         alt={tile.title}
-                                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-90" />
                                 </div>

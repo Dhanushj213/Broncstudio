@@ -93,7 +93,7 @@ export default function PersonaliseListingPage() {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState<BaseProduct[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<BaseProduct[]>([]);
-    const [heroImage, setHeroImage] = useState<string>('https://images.unsplash.com/photo-1513346038313-05b1c5905d53?w=1600&q=80');
+    const [heroImage, setHeroImage] = useState<string>('');
 
     // Filters
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -195,13 +195,17 @@ export default function PersonaliseListingPage() {
             {/* HERO BANNER IMAGE */}
             <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
                 <div className="absolute inset-0 bg-black/20 dark:bg-black/50 z-10" />
-                <Image
-                    src={heroImage}
-                    alt="Custom Studio Hero"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+                {heroImage ? (
+                    <Image
+                        src={heroImage}
+                        alt="Custom Studio Hero"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-navy-900" />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F7] dark:from-black to-transparent z-20" />
             </div>
 

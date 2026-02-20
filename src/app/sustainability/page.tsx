@@ -2,15 +2,16 @@
 
 import { createClient } from '@/utils/supabase/client';
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { Leaf, Droplets, Sun, Recycle } from 'lucide-react';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function SustainabilityPage() {
-    const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2000&auto=format&fit=crop');
+    const [heroImage, setHeroImage] = useState('');
     const [proudlyIndian, setProudlyIndian] = useState({
-        image: 'https://images.unsplash.com/photo-1628148601679-0522197305b0?q=80&w=1000&auto=format&fit=crop',
+        image: '',
         title: 'Proudly Indian.',
         text: 'Every thread tells a story of Indian heritage. By choosing Broncstudio, you\'re supporting local textile communities in Tamil Nadu and Karnataka.'
     });
@@ -54,9 +55,11 @@ export default function SustainabilityPage() {
             {/* Hero */}
             <div className="relative h-[60vh] overflow-hidden flex items-center justify-center text-center px-6 bg-emerald-950">
                 {heroImage && (
-                    <img
+                    <Image
                         src={getGoogleDriveDirectLink(heroImage)}
                         alt="Nature"
+                        fill
+                        priority
                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                     />
                 )}
@@ -115,11 +118,14 @@ export default function SustainabilityPage() {
                 <div className="container-premium max-w-[1000px] mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
                     <div className="md:w-1/2">
                         {proudlyIndian.image && (
-                            <img
-                                src={getGoogleDriveDirectLink(proudlyIndian.image)}
-                                alt="Artisans"
-                                className="rounded-3xl shadow-lg w-full"
-                            />
+                            <div className="relative aspect-video rounded-3xl overflow-hidden shadow-lg w-full">
+                                <Image
+                                    src={getGoogleDriveDirectLink(proudlyIndian.image)}
+                                    alt="Artisans"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
                         )}
                     </div>
                     <div className="md:w-1/2">

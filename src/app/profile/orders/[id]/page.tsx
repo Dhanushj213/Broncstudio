@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Package, Clock, MapPin, CreditCard, ChevronRight, Truck, CheckCircle, XCircle } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useParams } from 'next/navigation';
@@ -176,8 +177,14 @@ export default function OrderDetailsPage() {
                             const meta = item.metadata;
                             return (
                                 <div key={i} className="p-4 flex gap-4">
-                                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
-                                        <img src={meta?.image_url || item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+                                        <Image
+                                            src={meta?.image_url || item.image_url}
+                                            alt={item.name}
+                                            fill
+                                            sizes="64px"
+                                            className="object-cover"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="font-bold text-primary">{item.name}</h4>

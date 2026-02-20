@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import GlassCard from '@/components/UI/GlassCard';
 import AmbientBackground from '@/components/UI/AmbientBackground';
@@ -86,7 +87,7 @@ export default function ShopClient() {
                     data: { name: 'Shop Worlds', description: 'Explore our curated collections.' } as unknown as TaxonomyCategory,
                     children: children as ShopCardData[],
                     breadcrumbs: [],
-                    heroImage: getGoogleDriveDirectLink(rootHero) || '/images/placeholder.jpg'
+                    heroImage: getGoogleDriveDirectLink(rootHero) || ''
                 });
                 setActiveCategory('all');
                 return;
@@ -127,7 +128,7 @@ export default function ShopClient() {
                             description: item.description
                         })),
                         breadcrumbs: [{ label: l1Node.name, href: `/shop/${l1Node.slug}` }],
-                        heroImage: getGoogleDriveDirectLink(categoryHero) || '/images/placeholder.jpg'
+                        heroImage: getGoogleDriveDirectLink(categoryHero) || ''
                     });
                     setActiveCategory('all');
                     return;
@@ -178,7 +179,7 @@ export default function ShopClient() {
                         { label: l1Node.name, href: `/shop/${l1Node.slug}` },
                         { label: l2Node.name, href: `/shop/${l1Node.slug}/${l2Node.slug}` }
                     ],
-                    heroImage: getGoogleDriveDirectLink(subHero) || '/images/placeholder.jpg'
+                    heroImage: getGoogleDriveDirectLink(subHero) || ''
                 });
                 setActiveCategory('all');
                 return;
@@ -366,10 +367,13 @@ export default function ShopClient() {
                     {/* Side Vignettes for cinematic feel */}
                     <div className="absolute inset-0 bg-gradient-to-r from-page/20 via-transparent to-page/20 z-20 opacity-30" />
 
-                    <img
+                    <Image
                         src={currentView.heroImage}
                         alt="Collection Hero"
-                        className="w-full h-full object-cover"
+                        fill
+                        priority
+                        sizes="100vw"
+                        className="object-cover"
                     />
                 </div>
             )}

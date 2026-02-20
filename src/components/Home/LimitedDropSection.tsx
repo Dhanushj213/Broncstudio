@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import CommerceCountdown from '@/components/UI/CommerceCountdown';
 import { ShoppingBag, Heart, Minus, Plus, Info, HelpCircle, ThumbsUp, AlertCircle } from 'lucide-react';
@@ -271,10 +272,12 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                     }}
                                     className="absolute inset-0 w-full h-full"
                                 >
-                                    <img
+                                    <Image
                                         src={allImages[currentImageIndex] || '/images/placeholder.jpg'}
-                                        alt={data.override_name}
-                                        className={`w-full h-full object-cover transition-opacity duration-1000 ${isOutOfStock ? 'opacity-40 grayscale-[0.8]' : 'opacity-100'}`}
+                                        alt={data.override_name || 'Limited Drop'}
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                        className={`object-cover transition-opacity duration-1000 ${isOutOfStock ? 'opacity-40 grayscale-[0.8]' : 'opacity-100'}`}
                                     />
                                 </motion.div>
                             </AnimatePresence>
@@ -340,7 +343,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                             : 'border-white/5 opacity-50 hover:opacity-100 hover:border-white/20'
                                             }`}
                                     >
-                                        <img src={img} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                                        <Image src={img} alt={`Preview ${idx + 1}`} fill sizes="80px" className="object-cover" />
                                         {currentImageIndex === idx && (
                                             <motion.div
                                                 layoutId="active-thumb-overlay"
@@ -641,11 +644,14 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                             </div>
                             <div className="p-4 md:p-8 max-h-[70vh] overflow-y-auto">
                                 {data.size_chart_url ? (
-                                    <img
-                                        src={getDirectImageUrl(data.size_chart_url)}
-                                        alt="Size Chart"
-                                        className="w-full h-auto rounded-lg shadow-2xl"
-                                    />
+                                    <div className="relative w-full aspect-[3/4]">
+                                        <Image
+                                            src={getDirectImageUrl(data.size_chart_url)}
+                                            alt="Size Chart"
+                                            fill
+                                            className="object-contain rounded-lg shadow-2xl"
+                                        />
+                                    </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center py-20 text-white/20">
                                         <HelpCircle size={48} className="mb-4" />

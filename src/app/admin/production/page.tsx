@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { Download, CheckCircle, Printer, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { format } from 'date-fns';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -206,8 +207,14 @@ export default function ProductionPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gray-100 rounded border border-gray-200 overflow-hidden relative group">
-                                                    <img src={item.image_url} alt="" className="w-full h-full object-cover" />
+                                                <div className="relative w-10 h-10 bg-gray-100 rounded border border-gray-200 overflow-hidden relative group">
+                                                    <Image
+                                                        src={item.image_url}
+                                                        alt=""
+                                                        fill
+                                                        sizes="40px"
+                                                        className="object-cover"
+                                                    />
                                                 </div>
                                                 <div>
                                                     <p className="font-medium text-gray-900">{item.product_name}</p>

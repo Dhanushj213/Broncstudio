@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { ArrowRight, Calendar, User, Clock } from 'lucide-react';
@@ -10,7 +11,7 @@ const ARTICLES = [
         slug: '5-books-every-little-legend-should-read',
         title: '5 Books Every Little Legend Should Read',
         excerpt: 'From magical forests to space adventures, these stories will spark your child’s imagination like never before.',
-        image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1000&auto=format&fit=crop',
+        image: '',
         category: 'Education',
         date: 'Jan 24, 2024',
         readTime: '5 min read'
@@ -19,7 +20,7 @@ const ARTICLES = [
         slug: 'style-guide-dressing-for-play',
         title: 'Style Guide: Dressing for Play',
         excerpt: 'Comfort meets cool. How to choose outfits that survive the playground test while looking picture-perfect.',
-        image: 'https://images.unsplash.com/photo-1502781252888-9143ba7f074e?q=80&w=1000&auto=format&fit=crop',
+        image: '',
         category: 'Fashion',
         date: 'Jan 18, 2024',
         readTime: '4 min read'
@@ -28,7 +29,7 @@ const ARTICLES = [
         slug: 'behind-the-scenes',
         title: 'Behind the Scenes of Our New Collection',
         excerpt: 'Take a peek into our design studio and see how our latest "Space Stories" collection came to life.',
-        image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000&auto=format&fit=crop',
+        image: '',
         category: 'Inside Broncstudio',
         date: 'Jan 10, 2024',
         readTime: '6 min read'
@@ -55,10 +56,12 @@ export default function JournalPage() {
                 <Link href={`/journal/${featured.slug}`} className="group block mb-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
                         <div className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-200 relative shadow-md group-hover:shadow-xl transition-all duration-500">
-                            <img
+                            <Image
                                 src={featured.image}
                                 alt={featured.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                className="object-cover group-hover:scale-105 transition-transform duration-700"
                             />
                             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-black uppercase tracking-wider">
                                 {featured.category}
@@ -89,10 +92,12 @@ export default function JournalPage() {
                     {recent.map((article, i) => (
                         <Link key={i} href={`/journal/${article.slug}`} className="group block bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-all border border-gray-100">
                             <div className="aspect-[3/2] rounded-xl overflow-hidden bg-gray-200 mb-4">
-                                <img
+                                <Image
                                     src={article.image}
                                     alt={article.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                             </div>
                             <div className="space-y-3">

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import ProductCard from '@/components/Product/ProductCard';
@@ -15,7 +16,7 @@ export default function BestsellersPage() {
 
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [heroImage, setHeroImage] = useState('https://images.unsplash.com/photo-1529139574466-a302d2052505?q=80&w=2070&auto=format&fit=crop');
+    const [heroImage, setHeroImage] = useState('');
 
     useEffect(() => {
         const fetchBestsellers = async () => {
@@ -64,11 +65,17 @@ export default function BestsellersPage() {
 
             {/* Hero Section */}
             <div className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center text-center">
-                <img
-                    src={getGoogleDriveDirectLink(heroImage)}
-                    alt="Bestsellers"
-                    className="absolute inset-0 w-full h-full object-cover"
-                />
+                {heroImage ? (
+                    <Image
+                        src={getGoogleDriveDirectLink(heroImage)}
+                        alt="Bestsellers"
+                        fill
+                        priority
+                        className="object-cover"
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-navy-900" />
+                )}
                 <div className="absolute inset-0 bg-black/40 dark:bg-black/60" />
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-10" />
 

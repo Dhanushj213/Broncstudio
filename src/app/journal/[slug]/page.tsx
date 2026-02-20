@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import Link from 'next/link';
 import { ArrowLeft, Share2, Clock, Calendar } from 'lucide-react';
@@ -20,12 +21,7 @@ export default function ArticlePage() {
 
             {/* Header Image */}
             <div className="w-full h-[60vh] relative">
-                <img
-                    src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=2000&auto=format&fit=crop"
-                    alt="Cover"
-                    className="w-full h-full object-cover fixed top-0 left-0 -z-10" // Parallax effect
-                    style={{ height: '60vh' }}
-                />
+                <div className="absolute inset-0 bg-navy-900" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F7] via-[#FAF9F7]/20 to-transparent" />
             </div>
 
@@ -57,7 +53,9 @@ export default function ArticlePage() {
                             Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                         </p>
                         <figure>
-                            <img src="https://images.unsplash.com/photo-1519337265831-281ec6cc8514?q=80&w=1000&auto=format&fit=crop" alt="Reading time" className="rounded-xl w-full" />
+                            <div className="relative aspect-video rounded-xl overflow-hidden mb-2">
+                                <div className="absolute inset-0 bg-navy-900" />
+                            </div>
                             <figcaption className="text-center text-sm text-gray-400 mt-2 italic">Building memories, one page at a time.</figcaption>
                         </figure>
                         <p>

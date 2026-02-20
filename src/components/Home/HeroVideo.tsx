@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createBrowserClient } from '@supabase/ssr';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
@@ -175,12 +176,13 @@ export default function HeroVideo() {
                 >
                     {validImages.map((img, idx) => (
                         <div key={idx} className="min-w-full w-full h-full snap-center flex-shrink-0 relative">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
+                            <Image
                                 src={img}
                                 alt={`Banner ${idx + 1}`}
-                                className="w-full h-full object-cover object-top opacity-90"
-                                referrerPolicy="no-referrer"
+                                fill
+                                priority={idx === 0}
+                                sizes="100vw"
+                                className="object-cover object-top opacity-90"
                             />
                         </div>
                     ))}

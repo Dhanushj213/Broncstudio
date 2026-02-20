@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { motion } from 'framer-motion';
 import { Heart, Globe, PenTool, Sparkles } from 'lucide-react';
@@ -32,12 +33,9 @@ export default function AboutClient() {
 
             {/* 2. Brand Image / Manifesto */}
             <div className="container-premium max-w-[1200px] mx-auto px-6 mb-24">
-                <div className="relative aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden bg-gray-200 shadow-xl">
-                    <img
-                        src="https://images.unsplash.com/photo-1503919545874-86c477cc25a9?q=80&w=2000&auto=format&fit=crop"
-                        alt="Kids playing and laughing"
-                        className="w-full h-full object-cover"
-                    />
+                <div className="relative aspect-video md:aspect-[21/9] rounded-3xl overflow-hidden bg-navy-900 shadow-xl flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-br from-navy-800 to-black opacity-50" />
+                    <span className="text-white/10 text-4xl md:text-9xl font-black select-none uppercase tracking-tighter">BroncStudio</span>
                     <div className="absolute inset-0 bg-navy-900/20 mix-blend-multiply" />
                     <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 text-white max-w-lg">
                         <h3 className="text-2xl md:text-3xl font-heading font-bold mb-2">Designed for Play, Crafted for Love.</h3>
@@ -104,11 +102,14 @@ export default function AboutClient() {
             {/* 4. Founder's Note */}
             <div className="bg-white border-y border-gray-100 py-20">
                 <div className="container-premium max-w-[800px] mx-auto px-6 text-center">
-                    <img
-                        src="/BroncStudio (2).png"
-                        alt="Broncstudio Logo"
-                        className="h-16 w-auto mx-auto mb-8"
-                    />
+                    <div className="relative h-16 w-full max-w-[200px] mx-auto mb-8">
+                        <Image
+                            src="/BroncStudio (2).png"
+                            alt="Broncstudio Logo"
+                            fill
+                            className="object-contain"
+                        />
+                    </div>
                     <blockquote className="text-2xl md:text-3xl font-heading font-medium text-navy-900 leading-normal mb-8">
                         "We aren't just selling clothes; we're dressing memories. Every birthday, every playdate, every quiet reading corner—we want to be a cozy part of it."
                     </blockquote>

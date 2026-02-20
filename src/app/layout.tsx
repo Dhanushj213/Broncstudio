@@ -106,8 +106,13 @@ export const metadata: Metadata = {
     creator: "@broncstudio", // Replace if social handle exists
   },
   icons: {
-    icon: '/blacklogo.png',
-    apple: '/blacklogo.png',
+    icon: [
+      { url: '/blacklogo.png' },
+      { url: '/blacklogo.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/blacklogo.png' },
+    ],
   },
   manifest: '/manifest.webmanifest',
   appleWebApp: {

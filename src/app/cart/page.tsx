@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Trash2, Minus, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
 import AmbientBackground from '@/components/UI/AmbientBackground';
@@ -19,12 +20,12 @@ const CartPage = () => {
 
     if (items.length === 0) {
         const WORLDS = [
-            { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids', icon: '🎨', color: '#FFD966', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing', icon: '👕', color: '#5BC0EB', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle', icon: '🎁', color: '#B392AC', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home', icon: '🏠', color: '#1B263B', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories', icon: '🧢', color: '#9BC53D', image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets', icon: '🐾', color: '#FF6B6B', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids', icon: '🎨', color: '#FFD966', image: '' },
+            { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing', icon: '👕', color: '#5BC0EB', image: '' },
+            { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle', icon: '🎁', color: '#B392AC', image: '' },
+            { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home', icon: '🏠', color: '#1B263B', image: '' },
+            { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories', icon: '🧢', color: '#9BC53D', image: '' },
+            { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets', icon: '🐾', color: '#FF6B6B', image: '' },
         ];
 
         return (
@@ -56,7 +57,11 @@ const CartPage = () => {
                                 <div
                                     className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden bg-white shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1 border border-white/50"
                                 >
-                                    <img src={world.image} alt={world.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                    {world.image ? (
+                                        <Image src={world.image} alt={world.name} fill sizes="(max-width: 768px) 50vw, 150px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
+                                    ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center text-4xl" style={{ backgroundColor: world.color }}>{world.icon}</div>
+                                    )}
                                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                                 </div>
                                 <div className="flex flex-col items-center text-center">
@@ -93,7 +98,7 @@ const CartPage = () => {
                             <GlassCard key={item.id} className="p-4 md:p-6 flex gap-4 md:gap-6 items-center group hover:border-coral-500/30 transition-colors">
                                 {/* Image */}
                                 <div className="w-24 h-24 md:w-32 h-32 bg-surface-2 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 relative">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <Image src={item.image} alt={item.name} fill sizes="128px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                 </div>
 
                                 {/* Details */}

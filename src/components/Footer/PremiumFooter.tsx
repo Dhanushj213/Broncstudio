@@ -103,7 +103,9 @@ export default function PremiumFooter() {
                     <div className="md:col-span-4 space-y-6">
                         <div>
                             <a href="/" className="flex flex-col items-center gap-2 mb-6 cursor-pointer group w-fit mx-auto md:mx-0">
-                                <img src="/whitelogo.png" alt="Broncstudio" className="h-20 w-auto object-contain" />
+                                <div className="relative h-20 w-32">
+                                    <Image src="/whitelogo.png" alt="Broncstudio" fill className="object-contain" />
+                                </div>
                                 <div className="relative h-20 md:h-14 w-auto aspect-[4/1]">
                                     {/* Light Mode */}
                                     <Image
@@ -313,11 +315,14 @@ export default function PremiumFooter() {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 group cursor-default">
                             <span className="text-[10px] font-bold tracking-widest uppercase text-gray-500 group-hover:text-gray-300 transition-colors">MADE IN INDIA</span>
-                            <img
-                                src="/makeinindia.png"
-                                alt="Make in India"
-                                className="h-10 w-auto brightness-0 invert opacity-80 group-hover:filter-none group-hover:opacity-100 transition-all duration-500"
-                            />
+                            <div className="relative h-10 w-16 px-1">
+                                <Image
+                                    src="/makeinindia.png"
+                                    alt="Make in India"
+                                    fill
+                                    className="object-contain brightness-0 invert opacity-80 group-hover:filter-none group-hover:opacity-100 transition-all duration-500"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

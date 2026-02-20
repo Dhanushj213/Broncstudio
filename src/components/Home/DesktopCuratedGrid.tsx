@@ -3,6 +3,7 @@
 // Vercel Rebuild Trigger: 160px micro update (Forced)
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { ArrowRight } from 'lucide-react';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
@@ -56,10 +57,12 @@ export default function DesktopCuratedGrid() {
                             href={`/shop/${item.category_slugs?.[0] || 'all'}?curated=${item.id}`}
                             className="group relative w-full aspect-square overflow-hidden rounded-[32px] cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500"
                         >
-                            <img
+                            <Image
                                 src={getGoogleDriveDirectLink(item.image_url)}
                                 alt={item.title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                fill
+                                sizes="(max-width: 1024px) 50vw, 33vw"
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-500" />
 

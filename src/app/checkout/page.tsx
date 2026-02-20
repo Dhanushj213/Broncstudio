@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CreditCard, Wallet, Banknote, ShieldCheck, Mail, MapPin, Phone, User, CheckCircle2, Loader2, ArrowRight, PartyPopper } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 import { formatPrice } from '@/utils/formatPrice';
 import Link from 'next/link';
@@ -912,7 +913,9 @@ export default function CheckoutPage() {
                                 {items.map((item) => (
                                     <div key={item.id} className="flex gap-4">
                                         <div className="w-16 h-16 bg-surface-2 rounded-lg overflow-hidden flex-shrink-0 border border-subtle">
-                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            <div className="relative w-full h-full">
+                                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                            </div>
                                         </div>
                                         <div className="flex-1">
                                             <h4 className="text-sm font-bold text-primary truncate">{item.name}</h4>

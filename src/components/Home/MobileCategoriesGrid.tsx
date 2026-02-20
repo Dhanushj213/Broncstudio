@@ -2,55 +2,56 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Strictly mapped to 'src/data/categories.ts' output
 const CATALOG_CATEGORIES = [
     {
         label: "Men's Edit",
         slug: 'men',
-        image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=500&q=80',
+        image: '',
         href: '/collections/men'
     },
     {
         label: "Women's Edit",
         slug: 'women',
-        image: 'https://images.unsplash.com/photo-1525845859779-54d477ff291f?w=500&q=80',
+        image: '',
         href: '/collections/women'
     },
     {
         label: "Little Legends",
         slug: 'little-legends',
-        image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80',
+        image: '',
         href: '/collections/little-legends'
     },
     {
         label: "Home & Living",
         slug: 'space-stories',
-        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80',
+        image: '',
         href: '/collections/space-stories'
     },
     {
         label: "Accessories",
         slug: 'style-extras',
-        image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80',
+        image: '',
         href: '/collections/style-extras'
     },
     {
         label: "Everyday Icons",
         slug: 'everyday-icons',
-        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80',
+        image: '',
         href: '/collections/everyday-icons'
     },
     {
         label: "Gift Suite",
         slug: 'little-luxuries',
-        image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80',
+        image: '',
         href: '/collections/little-luxuries'
     },
     {
         label: "Pawfect Picks",
         slug: 'pets',
-        image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500&q=80',
+        image: '',
         href: '/collections/pets'
     }
 ];
@@ -77,11 +78,17 @@ export default function MobileCategoriesGrid() {
                             className="flex flex-col gap-2 group snap-start w-[calc(50vw-24px)]"
                         >
                             <div className="aspect-[3/4] overflow-hidden rounded-lg bg-gray-200 relative">
-                                <img
-                                    src={item.image}
-                                    alt={item.label}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
+                                {item.image ? (
+                                    <Image
+                                        src={item.image}
+                                        alt={item.label}
+                                        fill
+                                        sizes="50vw"
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 bg-gray-200" />
+                                )}
                                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                             </div>
                             <span className="text-center text-[10px] font-bold text-navy-900 dark:text-white uppercase tracking-widest truncate px-1">

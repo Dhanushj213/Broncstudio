@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const MotionImage = motion(Image);
 import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 
 interface ProductGalleryProps {
@@ -44,12 +47,16 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                     className="flex md:hidden overflow-x-auto snap-x snap-mandatory no-scrollbar w-full aspect-[3/4] bg-surface-2"
                 >
                     {images.map((img, idx) => (
-                        <div key={idx} className="w-full h-full flex-shrink-0 snap-center p-4">
-                            <img
-                                src={img}
-                                alt={`View ${idx}`}
-                                className="w-full h-full object-cover rounded-2xl shadow-sm"
-                            />
+                        <div key={idx} className="relative w-full h-full flex-shrink-0 snap-center p-4">
+                            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-sm">
+                                <Image
+                                    src={img}
+                                    alt={`View ${idx}`}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover"
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -66,7 +73,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                     }}
                 >
                     <AnimatePresence mode="wait">
-                        <motion.img
+                        <MotionImage
                             key={activeIndex}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -74,7 +81,10 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                             transition={{ duration: 0.4 }}
                             src={images[activeIndex]}
                             alt="Main product view"
-                            className="w-full h-full object-cover transition-transform duration-200 ease-out group-hover:scale-[2] origin-[var(--zoom-x)_var(--zoom-y)]"
+                            fill
+                            priority
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            className="object-cover transition-transform duration-200 ease-out group-hover:scale-[2] origin-[var(--zoom-x)_var(--zoom-y)]"
                         />
                     </AnimatePresence>
 
@@ -130,7 +140,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                             : 'border-transparent opacity-60 hover:opacity-100'
                             }`}
                     >
-                        <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                        <Image src={img} alt={`Thumbnail ${idx}`} fill sizes="10vw" className="object-cover" />
                         {activeIndex === idx && (
                             <motion.div
                                 layoutId="activeThumb"

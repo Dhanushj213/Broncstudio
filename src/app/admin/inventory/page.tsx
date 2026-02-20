@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { Search, Save, AlertTriangle, Check, Loader2, Layers } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface ProductInventory {
     id: string;
@@ -160,7 +161,13 @@ export default function InventoryPage() {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-white/10 overflow-hidden border border-gray-200 dark:border-white/10">
                                                     {product.images?.[0] ? (
-                                                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                                                        <Image
+                                                            src={product.images[0]}
+                                                            alt={product.name}
+                                                            fill
+                                                            sizes="40px"
+                                                            className="object-cover"
+                                                        />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">IMG</div>
                                                     )}

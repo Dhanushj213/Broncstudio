@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { createBrowserClient } from '@supabase/ssr';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
@@ -43,11 +44,14 @@ export default function PressPage() {
                         <div key={i} className="bg-white dark:bg-white/5 p-12 rounded-3xl border border-gray-100 dark:border-white/10 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-center gap-12 text-left group">
                             <div className="w-full md:w-1/3 flex items-center justify-center p-6 bg-gray-50 dark:bg-white/10 rounded-2xl h-40">
                                 {feature.logo ? (
-                                    <img
-                                        src={getGoogleDriveDirectLink(feature.logo)}
-                                        alt={feature.name}
-                                        className="max-h-12 max-w-full opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0 dark:invert"
-                                    />
+                                    <div className="relative h-12 w-full max-w-[150px]">
+                                        <Image
+                                            src={getGoogleDriveDirectLink(feature.logo)}
+                                            alt={feature.name}
+                                            fill
+                                            className="object-contain opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0 dark:invert"
+                                        />
+                                    </div>
                                 ) : (
                                     <span className="text-gray-400 font-bold text-xl">{feature.name}</span>
                                 )}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { createBrowserClient } from '@supabase/ssr';
 import {
     Save,
@@ -261,14 +262,14 @@ export default function StorefrontPage() {
         } else {
             setBentoContent({
                 tiles: [
-                    { title: 'Clothing', subtitle: 'Trending', href: '/shop/clothing', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-green-100', textColor: 'text-green-900' },
-                    { title: 'Women', subtitle: 'For Her', href: '/shop/clothing/women', image: 'https://images.unsplash.com/photo-1525845859779-54d477ff291f?w=600&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-2', color: 'bg-orange-50', textColor: 'text-orange-900' },
-                    { title: 'Stationery & Play', subtitle: 'Curiosity', href: '/shop/kids', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-blue-50', textColor: 'text-blue-900' },
-                    { title: 'Accessories', subtitle: 'Extras', href: '/shop/accessories', image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-purple-100', textColor: 'text-purple-900' },
-                    { title: 'Men', subtitle: 'Menswear', href: '/shop/clothing/men', image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-stone-100', textColor: 'text-stone-900' },
-                    { title: 'Pets', subtitle: 'Furry Friends', href: '/shop/pets', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-amber-100', textColor: 'text-amber-900' },
-                    { title: 'Lifestyle', subtitle: 'Small Joys', href: '/shop/lifestyle', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-rose-50', textColor: 'text-rose-900' },
-                    { title: 'Home', subtitle: 'Decor', href: '/shop/home', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80', colSpan: 'col-span-12', rowSpan: 'row-span-1', color: 'bg-indigo-100', textColor: 'text-indigo-900' }
+                    { title: 'Clothing', subtitle: 'Trending', href: '/shop/clothing', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-green-100', textColor: 'text-green-900' },
+                    { title: 'Women', subtitle: 'For Her', href: '/shop/clothing/women', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-2', color: 'bg-orange-50', textColor: 'text-orange-900' },
+                    { title: 'Stationery & Play', subtitle: 'Curiosity', href: '/shop/kids', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-blue-50', textColor: 'text-blue-900' },
+                    { title: 'Accessories', subtitle: 'Extras', href: '/shop/accessories', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-purple-100', textColor: 'text-purple-900' },
+                    { title: 'Men', subtitle: 'Menswear', href: '/shop/clothing/men', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-stone-100', textColor: 'text-stone-900' },
+                    { title: 'Pets', subtitle: 'Furry Friends', href: '/shop/pets', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-amber-100', textColor: 'text-amber-900' },
+                    { title: 'Lifestyle', subtitle: 'Small Joys', href: '/shop/lifestyle', image: '', colSpan: 'col-span-6 md:col-span-3', rowSpan: 'row-span-1', color: 'bg-rose-50', textColor: 'text-rose-900' },
+                    { title: 'Home', subtitle: 'Decor', href: '/shop/home', image: '', colSpan: 'col-span-12', rowSpan: 'row-span-1', color: 'bg-indigo-100', textColor: 'text-indigo-900' }
                 ]
             });
         }
@@ -285,12 +286,12 @@ export default function StorefrontPage() {
         } else {
             setShopCollections({
                 collections: [
-                    { id: 'kids', name: 'Stationery & Play', slug: 'kids', image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=80', description: 'Curiosity & Play.' },
-                    { id: 'clothing', name: 'Clothing', slug: 'clothing', image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&q=80', description: 'Fashion for Everyone.' },
-                    { id: 'lifestyle', name: 'Lifestyle', slug: 'lifestyle', image: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=500&q=80', description: 'Small Joys & Gifting.' },
-                    { id: 'home', name: 'Home & Tech', slug: 'home', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&q=80', description: 'Decor & Comfort.' },
-                    { id: 'accessories', name: 'Accessories', slug: 'accessories', image: 'https://images.unsplash.com/photo-1576053139778-7e32f2ae3cfd?w=500&q=80', description: 'Style Extras.' },
-                    { id: 'pets', name: 'Pets', slug: 'pets', image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&q=80', description: 'Furry Friends.' }
+                    { id: 'kids', name: 'Stationery & Play', slug: 'kids', image: '', description: 'Curiosity & Play.' },
+                    { id: 'clothing', name: 'Clothing', slug: 'clothing', image: '', description: 'Fashion for Everyone.' },
+                    { id: 'lifestyle', name: 'Lifestyle', slug: 'lifestyle', image: '', description: 'Small Joys & Gifting.' },
+                    { id: 'home', name: 'Home & Tech', slug: 'home', image: '', description: 'Decor & Comfort.' },
+                    { id: 'accessories', name: 'Accessories', slug: 'accessories', image: '', description: 'Style Extras.' },
+                    { id: 'pets', name: 'Pets', slug: 'pets', image: '', description: 'Furry Friends.' }
                 ]
             });
         }
@@ -806,13 +807,25 @@ export default function StorefrontPage() {
                                                     />
                                                 ) : (
                                                     getGoogleDriveDirectLink(heroContent.poster_url) && (
-                                                        <img src={getGoogleDriveDirectLink(heroContent.poster_url)} className="w-full h-full object-cover opacity-50" alt="" />
+                                                        <Image
+                                                            src={getGoogleDriveDirectLink(heroContent.poster_url)}
+                                                            alt=""
+                                                            fill
+                                                            sizes="800px"
+                                                            className="w-full h-full object-cover opacity-50"
+                                                        />
                                                     )
                                                 )
                                             ) : (
                                                 <div className="w-full h-full overflow-hidden bg-navy-800">
                                                     {heroContent.images[0] && getGoogleDriveDirectLink(heroContent.images[0]) && (
-                                                        <img src={getGoogleDriveDirectLink(heroContent.images[0])} className="w-full h-full object-cover" alt="" />
+                                                        <Image
+                                                            src={getGoogleDriveDirectLink(heroContent.images[0])}
+                                                            alt=""
+                                                            fill
+                                                            sizes="800px"
+                                                            className="w-full h-full object-cover"
+                                                        />
                                                     )}
                                                 </div>
                                             )}
@@ -865,7 +878,13 @@ export default function StorefrontPage() {
                                     </div>
                                     <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(personaliseHeroImage) && (
-                                            <img src={getGoogleDriveDirectLink(personaliseHeroImage)} className="w-full h-full object-cover" alt="" />
+                                            <Image
+                                                src={getGoogleDriveDirectLink(personaliseHeroImage)}
+                                                alt=""
+                                                fill
+                                                sizes="800px"
+                                                className="w-full h-full object-cover"
+                                            />
                                         )}
                                     </div>
                                 </div>
@@ -902,7 +921,13 @@ export default function StorefrontPage() {
                                     </div>
                                     <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '') && (
-                                            <img src={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '')} className="w-full h-full object-cover" alt="" />
+                                            <Image
+                                                src={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '')}
+                                                alt=""
+                                                fill
+                                                sizes="400px"
+                                                className="w-full h-full object-cover"
+                                            />
                                         )}
                                     </div>
                                 </div>
@@ -924,7 +949,13 @@ export default function StorefrontPage() {
                                     </div>
                                     <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '') && (
-                                            <img src={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '')} className="w-full h-full object-cover" alt="" />
+                                            <Image
+                                                src={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '')}
+                                                alt=""
+                                                fill
+                                                sizes="400px"
+                                                className="w-full h-full object-cover"
+                                            />
                                         )}
                                     </div>
                                 </div>
@@ -946,7 +977,13 @@ export default function StorefrontPage() {
                                     </div>
                                     <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '') && (
-                                            <img src={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '')} className="w-full h-full object-cover" alt="" />
+                                            <Image
+                                                src={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '')}
+                                                alt=""
+                                                fill
+                                                sizes="400px"
+                                                className="w-full h-full object-cover"
+                                            />
                                         )}
                                     </div>
                                 </div>
@@ -982,7 +1019,13 @@ export default function StorefrontPage() {
                                     </div>
                                     <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['root'] || '') && (
-                                            <img src={getGoogleDriveDirectLink(shopHeroImages['root'] || '')} className="w-full h-full object-cover" alt="" />
+                                            <Image
+                                                src={getGoogleDriveDirectLink(shopHeroImages['root'] || '')}
+                                                alt=""
+                                                fill
+                                                sizes="400px"
+                                                className="w-full h-full object-cover"
+                                            />
                                         )}
                                     </div>
                                 </div>
@@ -1015,7 +1058,13 @@ export default function StorefrontPage() {
                                                     </label>
                                                     <div className="w-20 h-10 rounded-lg bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
                                                         {getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '') && (
-                                                            <img src={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '')} className="w-full h-full object-cover" alt="" />
+                                                            <Image
+                                                                src={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '')}
+                                                                alt=""
+                                                                fill
+                                                                sizes="400px"
+                                                                className="w-full h-full object-cover"
+                                                            />
                                                         )}
                                                     </div>
                                                 </div>
@@ -1037,7 +1086,13 @@ export default function StorefrontPage() {
                                                         </label>
                                                         <div className="w-16 h-8 rounded bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
                                                             {getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '') && (
-                                                                <img src={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '')} className="w-full h-full object-cover" alt="" />
+                                                                <Image
+                                                                    src={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '')}
+                                                                    alt=""
+                                                                    fill
+                                                                    sizes="400px"
+                                                                    className="w-full h-full object-cover"
+                                                                />
                                                             )}
                                                         </div>
                                                     </div>
@@ -1076,13 +1131,17 @@ export default function StorefrontPage() {
                                     <div className="flex gap-6">
                                         {/* Image Preview */}
                                         <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 dark:bg-white/5 border border-gray-100 dark:border-white/10">
-                                            {getGoogleDriveDirectLink(tile.image) && (
-                                                <img
-                                                    src={getGoogleDriveDirectLink(tile.image)}
-                                                    className="w-full h-full object-cover transition-transform group-hover/card:scale-110 duration-700"
-                                                    alt=""
-                                                />
-                                            )}
+                                            <div className="relative w-full h-full">
+                                                {getGoogleDriveDirectLink(tile.image) && (
+                                                    <Image
+                                                        src={getGoogleDriveDirectLink(tile.image)}
+                                                        alt=""
+                                                        fill
+                                                        sizes="96px"
+                                                        className="object-cover transition-transform group-hover/card:scale-110 duration-700"
+                                                    />
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Inputs Grouped */}
@@ -1168,10 +1227,12 @@ export default function StorefrontPage() {
                             {shopCollections.collections.map((col, idx) => (
                                 <div key={idx} className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 overflow-hidden shadow-lg dark:shadow-none hover:shadow-2xl hover:border-blue-100 dark:hover:border-white/20 transition-all group/shopcard">
                                     <div className="h-40 relative bg-gray-900 overflow-hidden">
-                                        <img
+                                        <Image
                                             src={getGoogleDriveDirectLink(col.image)}
-                                            className="w-full h-full object-cover opacity-60 transition-transform group-hover/shopcard:scale-110 duration-1000"
                                             alt=""
+                                            fill
+                                            sizes="400px"
+                                            className="w-full h-full object-cover opacity-60 transition-transform group-hover/shopcard:scale-110 duration-1000"
                                         />
                                         <div className="absolute inset-0 p-4 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent">
                                             <span className="text-white text-lg font-black tracking-tight leading-none px-2">{col.name}</span>
@@ -1498,7 +1559,13 @@ export default function StorefrontPage() {
                                                         {url && (
                                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full overflow-hidden border border-gray-200">
                                                                 {getGoogleDriveDirectLink(url) && (
-                                                                    <img src={getGoogleDriveDirectLink(url)} className="w-full h-full object-cover" alt="" />
+                                                                    <Image
+                                                                        src={getGoogleDriveDirectLink(url)}
+                                                                        alt=""
+                                                                        fill
+                                                                        sizes="80px"
+                                                                        className="w-full h-full object-cover"
+                                                                    />
                                                                 )}
                                                             </div>
                                                         )}
@@ -1530,10 +1597,12 @@ export default function StorefrontPage() {
                                         {/* Background Carousel (Preview first active) */}
                                         <div className="absolute inset-0 z-0">
                                             {loginContent.visual_urls.find(url => url !== '') ? (
-                                                <img
+                                                <Image
                                                     src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')}
-                                                    className="w-full h-full object-cover opacity-60"
                                                     alt=""
+                                                    fill
+                                                    sizes="600px"
+                                                    className="w-full h-full object-cover opacity-60"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-navy-900/50" />
@@ -1764,8 +1833,16 @@ export default function StorefrontPage() {
                         <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 space-y-6">
                             {lookbookItems.map((item, idx) => (
                                 <div key={idx} className="bg-gray-50 dark:bg-white/5 p-6 rounded-xl space-y-4 border border-gray-200 dark:border-white/10 flex items-center gap-4">
-                                    <div className="w-20 h-20 rounded-lg bg-gray-200 shrink-0 overflow-hidden">
-                                        {item.image && <img src={getGoogleDriveDirectLink(item.image)} className="w-full h-full object-cover" />}
+                                    <div className="relative w-20 h-20 rounded-lg bg-gray-200 shrink-0 overflow-hidden">
+                                        {item.image && (
+                                            <Image
+                                                src={getGoogleDriveDirectLink(item.image)}
+                                                alt=""
+                                                fill
+                                                sizes="80px"
+                                                className="object-cover"
+                                            />
+                                        )}
                                     </div>
                                     <div className="flex-1 space-y-2">
                                         <input

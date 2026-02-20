@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Edit2, ShieldCheck, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -52,11 +53,14 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
 
             {/* Avatar */}
             {user?.avatar_url ? (
-                <img
-                    src={user.avatar_url}
-                    alt={getDisplayName()}
-                    className="relative z-10 w-20 h-20 rounded-full ring-4 ring-[#FAF9F7] dark:ring-black flex-shrink-0 object-cover"
-                />
+                <div className="relative z-10 w-20 h-20 rounded-full ring-4 ring-[#FAF9F7] dark:ring-black flex-shrink-0 overflow-hidden">
+                    <Image
+                        src={user.avatar_url}
+                        alt={getDisplayName()}
+                        fill
+                        className="object-cover"
+                    />
+                </div>
             ) : (
                 <div className="relative z-10 w-20 h-20 rounded-full bg-gray-100 dark:bg-white/10 text-navy-900 dark:text-white flex items-center justify-center text-2xl font-bold ring-4 ring-[#FAF9F7] dark:ring-black flex-shrink-0 transition-colors duration-300">
                     {getInitials()}

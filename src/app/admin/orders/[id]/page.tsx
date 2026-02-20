@@ -5,6 +5,7 @@ import { createBrowserClient } from '@supabase/ssr';
 import { ArrowLeft, CheckCircle, XCircle, Truck, Package, CreditCard, User, MapPin, Clock } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { updateOrderStatus, updatePaymentStatus, undoLastStatusUpdate } from '@/actions/adminActions';
 import { useToast } from '@/context/ToastContext';
 import InvoiceDownloadButton from '@/components/Invoice/InvoiceDownloadButton';
@@ -268,8 +269,14 @@ export default function OrderDetailPage() {
                                 const meta = item.metadata as any;
                                 return (
                                     <div key={idx} className="p-6 flex items-start gap-4">
-                                        <div className="w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative group">
-                                            <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                        <div className="relative w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative group">
+                                            <Image
+                                                src={item.image_url}
+                                                alt={item.name}
+                                                fill
+                                                sizes="80px"
+                                                className="object-cover"
+                                            />
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -297,8 +304,14 @@ export default function OrderDetailPage() {
                                                                     .filter(([_, p]) => p.enabled && p.uploadedImage)
                                                                     .map(([loc, p]) => (
                                                                         <div key={loc} className="bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3">
-                                                                            <div className="w-12 h-12 bg-white dark:bg-black/20 rounded border border-gray-200 dark:border-white/10 overflow-hidden flex-shrink-0">
-                                                                                <img src={p.uploadedImage} alt={loc} className="w-full h-full object-contain p-1" />
+                                                                            <div className="relative w-12 h-12 bg-white dark:bg-black/20 rounded border border-gray-200 dark:border-white/10 overflow-hidden flex-shrink-0">
+                                                                                <Image
+                                                                                    src={p.uploadedImage}
+                                                                                    alt={loc}
+                                                                                    fill
+                                                                                    sizes="48px"
+                                                                                    className="object-contain p-1"
+                                                                                />
                                                                             </div>
                                                                             <div className="flex-1 min-w-0">
                                                                                 <p className="text-gray-400 text-[10px] font-bold uppercase tracking-wider">{loc}</p>

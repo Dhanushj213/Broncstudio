@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
@@ -44,10 +45,12 @@ export default function MobileCuratedGrid() {
                         className="flex flex-col gap-2 w-[calc(50vw-24px)] snap-start group"
                     >
                         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-100">
-                            <img
+                            <Image
                                 src={getGoogleDriveDirectLink(item.image_url)}
                                 alt={item.title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                fill
+                                sizes="50vw"
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                         </div>
                         <span className="text-navy-900 dark:text-white font-serif uppercase tracking-widest text-[10px] text-center font-bold">

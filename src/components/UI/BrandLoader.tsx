@@ -116,10 +116,11 @@ export default function BrandLoader({ text = 'Just a moment...', size = 'md' }: 
                         }}
                         transition={{ duration: 2, repeat: Infinity }}
                     >
-                        <img
+                        <Image
                             src="/whitelogo.png"
                             alt="Broncstudio"
-                            className="w-full h-full object-contain"
+                            fill
+                            className="object-contain"
                         />
                     </motion.div>
 
