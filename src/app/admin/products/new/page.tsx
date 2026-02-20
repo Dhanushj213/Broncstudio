@@ -31,6 +31,7 @@ export default function NewProductPage() {
         category_id: '',
         images: [] as string[],
         is_featured: false,
+        is_sold_out: false,
         gst_percent: '18', // Default
         tags: '',
 
@@ -151,7 +152,8 @@ export default function NewProductPage() {
                 category_id: formData.category_id,
                 images: formData.images,
                 slug: slug,
-                metadata: metadata
+                metadata: metadata,
+                is_sold_out: formData.is_sold_out
             });
 
         if (error) {
@@ -187,15 +189,27 @@ export default function NewProductPage() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                     <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                         <h2 className="text-lg font-bold text-gray-900">General Information</h2>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={formData.is_featured}
-                                onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-                                className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
-                            />
-                            <span className="text-sm font-bold text-gray-900">Featured Product</span>
-                        </label>
+                        <div className="flex items-center gap-6">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.is_featured}
+                                    onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                                    className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                                />
+                                <span className="text-sm font-bold text-gray-900">Featured</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.is_sold_out}
+                                    onChange={(e) => setFormData({ ...formData, is_sold_out: e.target.checked })}
+                                    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                                />
+                                <span className="text-sm font-bold text-red-600">Mark as Sold Out</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>

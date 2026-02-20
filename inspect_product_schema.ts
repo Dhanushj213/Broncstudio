@@ -10,7 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function inspectProduct() {
     const { data, error } = await supabase
         .from('products')
-        .select('id, tags')
+        .select('*')
         .limit(1)
         .single();
 

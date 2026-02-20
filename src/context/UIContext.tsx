@@ -16,6 +16,7 @@ export interface QuickViewProductData {
     badge?: string;
     sizes?: string[];
     metadata?: any;
+    is_sold_out?: boolean;
 }
 
 interface UIContextType {

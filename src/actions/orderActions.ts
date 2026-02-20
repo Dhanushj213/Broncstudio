@@ -112,6 +112,33 @@ export async function createOrder(
             return { success: false, error: 'Insufficient wallet balance.' };
         }
     }
+    // 2.5 Validate Stock (Crucial for Limited Drops)
+    for (const item of items) {
+        const { data: product } = await supabase
+            .from('products')
+            .select('total_stock')
+            .eq('id', item.productId)
+            .single();
+
+        if (product) {
+            const { data: soldData } = await supabase
+                .from('order_items')
+                .select('quantity, orders!inner(payment_status, status)')
+                .eq('product_id', item.productId)
+                .eq('orders.payment_status', 'paid')
+                .in('orders.status', ['processing', 'shipped', 'delivered']);
+
+            const totalSold = (soldData as any[])?.reduce((acc: number, curr: any) => acc + (curr.quantity || 0), 0) || 0;
+            const remaining = Math.max(0, product.total_stock - totalSold);
+
+            if (item.qty > remaining) {
+                return {
+                    success: false,
+                    error: `Insufficient stock for ${item.name}. Only ${remaining} left.`
+                };
+            }
+        }
+    }
 
     // 3. Insert Order
     const { data: order, error: orderError } = await supabase

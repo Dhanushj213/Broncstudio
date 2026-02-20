@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Poppins, Inter, Baloo_2, Nunito } from "next/font/google";
+import { Poppins, Inter, Baloo_2, Nunito, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header/Header";
 import MobileNav from "@/components/Header/MobileNav";
@@ -41,6 +41,12 @@ const baloo2 = Baloo_2({
   variable: "--font-baloo",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 const nunito = Nunito({
@@ -143,7 +149,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} ${greatVibes.variable} antialiased`}
+        className={`${poppins.variable} ${inter.variable} ${baloo2.variable} ${nunito.variable} ${greatVibes.variable} ${playfair.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
@@ -189,6 +195,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </body>
-    </html>
+    </html >
   );
 }

@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             url: `https://broncstudio.com/product/${product.id}`,
             priceCurrency: 'INR',
             price: product.price,
-            availability: product.stock_status !== 'out_of_stock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            availability: (product.is_sold_out || product.stock_status !== 'out_of_stock') ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
             itemCondition: 'https://schema.org/NewCondition'
         }
     } : null;

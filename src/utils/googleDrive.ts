@@ -10,12 +10,9 @@ export const getGoogleDriveDirectLink = (url: string | undefined): string => {
 
         if (match) {
             const fileId = match[0];
-            // Thumbnail endpoint is often more reliable for direct image display
-            // sz=w1280 provides a high-quality preview
-            const directLink = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1280`;
-
-            // Still use the proxy to bypass potential 403s/CORs issues
-            return `/api/proxy-image?url=${encodeURIComponent(directLink)}`;
+            const directDriveUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+            // Use an external image proxy (wsrv.nl) to bypass Google Drive's strict hotlinking/CORS policies
+            return `https://wsrv.nl/?url=${encodeURIComponent(directDriveUrl)}`;
         }
 
         // Return original URL if it doesn't match Google Drive ID pattern

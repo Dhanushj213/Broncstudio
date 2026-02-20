@@ -38,6 +38,7 @@ export interface DBProduct {
     stock_status?: string;
     created_at: string;
     category_id: string;
+    is_sold_out?: boolean;
     metadata?: {
         colors?: string[];
         sizes?: string[];
@@ -55,6 +56,7 @@ export interface ShopProduct {
     image: string;
     secondaryImage?: string;
     badge?: string;
+    is_sold_out?: boolean;
 }
 
 export interface ShopCardData {

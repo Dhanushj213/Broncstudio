@@ -43,7 +43,18 @@ function SearchContent() {
                 console.error('Search error:', error);
             }
 
-            setProducts(data || []);
+            if (data) {
+                const sorted = [...data].sort((a, b) => {
+                    const aSoldOut = !!a.is_sold_out || a.stock_status === 'out_of_stock';
+                    const bSoldOut = !!b.is_sold_out || b.stock_status === 'out_of_stock';
+                    if (aSoldOut && !bSoldOut) return 1;
+                    if (!aSoldOut && bSoldOut) return -1;
+                    return 0;
+                });
+                setProducts(sorted);
+            } else {
+                setProducts([]);
+            }
             setLoading(false);
         };
 
@@ -85,6 +96,7 @@ function SearchContent() {
                                 price={product.price}
                                 originalPrice={product.compare_at_price}
                                 image={product.images?.[0] || product.image_url}
+                                badge={(product.is_sold_out || product.stock_status === 'out_of_stock') ? 'Sold Out' : undefined}
                             />
                         ))}
                     </div>

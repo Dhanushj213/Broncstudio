@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useToast } from '@/context/ToastContext';
 import { getProductImage } from '@/utils/sampleImages';
+import clsx from 'clsx';
 
 interface ProductProps {
     id: string;
@@ -20,6 +21,7 @@ interface ProductProps {
     badge?: string;
     secondaryImage?: string; // New prop for hover effect
     metadata?: any; // For Quick View details
+    is_sold_out?: boolean;
 }
 
 export default function ProductCard(props: ProductProps) {
@@ -39,7 +41,14 @@ export default function ProductCard(props: ProductProps) {
             onMouseLeave={() => setIsHovered(false)}
         >
             <div className="relative bg-gray-50 dark:bg-white/5 overflow-hidden" style={{ aspectRatio: '3/4' }}>
-                {badge && (
+                {/* Sold Out Seal */}
+                {(badge === 'Sold Out' || props.is_sold_out) ? (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-4">
+                        <span className="border-4 md:border-8 border-red-600/80 text-red-600/80 text-xl md:text-3xl font-black px-4 py-2 md:px-6 md:py-3 uppercase tracking-tighter -rotate-12 border-double rounded-lg scale-110 md:scale-100 whitespace-nowrap select-none">
+                            Sold Out
+                        </span>
+                    </div>
+                ) : badge && (
                     <span className="absolute top-3 left-3 z-10 bg-black text-white border border-white/10 text-[10px] font-bold px-2 py-1 uppercase tracking-wider rounded-sm shadow-sm">
                         {badge}
                     </span>
@@ -78,9 +87,22 @@ export default function ProductCard(props: ProductProps) {
 
                     {/* Add to Cart (Icon Only) */}
                     <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(props, "One Size"); addToast(`${name} added to Bag!`); }}
-                        className="w-10 h-10 rounded-full bg-black text-white border border-white/10 shadow-md flex items-center justify-center transition-colors duration-200 hover:bg-white hover:text-black delay-100"
-                        title="Add to Cart"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (!props.is_sold_out && badge !== 'Sold Out') {
+                                addToCart(props, "One Size");
+                                addToast(`${name} added to Bag!`);
+                            }
+                        }}
+                        disabled={!!props.is_sold_out || badge === 'Sold Out'}
+                        className={clsx(
+                            "w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-all duration-200",
+                            (props.is_sold_out || badge === 'Sold Out')
+                                ? "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300"
+                                : "bg-black text-white border border-white/10 hover:bg-white hover:text-black delay-100"
+                        )}
+                        title={(props.is_sold_out || badge === 'Sold Out') ? "Sold Out" : "Add to Cart"}
                     >
                         <ShoppingBag size={18} />
                     </button>

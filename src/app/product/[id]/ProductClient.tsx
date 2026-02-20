@@ -66,8 +66,16 @@ export default function ProductClient() {
                         ...p,
                         image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
                         secondaryImage: p.images?.[1],
-                        originalPrice: p.compare_at_price
+                        originalPrice: p.compare_at_price,
+                        badge: (p.is_sold_out || p.stock_status === 'out_of_stock') ? 'Sold Out' : undefined
                     }));
+
+                    // Sort related: Sold out at bottom
+                    mappedRelated.sort((a, b) => {
+                        const aSold = !!a.is_sold_out || a.stock_status === 'out_of_stock';
+                        const bSold = !!b.is_sold_out || b.stock_status === 'out_of_stock';
+                        return (aSold === bSold) ? 0 : aSold ? 1 : -1;
+                    });
                     setRelatedProducts(mappedRelated);
                 }
             }
@@ -85,8 +93,16 @@ export default function ProductClient() {
                     ...p,
                     image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
                     secondaryImage: p.images?.[1],
-                    originalPrice: p.compare_at_price
+                    originalPrice: p.compare_at_price,
+                    badge: (p.is_sold_out || p.stock_status === 'out_of_stock') ? 'Sold Out' : undefined
                 }));
+
+                // Sort random: Sold out at bottom
+                allRandom.sort((a, b) => {
+                    const aSold = !!a.is_sold_out || a.stock_status === 'out_of_stock';
+                    const bSold = !!b.is_sold_out || b.stock_status === 'out_of_stock';
+                    return (aSold === bSold) ? 0 : aSold ? 1 : -1;
+                });
                 setRandomProducts(allRandom);
             }
 

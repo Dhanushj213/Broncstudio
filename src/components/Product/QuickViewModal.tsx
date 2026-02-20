@@ -20,7 +20,7 @@ export default function QuickViewModal() {
     // Derived State
     const meta = product?.metadata || {};
     const stockStatus = meta.stock_status || product?.stock_status || 'in_stock';
-    const inStock = stockStatus !== 'out_of_stock';
+    const inStock = stockStatus !== 'out_of_stock' && !product?.is_sold_out;
 
     const colors = meta.colors || product?.colors || [];
     const sizes = meta.sizes || product?.sizes || []; // Fallback if needed
@@ -81,7 +81,14 @@ export default function QuickViewModal() {
                             alt={product.name}
                             className="w-full h-full object-cover"
                         />
-                        {product.badge && (
+                        {/* Sold Out Seal */}
+                        {(product.badge === 'Sold Out' || product.is_sold_out) ? (
+                            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-4">
+                                <span className="border-4 md:border-8 border-red-600/80 text-red-600/80 text-xl md:text-3xl font-black px-4 py-2 md:px-6 md:py-3 uppercase tracking-tighter -rotate-12 border-double rounded-lg whitespace-nowrap select-none">
+                                    Sold Out
+                                </span>
+                            </div>
+                        ) : product.badge && (
                             <span className="absolute top-4 left-4 bg-navy-900 text-white text-xs font-bold px-3 py-1 uppercase tracking-wider">
                                 {product.badge}
                             </span>

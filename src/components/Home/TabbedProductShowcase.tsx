@@ -154,8 +154,33 @@ export default function TabbedProductShowcase({ categorySlug = 'everyday-icons' 
                         originalPrice: p.compare_at_price,
                         image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
                         secondaryImage: p.images?.[1],
-                        badge: p.stock_status === 'out_of_stock' ? 'Sold Out' : undefined
+                        badge: (p.is_sold_out || p.stock_status === 'out_of_stock') ? 'Sold Out' : undefined,
+                        is_sold_out: p.is_sold_out
                     })));
+
+                    setProducts(prev => {
+                        const result = [...(prods.map((p: DBProduct) => ({
+                            id: p.id,
+                            name: p.name,
+                            brand: 'BroncStudio',
+                            price: p.price,
+                            originalPrice: p.compare_at_price,
+                            image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
+                            secondaryImage: p.images?.[1],
+                            badge: (p.is_sold_out || p.stock_status === 'out_of_stock') ? 'Sold Out' : undefined,
+                            is_sold_out: p.is_sold_out
+                        })))];
+
+                        result.sort((a, b) => {
+                            const aSoldOut = !!a.is_sold_out || a.badge === 'Sold Out';
+                            const bSoldOut = !!b.is_sold_out || b.badge === 'Sold Out';
+
+                            if (aSoldOut && !bSoldOut) return 1;
+                            if (!aSoldOut && bSoldOut) return -1;
+                            return 0;
+                        });
+                        return result;
+                    });
                 } else {
                     setProducts([]);
                 }

@@ -17,7 +17,7 @@ export interface CartItem {
 
 interface CartContextType {
     items: CartItem[];
-    addToCart: (product: any, size: string) => void;
+    addToCart: (product: any, size: string, quantity?: number) => void;
     removeFromCart: (itemId: string) => void;
     updateQuantity: (itemId: string, qty: number) => void;
     cartCount: number;
@@ -47,7 +47,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('broncstudio_cart', JSON.stringify(items));
     }, [items]);
 
-    const addToCart = (product: any, size: string) => {
+    const addToCart = (product: any, size: string, quantity: number = 1) => {
         // If it's a custom order, we need a unique ID for every addition (allow multiple configs)
         // Otherwise, group by product+size+model
         const isCustom = size === 'Custom' || product.metadata?.is_custom;
@@ -58,10 +58,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setItems(prev => {
             const existing = prev.find(i => i.id === itemId);
             if (existing && !isCustom) {
-                // Increment qty (only for non-custom items)
-                return prev.map(i => i.id === itemId ? { ...i, qty: i.qty + 1 } : i);
+                // Increment qty by the requested quantity
+                return prev.map(i => i.id === itemId ? { ...i, qty: i.qty + quantity } : i);
             } else {
-                // Add new
+                // Add new with the requested quantity
                 return [...prev, {
                     id: itemId,
                     productId: product.id,
@@ -70,7 +70,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     price: Number(product.price),
                     size: size,
                     color: product.color || 'Standard',
-                    qty: 1,
+                    qty: quantity,
                     metadata: product.metadata || {}
                 }];
             }

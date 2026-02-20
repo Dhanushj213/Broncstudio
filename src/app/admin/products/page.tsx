@@ -14,6 +14,7 @@ interface Product {
     images: string[];
     description: string;
     created_at: string;
+    is_sold_out?: boolean;
     metadata?: {
         stock_status?: string;
         is_featured?: boolean;
@@ -156,6 +157,31 @@ export default function AdminProductsPage() {
         }
     };
 
+    const handleToggleSoldOut = async (product: Product, currentStatus: boolean) => {
+        // Optimistic Update
+        const updatedProducts = products.map(p =>
+            p.id === product.id
+                ? { ...p, is_sold_out: !currentStatus }
+                : p
+        );
+        setProducts(updatedProducts);
+
+        // API Update
+        const { error } = await supabase
+            .from('products')
+            .update({
+                is_sold_out: !currentStatus
+            })
+            .eq('id', product.id);
+
+        if (error) {
+            console.error('Update error:', error);
+            addToast('Failed to update sold out status', 'error');
+            // Revert on error
+            setProducts(products);
+        }
+    };
+
     const styles = {
         toggleWrapper: "relative inline-flex items-center cursor-pointer",
         toggleInput: "sr-only peer",
@@ -219,6 +245,7 @@ export default function AdminProductsPage() {
                                     <th className="px-6 py-4">Price</th>
                                     <th className="px-6 py-4 text-center">Featured</th>
                                     <th className="px-6 py-4 text-center">New</th>
+                                    <th className="px-6 py-4 text-center">Sold Out</th>
                                     <th className="px-6 py-4">Stock</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
@@ -273,6 +300,17 @@ export default function AdminProductsPage() {
                                                     onChange={() => handleToggleNewArrival(product, !!product.metadata?.is_new_arrival)}
                                                 />
                                                 <div className={`${styles.toggleSlider} peer-checked:bg-blue-500`}></div>
+                                            </label>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <label className={styles.toggleWrapper}>
+                                                <input
+                                                    type="checkbox"
+                                                    className={styles.toggleInput}
+                                                    checked={!!product.is_sold_out}
+                                                    onChange={() => handleToggleSoldOut(product, !!product.is_sold_out)}
+                                                />
+                                                <div className={`${styles.toggleSlider} peer-checked:bg-red-500`}></div>
                                             </label>
                                         </td>
                                         <td className="px-6 py-4 text-gray-500 dark:text-gray-400">

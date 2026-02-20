@@ -34,6 +34,7 @@ export default function EditProductPage() {
         category_id: '',
         images: [] as string[],
         is_featured: false,
+        is_sold_out: false,
         gst_percent: '18', // Default
 
 
@@ -141,7 +142,8 @@ export default function EditProductPage() {
             fit: meta.fit || 'regular',
             style: meta.style || 'minimal',
             primary_color: meta.primary_color || '',
-            gst_percent: meta.gst_percent ? String(meta.gst_percent) : '18'
+            gst_percent: meta.gst_percent ? String(meta.gst_percent) : '18',
+            is_sold_out: data.is_sold_out || false
         });
         setFetching(false);
     };
@@ -223,7 +225,8 @@ export default function EditProductPage() {
                 compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
                 category_id: formData.category_id,
                 images: formData.images,
-                metadata: metadata
+                metadata: metadata,
+                is_sold_out: formData.is_sold_out
             })
             .eq('id', id);
 
@@ -284,15 +287,27 @@ export default function EditProductPage() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-4">
                     <div className="flex items-center justify-between border-b border-gray-100 pb-2">
                         <h2 className="text-lg font-bold text-gray-900">General Information</h2>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={formData.is_featured}
-                                onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-                                className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
-                            />
-                            <span className="text-sm font-bold text-gray-900">Featured Product</span>
-                        </label>
+                        <div className="flex items-center gap-6">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.is_featured}
+                                    onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                                    className="w-5 h-5 rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                                />
+                                <span className="text-sm font-bold text-gray-900">Featured</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.is_sold_out}
+                                    onChange={(e) => setFormData({ ...formData, is_sold_out: e.target.checked })}
+                                    className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-600"
+                                />
+                                <span className="text-sm font-bold text-red-600">Mark as Sold Out</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>

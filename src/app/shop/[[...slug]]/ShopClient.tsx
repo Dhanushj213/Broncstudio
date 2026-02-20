@@ -270,7 +270,8 @@ export default function ShopClient() {
                         originalPrice: p.compare_at_price,
                         image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
                         secondaryImage: p.images?.[1],
-                        badge: p.stock_status === 'out_of_stock' ? 'Sold Out' : undefined
+                        badge: (p.is_sold_out || p.stock_status === 'out_of_stock') ? 'Sold Out' : undefined,
+                        is_sold_out: p.is_sold_out
                     }));
                     setProducts(mapped);
                 } else {
@@ -303,6 +304,20 @@ export default function ShopClient() {
 
         return true;
     });
+
+    // Final Sort: Sold Out products ALWAYS at the bottom
+    const sortedProducts = useMemo(() => {
+        const result = [...filteredProducts];
+        result.sort((a: any, b: any) => {
+            const aSoldOut = !!a.is_sold_out || a.badge === 'Sold Out';
+            const bSoldOut = !!b.is_sold_out || b.badge === 'Sold Out';
+
+            if (aSoldOut && !bSoldOut) return 1;
+            if (!aSoldOut && bSoldOut) return -1;
+            return 0;
+        });
+        return result;
+    }, [filteredProducts]);
 
     if (currentView?.type === '404') {
         return (
@@ -457,7 +472,7 @@ export default function ShopClient() {
                                     <div className="flex justify-center py-20"><BrandLoader text="Loading..." /></div>
                                 ) : filteredProducts.length > 0 ? (
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                                        {filteredProducts.map((p) => (
+                                        {sortedProducts.map((p) => (
                                             <ProductCard key={p.id} {...p} />
                                         ))}
                                     </div>

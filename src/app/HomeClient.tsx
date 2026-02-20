@@ -13,6 +13,7 @@ import HeroVideo from '@/components/Home/HeroVideo';
 import CuratedGrid from '@/components/Home/CuratedGrid';
 
 import MasonryProductGrid from '@/components/Home/MasonryProductGrid';
+import LimitedDropSection from '@/components/Home/LimitedDropSection';
 import DiscoverMore from '@/components/Home/DiscoverMore';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/context/ToastContext';
@@ -33,6 +34,7 @@ const mapProduct = (p: any) => ({
 export default function HomeClient() {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [newArrivals, setNewArrivals] = useState<any[]>([]);
+  const [dropData, setDropData] = useState<any>(null);
   const supabase = createClient();
   const { addToast } = useToast();
 
@@ -73,6 +75,17 @@ export default function HomeClient() {
       if (featProds) {
         setFeaturedProducts(featProds.map(mapProduct));
       }
+
+      // Fetch Limited Drop
+      const { data: dropBlock } = await supabase
+        .from('content_blocks')
+        .select('content')
+        .eq('section_id', 'limited_drop')
+        .single();
+
+      if (dropBlock && dropBlock.content) {
+        setDropData(dropBlock.content);
+      }
     }
     fetchData();
   }, []);
@@ -98,6 +111,11 @@ export default function HomeClient() {
           title="Fresh Drops"
           subtitle="Get them before they're gone."
         />
+      )}
+
+      {/* Limited Edition Drop Section */}
+      {dropData && dropData.is_enabled && (
+        <LimitedDropSection data={dropData} />
       )}
 
       {/* Featured Collection - Masonry Layout */}

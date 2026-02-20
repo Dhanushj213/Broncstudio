@@ -108,6 +108,29 @@ interface LookbookItem {
     user: string;
 }
 
+interface LimitedDropContent {
+    is_enabled: boolean;
+    product_id: string;
+    start_date: string;
+    end_date: string;
+    total_quantity: number;
+    sold_parts: number;
+    show_tape: boolean;
+    show_countdown: boolean;
+    waitlist_enabled: boolean;
+    stock_message: string;
+    override_name: string;
+    override_price: number;
+    override_mrp: number;
+    override_image: string;
+    marquee_text: string;
+    available_sizes?: string;
+    info_box_text?: string;
+    more_info_text?: string;
+    gallery_images?: string[];
+    size_chart_url?: string;
+}
+
 export default function StorefrontPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -168,6 +191,30 @@ export default function StorefrontPage() {
 
     // Lookbook Content State
     const [lookbookItems, setLookbookItems] = useState<LookbookItem[]>([]);
+
+    // Limited Drop State
+    const [limitedDropContent, setLimitedDropContent] = useState<LimitedDropContent>({
+        is_enabled: false,
+        product_id: '',
+        start_date: new Date().toISOString(),
+        end_date: new Date(Date.now() + 86400000 * 2).toISOString(),
+        total_quantity: 500,
+        sold_parts: 0,
+        show_tape: true,
+        show_countdown: true,
+        waitlist_enabled: true,
+        stock_message: '',
+        override_name: '',
+        override_price: 0,
+        override_mrp: 0,
+        override_image: '',
+        marquee_text: 'FINAL DROP • LIMITED EDITION •',
+        available_sizes: 'S, M, L, XL, 2XL, 3XL',
+        info_box_text: "Wokiee is one of the most powerful and flexible themes for creating a modern online store on the Shopify platform. It's perfect for any type of business, no matter what you sell: fashion, clothing, accessories, cosmetics, electronics, or even auto parts. This theme is designed to make your online store look stylish and professional while offering your customers an exceptional user experience.",
+        more_info_text: 'More Information',
+        gallery_images: [''],
+        size_chart_url: ''
+    });
 
 
     const [activeHeroTab, setActiveHeroTab] = useState<'desktop' | 'mobile'>('desktop');
@@ -305,6 +352,19 @@ export default function StorefrontPage() {
             .single();
         if (lookbookData && lookbookData.content) setLookbookItems(lookbookData.content);
 
+        // Fetch Limited Drop
+        const { data: dropData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'limited_drop')
+            .single();
+        if (dropData && dropData.content) setLimitedDropContent(prev => ({
+            ...prev,
+            ...dropData.content,
+            gallery_images: dropData.content.gallery_images || [''],
+            size_chart_url: dropData.content.size_chart_url || ''
+        }));
+
         setLoading(false);
     };
 
@@ -367,6 +427,12 @@ export default function StorefrontPage() {
             updated_at: new Date().toISOString()
         };
 
+        const dropPayload = {
+            section_id: 'limited_drop',
+            content: limitedDropContent,
+            updated_at: new Date().toISOString()
+        };
+
 
         const { error: heroErr } = await supabase
             .from('content_blocks')
@@ -392,9 +458,10 @@ export default function StorefrontPage() {
         const { error: sustErr } = await supabase.from('content_blocks').upsert(sustPayload, { onConflict: 'section_id' });
         const { error: pressErr } = await supabase.from('content_blocks').upsert(pressPayload, { onConflict: 'section_id' });
         const { error: lookbookErr } = await supabase.from('content_blocks').upsert(lookbookPayload, { onConflict: 'section_id' });
+        const { error: dropErr } = await supabase.from('content_blocks').upsert(dropPayload, { onConflict: 'section_id' });
 
-        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr) {
-            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr);
+        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr) {
+            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr);
 
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 3000);
@@ -461,6 +528,7 @@ export default function StorefrontPage() {
         { id: 'sustainability', label: 'Sustainability', icon: <Leaf size={18} /> },
         { id: 'press', label: 'Press', icon: <Newspaper size={18} /> },
         { id: 'lookbook', label: 'Lookbook', icon: <ShoppingBag size={18} /> },
+        { id: 'limited_drop', label: 'Limited Edition Drop', icon: <Play size={18} /> },
         { id: 'login', label: 'Login Overlay', icon: <UserCircle size={18} /> },
 
     ];
@@ -1111,6 +1179,227 @@ export default function StorefrontPage() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </section>
+
+                    {/* LIMITED DROP SECTION */}
+                    <section id="limited_drop" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-orange-500 dark:border-orange-500/50 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white shadow-xl">
+                                <Play size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Limited Edition Drop</h2>
+                                <p className="text-[10px] font-black text-orange-600/70 dark:text-orange-400/70 uppercase tracking-[0.2em]">Cinematic Countdown & Exclusivity</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 shadow-xl space-y-8">
+                            <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-500/10 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                                <div className="flex items-center gap-3">
+                                    <div className={`w-3 h-3 rounded-full ${limitedDropContent.is_enabled ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+                                    <span className="font-bold text-navy-900 dark:text-white">Active Drop Status</span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setLimitedDropContent({ ...limitedDropContent, is_enabled: !limitedDropContent.is_enabled })}
+                                    className={`px-6 py-2 rounded-full font-black text-xs uppercase transition-all ${limitedDropContent.is_enabled ? 'bg-navy-900 text-white' : 'bg-gray-200 text-gray-500'}`}
+                                >
+                                    {limitedDropContent.is_enabled ? 'ENABLED' : 'DISABLED'}
+                                </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Product Name Override</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.override_name}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, override_name: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            placeholder="e.g. AG-01 'NEBULA' HOODIE"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Selling Price (₹)</label>
+                                            <input
+                                                type="number"
+                                                value={limitedDropContent.override_price || 0}
+                                                onChange={e => setLimitedDropContent({ ...limitedDropContent, override_price: parseInt(e.target.value) || 0 })}
+                                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">MRP (₹)</label>
+                                            <input
+                                                type="number"
+                                                value={limitedDropContent.override_mrp || 0}
+                                                onChange={e => setLimitedDropContent({ ...limitedDropContent, override_mrp: parseInt(e.target.value) || 0 })}
+                                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Featured Image URL</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.override_image}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, override_image: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            placeholder="Paste image link..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Promo Strip Text (Marquee)</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.marquee_text}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, marquee_text: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            placeholder="e.g. FLASH SALE • 50% OFF • LIMITED STOCK"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Total Quantity</label>
+                                            <input
+                                                type="number"
+                                                value={limitedDropContent.total_quantity || 0}
+                                                onChange={e => setLimitedDropContent({ ...limitedDropContent, total_quantity: parseInt(e.target.value) || 0 })}
+                                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Sold Quantity</label>
+                                            <input
+                                                type="number"
+                                                value={limitedDropContent.sold_parts || 0}
+                                                onChange={e => setLimitedDropContent({ ...limitedDropContent, sold_parts: parseInt(e.target.value) || 0 })}
+                                                className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Drop End Date & Time</label>
+                                        <input
+                                            type="datetime-local"
+                                            value={limitedDropContent.end_date ? new Date(limitedDropContent.end_date).toISOString().slice(0, 16) : ''}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, end_date: new Date(e.target.value).toISOString() })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Available Sizes (CSV)</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.available_sizes}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, available_sizes: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            placeholder="S, M, L, XL..."
+                                        />
+                                    </div>
+
+                                    {/* Gallery Images Support */}
+                                    <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-white/5">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                            <ImageIcon size={14} />
+                                            Secondary Gallery Images
+                                        </label>
+                                        <div className="space-y-3">
+                                            {(limitedDropContent.gallery_images || []).map((url, idx) => (
+                                                <div key={idx} className="flex gap-3">
+                                                    <input
+                                                        type="text"
+                                                        value={url}
+                                                        onChange={e => {
+                                                            const newImages = [...(limitedDropContent.gallery_images || [])];
+                                                            newImages[idx] = e.target.value;
+                                                            setLimitedDropContent({ ...limitedDropContent, gallery_images: newImages });
+                                                        }}
+                                                        className="flex-1 px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold text-sm"
+                                                        placeholder={`Gallery Image #${idx + 1}`}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newImages = (limitedDropContent.gallery_images || []).filter((_, i) => i !== idx);
+                                                            setLimitedDropContent({ ...limitedDropContent, gallery_images: newImages.length ? newImages : [''] });
+                                                        }}
+                                                        className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => setLimitedDropContent({ ...limitedDropContent, gallery_images: [...(limitedDropContent.gallery_images || []), ''] })}
+                                                className="w-full py-3 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 font-bold text-xs hover:border-navy-900 hover:text-navy-900 transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <Plus size={14} /> Add Gallery Image
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 pt-4">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Size Chart Image URL</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.size_chart_url || ''}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, size_chart_url: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            placeholder="Paste size chart image link..."
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">More Info Button Text</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.more_info_text}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, more_info_text: e.target.value })}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
+                                            placeholder="e.g. More Information"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Information Box Content</label>
+                                        <textarea
+                                            value={limitedDropContent.info_box_text}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, info_box_text: e.target.value })}
+                                            rows={4}
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold text-sm"
+                                            placeholder="Description for the info box..."
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Show Countdown</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setLimitedDropContent({ ...limitedDropContent, show_countdown: !limitedDropContent.show_countdown })}
+                                                className={`w-full py-3 rounded-xl font-bold text-xs transition-all ${limitedDropContent.show_countdown ? 'bg-navy-900 text-white' : 'bg-gray-100 text-gray-400'}`}
+                                            >
+                                                {limitedDropContent.show_countdown ? 'ON' : 'OFF'}
+                                            </button>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Show Promo Strip</label>
+                                            <button
+                                                type="button"
+                                                onClick={() => setLimitedDropContent({ ...limitedDropContent, show_tape: !limitedDropContent.show_tape })}
+                                                className={`w-full py-3 rounded-xl font-bold text-xs transition-all ${limitedDropContent.show_tape ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400'}`}
+                                            >
+                                                {limitedDropContent.show_tape ? 'ON' : 'OFF'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </section>
 

@@ -104,7 +104,7 @@ export default function CollectionPage() {
                     // Fetch products with discounts
                     const { data: saleData } = await supabase
                         .from('products')
-                        .select('id, name, price, compare_at_price, images, stock_status, created_at, category_id, metadata')
+                        .select('id, name, price, compare_at_price, images, stock_status, is_sold_out, created_at, category_id, metadata')
                         .not('compare_at_price', 'is', null);
 
                     if (saleData) {
@@ -118,7 +118,7 @@ export default function CollectionPage() {
                 // Normal Curated Collection
                 const { data, error } = await supabase
                     .from('products')
-                    .select('id, name, price, compare_at_price, images, stock_status, created_at, category_id, metadata');
+                    .select('id, name, price, compare_at_price, images, stock_status, is_sold_out, created_at, category_id, metadata');
 
                 if (error) {
                     console.error("Error fetching products:", error);
@@ -150,7 +150,7 @@ export default function CollectionPage() {
                     return;
                 }
 
-                let productQuery = supabase.from('products').select('id, name, price, compare_at_price, images, stock_status, created_at, category_id');
+                let productQuery = supabase.from('products').select('id, name, price, compare_at_price, images, stock_status, is_sold_out, created_at, category_id');
 
                 if (node.type === 'item') {
                     // Leaf: Direct match
@@ -215,6 +215,16 @@ export default function CollectionPage() {
             default: // featured
                 break;
         }
+
+        // Final Sort: Sold Out products ALWAYS at the bottom
+        result.sort((a, b) => {
+            const aSoldOut = !!a.is_sold_out || a.stock_status === 'out_of_stock';
+            const bSoldOut = !!b.is_sold_out || b.stock_status === 'out_of_stock';
+
+            if (aSoldOut && !bSoldOut) return 1;
+            if (!aSoldOut && bSoldOut) return -1;
+            return 0;
+        });
 
         return result;
     }, [products, sortOption]);
@@ -388,7 +398,7 @@ export default function CollectionPage() {
                                                         originalPrice={product.compare_at_price}
                                                         image={product.images?.[0] || product.image_url || '/images/placeholder.jpg'}
                                                         secondaryImage={product.images?.[1]}
-                                                        badge={product.stock_status === 'out_of_stock' ? 'Sold Out' : undefined}
+                                                        badge={(product.is_sold_out || product.stock_status === 'out_of_stock') ? 'Sold Out' : undefined}
                                                     />
                                                 </motion.div>
                                             ))}

@@ -37,7 +37,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const [showSizeGuide, setShowSizeGuide] = useState(false);
 
     const stockStatus = meta.stock_status || 'in_stock';
-    const isOutOfStock = stockStatus === 'out_of_stock';
+    const isOutOfStock = stockStatus === 'out_of_stock' || !!product.is_sold_out;
     const isLowStock = stockStatus === 'low_stock';
 
     const [deliveryDate, setDeliveryDate] = useState<string>('');
@@ -187,6 +187,21 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
             {/* 2. VARIANT SELECTION */}
             <div className="space-y-6 mb-8">
+                {/* Stock Status & Seal */}
+                <div className="flex items-center gap-2 mb-6 relative">
+                    {!isOutOfStock ? (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded">
+                            <Check size={14} /> In Stock
+                        </span>
+                    ) : (
+                        <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 pointer-events-none rotate-6">
+                            <span className="border-4 border-red-600/80 text-red-600/80 text-2xl font-black px-4 py-1 uppercase tracking-tighter border-double rounded-lg whitespace-nowrap select-none">
+                                Sold Out
+                            </span>
+                        </div>
+                    )}
+                    <span className="text-xs text-gray-400">SKU: {product.id.slice(0, 8).toUpperCase()}</span>
+                </div>
                 {/* Colors */}
                 {colors.length > 0 && (
                     <div>
