@@ -245,7 +245,22 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
             </div>
 
             <div className="max-w-[1440px] mx-auto pt-16 md:pt-24 pb-12 relative z-10 px-4 md:px-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start relative">
+                    {/* Full Section Sold Out Overlay */}
+                    {isOutOfStock && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 2, rotate: -20 }}
+                            animate={{ opacity: 1, scale: 1, rotate: -12 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
+                            className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none mix-blend-screen"
+                        >
+                            <div className="border-[4px] sm:border-[8px] border-[#ff3333] px-12 sm:px-24 py-6 sm:py-12 rounded-2xl bg-[#ff3333]/10 backdrop-blur-sm shadow-[0_0_150px_rgba(255,51,51,0.5)] transform -translate-y-12">
+                                <h2 className="text-[#ff3333] text-6xl sm:text-9xl font-black uppercase tracking-[0.2em] font-sans drop-shadow-[0_0_25px_rgba(255,51,51,0.8)] m-0 leading-none">
+                                    SOLD OUT
+                                </h2>
+                            </div>
+                        </motion.div>
+                    )}
 
                     {/* LEFT: Cinematic Hero Frame */}
                     <div className="relative group perspective-1000">
@@ -277,20 +292,6 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                         alt={data.override_name}
                                         className={`w-full h-full object-cover transition-opacity duration-1000 ${isOutOfStock ? 'opacity-40 grayscale-[0.8]' : 'opacity-100'}`}
                                     />
-                                    {isOutOfStock && (
-                                        <motion.div
-                                            initial={{ opacity: 0, scale: 2, rotate: -20 }}
-                                            animate={{ opacity: 1, scale: 1, rotate: -12 }}
-                                            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
-                                            className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none mix-blend-screen"
-                                        >
-                                            <div className="border-[4px] sm:border-[6px] border-[#ff3333] px-6 sm:px-12 py-3 sm:py-6 rounded-xl bg-[#ff3333]/10 backdrop-blur-sm shadow-[0_0_100px_rgba(255,51,51,0.4)]">
-                                                <h2 className="text-[#ff3333] text-4xl sm:text-7xl font-black uppercase tracking-[0.2em] font-sans drop-shadow-[0_0_15px_rgba(255,51,51,0.8)] m-0 leading-none">
-                                                    SOLD OUT
-                                                </h2>
-                                            </div>
-                                        </motion.div>
-                                    )}
                                 </motion.div>
                             </AnimatePresence>
 
@@ -318,9 +319,6 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                             <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay"
                                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
                             />
-
-                            {/* Luxury Sold Out Stamp */}
-                            {isOutOfStock && <LuxurySoldOutStamp />}
 
                             {/* Status Overlay Removed as per request */}
                         </motion.div>
@@ -654,70 +652,6 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                 )}
             </AnimatePresence>
         </section>
-    );
-}
-
-// Premium Luxury Sold Out Stamp Component
-function LuxurySoldOutStamp() {
-    return (
-        <motion.div
-            initial={{ scale: 5, opacity: 0, rotate: -40, filter: 'blur(10px)' }}
-            animate={{ scale: 1, opacity: 1, rotate: -12, filter: 'blur(0px)' }}
-            transition={{
-                type: "spring",
-                damping: 15,
-                stiffness: 150,
-                delay: 0.2
-            }}
-            className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none select-none"
-        >
-            <div className="relative group">
-                {/* Outer Glow */}
-                <div className="absolute inset-0 bg-[#D4AF37]/20 blur-2xl rounded-full scale-110" />
-
-                {/* Stamp Container */}
-                <div className="relative border-[3px] border-[#D4AF37] p-1.5 rounded-[4px] bg-white/10 backdrop-blur-[2px] shadow-2xl overflow-hidden">
-                    <div className="border-[1.5px] border-[#D4AF37]/60 px-8 py-4 rounded-[2px] flex flex-col items-center justify-center bg-gradient-to-br from-[#D4AF37] via-[#F9E2AF] to-[#B8860B] bg-clip-text">
-                        <span className="text-[10px] font-bold tracking-[0.5em] text-[#B8860B] uppercase mb-1">Authentic</span>
-                        <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-gradient-to-br from-[#D4AF37] via-[#F1D1E1] to-[#B8860B] bg-clip-text drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]">
-                            Sold Out
-                        </h2>
-                        <div className="h-[1px] w-full bg-[#B8860B]/30 my-1" />
-                        <span className="text-[8px] font-black tracking-widest text-[#B8860B] uppercase">Limited Edition Series</span>
-                    </div>
-
-                    {/* Metallic Shine Effect */}
-                    <motion.div
-                        animate={{ x: [-100, 300] }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                        className="absolute inset-0 w-20 h-full bg-white/40 skew-x-[-25deg] blur-xl -translate-x-full"
-                    />
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-// Custom Icons for 1:1 Marquee Match
-function MonkeyIcon({ className }: { className?: string }) {
-    return (
-        <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-            <path d="M20,10.68A7,7,0,1,0,3,11a7,7,0,0,0,14,0V10.27A10.89,10.89,0,0,0,20,10.68ZM5,11a5,5,0,1,1,10,0,5,5,0,0,1-10,0Z" />
-            <circle cx="9" cy="9" r="1" />
-            <circle cx="15" cy="9" r="1" />
-            <path d="M12,14.5A2.5,2.5,0,0,1,9.5,12a.5.5,0,0,0-1,0,3.5,3.5,0,0,0,7,0,.5.5,0,0,0-1,0A2.5,2.5,0,0,1,12,14.5Z" />
-        </svg>
-    );
-}
-
-function HandIcon({ className }: { className?: string }) {
-    return (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
-        </svg>
     );
 }
 
