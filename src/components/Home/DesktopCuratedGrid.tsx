@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 import { ArrowRight } from 'lucide-react';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface CuratedSection {
     id: string;
@@ -56,7 +57,7 @@ export default function DesktopCuratedGrid() {
                             className="group relative w-full aspect-square overflow-hidden rounded-[32px] cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500"
                         >
                             <img
-                                src={item.image_url}
+                                src={getGoogleDriveDirectLink(item.image_url)}
                                 alt={item.title}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />

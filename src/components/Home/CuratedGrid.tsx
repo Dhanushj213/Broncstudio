@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface CuratedSection {
     id: string;
@@ -50,7 +51,7 @@ export default function CuratedGrid() {
                         >
                             {/* Image with Zoom Effect */}
                             <img
-                                src={item.image_url}
+                                src={getGoogleDriveDirectLink(item.image_url)}
                                 alt={item.title}
                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                             />

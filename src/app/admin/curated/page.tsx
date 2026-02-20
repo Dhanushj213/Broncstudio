@@ -6,7 +6,9 @@ import { Plus, Search, Edit, Trash2, ExternalLink, Loader2, Sparkles, LayoutGrid
 import Link from 'next/link';
 import Image from 'next/image';
 import { useToast } from '@/context/ToastContext';
+import ConfirmationModal from '@/components/admin/ConfirmationModal';
 import GlassCard from '@/components/UI/GlassCard';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface CuratedSection {
     id: string;
@@ -20,6 +22,7 @@ interface CuratedSection {
 export default function AdminCuratedPage() {
     const [sections, setSections] = useState<CuratedSection[]>([]);
     const [loading, setLoading] = useState(true);
+    const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
     const { addToast } = useToast();
 
     const supabase = createBrowserClient(
@@ -47,20 +50,34 @@ export default function AdminCuratedPage() {
         setLoading(false);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this collection?')) return;
+    const handleDelete = (e: React.MouseEvent, id: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setSectionToDelete(id);
+    };
 
+    const confirmDelete = async () => {
+        if (!sectionToDelete) return;
+
+        const id = sectionToDelete;
+        setLoading(true);
         const { error } = await supabase.from('curated_sections').delete().eq('id', id);
 
         if (error) {
+            console.error('Delete error:', error);
             addToast(`Failed to delete: ${error.message}`, 'error');
         } else {
             setSections(sections.filter(s => s.id !== id));
             addToast('Collection deleted', 'success');
         }
+        setLoading(false);
+        setSectionToDelete(null);
     };
 
-    const handleToggleActive = async (section: CuratedSection) => {
+    const handleToggleActive = async (e: React.MouseEvent, section: CuratedSection) => {
+        e.preventDefault();
+        e.stopPropagation();
+
         const { error } = await supabase
             .from('curated_sections')
             .update({ is_active: !section.is_active })
@@ -112,7 +129,7 @@ export default function AdminCuratedPage() {
                             <div className="relative h-48 w-full bg-gray-100 dark:bg-slate-800 overflow-hidden">
                                 {section.image_url ? (
                                     <Image
-                                        src={section.image_url}
+                                        src={getGoogleDriveDirectLink(section.image_url)}
                                         alt={section.title}
                                         fill
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -150,14 +167,14 @@ export default function AdminCuratedPage() {
                                     </div>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => handleToggleActive(section)}
+                                            onClick={(e) => handleToggleActive(e, section)}
                                             className={`p-2 rounded-lg transition-colors ${section.is_active ? 'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20' : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
                                             title="Toggle Visibility"
                                         >
                                             <div className={`w-3 h-3 rounded-full ${section.is_active ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(section.id)}
+                                            onClick={(e) => handleDelete(e, section.id)}
                                             className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:text-gray-500 dark:hover:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                         >
                                             <Trash2 size={18} />
@@ -169,6 +186,16 @@ export default function AdminCuratedPage() {
                     ))}
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={!!sectionToDelete}
+                onClose={() => setSectionToDelete(null)}
+                onConfirm={confirmDelete}
+                title="Delete Collection"
+                message="Are you sure you want to delete this collection? This action cannot be undone."
+                confirmText="Delete"
+                isDanger={true}
+            />
         </div>
     );
 }

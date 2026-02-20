@@ -7,6 +7,7 @@ import { ArrowLeft, Save, Loader2, Image as ImageIcon, Search, Plus, X, Check } 
 import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import Image from 'next/image';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface Product {
     id: string;
@@ -223,7 +224,7 @@ export default function EditCollectionPage() {
                             <div className="space-y-2">
                                 <div className="aspect-[4/5] bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
                                     {formData.image_url ? (
-                                        <Image src={formData.image_url} alt="Preview" fill className="object-cover" />
+                                        <Image src={getGoogleDriveDirectLink(formData.image_url)} alt="Preview" fill className="object-cover" />
                                     ) : (
                                         <div className="flex items-center justify-center w-full h-full text-gray-300">
                                             <ImageIcon size={32} />

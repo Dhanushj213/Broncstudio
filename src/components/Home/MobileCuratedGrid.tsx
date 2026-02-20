@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function MobileCuratedGrid() {
     const [sections, setSections] = useState<any[]>([]);
@@ -44,7 +45,7 @@ export default function MobileCuratedGrid() {
                     >
                         <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-100">
                             <img
-                                src={item.image_url}
+                                src={getGoogleDriveDirectLink(item.image_url)}
                                 alt={item.title}
                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
