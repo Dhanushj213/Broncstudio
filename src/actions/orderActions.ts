@@ -114,6 +114,14 @@ export async function createOrder(
     }
     // 2.5 Validate Stock (Crucial for Limited Drops)
     for (const item of items) {
+        // Prevent database crash from invalid UUIDs
+        if (!item.productId || item.productId === 'limited-drop-product') {
+            return {
+                success: false,
+                error: `Cart Error: "${item.name}" has an invalid configuration. Please remove it from your cart and add it again.`
+            };
+        }
+
         const { data: product } = await supabase
             .from('products')
             .select('total_stock')

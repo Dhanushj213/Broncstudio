@@ -133,6 +133,10 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
     }, [currentImageIndex, allImages.length]);
 
     const handleAddToCart = () => {
+        if (!data.product_id || data.product_id === 'limited-drop-product') {
+            addToast('Admin Error: Please link a valid Product UUID in Storefront settings before adding to cart.', 'error');
+            return;
+        }
         if (isOutOfStock) {
             addToast('Sorry, this item is out of stock', 'error');
             return;
