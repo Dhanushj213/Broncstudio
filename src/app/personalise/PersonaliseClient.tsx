@@ -189,12 +189,11 @@ export default function PersonaliseListingPage() {
     const categories = ['All', ...Object.keys(PERSONALIZATION_TAXONOMY)];
 
     return (
-        <div className="relative min-h-screen bg-background pt-[220px] -mt-[120px] pb-20 overflow-hidden">
+        <div className="relative min-h-screen bg-gray-50 dark:bg-black pb-20 overflow-hidden">
             <AmbientBackground />
 
             {/* HERO BANNER IMAGE */}
-            <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
-                <div className="absolute inset-0 bg-black/20 dark:bg-black/50 z-10" />
+            <div className="relative h-[60vh] w-full overflow-hidden flex flex-col items-center justify-center text-center">
                 {heroImage ? (
                     <Image
                         src={heroImage}
@@ -206,46 +205,46 @@ export default function PersonaliseListingPage() {
                 ) : (
                     <div className="absolute inset-0 bg-navy-900" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F7] dark:from-black to-transparent z-20" />
-            </div>
+                <div className="absolute inset-0 bg-black/40 dark:bg-black/60 z-10" />
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-10" />
 
-            {/* Background Blob */}
-            <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-cyan-500/10 opacity-40 blur-3xl pointer-events-none z-0" />
+                {/* Content inside Hero for proper merging effect */}
+                <div className="relative z-20 max-w-4xl mx-auto px-6 text-white">
+                    {/* Breadcrumbs */}
+                    <div className="flex justify-center mb-8">
+                        <div className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-full border border-white/30 flex items-center space-x-2 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg">
+                            <Link href="/" className="hover:text-blue-300 transition-colors">Home</Link>
+                            <span className="opacity-40">/</span>
+                            <span className="text-blue-300">Personalise</span>
+                        </div>
+                    </div>
 
-            {/* Breadcrumbs */}
-            <div className="relative z-40 px-6 py-4 mt-8">
-                <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-full border border-black/5 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 shadow-sm">
-                    <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
-                    <span className="opacity-40">/</span>
-                    <span className="text-blue-600">Personalise</span>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white mb-6 mx-auto shadow-lg"
+                    >
+                        <Sparkles size={12} className="text-yellow-400" /> Custom Design Studio
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-5xl lg:text-7xl font-black mb-6 tracking-tight text-white drop-shadow-2xl"
+                    >
+                        Create Your <span className="text-blue-400">Own</span>
+                    </motion.h1>
+
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-medium drop-shadow-lg"
+                    >
+                        Premium custom apparel and accessories. Select a base product and make it uniquely yours.
+                    </motion.p>
                 </div>
-            </div>
-
-            {/* Hero Title & Tagline */}
-            <div className="relative z-30 max-w-[1400px] mx-auto px-6 pt-4 pb-12 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-navy-900 dark:text-white/80 mb-6 mx-auto"
-                >
-                    <Sparkles size={12} className="text-blue-500 dark:text-yellow-400" /> Custom Design Studio
-                </motion.div>
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-5xl lg:text-7xl font-black mb-6 tracking-tight text-navy-900 dark:text-white drop-shadow-sm dark:drop-shadow-2xl"
-                >
-                    Create Your <span className="text-blue-500 dark:text-blue-400">Own</span>
-                </motion.h1>
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-lg lg:text-xl text-navy-700 dark:text-white/90 max-w-2xl mx-auto font-medium drop-shadow-sm dark:drop-shadow-lg"
-                >
-                    Premium custom apparel and accessories. Select a base product and make it uniquely yours.
-                </motion.p>
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
