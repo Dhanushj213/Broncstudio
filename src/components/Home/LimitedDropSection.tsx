@@ -16,7 +16,7 @@ interface LimitedDropProps {
         start_date: string;
         end_date: string;
         total_quantity: number;
-        sold_parts: number;
+        remaining_quantity: number;
         show_tape: boolean;
         show_countdown: boolean;
         waitlist_enabled: boolean;
@@ -59,67 +59,12 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [direction, setDirection] = useState(0);
     const [showSizeChart, setShowSizeChart] = useState(false);
-    const [stats, setStats] = useState({
-        remaining: data.total_quantity - data.sold_parts,
-        total: data.total_quantity,
-        isLoading: true
-    });
 
-    const supabase = useMemo(() => createClient(), []);
-
-    const fetchLiveStats = useCallback(async () => {
-        if (!data.product_id) return;
-
-        try {
-            // 1. Get total stock from product
-            const { data: product } = await supabase
-                .from('products')
-                .select('total_stock')
-                .eq('id', data.product_id)
-                .single();
-
-            const totalStock = product?.total_stock ?? data.total_quantity;
-
-            // 2. Get total sold quantity (paid & valid orders)
-            const { data: orders } = await supabase
-                .from('order_items')
-                .select('quantity, orders!inner(payment_status, status, created_at)')
-                .eq('product_id', data.product_id)
-                .eq('orders.payment_status', 'paid')
-                .in('orders.status', ['processing', 'shipped', 'delivered']);
-
-            const totalSold = (orders as any[])?.reduce((acc: number, curr: any) => acc + (curr.quantity || 0), 0) || 0;
-
-            setStats({
-                remaining: Math.max(0, totalStock - totalSold),
-                total: totalStock,
-                isLoading: false
-            });
-        } catch (error) {
-            console.error('Error fetching inventory stats:', error);
-            setStats(prev => ({ ...prev, isLoading: false }));
-        }
-    }, [data.product_id, data.total_quantity, supabase]);
-
-    useEffect(() => {
-        fetchLiveStats();
-
-        // Realtime subscription to order updates
-        const channel = supabase
-            .channel('inventory_sync')
-            .on('postgres_changes', {
-                event: '*',
-                schema: 'public',
-                table: 'order_items'
-            }, () => {
-                fetchLiveStats();
-            })
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [fetchLiveStats, supabase]);
+    // Derived explicitly from admin dashboard configuration as requested
+    const stats = {
+        remaining: data.remaining_quantity ?? (data.total_quantity - ((data as any).sold_parts || 0)),
+        total: data.total_quantity || 1
+    };
 
     const isOutOfStock = stats.remaining <= 0;
     const isCriticalStock = stats.remaining > 0 && stats.remaining < 5;
@@ -295,7 +240,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
             {/* Restored Edition Title Below Top Tape */}
             <div className="absolute top-14 left-0 w-full flex justify-center sm:block sm:w-auto sm:left-8 z-30 pointer-events-none origin-top-left overflow-hidden">
                 <h3 className="text-[7.5vw] sm:text-[60px] md:text-[120px] whitespace-nowrap font-serif italic text-white/5 uppercase tracking-tighter leading-none select-none mix-blend-overlay transform sm:scale-100">
-                    LIMITED EDITION /05
+                    LIMITED EDITION /{stats.total.toString().padStart(2, '0')}
                 </h3>
             </div>
 
