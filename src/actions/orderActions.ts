@@ -114,12 +114,9 @@ export async function createOrder(
     }
     // 2.5 Validate Stock (Crucial for Limited Drops)
     for (const item of items) {
-        // Prevent database crash from invalid UUIDs
-        if (!item.productId || item.productId === 'limited-drop-product') {
-            return {
-                success: false,
-                error: `Cart Error: "${item.name}" has an invalid configuration. Please remove it from your cart and add it again.`
-            };
+        // Skip DB product validation for the special Independent Limited Drop
+        if (item.metadata?.is_limited_drop) {
+            continue;
         }
 
         const { data: product } = await supabase
@@ -184,7 +181,7 @@ export async function createOrder(
     // 3. Insert Order Items
     const orderItems = items.map(item => ({
         order_id: order.id,
-        product_id: item.productId, // Ensure this relies on the real UUID
+        product_id: item.metadata?.is_limited_drop ? null : item.productId, // Nullable for independent limited drop
         name: item.name,
         quantity: item.qty,
         price: item.price,
