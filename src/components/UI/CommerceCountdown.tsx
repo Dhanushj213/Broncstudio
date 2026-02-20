@@ -65,8 +65,8 @@ export default function CommerceCountdown({ targetDate, onEnd }: CommerceCountdo
 
 function CountdownUnit({ value, label, isUrgent }: { value: string; label: string; isUrgent: boolean }) {
     return (
-        <div className="flex flex-col items-center gap-2 min-w-[64px]">
-            <div className={`relative w-full h-14 bg-white/5 backdrop-blur-xl rounded-[2px] flex items-center justify-center overflow-hidden border transition-all duration-500 ${isUrgent ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : 'border-white/10 shadow-black/40 shadow-xl'}`}>
+        <div className="flex flex-col items-center gap-1 sm:gap-2 min-w-[48px] sm:min-w-[64px]">
+            <div className={`relative w-full h-12 sm:h-14 bg-white/5 backdrop-blur-xl rounded-[2px] flex items-center justify-center overflow-hidden border transition-all duration-500 ${isUrgent ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : 'border-white/10 shadow-black/40 shadow-xl'}`}>
                 {/* Refined Luxury Watch Flip Effect */}
                 <AnimatePresence mode="popLayout" initial={false}>
                     <motion.span

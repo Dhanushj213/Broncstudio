@@ -293,8 +293,8 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
             )}
 
             {/* Restored Edition Title Below Top Tape */}
-            <div className="absolute top-14 left-8 z-30 pointer-events-none origin-top-left">
-                <h3 className="text-[80px] md:text-[120px] font-serif italic text-white/5 uppercase tracking-tighter leading-none select-none mix-blend-overlay">
+            <div className="absolute top-14 left-4 sm:left-8 z-30 pointer-events-none origin-top-left">
+                <h3 className="text-[48px] sm:text-[60px] md:text-[120px] font-serif italic text-white/5 uppercase tracking-tighter leading-none select-none mix-blend-overlay">
                     LIMITED EDITION /05
                 </h3>
             </div>
@@ -413,7 +413,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                     <motion.h1
                                         initial={{ opacity: 0 }}
                                         whileInView={{ opacity: 1 }}
-                                        className="text-4xl md:text-6xl font-serif text-white uppercase tracking-[0.15em] leading-tight"
+                                        className="text-[2rem] sm:text-4xl md:text-5xl lg:text-6xl font-serif text-white uppercase tracking-[0.1em] sm:tracking-[0.15em] leading-[1.1]"
                                         style={{ fontFamily: 'var(--font-playfair), serif' }}
                                     >
                                         {(data.override_name || "VOID").split("'").map((part, i) => (
@@ -494,7 +494,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                         </div>
 
                         {/* 5. Luxury Size Selection (Glass + Matte Hybrid) */}
-                        <div className="space-y-6 pt-4">
+                        <div className="space-y-4 sm:space-y-6 pt-4">
                             <div className="flex items-center justify-between px-1">
                                 <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Select Silhouette</span>
                                 <button
@@ -504,14 +504,14 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                     Size Guide
                                 </button>
                             </div>
-                            <div className="grid grid-cols-4 gap-3">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3">
                                 {sizes.map(size => (
                                     <motion.button
                                         key={size}
                                         whileHover={{ y: -3, backgroundColor: "rgba(255,255,255,0.15)" }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => setSelectedSize(size)}
-                                        className={`h-16 rounded-[2px] border text-[13px] font-black transition-all duration-500 font-serif ${selectedSize === size
+                                        className={`h-12 sm:h-16 rounded-[2px] border text-[12px] sm:text-[13px] font-black transition-all duration-500 font-serif ${selectedSize === size
                                             ? 'bg-[#f1a333] text-black border-[#f1a333] shadow-[0_15px_30px_-10px_rgba(241,163,51,0.5)]'
                                             : 'bg-white/5 text-white/40 border-white/5 hover:border-white/20 shadow-xl shadow-black/40'
                                             }`}
@@ -524,55 +524,59 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                         </div>
 
                         {/* 6. Powerful Action Bar */}
-                        <div className="pt-8 space-y-6">
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex items-center h-16 px-6 bg-white/5 border border-white/10 rounded-[2px] shadow-inner">
+                        <div className="pt-6 sm:pt-8 space-y-6">
+                            <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row">
+                                <div className="flex items-center justify-between lg:justify-start h-14 sm:h-16 px-4 sm:px-6 bg-white/5 border border-white/10 rounded-[2px] shadow-inner lg:w-fit">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="w-12 h-12 flex items-center justify-center text-white/20 hover:text-[#f1a333] transition-colors"
+                                        className="w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center text-white/20 hover:text-[#f1a333] transition-colors"
                                     >
                                         <Minus size={16} />
                                     </button>
-                                    <span className="w-12 text-center text-sm font-black text-white selection:bg-none">
+                                    <span className="w-10 sm:w-12 text-center text-sm font-black text-white selection:bg-none">
                                         {quantity.toString().padStart(2, '0')}
                                     </span>
                                     <button
                                         onClick={() => setQuantity(quantity + 1)}
-                                        className="w-12 h-12 flex items-center justify-center text-white/20 hover:text-[#f1a333] transition-colors"
+                                        className="w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center text-white/20 hover:text-[#f1a333] transition-colors"
                                     >
                                         <Plus size={16} />
                                     </button>
                                 </div>
-                                <motion.button
-                                    whileHover={{ scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)" }}
-                                    whileTap={{ scale: 0.98 }}
-                                    animate={stats.remaining < 2 && !isOutOfStock ? {
-                                        x: [0, -2, 2, -2, 2, 0],
-                                    } : {}}
-                                    transition={stats.remaining < 2 ? {
-                                        duration: 0.5,
-                                        repeat: Infinity,
-                                        repeatDelay: 3
-                                    } : {}}
-                                    onClick={handleAddToCart}
-                                    disabled={isOutOfStock}
-                                    className="flex-1 h-16 bg-white text-black text-[13px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 rounded-[2px] shadow-[0_20px_40px_-5px_rgba(255,255,255,0.1)] transition-all duration-300 disabled:opacity-30 disabled:grayscale group relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#f1a333]/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
-                                    <span className="relative z-10">{isOutOfStock ? "COLLECTION EXHAUSTED" : "SECURE YOUR PIECE"}</span>
-                                    {!isOutOfStock && <ShoppingBag size={20} className="relative z-10 group-hover:scale-110 transition-transform" />}
-                                </motion.button>
-                                <motion.button
-                                    whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={handleToggleWishlist}
-                                    className={`w-16 h-16 flex items-center justify-center border rounded-[2px] transition-all duration-500 ${isWishlisted
-                                        ? 'bg-red-500/10 border-red-500/40 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]'
-                                        : 'bg-white/5 border-white/5 text-white/20 hover:border-white/20 hover:text-white'
-                                        }`}
-                                >
-                                    <Heart size={24} fill={isWishlisted ? "currentColor" : "none"} className={isWishlisted ? "animate-heartbeat" : ""} />
-                                </motion.button>
+
+                                <div className="flex gap-3 sm:gap-4 flex-1">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        animate={stats.remaining < 2 && !isOutOfStock ? {
+                                            x: [0, -2, 2, -2, 2, 0],
+                                        } : {}}
+                                        transition={stats.remaining < 2 ? {
+                                            duration: 0.5,
+                                            repeat: Infinity,
+                                            repeatDelay: 3
+                                        } : {}}
+                                        onClick={handleAddToCart}
+                                        disabled={isOutOfStock}
+                                        className="flex-1 h-14 sm:h-16 bg-white text-black text-[11px] sm:text-[13px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] flex items-center justify-center gap-2 sm:gap-4 rounded-[2px] shadow-[0_20px_40px_-5px_rgba(255,255,255,0.1)] transition-all duration-300 disabled:opacity-30 disabled:grayscale group relative overflow-hidden px-2"
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#f1a333]/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                                        <span className="relative z-10 text-center">{isOutOfStock ? "EXHAUSTED" : "SECURE YOUR PIECE"}</span>
+                                        {!isOutOfStock && <ShoppingBag size={16} className="relative z-10 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform flex-shrink-0" />}
+                                    </motion.button>
+
+                                    <motion.button
+                                        whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={handleToggleWishlist}
+                                        className={`w-14 h-14 sm:w-16 sm:h-16 flex-shrink-0 flex items-center justify-center border rounded-[2px] transition-all duration-500 ${isWishlisted
+                                            ? 'bg-red-500/10 border-red-500/40 text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.2)]'
+                                            : 'bg-white/5 border-white/5 text-white/20 hover:border-white/20 hover:text-white'
+                                            }`}
+                                    >
+                                        <Heart size={20} className="sm:w-6 sm:h-6" fill={isWishlisted ? "currentColor" : "none"} />
+                                    </motion.button>
+                                </div>
                             </div>
                         </div>
 
