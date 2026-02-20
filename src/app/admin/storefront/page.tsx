@@ -1212,6 +1212,17 @@ export default function StorefrontPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div className="space-y-2">
+                                        <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Linked Product UUID (Required)</label>
+                                        <input
+                                            type="text"
+                                            value={limitedDropContent.product_id}
+                                            onChange={e => setLimitedDropContent({ ...limitedDropContent, product_id: e.target.value })}
+                                            className="w-full px-4 py-3 bg-red-50 dark:bg-red-950/30 border-2 border-red-500/20 focus:border-red-500 rounded-2xl outline-none font-bold placeholder-red-300"
+                                            placeholder="Paste the database product UUID here..."
+                                        />
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-wider font-bold mt-1">* Required for checkout to work.</p>
+                                    </div>
+                                    <div className="space-y-2">
                                         <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Product Name Override</label>
                                         <input
                                             type="text"
