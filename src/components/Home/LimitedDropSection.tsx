@@ -293,8 +293,8 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
             )}
 
             {/* Restored Edition Title Below Top Tape */}
-            <div className="absolute top-14 left-4 sm:left-8 z-30 pointer-events-none origin-top-left">
-                <h3 className="text-[12vw] sm:text-[60px] md:text-[120px] whitespace-nowrap font-serif italic text-white/5 uppercase tracking-tighter leading-none select-none mix-blend-overlay">
+            <div className="absolute top-14 left-0 w-full flex justify-center sm:block sm:w-auto sm:left-8 z-30 pointer-events-none origin-top-left overflow-hidden">
+                <h3 className="text-[7.5vw] sm:text-[60px] md:text-[120px] whitespace-nowrap font-serif italic text-white/5 uppercase tracking-tighter leading-none select-none mix-blend-overlay transform sm:scale-100">
                     LIMITED EDITION /05
                 </h3>
             </div>
