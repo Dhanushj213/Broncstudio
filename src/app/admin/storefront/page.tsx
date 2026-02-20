@@ -114,7 +114,7 @@ interface LimitedDropContent {
     start_date: string;
     end_date: string;
     total_quantity: number;
-    sold_parts: number;
+    remaining_quantity: number;
     show_tape: boolean;
     show_countdown: boolean;
     waitlist_enabled: boolean;
@@ -199,7 +199,7 @@ export default function StorefrontPage() {
         start_date: new Date().toISOString(),
         end_date: new Date(Date.now() + 86400000 * 2).toISOString(),
         total_quantity: 500,
-        sold_parts: 0,
+        remaining_quantity: 12,
         show_tape: true,
         show_countdown: true,
         waitlist_enabled: true,
@@ -1275,11 +1275,11 @@ export default function StorefrontPage() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Sold Quantity</label>
+                                            <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Remaining Quantity</label>
                                             <input
                                                 type="number"
-                                                value={limitedDropContent.sold_parts || 0}
-                                                onChange={e => setLimitedDropContent({ ...limitedDropContent, sold_parts: parseInt(e.target.value) || 0 })}
+                                                value={limitedDropContent.remaining_quantity || 0}
+                                                onChange={e => setLimitedDropContent({ ...limitedDropContent, remaining_quantity: parseInt(e.target.value) || 0 })}
                                                 className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-navy-900 rounded-2xl outline-none font-bold"
                                             />
                                         </div>
