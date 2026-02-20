@@ -60,10 +60,22 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [direction, setDirection] = useState(0);
     const [showSizeChart, setShowSizeChart] = useState(false);
+    const [hasEnded, setHasEnded] = useState(false);
+
+    useEffect(() => {
+        if (!data.end_date) return;
+        const checkEnded = () => {
+            setHasEnded(new Date() > new Date(data.end_date));
+        };
+        checkEnded();
+        const timer = setInterval(checkEnded, 1000);
+        return () => clearInterval(timer);
+    }, [data.end_date]);
 
     // Derived explicitly from admin dashboard configuration as requested
+    const actualRemaining = data.remaining_quantity ?? (data.total_quantity - ((data as any).sold_parts || 0));
     const stats = {
-        remaining: data.remaining_quantity ?? (data.total_quantity - ((data as any).sold_parts || 0)),
+        remaining: hasEnded ? 0 : actualRemaining,
         total: data.total_quantity || 1
     };
 
