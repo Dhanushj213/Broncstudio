@@ -166,6 +166,7 @@ export default function StorefrontPage() {
     });
 
     const [shopHeroImages, setShopHeroImages] = useState<Record<string, string>>({});
+    const [personaliseHeroImage, setPersonaliseHeroImage] = useState<string>('');
 
     // Social Links State
     const [socialLinks, setSocialLinks] = useState<SocialLinksContent>({
@@ -320,6 +321,17 @@ export default function StorefrontPage() {
             setShopHeroImages(shopHeroData.content);
         }
 
+        // Fetch Personalise Hero Image
+        const { data: personaliseHeroData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'personalise_hero_image')
+            .single();
+
+        if (personaliseHeroData && personaliseHeroData.content?.url) {
+            setPersonaliseHeroImage(personaliseHeroData.content.url);
+        }
+
         // Fetch Social Links
         const { data: socialData } = await supabase
             .from('content_blocks')
@@ -403,6 +415,12 @@ export default function StorefrontPage() {
             updated_at: new Date().toISOString()
         };
 
+        const personaliseHeroPayload = {
+            section_id: 'personalise_hero_image',
+            content: { url: personaliseHeroImage },
+            updated_at: new Date().toISOString()
+        };
+
         const socialPayload = {
             section_id: 'global_social_links',
             content: socialLinks,
@@ -454,14 +472,18 @@ export default function StorefrontPage() {
             .from('content_blocks')
             .upsert(shopHeroPayload, { onConflict: 'section_id' });
 
+        const { error: personaliseHeroErr } = await supabase
+            .from('content_blocks')
+            .upsert(personaliseHeroPayload, { onConflict: 'section_id' });
+
         const { error: socialErr } = await supabase.from('content_blocks').upsert(socialPayload, { onConflict: 'section_id' });
         const { error: sustErr } = await supabase.from('content_blocks').upsert(sustPayload, { onConflict: 'section_id' });
         const { error: pressErr } = await supabase.from('content_blocks').upsert(pressPayload, { onConflict: 'section_id' });
         const { error: lookbookErr } = await supabase.from('content_blocks').upsert(lookbookPayload, { onConflict: 'section_id' });
         const { error: dropErr } = await supabase.from('content_blocks').upsert(dropPayload, { onConflict: 'section_id' });
 
-        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr) {
-            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr);
+        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || personaliseHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr) {
+            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || personaliseHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr);
 
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 3000);
@@ -523,6 +545,7 @@ export default function StorefrontPage() {
         { id: 'shop_heroes', label: 'Shop Hero Banners', icon: <ImageIcon size={18} /> },
         { id: 'bento', label: 'Department Bento', icon: <Grid size={18} /> },
         { id: 'shop', label: 'Shop Collections', icon: <ShoppingBag size={18} /> },
+        { id: 'personalise_hero', label: 'Personalise Hero Image', icon: <ImageIcon size={18} /> },
         { id: 'special_heroes', label: 'Special Pages', icon: <Sparkles size={18} /> },
         { id: 'social_links', label: 'Social & Contact', icon: <Globe size={18} /> },
         { id: 'sustainability', label: 'Sustainability', icon: <Leaf size={18} /> },
@@ -816,6 +839,43 @@ export default function StorefrontPage() {
                                     </div>
                                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">Mobile Aspect Ratio Preview</p>
                                 </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    {/* PERSONALISE HERO BANNER SECTION */}
+                    <section id="personalise_hero" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-indigo-500 dark:border-indigo-500/50 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center text-white shadow-xl">
+                                <ImageIcon size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Personalise Hero Image</h2>
+                                <p className="text-[10px] font-black text-indigo-600/70 dark:text-indigo-400/70 uppercase tracking-[0.2em]">Hero Image for /personalise</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 shadow-xl space-y-8">
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Personalise Page Hero</h3>
+                                        <p className="text-xs text-gray-400 font-bold">Image for the root /personalise page</p>
+                                    </div>
+                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                        {getGoogleDriveDirectLink(personaliseHeroImage) && (
+                                            <img src={getGoogleDriveDirectLink(personaliseHeroImage)} className="w-full h-full object-cover" alt="" />
+                                        )}
+                                    </div>
+                                </div>
+                                <input
+                                    type="url"
+                                    value={personaliseHeroImage}
+                                    onChange={e => setPersonaliseHeroImage(e.target.value)}
+                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-gray-50 dark:bg-slate-950 border-2 border-transparent focus:border-indigo-500 rounded-2xl outline-none font-bold text-sm shadow-sm transition-all"
+                                    placeholder="Paste Personalise Hero Link..."
+                                />
                             </div>
                         </div>
                     </section>

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PERSONALIZATION_TAXONOMY } from '@/lib/personalization';
 import AmbientBackground from '@/components/UI/AmbientBackground';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 
 // ----------------------------------------------------------------------
@@ -92,6 +93,7 @@ export default function PersonaliseListingPage() {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState<BaseProduct[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<BaseProduct[]>([]);
+    const [heroImage, setHeroImage] = useState<string>('https://images.unsplash.com/photo-1513346038313-05b1c5905d53?w=1600&q=80');
 
     // Filters
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -123,6 +125,18 @@ export default function PersonaliseListingPage() {
                 setProducts(shuffled);
                 setFilteredProducts(shuffled);
             }
+
+            // Fetch Hero Image
+            const { data: heroData } = await supabase
+                .from('content_blocks')
+                .select('*')
+                .eq('section_id', 'personalise_hero_image')
+                .single();
+
+            if (heroData && heroData.content?.url) {
+                setHeroImage(getGoogleDriveDirectLink(heroData.content.url));
+            }
+
             setLoading(false);
         };
 
@@ -182,7 +196,7 @@ export default function PersonaliseListingPage() {
             <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
                 <div className="absolute inset-0 bg-black/50 z-10" />
                 <Image
-                    src="https://images.unsplash.com/photo-1513346038313-05b1c5905d53?w=1600&q=80"
+                    src={heroImage}
                     alt="Custom Studio Hero"
                     fill
                     className="object-cover"
