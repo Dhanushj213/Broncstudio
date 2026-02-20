@@ -194,7 +194,7 @@ export default function PersonaliseListingPage() {
 
             {/* HERO BANNER IMAGE */}
             <div className="absolute top-0 left-0 right-0 h-[400px] md:h-[500px] z-0">
-                <div className="absolute inset-0 bg-black/50 z-10" />
+                <div className="absolute inset-0 bg-black/20 dark:bg-black/50 z-10" />
                 <Image
                     src={heroImage}
                     alt="Custom Studio Hero"
@@ -202,7 +202,7 @@ export default function PersonaliseListingPage() {
                     className="object-cover"
                     priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-black to-transparent z-20" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F7] dark:from-black to-transparent z-20" />
             </div>
 
             {/* Background Blob */}
@@ -210,7 +210,7 @@ export default function PersonaliseListingPage() {
 
             {/* Breadcrumbs */}
             <div className="relative z-40 px-6 py-4 mt-8">
-                <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-full border border-white/20 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 shadow-sm">
+                <div className="max-w-fit mx-auto px-6 py-2 bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-full border border-black/5 dark:border-white/5 flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 shadow-sm">
                     <Link href="/" className="hover:text-blue-500 transition-colors">Home</Link>
                     <span className="opacity-40">/</span>
                     <span className="text-blue-600">Personalise</span>
@@ -222,23 +222,23 @@ export default function PersonaliseListingPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white/80 mb-6 mx-auto"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/20 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-navy-900 dark:text-white/80 mb-6 mx-auto"
                 >
-                    <Sparkles size={12} className="text-yellow-400" /> Custom Design Studio
+                    <Sparkles size={12} className="text-blue-500 dark:text-yellow-400" /> Custom Design Studio
                 </motion.div>
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-5xl lg:text-7xl font-black mb-6 tracking-tight text-white drop-shadow-2xl"
+                    className="text-5xl lg:text-7xl font-black mb-6 tracking-tight text-navy-900 dark:text-white drop-shadow-sm dark:drop-shadow-2xl"
                 >
-                    Create Your <span className="text-blue-400">Own</span>
+                    Create Your <span className="text-blue-500 dark:text-blue-400">Own</span>
                 </motion.h1>
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-medium drop-shadow-lg"
+                    className="text-lg lg:text-xl text-navy-700 dark:text-white/90 max-w-2xl mx-auto font-medium drop-shadow-sm dark:drop-shadow-lg"
                 >
                     Premium custom apparel and accessories. Select a base product and make it uniquely yours.
                 </motion.p>
