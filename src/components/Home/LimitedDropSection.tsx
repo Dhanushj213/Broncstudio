@@ -246,7 +246,6 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
 
             <div className="max-w-[1440px] mx-auto pt-16 md:pt-24 pb-12 relative z-10 px-4 md:px-12">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start relative">
-
                     {/* LEFT: Cinematic Hero Frame */}
                     <div className="relative group perspective-1000">
                         <motion.div
@@ -279,6 +278,22 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                     />
                                 </motion.div>
                             </AnimatePresence>
+
+                            {/* Red Sold Out Stamp - Restricted to Image */}
+                            {isOutOfStock && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 2, rotate: -20 }}
+                                    animate={{ opacity: 1, scale: 1, rotate: -12 }}
+                                    transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
+                                    className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none mix-blend-screen"
+                                >
+                                    <div className="border-[4px] sm:border-[6px] border-[#ff3333] px-8 sm:px-12 py-3 sm:py-6 rounded-xl bg-[#ff3333]/10 backdrop-blur-sm shadow-[0_0_100px_rgba(255,51,51,0.4)]">
+                                        <h2 className="text-[#ff3333] text-4xl sm:text-7xl font-black uppercase tracking-[0.2em] font-sans drop-shadow-[0_0_15px_rgba(255,51,51,0.8)] m-0 leading-none">
+                                            SOLD OUT
+                                        </h2>
+                                    </div>
+                                </motion.div>
+                            )}
 
                             {/* Gallery Navigation Dots */}
                             {allImages.length > 1 && (
@@ -636,21 +651,6 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                     </div>
                 )}
             </AnimatePresence>
-            {/* Full Section Sold Out Overlay (Foreground Layer) */}
-            {isOutOfStock && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 2, rotate: -20 }}
-                    animate={{ opacity: 1, scale: 1, rotate: -12 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
-                    className="absolute inset-0 flex items-center justify-center z-[100] pointer-events-none mix-blend-screen overflow-hidden"
-                >
-                    <div className="border-[4px] sm:border-[8px] border-[#ff3333] px-12 sm:px-24 py-6 sm:py-12 rounded-2xl bg-[#ff3333]/10 backdrop-blur-sm shadow-[0_0_150px_rgba(255,51,51,0.5)] transform -translate-y-12">
-                        <h2 className="text-[#ff3333] text-6xl sm:text-9xl font-black uppercase tracking-[0.2em] font-sans drop-shadow-[0_0_25px_rgba(255,51,51,0.8)] m-0 leading-none">
-                            SOLD OUT
-                        </h2>
-                    </div>
-                </motion.div>
-            )}
         </section>
     );
 }
