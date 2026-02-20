@@ -395,11 +395,22 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                         {/* 2. Advanced Urgency & Countdown */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Drop Ends In</span>
+                                <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">
+                                    {isOutOfStock ? "Drop Concluded" : "Drop Ends In"}
+                                </span>
                                 <div className="h-px flex-1 bg-white/5" />
                             </div>
-                            <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2px] shadow-2xl">
-                                {data.show_countdown && <CommerceCountdown targetDate={data.end_date} />}
+                            <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2px] shadow-2xl flex items-center justify-center min-h-[100px]">
+                                {isOutOfStock ? (
+                                    <div className="flex flex-col items-center gap-2">
+                                        <span className="text-2xl md:text-3xl font-black text-red-500 uppercase tracking-[0.3em]">
+                                            Sold Out
+                                        </span>
+                                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Successful Drop</span>
+                                    </div>
+                                ) : (
+                                    data.show_countdown && <CommerceCountdown targetDate={data.end_date} />
+                                )}
                             </div>
                         </div>
 
