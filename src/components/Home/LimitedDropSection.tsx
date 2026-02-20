@@ -277,6 +277,20 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                         alt={data.override_name}
                                         className={`w-full h-full object-cover transition-opacity duration-1000 ${isOutOfStock ? 'opacity-40 grayscale-[0.8]' : 'opacity-100'}`}
                                     />
+                                    {isOutOfStock && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 2, rotate: -20 }}
+                                            animate={{ opacity: 1, scale: 1, rotate: -12 }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
+                                            className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none mix-blend-screen"
+                                        >
+                                            <div className="border-[4px] sm:border-[6px] border-[#ff3333] px-6 sm:px-12 py-3 sm:py-6 rounded-xl bg-[#ff3333]/10 backdrop-blur-sm shadow-[0_0_100px_rgba(255,51,51,0.4)]">
+                                                <h2 className="text-[#ff3333] text-4xl sm:text-7xl font-black uppercase tracking-[0.2em] font-sans drop-shadow-[0_0_15px_rgba(255,51,51,0.8)] m-0 leading-none">
+                                                    SOLD OUT
+                                                </h2>
+                                            </div>
+                                        </motion.div>
+                                    )}
                                 </motion.div>
                             </AnimatePresence>
 
@@ -422,7 +436,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                         transition={{ duration: 1.5, repeat: Infinity }}
                                         className={`text-[11px] font-black uppercase tracking-widest ${stats.remaining < 5 ? 'text-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]' : 'text-white/60'}`}
                                     >
-                                        {stats.remaining} PIECES REMAINING
+                                        {isOutOfStock ? "SOLD OUT" : `${stats.remaining} PIECES REMAINING`}
                                     </motion.span>
                                 </div>
                                 <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden relative">
