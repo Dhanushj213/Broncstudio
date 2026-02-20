@@ -192,7 +192,7 @@ export async function createOrder(
     if (itemsError) {
         console.error("Order Items Error:", itemsError);
         // Optional: Delete the order if items fail? Or keep for manual check.
-        return { success: false, error: 'Failed to save order items.' };
+        return { success: false, error: `Failed to save order items. Supabase Error: ${itemsError.message || JSON.stringify(itemsError)}` };
     }
 
     // 4. Debit Wallet
