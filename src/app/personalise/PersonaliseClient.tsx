@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PERSONALIZATION_TAXONOMY } from '@/lib/personalization';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
+import clsx from 'clsx';
 
 
 // ----------------------------------------------------------------------
@@ -31,60 +32,88 @@ interface BaseProduct {
 // COMPONENTS
 // ----------------------------------------------------------------------
 
-const ProductCard = ({ product }: { product: BaseProduct }) => (
-    <motion.div
-        layout
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        whileHover={{ y: -4 }}
-        className="group relative bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
-    >
-        <Link href={`/personalise/${product.id}`}>
-            <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-                <Image
-                    src={getGoogleDriveDirectLink(product.images[0]) || 'https://placehold.co/600x800/png?text=No+Image'}
-                    alt={product.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
+const ProductCard = ({ product }: { product: BaseProduct }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-                {/* Mobile Quick Action Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4 lg:hidden">
-                    <div className="w-full py-3 bg-white text-black font-black text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2">
-                        Customize <ArrowRight size={14} />
+    // Slideshow logic
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isHovered && product.images && product.images.length > 1) {
+            interval = setInterval(() => {
+                setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+            }, 1500);
+        } else {
+            setCurrentImageIndex(0);
+        }
+        return () => clearInterval(interval);
+    }, [isHovered, product.images]);
+
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            whileHover={{ y: -4 }}
+            className="group relative bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200 dark:border-neutral-800 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <Link href={`/personalise/${product.id}`}>
+                <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                    {product.images.map((img, index) => (
+                        <Image
+                            key={index}
+                            src={getGoogleDriveDirectLink(img)}
+                            alt={`${product.name} - ${index + 1}`}
+                            fill
+                            className={clsx(
+                                "object-cover transition-all duration-700 ease-in-out",
+                                index === currentImageIndex ? "opacity-100 scale-100" : "opacity-0 scale-110",
+                                isHovered && index === currentImageIndex && "scale-110"
+                            )}
+                            priority={index === 0}
+                        />
+                    ))}
+
+                    {/* Mobile Quick Action Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4 lg:hidden">
+                        <div className="w-full py-3 bg-white text-black font-black text-sm rounded-2xl shadow-xl flex items-center justify-center gap-2">
+                            Customize <ArrowRight size={14} />
+                        </div>
+                    </div>
+
+                    {/* Desktop Quick Action */}
+                    <div className="absolute bottom-6 left-6 right-6 translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hidden lg:block">
+                        <button className="w-full py-4 bg-white/95 backdrop-blur-md text-black font-black rounded-2xl shadow-2xl hover:bg-white flex items-center justify-center gap-2 transform active:scale-95 transition-transform">
+                            Start Designing <Sparkles size={18} className="text-blue-600" />
+                        </button>
                     </div>
                 </div>
 
-                {/* Desktop Quick Action */}
-                <div className="absolute bottom-6 left-6 right-6 translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hidden lg:block">
-                    <button className="w-full py-4 bg-white/95 backdrop-blur-md text-black font-black rounded-2xl shadow-2xl hover:bg-white flex items-center justify-center gap-2 transform active:scale-95 transition-transform">
-                        Start Designing <Sparkles size={18} className="text-blue-600" />
-                    </button>
-                </div>
-            </div>
-
-            <div className="p-5">
-                <div className="flex justify-between items-start gap-2 mb-1">
-                    <h3 className="font-black text-lg text-neutral-900 dark:text-white leading-tight truncate" title={product.name}>
-                        {product.name}
-                    </h3>
-                </div>
-                <p className="text-neutral-500 text-xs font-bold uppercase tracking-widest">{product.metadata.product_type}</p>
-
-                <div className="mt-4 flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <span className="text-2xl font-black text-neutral-900 dark:text-white">₹{product.price}</span>
-                        <span className="text-[10px] font-bold text-neutral-400 uppercase">Base Price</span>
+                <div className="p-5">
+                    <div className="flex justify-between items-start gap-2 mb-1">
+                        <h3 className="font-black text-lg text-neutral-900 dark:text-white leading-tight truncate" title={product.name}>
+                            {product.name}
+                        </h3>
                     </div>
-                    <div className="h-10 w-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                        <ChevronRight size={20} />
+                    <p className="text-neutral-500 text-xs font-bold uppercase tracking-widest">{product.metadata.product_type}</p>
+
+                    <div className="mt-4 flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black text-neutral-900 dark:text-white">₹{product.price}</span>
+                            <span className="text-[10px] font-bold text-neutral-400 uppercase">Base Price</span>
+                        </div>
+                        <div className="h-10 w-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                            <ChevronRight size={20} />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Link>
-    </motion.div>
-);
+            </Link>
+        </motion.div>
+    );
+};
 
 // ----------------------------------------------------------------------
 // MAIN PAGE

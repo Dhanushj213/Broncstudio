@@ -44,8 +44,7 @@ export default function MasonryProductGrid({ products, title = "Featured Collect
                                 price={product.price}
                                 originalPrice={product.originalPrice || product.compare_at_price}
                                 image={product.image || product.images?.[0] || '/images/placeholder.jpg'}
-                                // Pass secondary image if available (Assuming full product object has images array)
-                                secondaryImage={product.images?.[1]}
+                                images={product.images || []}
                                 badge={product.badge}
                                 metadata={product.metadata}
                             />

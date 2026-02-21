@@ -39,7 +39,7 @@ export default function DiscoverMore() {
                     price: p.price,
                     originalPrice: p.compare_at_price,
                     image: p.images?.[0] || '/images/placeholder.jpg',
-                    secondaryImage: p.images?.[1],
+                    images: p.images || [], // Pass full images array
                     badge: p.stock_status === 'out_of_stock' ? 'Sold Out' : undefined
                 })));
             }

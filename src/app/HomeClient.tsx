@@ -26,8 +26,8 @@ const mapProduct = (p: any) => ({
   price: p.price,
   originalPrice: p.compare_at_price,
   image: p.images?.[0] || '/images/placeholder.jpg',
-  secondaryImage: p.images?.[1], // Pass 2nd image for hover
-  badge: undefined, // Logic can be added later
+  images: p.images || [], // Pass full images array
+  badge: undefined,
   metadata: p.metadata,
 });
 

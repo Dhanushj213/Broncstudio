@@ -270,7 +270,7 @@ export default function ShopClient() {
                         price: p.price,
                         originalPrice: p.compare_at_price,
                         image: p.images?.[0] || p.image_url || '/images/placeholder.jpg',
-                        secondaryImage: p.images?.[1],
+                        images: p.images || [], // Pass full images array
                         badge: (p.is_sold_out || p.stock_status === 'out_of_stock') ? 'Sold Out' : undefined,
                         is_sold_out: p.is_sold_out
                     }));
