@@ -43,7 +43,7 @@ const ProductCard = ({ product }: { product: BaseProduct }) => (
         <Link href={`/personalise/${product.id}`}>
             <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
                 <Image
-                    src={product.images[0] || 'https://placehold.co/600x800/png?text=No+Image'}
+                    src={getGoogleDriveDirectLink(product.images[0]) || 'https://placehold.co/600x800/png?text=No+Image'}
                     alt={product.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
@@ -196,7 +196,7 @@ export default function PersonaliseListingPage() {
             <div className="relative h-[60vh] w-full overflow-hidden flex flex-col items-center justify-center text-center">
                 {heroImage ? (
                     <Image
-                        src={heroImage}
+                        src={getGoogleDriveDirectLink(heroImage)}
                         alt="Custom Studio Hero"
                         fill
                         className="object-cover"

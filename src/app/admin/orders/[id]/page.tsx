@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { updateOrderStatus, updatePaymentStatus, undoLastStatusUpdate } from '@/actions/adminActions';
 import { useToast } from '@/context/ToastContext';
 import InvoiceDownloadButton from '@/components/Invoice/InvoiceDownloadButton';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 
 
@@ -271,7 +272,7 @@ export default function OrderDetailPage() {
                                     <div key={idx} className="p-6 flex items-start gap-4">
                                         <div className="relative w-20 h-20 bg-gray-100 dark:bg-white/5 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200 dark:border-white/10 relative group">
                                             <Image
-                                                src={item.image_url}
+                                                src={getGoogleDriveDirectLink(item.image_url)}
                                                 alt={item.name}
                                                 fill
                                                 sizes="80px"
@@ -306,7 +307,7 @@ export default function OrderDetailPage() {
                                                                         <div key={loc} className="bg-gray-50 dark:bg-white/5 p-3 rounded-xl border border-gray-100 dark:border-white/10 flex items-center gap-3">
                                                                             <div className="relative w-12 h-12 bg-white dark:bg-black/20 rounded border border-gray-200 dark:border-white/10 overflow-hidden flex-shrink-0">
                                                                                 <Image
-                                                                                    src={p.uploadedImage}
+                                                                                    src={getGoogleDriveDirectLink(p.uploadedImage)}
                                                                                     alt={loc}
                                                                                     fill
                                                                                     sizes="48px"

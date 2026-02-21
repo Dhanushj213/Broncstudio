@@ -7,6 +7,7 @@ import { ArrowLeft, Save, Loader2, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/context/ToastContext';
 import Image from 'next/image';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function NewCollectionPage() {
     const router = useRouter();
@@ -115,7 +116,7 @@ export default function NewCollectionPage() {
                             </div>
                             <div className="w-24 h-24 bg-gray-100 rounded-xl overflow-hidden border border-gray-200 flex-shrink-0 relative">
                                 {formData.image_url ? (
-                                    <Image src={formData.image_url} alt="Preview" fill className="object-cover" />
+                                    <Image src={getGoogleDriveDirectLink(formData.image_url)} alt="Preview" fill className="object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                                         <ImageIcon size={24} />

@@ -8,6 +8,7 @@ import GlassCard from '@/components/UI/GlassCard';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/utils/formatPrice';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 
 const CartPage = () => {
@@ -98,7 +99,7 @@ const CartPage = () => {
                             <GlassCard key={item.id} className="p-4 md:p-6 flex gap-4 md:gap-6 items-center group hover:border-coral-500/30 transition-colors">
                                 {/* Image */}
                                 <div className="w-24 h-24 md:w-32 h-32 bg-surface-2 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 relative">
-                                    <Image src={item.image} alt={item.name} fill sizes="128px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <Image src={getGoogleDriveDirectLink(item.image)} alt={item.name} fill sizes="128px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                                 </div>
 
                                 {/* Details */}

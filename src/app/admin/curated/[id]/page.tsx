@@ -300,7 +300,7 @@ export default function EditCollectionPage() {
                                         <div className="flex items-center gap-3">
                                             <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
                                                 {product.images?.[0] && (
-                                                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                                                    <Image src={getGoogleDriveDirectLink(product.images[0])} alt={product.name} fill className="object-cover" />
                                                 )}
                                             </div>
                                             <div>
@@ -348,7 +348,7 @@ export default function EditCollectionPage() {
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200">
                                                 {product.images?.[0] && (
-                                                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                                                    <Image src={getGoogleDriveDirectLink(product.images[0])} alt={product.name} fill className="object-cover" />
                                                 )}
                                             </div>
                                             <div className="font-medium text-gray-900 text-sm">{product.name}</div>

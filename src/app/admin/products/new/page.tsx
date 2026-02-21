@@ -6,6 +6,7 @@ import { ArrowLeft, Save, Loader2, Trash2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface Category {
     id: string;
@@ -589,7 +590,7 @@ export default function NewProductPage() {
                                 {formData.images.map((img, idx) => (
                                     <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
                                         <Image
-                                            src={img}
+                                            src={getGoogleDriveDirectLink(img)}
                                             alt={`Image ${idx + 1}`}
                                             fill
                                             className="object-cover"

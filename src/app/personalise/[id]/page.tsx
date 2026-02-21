@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import { PersonalizationConfig } from '@/lib/personalization';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 // ----------------------------------------------------------------------
 // TYPES
@@ -211,7 +212,7 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
             <div className="sticky top-[var(--header-height)] z-40 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 lg:hidden px-4 py-3 flex items-center justify-between animate-in fade-in slide-in-from-top-4">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-neutral-100 dark:bg-neutral-800 relative overflow-hidden flex-shrink-0">
-                        <Image src={product.images[0]} alt={product.name} fill className="object-cover" />
+                        <Image src={getGoogleDriveDirectLink(product.images[0])} alt={product.name} fill className="object-cover" />
                     </div>
                     <div className="overflow-hidden">
                         <h2 className="text-sm font-black truncate w-40 dark:text-white uppercase tracking-tight">{product.name}</h2>
@@ -243,7 +244,7 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                             className="relative aspect-[4/5] bg-white dark:bg-neutral-900 rounded-[2.5rem] overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-2xl group"
                         >
                             <Image
-                                src={product.images[0]}
+                                src={getGoogleDriveDirectLink(product.images[0])}
                                 alt={product.name}
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-1000"

@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import GlassCard from '@/components/UI/GlassCard';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { createOrder } from '@/actions/orderActions'; // Server Action
@@ -914,7 +915,7 @@ export default function CheckoutPage() {
                                     <div key={item.id} className="flex gap-4">
                                         <div className="w-16 h-16 bg-surface-2 rounded-lg overflow-hidden flex-shrink-0 border border-subtle">
                                             <div className="relative w-full h-full">
-                                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                                <Image src={getGoogleDriveDirectLink(item.image)} alt={item.name} fill className="object-cover" />
                                             </div>
                                         </div>
                                         <div className="flex-1">

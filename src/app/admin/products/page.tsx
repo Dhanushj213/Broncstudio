@@ -5,6 +5,7 @@ import { createBrowserClient } from '@supabase/ssr';
 import { Plus, Search, Filter, Edit, Trash2, Package, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface Product {
     id: string;
@@ -258,7 +259,7 @@ export default function AdminProductsPage() {
                                                 <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-white/10 overflow-hidden border border-gray-200 dark:border-white/10 relative">
                                                     {product.images?.[0] ? (
                                                         <Image
-                                                            src={product.images[0]}
+                                                            src={getGoogleDriveDirectLink(product.images[0])}
                                                             alt={product.name}
                                                             fill
                                                             className="object-cover"

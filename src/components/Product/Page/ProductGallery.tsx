@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 const MotionImage = motion(Image);
 import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
@@ -50,7 +51,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                         <div key={idx} className="relative w-full h-full flex-shrink-0 snap-center p-4">
                             <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-sm">
                                 <Image
-                                    src={img}
+                                    src={getGoogleDriveDirectLink(img)}
                                     alt={`View ${idx}`}
                                     fill
                                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -79,7 +80,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
-                            src={images[activeIndex]}
+                            src={getGoogleDriveDirectLink(images[activeIndex])}
                             alt="Main product view"
                             fill
                             priority
@@ -140,7 +141,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                             : 'border-transparent opacity-60 hover:opacity-100'
                             }`}
                     >
-                        <Image src={img} alt={`Thumbnail ${idx}`} fill sizes="10vw" className="object-cover" />
+                        <Image src={getGoogleDriveDirectLink(img)} alt={`Thumbnail ${idx}`} fill sizes="10vw" className="object-cover" />
                         {activeIndex === idx && (
                             <motion.div
                                 layoutId="activeThumb"

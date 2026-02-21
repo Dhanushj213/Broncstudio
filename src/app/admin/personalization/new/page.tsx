@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { PERSONALIZATION_TAXONOMY, SUPPORTED_GENDERS, Gender, PrintTypeConfig, PlacementConfig, PREDEFINED_COLORS, PREDEFINED_SIZES, PLACEMENTS, PRINT_TYPES } from '@/lib/personalization';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 
 
@@ -747,7 +748,7 @@ export default function AddPersonalizationProductPage() {
                                     <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mt-2">
                                         {formData.images.map((img, idx) => (
                                             <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 group">
-                                                <Image src={img} alt="" fill className="object-cover" />
+                                                <Image src={getGoogleDriveDirectLink(img)} alt="" fill className="object-cover" />
                                                 <button
                                                     type="button"
                                                     onClick={() => {

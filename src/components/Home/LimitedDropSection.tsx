@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useToast } from '@/context/ToastContext';
 import { createClient } from '@/utils/supabase/client';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 interface LimitedDropProps {
     data: {
@@ -35,20 +36,7 @@ interface LimitedDropProps {
     };
 }
 
-const getDirectImageUrl = (url: string | undefined): string => {
-    if (!url) return '';
-    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (driveMatch && driveMatch[1]) {
-        // Use an external image proxy (wsrv.nl) to bypass Google Drive's strict hotlinking/CORS policies
-        const directDriveUrl = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
-        return `https://wsrv.nl/?url=${encodeURIComponent(directDriveUrl)}`;
-    }
-    // Handle already converted uc?export=view links just in case
-    if (url.includes('drive.google.com/uc')) {
-        return `https://wsrv.nl/?url=${encodeURIComponent(url)}`;
-    }
-    return url;
-};
+
 
 export default function LimitedDropSection({ data }: LimitedDropProps) {
     const { addToCart } = useCart();
@@ -96,7 +84,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
         id: data.product_id || 'limited-drop-product',
         name: data.override_name || 'Limited Edition Product',
         price: data.override_price || 0,
-        image: getDirectImageUrl(data.override_image) || '/images/placeholder.jpg',
+        image: getGoogleDriveDirectLink(data.override_image) || '/images/placeholder.jpg',
         gallery_images: data.gallery_images || [],
         metadata: {
             mrp: data.override_mrp,
@@ -106,7 +94,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
 
     const isWishlisted = isInWishlist(productForInteractions.id);
 
-    const allImages = useMemo(() => [data.override_image, ...(data.gallery_images || [])].filter(Boolean).map(getDirectImageUrl) as string[], [data.override_image, data.gallery_images]);
+    const allImages = useMemo(() => [data.override_image, ...(data.gallery_images || [])].filter(Boolean).map(getGoogleDriveDirectLink) as string[], [data.override_image, data.gallery_images]);
 
     const slideVariants = {
         enter: (direction: number) => ({
@@ -658,7 +646,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                 {data.size_chart_url ? (
                                     <div className="relative w-full aspect-[3/4]">
                                         <Image
-                                            src={getDirectImageUrl(data.size_chart_url)}
+                                            src={getGoogleDriveDirectLink(data.size_chart_url)}
                                             alt="Size Chart"
                                             fill
                                             className="object-contain rounded-lg shadow-2xl"

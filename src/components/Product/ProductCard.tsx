@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useToast } from '@/context/ToastContext';
 import { getProductImage } from '@/utils/sampleImages';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import clsx from 'clsx';
 
 interface ProductProps {
@@ -32,7 +33,7 @@ export default function ProductCard(props: ProductProps) {
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToast } = useToast();
 
-    const imgSrc = image || getProductImage(id);
+    const imgSrc = getGoogleDriveDirectLink(image || getProductImage(id));
 
     return (
         <div
@@ -121,7 +122,7 @@ export default function ProductCard(props: ProductProps) {
                     {/* Secondary Image (Absolute Overlay) */}
                     {props.secondaryImage && (
                         <Image
-                            src={props.secondaryImage}
+                            src={getGoogleDriveDirectLink(props.secondaryImage)}
                             alt={`${name} secondary`}
                             fill
                             sizes="(max-width: 768px) 50vw, 33vw"

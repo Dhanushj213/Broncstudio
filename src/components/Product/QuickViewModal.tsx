@@ -7,6 +7,7 @@ import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { X, ShoppingBag, Check, AlertCircle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import clsx from 'clsx';
 
 export default function QuickViewModal() {
@@ -78,7 +79,7 @@ export default function QuickViewModal() {
                     {/* LEFT: Image Section (Full Height on Desktop) */}
                     <div className="w-full md:w-1/2 bg-gray-100 dark:bg-black/20 relative md:h-auto h-[35vh] shrink-0">
                         <Image
-                            src={product.image}
+                            src={getGoogleDriveDirectLink(product.image)}
                             alt={product.name}
                             fill
                             sizes="(max-width: 768px) 100vw, 50vw"

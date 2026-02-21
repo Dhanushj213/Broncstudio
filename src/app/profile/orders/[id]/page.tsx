@@ -8,6 +8,7 @@ import { useUI } from '@/context/UIContext';
 import { useParams } from 'next/navigation';
 import { createBrowserClient } from '@supabase/ssr';
 import InvoiceDownloadButton from '@/components/Invoice/InvoiceDownloadButton';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 
 interface OrderItem {
@@ -179,7 +180,7 @@ export default function OrderDetailsPage() {
                                 <div key={i} className="p-4 flex gap-4">
                                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex-shrink-0">
                                         <Image
-                                            src={meta?.image_url || item.image_url}
+                                            src={getGoogleDriveDirectLink(meta?.image_url || item.image_url)}
                                             alt={item.name}
                                             fill
                                             sizes="64px"

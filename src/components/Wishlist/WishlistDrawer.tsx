@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { X, ShoppingBag, Trash2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { formatPrice } from '@/utils/formatPrice';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
 export default function WishlistDrawer() {
     const { isWishlistOpen, closeWishlist } = useUI();
@@ -59,7 +60,7 @@ export default function WishlistDrawer() {
                                     <div key={item.id} className="flex gap-4 group">
                                         <div className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
                                             <div className="relative w-full h-full">
-                                                <Image src={item.image} alt={item.name} fill className="object-cover" />
+                                                <Image src={getGoogleDriveDirectLink(item.image)} alt={item.name} fill className="object-cover" />
                                             </div>
                                         </div>
                                         <div className="flex-1 flex flex-col">
