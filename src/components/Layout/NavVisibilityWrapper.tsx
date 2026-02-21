@@ -12,7 +12,7 @@ export default function NavVisibilityWrapper({
     hideOnPaths = ['/login']
 }: NavVisibilityWrapperProps) {
     const pathname = usePathname();
-    const shouldHide = hideOnPaths.includes(pathname);
+    const shouldHide = hideOnPaths.some(p => pathname.startsWith(p));
 
     if (shouldHide) return null;
 

@@ -797,7 +797,7 @@ export default function StorefrontPage() {
                                     </label>
                                     <div className="relative aspect-[3/4] lg:aspect-auto lg:h-full bg-navy-900 dark:bg-slate-950 rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-navy-950 dark:border-white/5 group/preview">
                                         {/* Background Visual */}
-                                        <div className="absolute inset-0 z-0">
+                                        <div className="absolute inset-0 z-0 overflow-hidden">
                                             {heroContent.type === 'video' ? (
                                                 heroContent.video_url ? (
                                                     <video
@@ -807,17 +807,19 @@ export default function StorefrontPage() {
                                                     />
                                                 ) : (
                                                     getGoogleDriveDirectLink(heroContent.poster_url) && (
-                                                        <Image
-                                                            src={getGoogleDriveDirectLink(heroContent.poster_url)}
-                                                            alt=""
-                                                            fill
-                                                            sizes="800px"
-                                                            className="w-full h-full object-cover opacity-50"
-                                                        />
+                                                        <div className="relative w-full h-full">
+                                                            <Image
+                                                                src={getGoogleDriveDirectLink(heroContent.poster_url)}
+                                                                alt=""
+                                                                fill
+                                                                sizes="800px"
+                                                                className="w-full h-full object-cover opacity-50"
+                                                            />
+                                                        </div>
                                                     )
                                                 )
                                             ) : (
-                                                <div className="w-full h-full overflow-hidden bg-navy-800">
+                                                <div className="relative w-full h-full overflow-hidden bg-navy-800">
                                                     {heroContent.images[0] && getGoogleDriveDirectLink(heroContent.images[0]) && (
                                                         <Image
                                                             src={getGoogleDriveDirectLink(heroContent.images[0])}
@@ -876,7 +878,7 @@ export default function StorefrontPage() {
                                         <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Personalise Page Hero</h3>
                                         <p className="text-xs text-gray-400 font-bold">Image for the root /personalise page</p>
                                     </div>
-                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                    <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(personaliseHeroImage) && (
                                             <Image
                                                 src={getGoogleDriveDirectLink(personaliseHeroImage)}
@@ -919,7 +921,7 @@ export default function StorefrontPage() {
                                         <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">New Arrivals</h3>
                                         <p className="text-xs text-gray-400 font-bold">Hero Image for /shop/new-arrivals</p>
                                     </div>
-                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                    <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '') && (
                                             <Image
                                                 src={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '')}
@@ -947,7 +949,7 @@ export default function StorefrontPage() {
                                         <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Bestsellers</h3>
                                         <p className="text-xs text-gray-400 font-bold">Hero Image for /shop/bestsellers</p>
                                     </div>
-                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                    <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '') && (
                                             <Image
                                                 src={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '')}
@@ -975,7 +977,7 @@ export default function StorefrontPage() {
                                         <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Sustainability</h3>
                                         <p className="text-xs text-gray-400 font-bold">Hero Image for /sustainability</p>
                                     </div>
-                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                    <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '') && (
                                             <Image
                                                 src={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '')}
@@ -1017,7 +1019,7 @@ export default function StorefrontPage() {
                                         <h3 className="text-lg font-black text-navy-900 dark:text-white uppercase">Main Shop Hero</h3>
                                         <p className="text-xs text-gray-400 font-bold">Image for the root /shop page</p>
                                     </div>
-                                    <div className="w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
+                                    <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['root'] || '') && (
                                             <Image
                                                 src={getGoogleDriveDirectLink(shopHeroImages['root'] || '')}
@@ -1056,7 +1058,7 @@ export default function StorefrontPage() {
                                                     <label className="text-[10px] font-black text-navy-900 dark:text-white uppercase tracking-widest">
                                                         {cat.name} Hero Banner
                                                     </label>
-                                                    <div className="w-20 h-10 rounded-lg bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
+                                                    <div className="relative w-20 h-10 rounded-lg bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
                                                         {getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '') && (
                                                             <Image
                                                                 src={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '')}
@@ -1067,6 +1069,7 @@ export default function StorefrontPage() {
                                                             />
                                                         )}
                                                     </div>
+                                                    streams
                                                 </div>
                                                 <input
                                                     type="url"
@@ -1084,7 +1087,7 @@ export default function StorefrontPage() {
                                                         <label className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest flex items-center gap-1">
                                                             Sub: {sub.name} <ChevronRight size={10} /> Hero
                                                         </label>
-                                                        <div className="w-16 h-8 rounded bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
+                                                        <div className="relative w-16 h-8 rounded bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
                                                             {getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '') && (
                                                                 <Image
                                                                     src={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '')}
@@ -1558,17 +1561,20 @@ export default function StorefrontPage() {
                                                         />
                                                         {url && (
                                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full overflow-hidden border border-gray-200">
-                                                                {getGoogleDriveDirectLink(url) && (
-                                                                    <Image
-                                                                        src={getGoogleDriveDirectLink(url)}
-                                                                        alt=""
-                                                                        fill
-                                                                        sizes="80px"
-                                                                        className="w-full h-full object-cover"
-                                                                    />
-                                                                )}
+                                                                <div className="relative w-full h-full">
+                                                                    {getGoogleDriveDirectLink(url) && (
+                                                                        <Image
+                                                                            src={getGoogleDriveDirectLink(url)}
+                                                                            alt=""
+                                                                            fill
+                                                                            sizes="80px"
+                                                                            className="w-full h-full object-cover"
+                                                                        />
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         )}
+                                                        streams
                                                     </div>
                                                 </div>
                                             ))}
@@ -1595,15 +1601,17 @@ export default function StorefrontPage() {
                                     </label>
                                     <div className="relative aspect-video lg:aspect-auto lg:h-[450px] bg-[#1a1a24] dark:bg-slate-950 rounded-[3rem] overflow-hidden border-[12px] border-black dark:border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.6)] group">
                                         {/* Background Carousel (Preview first active) */}
-                                        <div className="absolute inset-0 z-0">
+                                        <div className="absolute inset-0 z-0 overflow-hidden">
                                             {loginContent.visual_urls.find(url => url !== '') ? (
-                                                <Image
-                                                    src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')}
-                                                    alt=""
-                                                    fill
-                                                    sizes="600px"
-                                                    className="w-full h-full object-cover opacity-60"
-                                                />
+                                                <div className="relative w-full h-full">
+                                                    <Image
+                                                        src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')}
+                                                        alt=""
+                                                        fill
+                                                        sizes="600px"
+                                                        className="w-full h-full object-cover opacity-60"
+                                                    />
+                                                </div>
                                             ) : (
                                                 <div className="w-full h-full bg-navy-900/50" />
                                             )}

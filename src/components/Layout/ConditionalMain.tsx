@@ -12,7 +12,7 @@ export default function ConditionalMain({
     hideOnPaths = ['/login']
 }: ConditionalMainProps) {
     const pathname = usePathname();
-    const isHiddenPath = hideOnPaths.includes(pathname);
+    const isHiddenPath = hideOnPaths.some(p => pathname.startsWith(p));
 
     return (
         <main className={isHiddenPath ? "min-h-screen flex flex-col" : "pb-[calc(64px+env(safe-area-inset-bottom)+20px)] md:pb-0"}>

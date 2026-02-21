@@ -148,7 +148,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hideStorefrontPaths = ['/login', '/admin', '/admin/orders', '/admin/products']; // Basic list, wrapper handles subpaths or exact matches
+  const hideStorefrontPaths = ['/login', '/admin'];
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -172,7 +172,9 @@ export default function RootLayout({
                       <AnnouncementBar />
                     </NavVisibilityWrapper>
 
-                    <Header />
+                    <NavVisibilityWrapper hideOnPaths={hideStorefrontPaths}>
+                      <Header />
+                    </NavVisibilityWrapper>
 
                     <ConditionalMain hideOnPaths={hideStorefrontPaths}>
                       {children}
