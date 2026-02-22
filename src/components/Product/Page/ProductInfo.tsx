@@ -8,6 +8,8 @@ import { useToast } from '@/context/ToastContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import StickyActionBar from './StickyActionBar';
 
 interface ProductInfoProps {
@@ -296,8 +298,8 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                         <Heart
                             size={20}
                             strokeWidth={1.5}
-                            fill={isWishlisted ? "currentColor" : "none"}
-                            className={`transition-colors ${isWishlisted ? 'text-black dark:text-white' : ''}`}
+                            fill={isWishlisted ? "#ef4444" : "none"}
+                            className={`transition-colors ${isWishlisted ? 'text-red-500' : ''}`}
                         />
                     </button>
 
@@ -382,11 +384,11 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <span className="block text-[10px] uppercase text-[#999] dark:text-gray-500 font-bold mb-1">Material</span>
-                                    <span className="font-medium text-[#111] dark:text-white">100% Premium Cotton</span>
+                                    <span className="font-medium text-[#111] dark:text-white capitalize truncate">{meta.material || '100% Premium Cotton'}</span>
                                 </div>
                                 <div>
                                     <span className="block text-[10px] uppercase text-[#999] dark:text-gray-500 font-bold mb-1">Fit</span>
-                                    <span className="font-medium text-[#111] dark:text-white">Oversized / Relaxed</span>
+                                    <span className="font-medium text-[#111] dark:text-white capitalize truncate">{meta.fit || 'Oversized / Relaxed'}</span>
                                 </div>
                             </div>
                         </div>
@@ -425,35 +427,63 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
                     >
                         <motion.div
+                            key="product-size-guide-overlay"
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white dark:bg-surface-1 w-full max-w-md rounded-2xl p-6 shadow-2xl relative"
+                            className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative"
                         >
-                            <h3 className="text-xl font-black uppercase tracking-tight mb-4">Size Guide</h3>
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-4 gap-2 text-sm font-bold border-b pb-2">
-                                    <span>Size</span>
-                                    <span>Chest</span>
-                                    <span>Length</span>
-                                    <span>Shoulder</span>
-                                </div>
-                                {['S', 'M', 'L', 'XL', 'XXL'].map(s => (
-                                    <div key={s} className="grid grid-cols-4 gap-2 text-sm text-secondary">
-                                        <span className="font-bold">{s}</span>
-                                        <span>38-40</span>
-                                        <span>28</span>
-                                        <span>18</span>
-                                    </div>
-                                ))}
+                            <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
+                                <h3 className="text-xl font-black uppercase tracking-tight dark:text-white">Size Guide</h3>
+                                <button
+                                    onClick={() => setShowSizeGuide(false)}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
+                                >
+                                    <Plus className="w-6 h-6 rotate-45 dark:text-white" />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setShowSizeGuide(false)}
-                                className="mt-6 w-full h-12 bg-black text-white rounded-lg font-bold uppercase tracking-wider text-xs"
-                            >
-                                Close Guide
-                            </button>
+
+                            <div className="p-4 md:p-8 max-h-[80vh] overflow-y-auto">
+                                {meta.size_guide ? (
+                                    <div className="relative w-full aspect-square md:aspect-video rounded-xl overflow-hidden bg-gray-50 dark:bg-white/5">
+                                        <Image
+                                            src={getGoogleDriveDirectLink(meta.size_guide)}
+                                            alt="Size Guide"
+                                            fill
+                                            className="object-contain"
+                                            sizes="(max-width: 768px) 100vw, 800px"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-4 gap-2 text-sm font-bold border-b pb-2 dark:text-white dark:border-white/10">
+                                            <span>Size</span>
+                                            <span>Chest</span>
+                                            <span>Length</span>
+                                            <span>Shoulder</span>
+                                        </div>
+                                        {['S', 'M', 'L', 'XL', 'XXL'].map(s => (
+                                            <div key={s} className="grid grid-cols-4 gap-2 text-sm text-secondary dark:text-gray-400">
+                                                <span className="font-bold">{s}</span>
+                                                <span>-</span>
+                                                <span>-</span>
+                                                <span>-</span>
+                                            </div>
+                                        ))}
+                                        <p className="text-[10px] text-gray-400 italic text-center pt-4">Standard sizing applies. Contact support for exact dimensions.</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="p-6 bg-gray-50 dark:bg-white/5 border-t border-gray-100 dark:border-white/5">
+                                <button
+                                    onClick={() => setShowSizeGuide(false)}
+                                    className="w-full h-14 bg-navy-900 dark:bg-white text-white dark:text-black rounded-2xl font-bold uppercase tracking-widest text-[10px] transition-all active:scale-95 shadow-lg shadow-navy-900/20 dark:shadow-white/10"
+                                >
+                                    Close Guide
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

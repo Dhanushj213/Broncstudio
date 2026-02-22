@@ -22,7 +22,8 @@ import {
     ShoppingBag,
     UserCircle,
     CheckCircle2,
-    ChevronRight
+    ChevronRight,
+    Ruler
 } from 'lucide-react';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import { CATEGORY_TAXONOMY } from '@/data/categories';
@@ -87,6 +88,10 @@ interface SocialLinksContent {
     phone: string;
     secondaryPhone: string;
     address: string;
+}
+
+interface GlobalSizeGuideContent {
+    image_url: string;
 }
 
 interface SustainabilityContent {
@@ -212,12 +217,13 @@ export default function StorefrontPage() {
         override_image: '',
         marquee_text: 'FINAL DROP • LIMITED EDITION •',
         available_sizes: 'S, M, L, XL, 2XL, 3XL',
-        info_box_text: "Wokiee is one of the most powerful and flexible themes for creating a modern online store on the Shopify platform. It's perfect for any type of business, no matter what you sell: fashion, clothing, accessories, cosmetics, electronics, or even auto parts. This theme is designed to make your online store look stylish and professional while offering your customers an exceptional user experience.",
-        more_info_text: 'More Information',
         gallery_images: [''],
-        size_chart_url: ''
     });
 
+    // Global Size Guide State
+    const [globalSizeGuide, setGlobalSizeGuide] = useState<GlobalSizeGuideContent>({
+        image_url: ''
+    });
 
     const [activeHeroTab, setActiveHeroTab] = useState<'desktop' | 'mobile'>('desktop');
     const [activeSection, setActiveSection] = useState('hero');
@@ -378,6 +384,17 @@ export default function StorefrontPage() {
             size_chart_url: dropData.content.size_chart_url || ''
         }));
 
+        // Fetch Global Size Guide
+        const { data: sizeGuideData } = await supabase
+            .from('content_blocks')
+            .select('*')
+            .eq('section_id', 'global_size_guide')
+            .single();
+
+        if (sizeGuideData && sizeGuideData.content) {
+            setGlobalSizeGuide(sizeGuideData.content);
+        }
+
         setLoading(false);
     };
 
@@ -452,6 +469,12 @@ export default function StorefrontPage() {
             updated_at: new Date().toISOString()
         };
 
+        const sizeGuidePayload = {
+            section_id: 'global_size_guide',
+            content: globalSizeGuide,
+            updated_at: new Date().toISOString()
+        };
+
 
         const { error: heroErr } = await supabase
             .from('content_blocks')
@@ -482,9 +505,10 @@ export default function StorefrontPage() {
         const { error: pressErr } = await supabase.from('content_blocks').upsert(pressPayload, { onConflict: 'section_id' });
         const { error: lookbookErr } = await supabase.from('content_blocks').upsert(lookbookPayload, { onConflict: 'section_id' });
         const { error: dropErr } = await supabase.from('content_blocks').upsert(dropPayload, { onConflict: 'section_id' });
+        const { error: sizeGuideErr } = await supabase.from('content_blocks').upsert(sizeGuidePayload, { onConflict: 'section_id' });
 
-        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || personaliseHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr) {
-            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || personaliseHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr);
+        if (heroErr || bentoErr || shopErr || loginErr || shopHeroErr || personaliseHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr || sizeGuideErr) {
+            console.error(heroErr || bentoErr || shopErr || loginErr || shopHeroErr || personaliseHeroErr || socialErr || sustErr || pressErr || lookbookErr || dropErr || sizeGuideErr);
 
             setSaveStatus('error');
             setTimeout(() => setSaveStatus('idle'), 3000);
@@ -553,6 +577,7 @@ export default function StorefrontPage() {
         { id: 'press', label: 'Press', icon: <Newspaper size={18} /> },
         { id: 'lookbook', label: 'Lookbook', icon: <ShoppingBag size={18} /> },
         { id: 'limited_drop', label: 'Limited Edition Drop', icon: <Play size={18} /> },
+        { id: 'size_guide', label: 'Global Size Guide', icon: <Ruler size={18} /> },
         { id: 'login', label: 'Login Overlay', icon: <UserCircle size={18} /> },
 
     ];
@@ -1892,6 +1917,42 @@ export default function StorefrontPage() {
                             >
                                 + Add Lookbook Item
                             </button>
+                        </div>
+                    </section>
+                    {/* GLOBAL SIZE GUIDE SECTION */}
+                    <section id="size_guide" className="scroll-mt-32 space-y-6">
+                        <div className="flex items-center gap-4 border-b-2 border-navy-900 dark:border-white/20 pb-4">
+                            <div className="w-12 h-12 rounded-2xl bg-navy-900 dark:bg-white/10 flex items-center justify-center text-white shadow-xl">
+                                <Ruler size={22} />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-navy-900 dark:text-white uppercase tracking-tight">Global Size Guide</h2>
+                                <p className="text-[10px] font-black text-navy-500 dark:text-gray-400 uppercase tracking-[0.2em]">Sizing Information Page</p>
+                            </div>
+                        </div>
+                        <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 space-y-6">
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Size Chart Image URL (Google Drive/Public Link)</label>
+                                    <input
+                                        type="text"
+                                        value={globalSizeGuide.image_url}
+                                        onChange={e => setGlobalSizeGuide({ ...globalSizeGuide, image_url: e.target.value })}
+                                        className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
+                                        placeholder="Paste image link here..."
+                                    />
+                                </div>
+                                {globalSizeGuide.image_url && (
+                                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 mt-4">
+                                        <Image
+                                            src={getGoogleDriveDirectLink(globalSizeGuide.image_url)}
+                                            alt="Size Guide Preview"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </section>
                 </form >

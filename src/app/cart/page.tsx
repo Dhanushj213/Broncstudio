@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { createBrowserClient } from '@supabase/ssr';
 import Image from 'next/image';
-import { Trash2, Minus, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Trash2, Minus, Plus, ArrowRight, ShieldCheck, ShoppingBag, Sparkles, Globe } from 'lucide-react';
 import GlassCard from '@/components/UI/GlassCard';
 import AmbientBackground from '@/components/UI/AmbientBackground';
 import { useCart } from '@/context/CartContext';
@@ -12,190 +14,296 @@ import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import { useStoreSettings } from '@/context/StoreSettingsContext';
 
 const CartPage = () => {
+    const [worlds, setWorlds] = useState([
+        { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids', image: '' },
+        { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing', image: '' },
+        { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle', image: '' },
+        { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home', image: '' },
+        { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories', image: '' },
+        { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets', image: '' },
+    ]);
+    const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
+    const [loadingTrending, setLoadingTrending] = useState(true);
+
     const { items, removeFromCart, updateQuantity, cartTotal } = useCart();
     const { settings } = useStoreSettings();
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const supabase = createBrowserClient(
+                    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+                );
+
+                // Fetch Collections
+                const { data: colData } = await supabase
+                    .from('content_blocks')
+                    .select('content')
+                    .eq('section_id', 'shop_page_collections')
+                    .single();
+
+                if (colData && colData.content) {
+                    const mappedWorlds = colData.content.map((col: any) => ({
+                        name: col.name,
+                        subtitle: col.description || '',
+                        href: `/shop/${col.slug}`,
+                        image: col.image || ''
+                    }));
+                    setWorlds(mappedWorlds);
+                }
+
+                // Fetch Trending Products
+                const { data: prodData } = await supabase
+                    .from('products')
+                    .select('*')
+                    .limit(8)
+                    .order('created_at', { ascending: false });
+
+                if (prodData) {
+                    setTrendingProducts(prodData);
+                }
+            } catch (error) {
+                console.error('Error fetching cart data:', error);
+            } finally {
+                setLoadingTrending(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const shipping = cartTotal >= settings.free_shipping_threshold ? 0 : settings.shipping_charge;
-    const tax = parseFloat((cartTotal * (settings.tax_rate / 100)).toFixed(2)); // Dynamic Tax Rate
+    const tax = parseFloat((cartTotal * (settings.tax_rate / 100)).toFixed(2));
     const total = cartTotal + shipping + tax;
 
+    // --- EMPTY STATE VIEW ---
     if (items.length === 0) {
-        const WORLDS = [
-            { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids' },
-            { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing' },
-            { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle' },
-            { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home' },
-            { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories' },
-            { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets' },
-        ];
-
         return (
-            <div className="w-full min-h-[calc(100vh-72px)] bg-background relative overflow-hidden flex flex-col items-center justify-center p-4 md:p-8 mt-[var(--header-height)]">
-                <AmbientBackground className="opacity-60" />
-
-                {/* Empty State Card */}
-                <GlassCard className="mx-auto p-8 md:p-12 text-center max-w-md w-full flex flex-col items-center shadow-xl border border-subtle relative z-10">
-                    <div className="text-6xl mb-6 animate-bounce">🛍️</div>
-                    <h2 className="text-2xl md:text-3xl font-heading font-bold text-primary mb-3 leading-tight">Your Bag is Empty</h2>
-                    <p className="text-secondary font-medium mb-8 leading-relaxed">
-                        Looks like you haven't discovered our treasures yet!
-                        <br className="hidden md:block" />
-                        Explore our world of wonders.
-                    </p>
-                    <Link href="/" className="w-full md:w-auto">
-                        <button className="w-full md:w-auto px-10 py-4 bg-black dark:bg-white text-white dark:text-black font-bold rounded-xl hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 active:scale-95">
-                            Start Shopping
-                        </button>
-                    </Link>
-                </GlassCard>
-
-                {/* Worlds Navigation */}
-                <div className="mt-12 md:mt-16 w-full max-w-5xl relative z-10">
-                    <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Or Jump Straight Into</p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6 justify-items-center">
-                        {WORLDS.map((world) => (
-                            <Link key={world.name} href={world.href} className="group flex flex-col items-center gap-3 w-full">
-                                <div
-                                    className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.05)] transition-all duration-500 group-hover:-translate-y-1 bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/5 flex flex-col justify-end p-4 hover:bg-white/20 dark:hover:bg-white/5"
-                                >
-                                    <div className="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                                    <div className="relative z-10">
-                                        <h3 className="font-heading font-black text-xl mb-1 leading-tight tracking-tight text-navy-900 dark:text-white transition-colors drop-shadow-sm">
-                                            {world.name}
-                                        </h3>
-                                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-navy-900 dark:group-hover:text-white transition-colors drop-shadow-sm">
-                                            {world.subtitle}
-                                        </p>
-                                    </div>
-                                    <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-navy-900 dark:bg-white text-white dark:text-navy-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0 duration-500 shadow-xl border border-white/10">
-                                        <ArrowRight size={16} />
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
+            <div className="w-full min-h-screen bg-white dark:bg-[#050505] relative overflow-hidden flex flex-col items-center pt-[var(--header-height)]">
+                {/* 🎬 Cinematic Background Layers (Dark Mode Only) */}
+                <div className="absolute inset-0 z-0 select-none pointer-events-none hidden dark:block">
+                    <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/50 to-black" />
+                    {/* Grain Texture Overlay */}
+                    <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+                    />
+                    {/* Soft Spotlight */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.03] rounded-full blur-[150px]" />
                 </div>
+
+                <AmbientBackground className="opacity-10 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen" />
+
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center justify-center min-h-[75vh] text-center"
+                >
+
+                    <div className="mb-14 relative">
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
+                            className="w-24 h-24 mx-auto mb-10 relative"
+                        >
+                            <div className="absolute inset-0 bg-navy-900/5 dark:bg-white/10 rounded-full blur-2xl animate-pulse" />
+                            <div className="relative z-10 w-full h-full flex items-center justify-center border border-navy-900/10 dark:border-white/20 rounded-3xl bg-white/40 dark:bg-black/40 backdrop-blur-2xl">
+                                <ShoppingBag className="w-10 h-10 text-navy-900/80 dark:text-white/80 stroke-[1px]" />
+                            </div>
+                        </motion.div>
+
+                        <motion.h1
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6, duration: 1, ease: "easeOut" }}
+                            className="text-6xl md:text-9xl font-serif font-light text-navy-900 dark:text-white mb-8 tracking-tighter leading-[0.85]"
+                        >
+                            Your Collection <br /> <span className="italic text-navy-900/40 dark:text-white/60">Awaits.</span>
+                        </motion.h1>
+
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 1, duration: 1.2 }}
+                            className="text-navy-900/60 dark:text-neutral-400 text-lg md:text-xl max-w-xl mx-auto font-light leading-relaxed tracking-wider"
+                        >
+                            Discover pieces crafted for bold everyday armor.
+                        </motion.p>
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.3, duration: 1 }}
+                        className="flex flex-col sm:flex-row items-center gap-6 w-full max-w-lg"
+                    >
+                        <Link href="/" className="w-full sm:flex-1">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="w-full px-12 py-6 bg-navy-900 dark:bg-white text-white dark:text-black font-bold rounded-full transition-all shadow-[0_0_50px_rgba(0,0,0,0.1)] dark:shadow-[0_0_50px_rgba(255,255,255,0.15)] group flex items-center justify-center gap-2 text-xs uppercase tracking-[0.2em]"
+                            >
+                                Explore Store
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </motion.button>
+                        </Link>
+                        <Link href="/shop" className="w-full sm:flex-1">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="w-full px-12 py-6 bg-transparent border border-navy-900/10 dark:border-white/10 text-navy-900 dark:text-white font-bold rounded-full transition-all flex items-center justify-center text-xs uppercase tracking-[0.2em] hover:bg-navy-900/5 dark:hover:bg-white/5"
+                            >
+                                New Drops
+                            </motion.button>
+                        </Link>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 2, duration: 1 }}
+                        className="mt-20 flex flex-wrap justify-center gap-x-12 gap-y-6"
+                    >
+                        {[
+                            { label: 'Unmatched Quality', icon: <ShieldCheck className="w-4 h-4" /> },
+                            { label: 'Everyday Armor', icon: <Sparkles className="w-4 h-4" /> },
+                            { label: 'Pan-India Delivery', icon: <Globe className="w-4 h-4" /> }
+                        ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-neutral-600 hover:text-neutral-400 transition-colors cursor-default">
+                                {item.icon}
+                                <span>{item.label}</span>
+                            </div>
+                        ))}
+                    </motion.div>
+                </motion.div>
+
             </div>
         );
     }
 
+    // --- STANDARD CART VIEW ---
     return (
-        <main className="min-h-screen bg-background relative overflow-hidden pb-32 md:pb-20 pt-[var(--header-height)]">
+        <main className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 dark:from-indigo-950 dark:via-purple-900/20 dark:to-pink-900/30 relative overflow-hidden pb-32 md:pb-20 pt-[var(--header-height)]">
             {/* Background Decor */}
-            <AmbientBackground className="opacity-60" />
+            <AmbientBackground className="opacity-80" />
 
-            <div className="container-premium max-w-[1200px] mx-auto px-4 md:px-6 pt-8 md:pt-12 relative z-10">
-                <header className="mb-8 md:mb-12">
-                    <h1 className="text-3xl md:text-5xl font-heading font-bold text-primary mb-2">My Bag 🛍️</h1>
-                    <p className="text-secondary font-medium">{items.reduce((acc, i) => acc + i.qty, 0)} items ready for adventure</p>
-                </header>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-3xl md:text-4xl font-heading font-black text-navy-900 dark:text-white flex items-center gap-4">
+                        <ShoppingBag className="w-8 h-8 text-coral-500" />
+                        Your Bag
+                        <span className="text-lg font-bold text-gray-400 dark:text-navy-400">({items.length} items)</span>
+                    </h1>
+                </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                    {/* Items Column */}
-                    <div className="lg:col-span-2 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {/* Cart Items */}
+                    <div className="lg:col-span-8 flex flex-col gap-4">
                         {items.map((item) => (
-                            <GlassCard key={item.id} className="p-4 md:p-6 flex gap-4 md:gap-6 items-center group hover:border-coral-500/30 transition-colors">
-                                {/* Image */}
-                                <div className="w-24 h-24 md:w-32 h-32 bg-surface-2 rounded-2xl overflow-hidden shadow-sm flex-shrink-0 relative">
-                                    <Image src={getGoogleDriveDirectLink(item.image)} alt={item.name} fill sizes="128px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                                </div>
-
-                                {/* Details */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <h3 className="text-lg md:text-xl font-bold text-primary leading-tight truncate pr-4">{item.name}</h3>
-                                        <button
-                                            onClick={() => removeFromCart(item.id)}
-                                            className="text-secondary hover:text-red-500 transition-colors bg-surface-2 p-2 rounded-full hover:bg-red-500/10"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                            <GlassCard key={`${item.id}-${item.size}`} className="p-4 md:p-6 group relative overflow-hidden">
+                                <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                                    {/* Image Container */}
+                                    <div className="relative w-full sm:w-32 aspect-square rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all duration-500">
+                                        {item.image ? (
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 bg-neutral-100 dark:bg-white/5" />
+                                        )}
                                     </div>
 
-                                    <p className="text-sm font-bold text-secondary mb-3">
-                                        {item.size && <span>{item.size} • </span>}
-                                        {item.color && <span>{item.color}</span>}
-                                    </p>
-
-                                    <div className="flex justify-between items-end">
-                                        <span className="text-xl font-bold text-primary">{formatPrice(item.price)}</span>
-
-                                        {/* Quantity */}
-                                        <div className="flex items-center gap-3 bg-surface-2 rounded-xl shadow-sm border border-subtle px-1 py-1">
+                                    {/* Item Details */}
+                                    <div className="flex-grow min-w-0">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="text-lg font-bold text-navy-900 dark:text-white truncate pr-6">{item.name}</h3>
                                             <button
-                                                onClick={() => updateQuantity(item.id, item.qty - 1)}
-                                                className="w-8 h-8 flex items-center justify-center text-primary hover:bg-surface-3 rounded-lg transition-colors"
+                                                onClick={() => removeFromCart(item.id)}
+                                                className="p-2 text-gray-400 hover:text-coral-500 hover:bg-coral-500/10 rounded-full transition-all active:scale-90"
+                                                title="Remove Item"
                                             >
-                                                <Minus size={14} />
+                                                <Trash2 size={18} />
                                             </button>
-                                            <span className="w-4 text-center text-sm font-bold text-primary">{item.qty}</span>
-                                            <button
-                                                onClick={() => updateQuantity(item.id, item.qty + 1)}
-                                                className="w-8 h-8 flex items-center justify-center text-primary hover:bg-surface-3 rounded-lg transition-colors"
-                                            >
-                                                <Plus size={14} />
-                                            </button>
+                                        </div>
+                                        <p className="text-sm font-bold text-coral-500 mb-3 tracking-widest uppercase">Size: {item.size}</p>
+                                        <div className="flex flex-wrap items-center justify-between gap-4">
+                                            <div className="flex items-center bg-gray-100 dark:bg-white/5 rounded-full p-1 border border-subtle">
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.qty - 1)}
+                                                    className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-navy-900 dark:hover:text-white transition-colors"
+                                                    disabled={item.qty <= 1}
+                                                >
+                                                    <Minus size={14} />
+                                                </button>
+                                                <span className="w-10 text-center font-black text-navy-900 dark:text-white text-sm">{item.qty}</span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.qty + 1)}
+                                                    className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-navy-900 dark:hover:text-white transition-colors"
+                                                >
+                                                    <Plus size={14} />
+                                                </button>
+                                            </div>
+                                            <span className="text-lg font-black text-navy-900 dark:text-white">{formatPrice(item.price * item.qty)}</span>
                                         </div>
                                     </div>
                                 </div>
                             </GlassCard>
                         ))}
-
-                        {/* Gift Note / Upsell (Optional Adorable Touch) */}
-
                     </div>
 
-                    {/* Summary Column */}
-                    <div className="lg:col-span-1 lg:sticky lg:top-32">
-                        <GlassCard className="p-6 md:p-8 bg-card backdrop-blur-xl border border-subtle">
-                            <h2 className="text-2xl font-heading font-bold text-primary mb-6">Order Summary</h2>
-
-                            <div className="space-y-4 mb-6">
-                                <div className="flex justify-between text-sm font-medium text-secondary">
+                    {/* Order Summary */}
+                    <div className="lg:col-span-4 lg:sticky lg:top-24">
+                        <GlassCard className="p-8 shadow-2xl border-2 border-white/50 dark:border-white/5">
+                            <h2 className="text-xl font-black text-navy-900 dark:text-white mb-6 uppercase tracking-widest border-b border-subtle pb-4">Summary</h2>
+                            <div className="space-y-4 mb-8">
+                                <div className="flex justify-between text-gray-600 dark:text-gray-400 font-bold">
                                     <span>Subtotal</span>
-                                    <span className="text-primary font-bold">{formatPrice(cartTotal)}</span>
+                                    <span>{formatPrice(cartTotal)}</span>
                                 </div>
-                                <div className="flex justify-between text-sm font-medium text-secondary">
-                                    <span>Shipping</span>
-                                    <span className={`${shipping === 0 ? 'text-green-500' : 'text-primary'} font-bold`}>
-                                        {shipping === 0 ? 'Free' : formatPrice(shipping)}
-                                    </span>
+                                <div className="flex justify-between text-gray-600 dark:text-gray-400 font-bold">
+                                    <span>Estimated Tax</span>
+                                    <span>{formatPrice(tax)}</span>
                                 </div>
-                                <div className="flex justify-between text-sm font-medium text-secondary">
-                                    <span>Tax</span>
-                                    <span className="text-primary font-bold">{formatPrice(tax)}</span>
+                                <div className="flex justify-between text-gray-600 dark:text-gray-400 font-bold">
+                                    <div className="flex flex-col">
+                                        <span>Shipping</span>
+                                        {shipping === 0 && <span className="text-[10px] text-emerald-500 uppercase tracking-widest">Free Shipping</span>}
+                                    </div>
+                                    <span>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
+                                </div>
+                                <div className="pt-4 border-t border-subtle">
+                                    <div className="flex justify-between text-xl font-black text-navy-900 dark:text-white">
+                                        <span>Total</span>
+                                        <span>{formatPrice(total)}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="border-t border-dashed border-subtle my-6"></div>
-
-                            <div className="flex justify-between items-end mb-8">
-                                <span className="text-lg font-bold text-primary">Total</span>
-                                <span className="text-3xl font-heading font-bold text-primary">{formatPrice(total)}</span>
-                            </div>
-
-                            <Link href="/checkout" className="block w-full">
-                                <button className="w-full py-4 bg-black dark:bg-white text-white dark:text-black font-bold rounded-xl hover:bg-coral-500 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 group">
-                                    Checkout <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                            <Link href="/checkout">
+                                <button className="w-full bg-navy-900 dark:bg-white text-white dark:text-navy-900 font-black py-4 rounded-full text-lg uppercase tracking-widest hover:bg-coral-500 dark:hover:bg-coral-500 dark:hover:text-white transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 group flex items-center justify-center gap-3">
+                                    Checkout
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </button>
                             </Link>
 
-                            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-secondary font-medium">
-                                <ShieldCheck size={14} /> Secure Checkout
+                            <div className="mt-8 flex flex-col gap-4">
+                                <div className="flex items-center gap-3 text-xs text-gray-500 font-bold">
+                                    <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                                    <span>Secure SSL Encryption</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-xs text-gray-500 font-bold">
+                                    <Sparkles className="w-4 h-4 text-coral-500" />
+                                    <span>7-Day Easy Returns</span>
+                                </div>
                             </div>
                         </GlassCard>
                     </div>
                 </div>
-            </div>
-
-            {/* Mobile Sticky Checkout (Optional overlap handling) */}
-            <div className="fixed bottom-0 inset-x-0 p-4 bg-card/90 backdrop-blur-md border-t border-subtle md:hidden z-50">
-                <Link href="/checkout">
-                    <button className="w-full py-3.5 bg-black dark:bg-white text-white dark:text-black font-bold rounded-xl shadow-lg flex items-center justify-center gap-2">
-                        Checkout • {formatPrice(total)}
-                    </button>
-                </Link>
             </div>
         </main>
     );

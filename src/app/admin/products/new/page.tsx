@@ -40,9 +40,8 @@ export default function NewProductPage() {
         stock_status: 'in_stock',
         colors: [] as { name: string; code: string }[],
         sizes: '',
-        highlights: '',
+        material: '',
         material_care: '',
-        shipping_returns: '',
         size_guide: '',
 
         // Recommendation Engine Meta
@@ -122,9 +121,8 @@ export default function NewProductPage() {
             stock_status: formData.stock_status,
             colors: formData.colors,
             sizes: formData.sizes.split(',').map(s => s.trim()).filter(Boolean),
-            highlights: formData.highlights.split('\n').filter(Boolean),
+            material: formData.material,
             material_care: formData.material_care,
-            shipping_returns: formData.shipping_returns,
             size_guide: formData.size_guide,
 
             // Save Engine Meta
@@ -283,15 +281,28 @@ export default function NewProductPage() {
                     </div>
 
                     {/* Sizes */}
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Sizes (Comma separated)</label>
-                        <input
-                            type="text"
-                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="e.g. S, M, L, XL or 2-3Y, 3-4Y"
-                            value={formData.sizes}
-                            onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Sizes (Comma separated)</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="e.g. S, M, L, XL or 2-3Y, 3-4Y"
+                                value={formData.sizes}
+                                onChange={(e) => setFormData({ ...formData, sizes: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Size Guide Image URL</label>
+                            <input
+                                type="url"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="https://drive.google.com/..."
+                                value={formData.size_guide}
+                                onChange={(e) => setFormData({ ...formData, size_guide: e.target.value })}
+                            />
+                            <p className="text-[10px] text-gray-400 mt-1 italic">Link to the size chart image for this product</p>
+                        </div>
                     </div>
                 </div>
 
@@ -299,15 +310,27 @@ export default function NewProductPage() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100/50 space-y-6">
                     <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Product Details</h2>
 
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Highlights (One per line)</label>
-                        <textarea
-                            rows={4}
-                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors font-mono text-sm"
-                            placeholder="100% Cotton&#10;Breathable&#10;Machine Wash"
-                            value={formData.highlights}
-                            onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Material (e.g. 100% Cotton)</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="100% Cotton"
+                                value={formData.material}
+                                onChange={(e) => setFormData({ ...formData, material: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Fit (Details)</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
+                                placeholder="Oversized / Relaxed"
+                                value={formData.fit}
+                                onChange={(e) => setFormData({ ...formData, fit: e.target.value })}
+                            />
+                        </div>
                     </div>
 
                     <div>
@@ -318,17 +341,6 @@ export default function NewProductPage() {
                             placeholder="Details about material and care instructions..."
                             value={formData.material_care}
                             onChange={(e) => setFormData({ ...formData, material_care: e.target.value })}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Shipping & Returns</label>
-                        <textarea
-                            rows={3}
-                            className="w-full px-4 py-2 bg-white text-gray-900 border border-gray-200 rounded-lg focus:outline-none focus:border-navy-900 transition-colors"
-                            placeholder="Shipping policy details..."
-                            value={formData.shipping_returns}
-                            onChange={(e) => setFormData({ ...formData, shipping_returns: e.target.value })}
                         />
                     </div>
                 </div>

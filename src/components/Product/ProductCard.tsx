@@ -85,7 +85,7 @@ export default function ProductCard(props: ProductProps) {
                                 addToast(`${name} added to Wishlist!`);
                             }
                         }}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-coral-500 text-white' : 'bg-black text-white hover:bg-white hover:text-black border border-white/10'}`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors duration-200 ${isInWishlist(id) ? 'bg-red-600 text-white' : 'bg-black text-white hover:bg-white hover:text-black border border-white/10'}`}
                         title="Add to Wishlist"
                     >
                         <Heart size={18} fill={isInWishlist(id) ? "currentColor" : "none"} />

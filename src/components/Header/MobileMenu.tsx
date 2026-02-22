@@ -275,7 +275,7 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                 >
                                     <Heart size={20} />
                                     {wishlistItems.length > 0 && (
-                                        <span className="absolute top-3 right-8 w-4 h-4 bg-pink-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
+                                        <span className="absolute top-3 right-8 w-4 h-4 bg-[var(--accent-orange)] rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
                                     )}
                                     <span className="text-xs font-bold uppercase tracking-widest">Wishlist</span>
                                 </motion.button>

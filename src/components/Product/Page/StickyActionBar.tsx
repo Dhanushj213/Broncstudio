@@ -71,8 +71,8 @@ export default function StickyActionBar({ product, selectedSize, selectedColor, 
             >
                 <Heart
                     size={20}
-                    fill={isWishlisted ? "currentColor" : "none"}
-                    className={isWishlisted ? 'text-black dark:text-white' : ''}
+                    fill={isWishlisted ? "#ef4444" : "none"}
+                    className={isWishlisted ? 'text-red-500 border-red-500' : ''}
                 />
             </button>
 

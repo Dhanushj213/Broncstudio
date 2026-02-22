@@ -134,7 +134,7 @@ export default function Header() {
                         <button onClick={toggleWishlist} className="hover:text-coral-500 transition-colors relative block">
                             <Heart size={22} strokeWidth={1.5} />
                             {wishlistItems.length > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent-orange)] rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
                             )}
                         </button>
                         <Link href="/cart" className="hover:text-coral-500 transition-colors relative block">
