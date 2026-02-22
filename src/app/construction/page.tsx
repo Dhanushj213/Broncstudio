@@ -17,8 +17,32 @@ export default function ConstructionPage() {
         twitter: '',
         gmail: '',
         phone: '',
-        secondaryPhone: ''
     });
+
+    // Email subscription state
+    const [email, setEmail] = useState('');
+    const [subscribeLoading, setSubscribeLoading] = useState(false);
+    const [subscribeError, setSubscribeError] = useState<string | null>(null);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubscribeLoading(true);
+        setSubscribeError(null);
+
+        try {
+            const { error } = await supabase
+                .from('subscribers')
+                .insert([{ email }]);
+
+            if (error) throw error;
+            setIsSubscribed(true);
+        } catch (error: any) {
+            console.error('Subscription error:', error);
+            setSubscribeError(error.message || 'Failed to submit. Please try again.');
+        } finally {
+            setSubscribeLoading(false);
+        }
+    };
 
     // Camera Parallax
     const mouseX = useMotionValue(0);
@@ -105,7 +129,7 @@ export default function ConstructionPage() {
                     style={{ x: panelX, y: panelY }}
                     className="w-full max-w-[540px] mx-auto lg:mx-0 flex flex-col justify-center"
                 >
-                    <div className="mb-6 lg:mb-8 shrink-0">
+                    <div className="mb-6 lg:mb-8 shrink-0 flex flex-col">
                         <Image
                             src="/whitelogo.png"
                             alt="Bronc Studio"
@@ -113,6 +137,15 @@ export default function ConstructionPage() {
                             height={34}
                             className="opacity-90 drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]"
                         />
+                        <motion.div
+                            initial={{ opacity: 0, letterSpacing: "0.1em" }}
+                            animate={{ opacity: 1, letterSpacing: "0.3em" }}
+                            transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+                            className="mt-4 text-xs lg:text-sm font-bold text-white/90 uppercase"
+                            style={{ textShadow: "0 2px 10px rgba(255,255,255,0.4)" }}
+                        >
+                            Broncstudio
+                        </motion.div>
                     </div>
 
                     <div className="inline-flex items-center gap-3 px-3 py-1 bg-black/40 border border-white/[0.08] rounded-full mb-4 lg:mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] backdrop-blur-md shrink-0 self-start">
@@ -183,23 +216,34 @@ export default function ConstructionPage() {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    onSubmit={(e) => { e.preventDefault(); setIsSubscribed(true); }}
+                                    onSubmit={handleSubscribe}
                                     className="flex flex-col sm:flex-row gap-3 w-full"
                                 >
                                     <div className="relative group/input flex-1">
                                         <input
                                             type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            disabled={subscribeLoading}
                                             placeholder="Leave a query or notify me..."
-                                            className="w-full h-full bg-black/30 border border-white/10 rounded-xl py-3.5 px-6 outline-none text-white focus:border-[#3C82F6]/40 transition-all font-light placeholder:text-[#8A8F98] shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)] text-sm"
+                                            className="w-full h-full bg-black/30 border border-white/10 rounded-xl py-3.5 px-6 outline-none text-white focus:border-[#3C82F6]/40 transition-all font-light placeholder:text-[#8A8F98] shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)] text-sm disabled:opacity-50"
                                             required
                                         />
+                                        {subscribeError && (
+                                            <div className="absolute top-full left-0 mt-2 text-red-400 text-xs px-2">
+                                                {subscribeError}
+                                            </div>
+                                        )}
                                     </div>
                                     <button
                                         type="submit"
-                                        className="sm:w-auto w-full px-8 bg-[#3C82F6] text-white font-semibold text-sm py-4 sm:py-0 rounded-xl hover:bg-white hover:text-black transition-all shadow-[0_4px_14px_rgba(60,130,246,0.25),inset_0_1px_1px_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-[0_1px_2px_rgba(60,130,246,0.25),inset_0_2px_4px_rgba(0,0,0,0.2)] flex justify-center items-center gap-2 overflow-hidden group/btn relative"
+                                        disabled={subscribeLoading}
+                                        className="sm:w-auto w-full px-8 bg-[#3C82F6] text-white font-semibold text-sm py-4 sm:py-0 rounded-xl hover:bg-white hover:text-black transition-all shadow-[0_4px_14px_rgba(60,130,246,0.25),inset_0_1px_1px_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-[0_1px_2px_rgba(60,130,246,0.25),inset_0_2px_4px_rgba(0,0,0,0.2)] flex justify-center items-center gap-2 overflow-hidden group/btn relative disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        <span className="relative z-10 whitespace-nowrap">SEND</span>
-                                        <ArrowRight size={14} className="relative z-10 transition-transform group-hover/btn:translate-x-1" />
+                                        <span className="relative z-10 whitespace-nowrap">
+                                            {subscribeLoading ? 'SENDING...' : 'SEND'}
+                                        </span>
+                                        {!subscribeLoading && <ArrowRight size={14} className="relative z-10 transition-transform group-hover/btn:translate-x-1" />}
                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
                                     </button>
                                 </motion.form>

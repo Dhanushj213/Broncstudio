@@ -30,6 +30,31 @@ export default function LaunchPage() {
     const [activeTab, setActiveTab] = useState<'countdown' | 'media'>('countdown');
     const [direction, setDirection] = useState(1);
 
+    // Subscription State
+    const [email, setEmail] = useState('');
+    const [subscribeLoading, setSubscribeLoading] = useState(false);
+    const [subscribeError, setSubscribeError] = useState<string | null>(null);
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubscribeLoading(true);
+        setSubscribeError(null);
+
+        try {
+            const { error } = await supabase
+                .from('subscribers')
+                .insert([{ email }]);
+
+            if (error) throw error;
+            setIsSubscribed(true);
+        } catch (error: any) {
+            console.error('Subscription error:', error);
+            setSubscribeError(error.message || 'Failed to subscribe. Please try again.');
+        } finally {
+            setSubscribeLoading(false);
+        }
+    };
+
     // Cursor tracking for lighting/parallax
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
@@ -230,24 +255,24 @@ export default function LaunchPage() {
                         }}
                         className="w-full max-w-[700px] px-4 perspective-1000 z-20 absolute"
                     >
-                        <div className="relative backdrop-blur-[50px] bg-white/[0.02] border border-white/[0.1] rounded-[2.5rem] p-6 sm:p-10 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(255,255,255,0.02)] overflow-hidden group">
+                        {/* Slide Navigation - Right Arrow (Placed OUTSIDE the overflow-hidden card) */}
+                        {launchHeroVideo && (
+                            <button
+                                onClick={() => { setDirection(1); setActiveTab('media'); }}
+                                className="absolute right-4 sm:right-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex translate-x-1/2"
+                            >
+                                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:translate-x-0.5 transition-transform" />
+                            </button>
+                        )}
 
-                            {/* Slide Navigation - Right Arrow */}
-                            {launchHeroVideo && (
-                                <button
-                                    onClick={() => { setDirection(1); setActiveTab('media'); }}
-                                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex"
-                                >
-                                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:translate-x-0.5 transition-transform" />
-                                </button>
-                            )}
+                        <div className="relative backdrop-blur-[50px] bg-white/[0.02] border border-white/[0.1] rounded-[2.5rem] p-6 sm:p-10 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(255,255,255,0.02)] overflow-hidden group">
 
                             {/* Inner Glass Highlights */}
                             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                             <div className="absolute top-0 left-0 w-[1px] h-full bg-gradient-to-b from-white/20 to-transparent" />
                             <div className="absolute top-0 -inset-x-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-45deg] group-hover:translate-x-[400%] transition-transform duration-[2.5s] ease-in-out pointer-events-none" />
 
-                            {/* Logo */}
+                            {/* Logo & Brand Name */}
                             <div className="flex flex-col items-center mb-6 sm:mb-10 relative z-10">
                                 <motion.div
                                     animate={{ filter: ['drop-shadow(0 0 0px rgba(255,255,255,0))', 'drop-shadow(0 0 20px rgba(255,255,255,0.25))', 'drop-shadow(0 0 0px rgba(255,255,255,0))'] }}
@@ -261,6 +286,15 @@ export default function LaunchPage() {
                                         className="opacity-100"
                                         priority
                                     />
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, letterSpacing: "0.1em" }}
+                                    animate={{ opacity: 1, letterSpacing: "0.3em" }}
+                                    transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+                                    className="mt-5 text-sm sm:text-base font-bold text-white/90 uppercase"
+                                    style={{ textShadow: "0 2px 10px rgba(255,255,255,0.4)" }}
+                                >
+                                    Broncstudio
                                 </motion.div>
                             </div>
 
@@ -335,24 +369,35 @@ export default function LaunchPage() {
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0, scale: 0.95 }}
-                                            onSubmit={(e) => { e.preventDefault(); setIsSubscribed(true); }}
+                                            onSubmit={handleSubscribe}
                                             className="flex flex-col gap-3 sm:gap-4"
                                         >
                                             <div className="relative group/input">
                                                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#3C82F6]/30 via-[#8B5CF6]/30 to-[#E6C78B]/30 rounded-[12px] blur opacity-0 group-focus-within/input:opacity-100 transition duration-500"></div>
                                                 <input
                                                     type="email"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    disabled={subscribeLoading}
                                                     placeholder="Enter email for priority access"
-                                                    className="relative w-full bg-black/40 border border-white/10 rounded-lg py-4 px-6 outline-none text-white focus:border-white/30 transition-all font-light placeholder:text-[#8A8F98] shadow-[inset_0_2px_10px_rgba(0,0,0,1)] text-center text-sm sm:text-base backdrop-blur-md"
+                                                    className="relative w-full bg-black/40 border border-white/10 rounded-lg py-4 px-6 outline-none text-white focus:border-white/30 transition-all font-light placeholder:text-[#8A8F98] shadow-[inset_0_2px_10px_rgba(0,0,0,1)] text-center text-sm sm:text-base backdrop-blur-md disabled:opacity-50"
                                                     required
                                                 />
                                             </div>
+                                            {subscribeError && (
+                                                <div className="text-red-400 text-xs text-center px-4 bg-red-500/10 py-2 rounded-lg border border-red-500/20">
+                                                    {subscribeError}
+                                                </div>
+                                            )}
                                             <button
                                                 type="submit"
-                                                className="w-full bg-gradient-to-r from-white to-[#E6C78B] text-black font-bold text-sm sm:text-base py-3.5 sm:py-4 rounded-lg hover:shadow-[0_0_30px_rgba(230,199,139,0.4)] transition-all flex justify-center items-center gap-3 overflow-hidden group/btn relative active:scale-[0.98]"
+                                                disabled={subscribeLoading}
+                                                className="w-full bg-gradient-to-r from-white to-[#E6C78B] text-black font-bold text-sm sm:text-base py-3.5 sm:py-4 rounded-lg hover:shadow-[0_0_30px_rgba(230,199,139,0.4)] transition-all flex justify-center items-center gap-3 overflow-hidden group/btn relative active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                <span className="relative z-10 uppercase tracking-widest whitespace-nowrap">Notify Me</span>
-                                                <ArrowRight size={18} className="relative z-10 transition-transform group-hover/btn:translate-x-1.5" />
+                                                <span className="relative z-10 uppercase tracking-widest whitespace-nowrap">
+                                                    {subscribeLoading ? 'Confirming...' : 'Notify Me'}
+                                                </span>
+                                                {!subscribeLoading && <ArrowRight size={18} className="relative z-10 transition-transform group-hover/btn:translate-x-1.5" />}
                                                 <div className="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-50 transition-opacity duration-300" />
                                             </button>
                                         </motion.form>
@@ -388,15 +433,15 @@ export default function LaunchPage() {
                         }}
                         className="w-full max-w-[800px] px-4 perspective-1000 z-20 absolute"
                     >
-                        <div className="relative backdrop-blur-[50px] bg-white/[0.02] border border-white/[0.1] rounded-[2.5rem] p-4 sm:p-8 shadow-[0_40px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(255,255,255,0.02)] overflow-hidden group flex flex-col items-center">
+                        {/* Slide Navigation - Left Arrow */}
+                        <button
+                            onClick={() => { setDirection(-1); setActiveTab('countdown'); }}
+                            className="absolute left-4 sm:left-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl -translate-x-1/2"
+                        >
+                            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:-translate-x-0.5 transition-transform" />
+                        </button>
 
-                            {/* Slide Navigation - Left Arrow */}
-                            <button
-                                onClick={() => { setDirection(-1); setActiveTab('countdown'); }}
-                                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl"
-                            >
-                                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:-translate-x-0.5 transition-transform" />
-                            </button>
+                        <div className="relative backdrop-blur-[50px] bg-white/[0.02] border border-white/[0.1] rounded-[2.5rem] p-4 sm:p-8 shadow-[0_40px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(255,255,255,0.02)] overflow-hidden group flex flex-col items-center">
 
                             {/* Inner Glass Highlights */}
                             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
