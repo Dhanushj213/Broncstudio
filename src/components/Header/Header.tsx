@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { Search, ShoppingBag, Heart, Menu, User, ChevronDown, Home } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import MobileMenu from './MobileMenu';
 import MegaMenu from './MegaMenu';
 import { createClient } from '@/utils/supabase/client';
@@ -22,6 +23,7 @@ export default function Header() {
 
     const { openSearch, toggleWishlist } = useUI();
     const { cartCount } = useCart();
+    const { wishlistItems } = useWishlist();
     const supabase = createClient();
 
     useEffect(() => {
@@ -129,8 +131,11 @@ export default function Header() {
                         <button onClick={openSearch} className="hover:text-coral-500 transition-colors hidden md:block">
                             <Search size={22} strokeWidth={1.5} />
                         </button>
-                        <button onClick={toggleWishlist} className="hover:text-coral-500 transition-colors">
+                        <button onClick={toggleWishlist} className="hover:text-coral-500 transition-colors relative block">
                             <Heart size={22} strokeWidth={1.5} />
+                            {wishlistItems.length > 0 && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
+                            )}
                         </button>
                         <Link href="/cart" className="hover:text-coral-500 transition-colors relative block">
                             <ShoppingBag size={22} strokeWidth={1.5} />

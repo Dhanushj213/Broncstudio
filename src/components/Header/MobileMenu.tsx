@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { X, ChevronRight, User, Heart, ShoppingBag, Globe, Sparkles, Home as HomeIcon, Tag, LayoutGrid, Gift, Monitor, Shirt, Pencil, PawPrint } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
+import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { DEPARTMENT_TAXONOMY } from '@/data/categories';
 
@@ -14,6 +16,8 @@ interface MobileMenuProps {
 
 const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
     const { openWishlist } = useUI();
+    const { cartCount } = useCart();
+    const { wishlistItems } = useWishlist();
     // Prevent scrolling when menu is open
     React.useEffect(() => {
         if (isOpen) {
@@ -267,9 +271,12 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                         onClose();
                                         openWishlist();
                                     }}
-                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_15px_rgba(0,0,0,0.4),-2px_-2px_15px_rgba(255,255,255,0.02)] hover:text-coral-600 transition-colors text-navy-900 dark:text-white"
+                                    className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_15px_rgba(0,0,0,0.4),-2px_-2px_15px_rgba(255,255,255,0.02)] hover:text-coral-600 transition-colors text-navy-900 dark:text-white relative"
                                 >
                                     <Heart size={20} />
+                                    {wishlistItems.length > 0 && (
+                                        <span className="absolute top-3 right-8 w-4 h-4 bg-pink-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
+                                    )}
                                     <span className="text-xs font-bold uppercase tracking-widest">Wishlist</span>
                                 </motion.button>
                                 <Link
@@ -280,9 +287,12 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                     <motion.div
                                         whileHover={{ y: -4, transition: { type: "spring" as const, stiffness: 400, damping: 10 } }}
                                         whileTap={tapEffect}
-                                        className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_15px_rgba(0,0,0,0.4),-2px_-2px_15px_rgba(255,255,255,0.02)] hover:text-blue-600 transition-colors text-navy-900 dark:text-white"
+                                        className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-[4px_4px_10px_rgba(0,0,0,0.05),-2px_-2px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_15px_rgba(0,0,0,0.4),-2px_-2px_15px_rgba(255,255,255,0.02)] hover:text-blue-600 transition-colors text-navy-900 dark:text-white relative"
                                     >
                                         <ShoppingBag size={20} />
+                                        {cartCount > 0 && (
+                                            <span className="absolute top-3 right-8 w-4 h-4 bg-[var(--accent-orange)] rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{cartCount}</span>
+                                        )}
                                         <span className="text-xs font-bold uppercase tracking-widest">Bag</span>
                                     </motion.div>
                                 </Link>
