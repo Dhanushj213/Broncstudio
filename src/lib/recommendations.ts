@@ -1,4 +1,4 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@/utils/supabase/client';
 
 export interface ProductAttribute {
     id: string;
@@ -77,10 +77,12 @@ export async function getRecommendations(currentProduct: any) {
         fit: meta.fit || 'regular'
     };
 
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    if (!current.id) {
+        console.warn('RecEngine Warning: currentProduct.id is missing.');
+        return [];
+    }
+
+    const supabase = createClient();
 
     // 1. HARD FILTER: Gender & Exclude Self
     let query = supabase
@@ -98,12 +100,12 @@ export async function getRecommendations(currentProduct: any) {
 
     const { data: candidates, error } = await query;
     if (error || !candidates) {
-        console.error('RecEngine Error:', error);
+        console.error('RecEngine Error Details:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2), 'Message:', error?.message);
         return [];
     }
 
     // 2. SCORING LOOP
-    const scoredCandidates = candidates.map(candidate => {
+    const scoredCandidates = candidates.map((candidate: any) => {
         const cMeta = candidate.metadata || {};
         const candidateAttr: ProductAttribute = {
             id: candidate.id,
@@ -155,8 +157,8 @@ export async function getRecommendations(currentProduct: any) {
     // Limit to 3 distinct types if possible (Top, Bottom, Access) - advanced logic
 
     let recommendations = scoredCandidates
-        .filter(c => c.score > 0)
-        .sort((a, b) => b.score - a.score);
+        .filter((c: any) => c.score > 0)
+        .sort((a: any, b: any) => b.score - a.score);
 
     // Deduplicate Types (Optional: Ensure variety)
     const uniqueTypes = new Set();
@@ -174,7 +176,7 @@ export async function getRecommendations(currentProduct: any) {
     // Fallback: If logic found nothing or very few, fill with ANY gender-matched items (Bestsellers/Random)
     if (diverseRecommendations.length < 2) {
         const fallbackPool = candidates
-            .filter(c => {
+            .filter((c: any) => {
                 // Determine candidate gender
                 const cGender = c.metadata?.gender || 'unisex';
                 // 1. Must not be current product

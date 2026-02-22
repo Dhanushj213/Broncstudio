@@ -5,6 +5,7 @@ import { Truck, RotateCcw, ShieldCheck, ChevronDown, ShoppingBag, Zap, Plus, Min
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import StickyActionBar from './StickyActionBar';
@@ -18,6 +19,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const { formatPrice } = useUI();
     const { addToCart } = useCart();
     const { addToast } = useToast();
+    const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
     const meta = product.metadata || {};
     const colors = meta.colors || [];
@@ -33,7 +35,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     const [pincodeStatus, setPincodeStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle');
 
     // Interactions State
-    const [isWishlisted, setIsWishlisted] = useState(false);
+    const isWishlisted = isInWishlist(product.id);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
 
     const stockStatus = meta.stock_status || 'in_stock';
@@ -83,8 +85,18 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     };
 
     const toggleWishlist = () => {
-        setIsWishlisted(!isWishlisted);
-        addToast(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist', 'success');
+        if (isWishlisted) {
+            removeFromWishlist(product.id);
+            addToast('Removed from wishlist', 'success');
+        } else {
+            addToWishlist({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images?.[0] || product.image || '/images/placeholder.jpg',
+            });
+            addToast('Added to wishlist', 'success');
+        }
     };
 
     const handleAddToCart = () => {
