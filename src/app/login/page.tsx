@@ -159,7 +159,7 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-[calc(100vh-72px)] w-full flex items-center justify-center bg-black text-white p-4 md:p-8 font-sans selection:bg-red-500/30 overflow-x-hidden relative">
+        <div className="min-h-screen w-full flex items-center justify-center bg-black text-white p-4 md:p-8 font-sans selection:bg-red-500/30 overflow-x-hidden relative">
             {/* Cinematic Red & Black Background */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
                 {/* Primary Radial Glow */}
