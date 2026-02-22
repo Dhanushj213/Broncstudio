@@ -259,7 +259,7 @@ export default function LaunchPage() {
                         {launchHeroVideo && (
                             <button
                                 onClick={() => { setDirection(1); setActiveTab('media'); }}
-                                className="absolute right-4 sm:right-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex translate-x-1/2"
+                                className="absolute right-0 sm:right-4 top-16 sm:top-1/2 sm:-translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex translate-x-1/2 sm:translate-x-1/2"
                             >
                                 <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:translate-x-0.5 transition-transform" />
                             </button>
@@ -436,7 +436,7 @@ export default function LaunchPage() {
                         {/* Slide Navigation - Left Arrow */}
                         <button
                             onClick={() => { setDirection(-1); setActiveTab('countdown'); }}
-                            className="absolute left-4 sm:left-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl -translate-x-1/2"
+                            className="absolute left-4 sm:left-4 top-16 sm:top-1/2 sm:-translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl"
                         >
                             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:-translate-x-0.5 transition-transform" />
                         </button>
