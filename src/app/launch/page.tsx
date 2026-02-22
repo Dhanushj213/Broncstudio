@@ -183,7 +183,7 @@ export default function LaunchPage() {
         setIsLaunching(true);
 
         // --- 💥 MASSIVE FINAL LAUNCH CELEBRATION ---
-        const duration = 4500;
+        const duration = 6000;
         fireGrandConfetti(duration, 3.0); // 3x intensity for the grand finale
 
         // Giant center explosion instantly
@@ -288,15 +288,46 @@ export default function LaunchPage() {
                 </motion.div>
             </motion.div>
 
-            {/* 💥 GRAND LAUNCH TRANSITION BLOOM */}
+            {/* 💥 GRAND LAUNCH TRANSITION BLOOM & TEXT SEQUENCE */}
             <AnimatePresence>
                 {isLaunching && (
-                    <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 150, opacity: 1 }}
-                        transition={{ duration: 2.5, ease: [0.8, 0, 0.2, 1] }}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20px] h-[20px] bg-white rounded-full blur-[2px] z-[100] pointer-events-none shadow-[0_0_100px_50px_rgba(255,255,255,1)]"
-                    />
+                    <>
+                        <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 150, opacity: 1 }}
+                            transition={{ duration: 2.5, ease: [0.8, 0, 0.2, 1] }}
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[20px] h-[20px] bg-white rounded-full blur-[2px] z-[100] pointer-events-none shadow-[0_0_100px_50px_rgba(255,255,255,1)]"
+                        />
+
+                        <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center pointer-events-none">
+                            <motion.div
+                                initial={{ opacity: 0, y: 20, filter: "blur(10px)", scale: 0.9 }}
+                                animate={{ opacity: [0, 1, 0], y: [20, 0, -20], filter: ["blur(10px)", "blur(0px)", "blur(10px)"], scale: [0.9, 1, 1.1] }}
+                                transition={{ duration: 1.5, delay: 0.8, times: [0, 0.4, 1], ease: "easeInOut" }}
+                                className="absolute text-4xl sm:text-6xl md:text-7xl font-black text-black tracking-tighter uppercase text-center"
+                            >
+                                Hand Crafted Designs
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20, filter: "blur(10px)", scale: 0.9 }}
+                                animate={{ opacity: [0, 1, 0], y: [20, 0, -20], filter: ["blur(10px)", "blur(0px)", "blur(10px)"], scale: [0.9, 1, 1.1] }}
+                                transition={{ duration: 1.5, delay: 2.4, times: [0, 0.4, 1], ease: "easeInOut" }}
+                                className="absolute text-4xl sm:text-6xl md:text-7xl font-black text-black tracking-tighter uppercase text-center"
+                            >
+                                Handpicked Quality
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20, filter: "blur(10px)", scale: 0.9 }}
+                                animate={{ opacity: [0, 1, 1], y: [20, 0, 0], filter: ["blur(10px)", "blur(0px)", "blur(0px)"], scale: [0.9, 1, 1] }}
+                                transition={{ duration: 1.5, delay: 4.0, times: [0, 0.4, 1], ease: "easeInOut" }}
+                                className="absolute text-4xl sm:text-6xl md:text-7xl font-black text-black tracking-tighter uppercase text-center"
+                            >
+                                Secure Payment
+                            </motion.div>
+                        </div>
+                    </>
                 )}
             </AnimatePresence>
 
