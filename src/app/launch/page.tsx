@@ -107,6 +107,8 @@ export default function LaunchPage() {
         return () => window.removeEventListener('mousemove', handleMouseMove);
     }, []);
 
+    const [preLaunchFired, setPreLaunchFired] = useState(false);
+
     useEffect(() => {
         if (!launchDateTime) return;
 
@@ -114,6 +116,12 @@ export default function LaunchPage() {
             const now = new Date().getTime();
             const launchDate = new Date(launchDateTime).getTime();
             const distance = launchDate - now;
+
+            // Trigger Epic 10-second warning fireworks
+            if (distance <= 10000 && distance > 0 && !preLaunchFired) {
+                setPreLaunchFired(true);
+                fireGrandConfetti(6000, 1.5); // 6 seconds of medium fireworks
+            }
 
             if (distance <= 0) {
                 clearInterval(timer);
@@ -130,16 +138,11 @@ export default function LaunchPage() {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [launchDateTime]);
+    }, [launchDateTime, preLaunchFired]);
 
-    const handleLaunchSequence = () => {
-        setIsLaunching(true);
-
-        // --- 💥 GRAND CONFETTI CELEBRATION ---
-        const duration = 3500;
+    const fireGrandConfetti = (duration: number, intensity: number = 1) => {
         const animationEnd = Date.now() + duration;
         const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-
         const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
         const interval: any = setInterval(function () {
@@ -149,20 +152,49 @@ export default function LaunchPage() {
                 return clearInterval(interval);
             }
 
-            const particleCount = 60 * (timeLeft / duration);
-            // Left firework
+            const particleCount = 50 * intensity * (timeLeft / duration);
+
+            // Vibrant, rich color palette for maximum "Wow"
+            const colors = ['#ffffff', '#E6C78B', '#3C82F6', '#8B5CF6', '#F43F5E', '#10B981', '#F59E0B'];
+
             confetti({
                 ...defaults, particleCount,
                 origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-                colors: ['#ffffff', '#E6C78B', '#3C82F6', '#8B5CF6']
+                colors: colors
             });
-            // Right firework
             confetti({
                 ...defaults, particleCount,
                 origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-                colors: ['#ffffff', '#E6C78B', '#3C82F6', '#8B5CF6']
+                colors: colors
             });
+            // Add central bursts for extra grandeur
+            if (intensity > 1.5) {
+                confetti({
+                    ...defaults, particleCount: particleCount / 2,
+                    origin: { x: randomInRange(0.4, 0.6), y: Math.random() - 0.2 },
+                    colors: colors,
+                    startVelocity: 45
+                });
+            }
         }, 250);
+    };
+
+    const handleLaunchSequence = () => {
+        setIsLaunching(true);
+
+        // --- 💥 MASSIVE FINAL LAUNCH CELEBRATION ---
+        const duration = 4500;
+        fireGrandConfetti(duration, 3.0); // 3x intensity for the grand finale
+
+        // Giant center explosion instantly
+        confetti({
+            particleCount: 300,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ['#ffffff', '#E6C78B', '#3C82F6', '#8B5CF6', '#F43F5E', '#10B981', '#F59E0B'],
+            zIndex: 9999,
+            startVelocity: 60
+        });
 
         setTimeout(() => {
             router.push('/');
