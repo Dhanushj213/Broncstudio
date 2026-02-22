@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { createBrowserClient } from '@supabase/ssr';
 import { ArrowRight, ChevronRight, ChevronLeft, Instagram, Facebook, Youtube, Twitter, Mail } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -133,9 +134,39 @@ export default function LaunchPage() {
 
     const handleLaunchSequence = () => {
         setIsLaunching(true);
+
+        // --- 💥 GRAND CONFETTI CELEBRATION ---
+        const duration = 3500;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const interval: any = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 60 * (timeLeft / duration);
+            // Left firework
+            confetti({
+                ...defaults, particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                colors: ['#ffffff', '#E6C78B', '#3C82F6', '#8B5CF6']
+            });
+            // Right firework
+            confetti({
+                ...defaults, particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                colors: ['#ffffff', '#E6C78B', '#3C82F6', '#8B5CF6']
+            });
+        }, 250);
+
         setTimeout(() => {
             router.push('/');
-        }, 3000); // 3 seconds total sequence
+        }, duration); // Redirect immediately after the confetti duration finishes
     };
 
     if (loading) return null;
