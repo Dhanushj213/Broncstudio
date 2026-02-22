@@ -320,11 +320,40 @@ export default function LaunchPage() {
 
                             <motion.div
                                 initial={{ opacity: 0, y: 20, filter: "blur(10px)", scale: 0.9 }}
-                                animate={{ opacity: [0, 1, 1], y: [20, 0, 0], filter: ["blur(10px)", "blur(0px)", "blur(0px)"], scale: [0.9, 1, 1] }}
+                                animate={{ opacity: [0, 1, 0], y: [20, 0, -20], filter: ["blur(10px)", "blur(0px)", "blur(10px)"], scale: [0.9, 1, 1.1] }}
                                 transition={{ duration: 1.5, delay: 4.0, times: [0, 0.4, 1], ease: "easeInOut" }}
                                 className="absolute text-4xl sm:text-6xl md:text-7xl font-black text-black tracking-tighter uppercase text-center"
                             >
                                 Secure Payment
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20, filter: "blur(10px)", scale: 0.9 }}
+                                animate={{ opacity: [0, 1, 0], y: [20, 0, -20], filter: ["blur(10px)", "blur(0px)", "blur(10px)"], scale: [0.9, 1, 1.1] }}
+                                transition={{ duration: 1.5, delay: 5.6, times: [0, 0.4, 1], ease: "easeInOut" }}
+                                className="absolute text-4xl sm:text-6xl md:text-7xl font-black text-black tracking-tighter uppercase text-center"
+                            >
+                                We Prioritize You
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20, filter: "blur(10px)", scale: 0.9 }}
+                                animate={{ opacity: [0, 1, 1], y: [20, 0, 0], filter: ["blur(10px)", "blur(0px)", "blur(0px)"], scale: [0.9, 1, 1] }}
+                                transition={{ duration: 1.8, delay: 7.2, times: [0, 0.5, 1], ease: "easeOut" }}
+                                className="absolute flex flex-col items-center justify-center gap-6"
+                            >
+                                <div className="p-4 bg-black rounded-full overflow-hidden shadow-2xl relative">
+                                    <Image
+                                        src="/whitelogo.png"
+                                        alt="Broncstudio Logo"
+                                        width={160}
+                                        height={45}
+                                        className="relative z-10"
+                                    />
+                                </div>
+                                <div className="text-4xl sm:text-6xl md:text-7xl font-black text-black tracking-[0.2em] uppercase text-center mt-4">
+                                    Broncstudio
+                                </div>
                             </motion.div>
                         </div>
                     </>
