@@ -230,25 +230,15 @@ export default function LaunchPage() {
                         }}
                         className="w-full max-w-[700px] px-4 perspective-1000 z-20 absolute"
                     >
-                        <div className="relative backdrop-blur-[50px] bg-white/[0.02] border border-white/[0.1] rounded-[2.5rem] p-8 sm:p-12 md:p-16 shadow-[0_40px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(255,255,255,0.02)] overflow-hidden group">
+                        <div className="relative backdrop-blur-[50px] bg-white/[0.02] border border-white/[0.1] rounded-[2.5rem] p-6 sm:p-10 md:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.2),inset_0_-1px_1px_rgba(255,255,255,0.02)] overflow-hidden group">
 
                             {/* Slide Navigation - Right Arrow */}
                             {launchHeroVideo && (
                                 <button
                                     onClick={() => { setDirection(1); setActiveTab('media'); }}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/20 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md hidden md:flex"
+                                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex"
                                 >
-                                    <ChevronRight size={24} className="group-hover/arrow:translate-x-0.5 transition-transform" />
-                                </button>
-                            )}
-                            {/* Mobile arrow bottom */}
-                            {launchHeroVideo && (
-                                <button
-                                    onClick={() => { setDirection(1); setActiveTab('media'); }}
-                                    className="w-full mt-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 md:hidden"
-                                >
-                                    <span className="text-sm font-medium tracking-widest uppercase">View Details</span>
-                                    <ChevronRight size={16} />
+                                    <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:translate-x-0.5 transition-transform" />
                                 </button>
                             )}
 
@@ -258,7 +248,7 @@ export default function LaunchPage() {
                             <div className="absolute top-0 -inset-x-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-45deg] group-hover:translate-x-[400%] transition-transform duration-[2.5s] ease-in-out pointer-events-none" />
 
                             {/* Logo */}
-                            <div className="flex flex-col items-center mb-10 relative z-10">
+                            <div className="flex flex-col items-center mb-6 sm:mb-10 relative z-10">
                                 <motion.div
                                     animate={{ filter: ['drop-shadow(0 0 0px rgba(255,255,255,0))', 'drop-shadow(0 0 20px rgba(255,255,255,0.25))', 'drop-shadow(0 0 0px rgba(255,255,255,0))'] }}
                                     transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -275,8 +265,8 @@ export default function LaunchPage() {
                             </div>
 
                             {/* Headline & Subtext */}
-                            <div className="text-center mb-12 relative z-10">
-                                <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] font-bold tracking-tight text-white leading-[1.05] mb-5 hmc-text-glow">
+                            <div className="text-center mb-8 sm:mb-12 relative z-10">
+                                <h1 className="text-4xl sm:text-5xl md:text-[3.5rem] font-bold tracking-tight text-white leading-[1.05] mb-3 sm:mb-5 hmc-text-glow">
                                     {headline.split(' ').map((word, i) => (
                                         <motion.span
                                             key={i}
@@ -300,7 +290,7 @@ export default function LaunchPage() {
                             </div>
 
                             {/* 🕒 LIQUID GLASS SKEUOMORPHIC COUNTDOWN */}
-                            <div className="flex justify-center gap-3 sm:gap-4 md:gap-5 mb-12 relative z-10 w-full shrink-0">
+                            <div className="flex justify-center gap-2 sm:gap-4 md:gap-5 mb-8 sm:mb-12 relative z-10 w-full shrink-0">
                                 {[
                                     { label: 'Days', value: timeLeft.days },
                                     { label: 'Hours', value: timeLeft.hours },
@@ -314,7 +304,7 @@ export default function LaunchPage() {
                                         transition={{ delay: 1.0 + idx * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                                         className="flex-1 max-w-[110px]"
                                     >
-                                        <div className="bg-white/[0.03] backdrop-blur-[20px] rounded-[1.5rem] p-4 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.5)] border border-white/[0.08] relative overflow-hidden flex flex-col items-center">
+                                        <div className="bg-white/[0.03] backdrop-blur-[20px] rounded-[1.5rem] p-3 sm:p-5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_10px_30px_rgba(0,0,0,0.5)] border border-white/[0.08] relative overflow-hidden flex flex-col items-center">
                                             {/* Micro-light at top */}
                                             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
@@ -323,7 +313,7 @@ export default function LaunchPage() {
                                                 initial={{ rotateX: 90, opacity: 0 }}
                                                 animate={{ rotateX: 0, opacity: 1 }}
                                                 transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                                                className="text-3xl sm:text-4xl md:text-5xl font-medium text-white tabular-nums tracking-tighter mb-1.5 drop-shadow-[0_4px_10px_rgba(255,255,255,0.1)]"
+                                                className="text-2xl sm:text-4xl md:text-5xl font-medium text-white tabular-nums tracking-tighter mb-1 sm:mb-1.5 drop-shadow-[0_4px_10px_rgba(255,255,255,0.1)]"
                                                 style={{ textShadow: "0 1px 2px rgba(255,255,255,0.2), 0 0 10px rgba(255,255,255,0.1)" }}
                                             >
                                                 {String(item.value).padStart(2, '0')}
@@ -346,20 +336,20 @@ export default function LaunchPage() {
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0, scale: 0.95 }}
                                             onSubmit={(e) => { e.preventDefault(); setIsSubscribed(true); }}
-                                            className="flex flex-col gap-4"
+                                            className="flex flex-col gap-3 sm:gap-4"
                                         >
                                             <div className="relative group/input">
-                                                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#3C82F6]/30 via-[#8B5CF6]/30 to-[#E6C78B]/30 rounded-[14px] blur opacity-0 group-focus-within/input:opacity-100 transition duration-500"></div>
+                                                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#3C82F6]/30 via-[#8B5CF6]/30 to-[#E6C78B]/30 rounded-[12px] blur opacity-0 group-focus-within/input:opacity-100 transition duration-500"></div>
                                                 <input
                                                     type="email"
                                                     placeholder="Enter email for priority access"
-                                                    className="relative w-full bg-black/40 border border-white/10 rounded-xl py-4.5 px-6 outline-none text-white focus:border-white/30 transition-all font-light placeholder:text-[#8A8F98] shadow-[inset_0_2px_10px_rgba(0,0,0,1)] text-center text-sm sm:text-base backdrop-blur-md"
+                                                    className="relative w-full bg-black/40 border border-white/10 rounded-lg py-4 px-6 outline-none text-white focus:border-white/30 transition-all font-light placeholder:text-[#8A8F98] shadow-[inset_0_2px_10px_rgba(0,0,0,1)] text-center text-sm sm:text-base backdrop-blur-md"
                                                     required
                                                 />
                                             </div>
                                             <button
                                                 type="submit"
-                                                className="w-full bg-gradient-to-r from-white to-[#E6C78B] text-black font-bold text-sm sm:text-base py-4 sm:py-4.5 rounded-xl hover:shadow-[0_0_30px_rgba(230,199,139,0.4)] transition-all flex justify-center items-center gap-3 overflow-hidden group/btn relative active:scale-[0.98]"
+                                                className="w-full bg-gradient-to-r from-white to-[#E6C78B] text-black font-bold text-sm sm:text-base py-3.5 sm:py-4 rounded-lg hover:shadow-[0_0_30px_rgba(230,199,139,0.4)] transition-all flex justify-center items-center gap-3 overflow-hidden group/btn relative active:scale-[0.98]"
                                             >
                                                 <span className="relative z-10 uppercase tracking-widest whitespace-nowrap">Notify Me</span>
                                                 <ArrowRight size={18} className="relative z-10 transition-transform group-hover/btn:translate-x-1.5" />
@@ -403,9 +393,9 @@ export default function LaunchPage() {
                             {/* Slide Navigation - Left Arrow */}
                             <button
                                 onClick={() => { setDirection(-1); setActiveTab('countdown'); }}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/20 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md hidden md:flex"
+                                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl"
                             >
-                                <ChevronLeft size={24} className="group-hover/arrow:-translate-x-0.5 transition-transform" />
+                                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:-translate-x-0.5 transition-transform" />
                             </button>
 
                             {/* Inner Glass Highlights */}
@@ -451,15 +441,6 @@ export default function LaunchPage() {
                                     />
                                 )}
                             </div>
-
-                            {/* Mobile arrow back */}
-                            <button
-                                onClick={() => { setDirection(-1); setActiveTab('countdown'); }}
-                                className="w-full mt-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 md:hidden truncate"
-                            >
-                                <ChevronLeft size={16} />
-                                <span className="text-sm font-medium tracking-widest uppercase">Back to Countdown</span>
-                            </button>
                         </div>
                     </motion.div>
                 )}
@@ -467,65 +448,67 @@ export default function LaunchPage() {
 
             {/* Footer Corner */}
             <AnimatePresence>
-                {!isLaunching && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ delay: 2 }}
-                        className="fixed bottom-8 left-0 right-0 px-8 flex justify-center sm:justify-between items-end z-50 pointer-events-none"
-                    >
-                        <div className="text-[#8A8F98] text-[9px] uppercase tracking-[0.3em] font-medium hidden sm:block whitespace-nowrap">
-                            Confidential / Bronc Studio 2026
-                        </div>
+                {
+                    !isLaunching && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ delay: 2 }}
+                            className="fixed bottom-8 left-0 right-0 px-8 flex justify-center sm:justify-between items-end z-50 pointer-events-none"
+                        >
+                            <div className="text-[#8A8F98] text-[9px] uppercase tracking-[0.3em] font-medium hidden sm:block whitespace-nowrap">
+                                Confidential / Bronc Studio 2026
+                            </div>
 
-                        <div className="flex gap-2 hidden sm:flex pointer-events-auto">
-                            {[1, 2, 3].map(i => (
-                                <motion.div
-                                    key={i}
-                                    animate={{ opacity: [0.3, 1, 0.3], height: [6, 12, 6] }}
-                                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
-                                    className="w-1 bg-white rounded-full"
-                                />
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            <div className="flex gap-2 hidden sm:flex pointer-events-auto">
+                                {[1, 2, 3].map(i => (
+                                    <motion.div
+                                        key={i}
+                                        animate={{ opacity: [0.3, 1, 0.3], height: [6, 12, 6] }}
+                                        transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+                                        className="w-1 bg-white rounded-full"
+                                    />
+                                ))}
+                            </div>
+                        </motion.div>
+                    )
+                }
+            </AnimatePresence >
 
             {/* Fixed Social Links */}
             <AnimatePresence>
                 {!isLaunching && (
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
                         transition={{ delay: 2.2 }}
-                        className="fixed bottom-6 sm:bottom-1/2 sm:translate-y-1/2 left-1/2 sm:left-auto sm:right-8 -translate-x-1/2 sm:translate-x-0 flex sm:flex-col gap-5 z-50 pointer-events-auto items-center"
+                        className="fixed bottom-6 w-full flex justify-center sm:w-auto sm:justify-start sm:bottom-1/2 sm:translate-y-1/2 sm:right-8 sm:left-auto sm:-translate-x-0 flex-row sm:flex-col gap-4 sm:gap-6 z-50 pointer-events-auto items-center"
                     >
                         {socialLinks.instagram && (
-                            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-colors hover:scale-110 active:scale-95 bg-black/40 sm:bg-transparent p-2.5 sm:p-0 rounded-full sm:rounded-none backdrop-blur-md sm:backdrop-blur-none border border-white/5 sm:border-none">
-                                <Instagram size={18} />
+                            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                <Instagram size={20} />
                             </a>
                         )}
                         {socialLinks.facebook && (
-                            <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-colors hover:scale-110 active:scale-95 bg-black/40 sm:bg-transparent p-2.5 sm:p-0 rounded-full sm:rounded-none backdrop-blur-md sm:backdrop-blur-none border border-white/5 sm:border-none">
-                                <Facebook size={18} />
+                            <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                <Facebook size={20} />
                             </a>
                         )}
                         {socialLinks.youtube && (
-                            <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-colors hover:scale-110 active:scale-95 bg-black/40 sm:bg-transparent p-2.5 sm:p-0 rounded-full sm:rounded-none backdrop-blur-md sm:backdrop-blur-none border border-white/5 sm:border-none">
-                                <Youtube size={18} />
+                            <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                <Youtube size={20} />
                             </a>
                         )}
                         {socialLinks.twitter && (
-                            <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-colors hover:scale-110 active:scale-95 bg-black/40 sm:bg-transparent p-2.5 sm:p-0 rounded-full sm:rounded-none backdrop-blur-md sm:backdrop-blur-none border border-white/5 sm:border-none">
-                                <Twitter size={18} />
+                            <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                <Twitter size={20} />
                             </a>
                         )}
                         {socialLinks.gmail && (
-                            <a href={`mailto:${socialLinks.gmail}`} className="text-[#8A8F98] hover:text-white transition-colors hover:scale-110 active:scale-95 bg-black/40 sm:bg-transparent p-2.5 sm:p-0 rounded-full sm:rounded-none backdrop-blur-md sm:backdrop-blur-none border border-white/5 sm:border-none">
-                                <Mail size={18} />
+                            <a href={`mailto:${socialLinks.gmail}`} className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                <Mail size={20} />
                             </a>
                         )}
                     </motion.div>
@@ -537,6 +520,6 @@ export default function LaunchPage() {
                     text-shadow: 0 4px 30px rgba(255,255,255,0.2);
                 }
             `}</style>
-        </motion.div>
+        </motion.div >
     );
 }
