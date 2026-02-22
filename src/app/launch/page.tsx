@@ -259,7 +259,7 @@ export default function LaunchPage() {
                         {launchHeroVideo && (
                             <button
                                 onClick={() => { setDirection(1); setActiveTab('media'); }}
-                                className="absolute right-0 sm:right-4 top-16 sm:top-1/2 sm:-translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex translate-x-1/2 sm:translate-x-1/2"
+                                className="absolute right-6 top-6 sm:right-4 sm:top-1/2 sm:-translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex translate-x-0 sm:translate-x-1/2"
                             >
                                 <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:translate-x-0.5 transition-transform" />
                             </button>
@@ -436,7 +436,7 @@ export default function LaunchPage() {
                         {/* Slide Navigation - Left Arrow */}
                         <button
                             onClick={() => { setDirection(-1); setActiveTab('countdown'); }}
-                            className="absolute left-4 sm:left-4 top-16 sm:top-1/2 sm:-translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl"
+                            className="absolute left-6 top-6 sm:left-4 sm:top-1/2 sm:-translate-y-1/2 z-50 p-2 sm:p-3 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/30 transition-all hover:scale-110 active:scale-95 group/arrow shadow-lg shadow-black/50 backdrop-blur-md flex shadow-xl translate-x-0 sm:-translate-x-1/2"
                         >
                             <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover/arrow:-translate-x-0.5 transition-transform" />
                         </button>
@@ -488,8 +488,9 @@ export default function LaunchPage() {
                             </div>
                         </div>
                     </motion.div>
-                )}
-            </AnimatePresence>
+                )
+                }
+            </AnimatePresence >
 
             {/* Footer Corner */}
             <AnimatePresence>
@@ -523,42 +524,44 @@ export default function LaunchPage() {
 
             {/* Fixed Social Links */}
             <AnimatePresence>
-                {!isLaunching && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{ delay: 2.2 }}
-                        className="fixed bottom-6 w-full flex justify-center sm:w-auto sm:justify-start sm:bottom-1/2 sm:translate-y-1/2 sm:right-8 sm:left-auto sm:-translate-x-0 flex-row sm:flex-col gap-4 sm:gap-6 z-50 pointer-events-auto items-center"
-                    >
-                        {socialLinks.instagram && (
-                            <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
-                                <Instagram size={20} />
-                            </a>
-                        )}
-                        {socialLinks.facebook && (
-                            <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
-                                <Facebook size={20} />
-                            </a>
-                        )}
-                        {socialLinks.youtube && (
-                            <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
-                                <Youtube size={20} />
-                            </a>
-                        )}
-                        {socialLinks.twitter && (
-                            <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
-                                <Twitter size={20} />
-                            </a>
-                        )}
-                        {socialLinks.gmail && (
-                            <a href={`mailto:${socialLinks.gmail}`} className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
-                                <Mail size={20} />
-                            </a>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                {
+                    !isLaunching && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            transition={{ delay: 2.2 }}
+                            className="fixed bottom-6 w-full flex justify-center sm:w-auto sm:justify-start sm:bottom-1/2 sm:translate-y-1/2 sm:right-8 sm:left-auto sm:-translate-x-0 flex-row sm:flex-col gap-4 sm:gap-6 z-50 pointer-events-auto items-center"
+                        >
+                            {socialLinks.instagram && (
+                                <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                    <Instagram size={20} />
+                                </a>
+                            )}
+                            {socialLinks.facebook && (
+                                <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                    <Facebook size={20} />
+                                </a>
+                            )}
+                            {socialLinks.youtube && (
+                                <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                    <Youtube size={20} />
+                                </a>
+                            )}
+                            {socialLinks.twitter && (
+                                <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                    <Twitter size={20} />
+                                </a>
+                            )}
+                            {socialLinks.gmail && (
+                                <a href={`mailto:${socialLinks.gmail}`} className="text-[#8A8F98] hover:text-white transition-all hover:scale-110 active:scale-95 bg-black/40 p-3 rounded-full backdrop-blur-md border border-white/5 hover:bg-black/60 hover:border-white/20 shadow-lg flex items-center justify-center">
+                                    <Mail size={20} />
+                                </a>
+                            )}
+                        </motion.div>
+                    )
+                }
+            </AnimatePresence >
 
             <style jsx global>{`
                 .hmc-text-glow {
