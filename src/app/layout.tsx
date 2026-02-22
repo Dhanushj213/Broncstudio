@@ -148,7 +148,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hideStorefrontPaths = ['/login', '/admin'];
+  const hideStorefrontPaths = ['/login', '/admin', '/launch', '/construction'];
 
   return (
     <html lang="en" suppressHydrationWarning>
