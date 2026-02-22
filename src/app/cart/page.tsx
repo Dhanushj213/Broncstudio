@@ -21,12 +21,12 @@ const CartPage = () => {
 
     if (items.length === 0) {
         const WORLDS = [
-            { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids', icon: '🎨', color: '#FFD966', image: '' },
-            { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing', icon: '👕', color: '#5BC0EB', image: '' },
-            { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle', icon: '🎁', color: '#B392AC', image: '' },
-            { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home', icon: '🏠', color: '#1B263B', image: '' },
-            { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories', icon: '🧢', color: '#9BC53D', image: '' },
-            { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets', icon: '🐾', color: '#FF6B6B', image: '' },
+            { name: 'Stationery & Play', subtitle: 'Curiosity & Play.', href: '/shop/kids' },
+            { name: 'Clothing', subtitle: 'Fashion for Everyone.', href: '/shop/clothing' },
+            { name: 'Lifestyle', subtitle: 'Small Joys & Gifting.', href: '/shop/lifestyle' },
+            { name: 'Home & Tech', subtitle: 'Decor & Comfort.', href: '/shop/home' },
+            { name: 'Accessories', subtitle: 'Style Extras.', href: '/shop/accessories' },
+            { name: 'Pets', subtitle: 'Furry Friends.', href: '/shop/pets' },
         ];
 
         return (
@@ -56,22 +56,21 @@ const CartPage = () => {
                         {WORLDS.map((world) => (
                             <Link key={world.name} href={world.href} className="group flex flex-col items-center gap-3 w-full">
                                 <div
-                                    className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden bg-white shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1 border border-white/50"
+                                    className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.05)] transition-all duration-500 group-hover:-translate-y-1 bg-white/10 dark:bg-black/10 backdrop-blur-xl border border-white/20 dark:border-white/5 flex flex-col justify-end p-4 hover:bg-white/20 dark:hover:bg-white/5"
                                 >
-                                    {world.image ? (
-                                        <Image src={world.image} alt={world.name} fill sizes="(max-width: 768px) 50vw, 150px" className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                                    ) : (
-                                        <div className="absolute inset-0 flex items-center justify-center text-4xl" style={{ backgroundColor: world.color }}>{world.icon}</div>
-                                    )}
-                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
-                                </div>
-                                <div className="flex flex-col items-center text-center">
-                                    <span className="text-[10px] md:text-xs font-bold text-navy-800 uppercase tracking-wide group-hover:text-coral-500 transition-colors">
-                                        {world.name}
-                                    </span>
-                                    <span className="text-[9px] text-gray-400 font-medium mt-0.5 group-hover:text-gray-600 transition-colors">
-                                        {world.subtitle}
-                                    </span>
+                                    <div className="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                    <div className="relative z-10">
+                                        <h3 className="font-heading font-black text-xl mb-1 leading-tight tracking-tight text-navy-900 dark:text-white transition-colors drop-shadow-sm">
+                                            {world.name}
+                                        </h3>
+                                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 group-hover:text-navy-900 dark:group-hover:text-white transition-colors drop-shadow-sm">
+                                            {world.subtitle}
+                                        </p>
+                                    </div>
+                                    <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-navy-900 dark:bg-white text-white dark:text-navy-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-4 group-hover:translate-x-0 duration-500 shadow-xl border border-white/10">
+                                        <ArrowRight size={16} />
+                                    </div>
                                 </div>
                             </Link>
                         ))}
