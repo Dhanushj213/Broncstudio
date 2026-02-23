@@ -213,7 +213,7 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
 
                             <motion.div variants={itemVariants} className="h-px bg-black/5 dark:bg-white/5 shadow-[0_1px_0_rgba(255,255,255,0.5)] dark:shadow-[0_1px_0_rgba(255,255,255,0.05)] mx-4 mb-6" />
 
-                            <motion.p variants={itemVariants} className="px-4 text-xs font-bold uppercase tracking-widest text-muted mb-2">Departments</motion.p>
+                            <motion.p variants={itemVariants} className="px-4 text-xs font-bold uppercase tracking-widest text-muted mb-2">Categories</motion.p>
 
                             {/* Departments */}
                             <div className="space-y-1">
