@@ -107,7 +107,7 @@ export async function updateSession(request: NextRequest) {
         isUserAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || (user.email ? ADMIN_EMAILS.includes(user.email) : false)
     }
 
-    if (!isUserAdmin && !isAuthRoute) {
+    if (isBlocked && !isUserAdmin && !isAuthRoute) {
         // For API requests, return JSON
         if (path.startsWith('/api/')) {
             return NextResponse.json(
