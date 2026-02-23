@@ -9,6 +9,7 @@ import ProductShowcase from '@/components/Home/ProductShowcase';
 import Link from 'next/link';
 import MobileCategoryRail from '@/components/Home/MobileCategoryRail';
 import HeroVideo from '@/components/Home/HeroVideo';
+import SpecialCollectionsRail from '@/components/Home/SpecialCollectionsRail';
 
 import CuratedGrid from '@/components/Home/CuratedGrid';
 
@@ -103,6 +104,9 @@ export default function HomeClient() {
         </h1>
         <DepartmentBentoGrid />
       </div>
+
+      {/* Special Collections Edge Rail */}
+      <SpecialCollectionsRail />
 
       {/* New Arrivals Section */}
       {newArrivals.length > 0 && (

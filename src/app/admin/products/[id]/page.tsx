@@ -22,6 +22,7 @@ export default function EditProductPage() {
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
     const [allCategories, setAllCategories] = useState<Category[]>([]);
+    const [specialCollections, setSpecialCollections] = useState<{ id: string, name: string }[]>([]);
 
     // UI Helper for Taxonomy
     const [selectedParentId, setSelectedParentId] = useState('');
@@ -38,7 +39,7 @@ export default function EditProductPage() {
         is_sold_out: false,
         gst_percent: '18', // Default
 
-
+        special_collection_ids: [] as string[],
         tags: '',
         // Dynamic Fields
         stock_status: 'in_stock',
@@ -74,6 +75,9 @@ export default function EditProductPage() {
     const fetchCategories = async () => {
         const { data } = await supabase.from('categories').select('id, name, parent_id');
         if (data) setAllCategories(data);
+
+        const { data: cols } = await supabase.from('special_collections').select('id, name').eq('is_active', true);
+        if (cols) setSpecialCollections(cols);
     };
 
     const fetchProduct = async (productId: string) => {
@@ -114,6 +118,14 @@ export default function EditProductPage() {
             // It might be a top level category or data missing.
         }
 
+        // Fetch special collections
+        const { data: scpData } = await supabase
+            .from('special_collection_products')
+            .select('collection_id')
+            .eq('product_id', productId);
+
+        const specialCollectionIds = scpData ? scpData.map(d => d.collection_id) : [];
+
         const meta = data.metadata || {};
 
         setFormData({
@@ -143,6 +155,7 @@ export default function EditProductPage() {
             primary_color: meta.primary_color || '',
             is_sold_out: data.is_sold_out || false,
             gst_percent: data.gst_percent?.toString() || '18',
+            special_collection_ids: specialCollectionIds,
         });
         setFetching(false);
     };
@@ -231,6 +244,17 @@ export default function EditProductPage() {
             console.error('Error updating product:', error);
             alert('Failed to update product: ' + error.message);
         } else {
+            // Update special collections
+            await supabase.from('special_collection_products').delete().eq('product_id', id);
+            if (formData.special_collection_ids.length > 0) {
+                const inserts = formData.special_collection_ids.map((collId, count) => ({
+                    product_id: id,
+                    collection_id: collId,
+                    sort_order: count
+                }));
+                await supabase.from('special_collection_products').insert(inserts);
+            }
+
             router.push('/admin/products');
             router.refresh();
         }
@@ -530,6 +554,34 @@ export default function EditProductPage() {
                                 <option value="low_stock">Only Few Left (Low Stock)</option>
                                 <option value="out_of_stock">Out of Stock</option>
                             </select>
+                        </div>
+
+                        {/* Special Collections */}
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-gray-700 mb-1">Special Collections</label>
+                            <div className="flex gap-4 flex-wrap bg-gray-50 p-4 rounded-xl border border-gray-200">
+                                {specialCollections.length === 0 ? (
+                                    <span className="text-sm text-gray-500 italic">No active special collections available. Create one first.</span>
+                                ) : (
+                                    specialCollections.map(coll => (
+                                        <label key={coll.id} className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.special_collection_ids.includes(coll.id)}
+                                                onChange={(e) => {
+                                                    const updated = e.target.checked
+                                                        ? [...formData.special_collection_ids, coll.id]
+                                                        : formData.special_collection_ids.filter(id => id !== coll.id);
+                                                    setFormData({ ...formData, special_collection_ids: updated });
+                                                }}
+                                                className="rounded border-gray-300 text-navy-900 focus:ring-navy-900"
+                                            />
+                                            <span className="text-sm text-gray-800 font-medium">{coll.name}</span>
+                                        </label>
+                                    ))
+                                )}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-2">Products will appear in the /special hub under selected collections.</p>
                         </div>
                     </div>
 

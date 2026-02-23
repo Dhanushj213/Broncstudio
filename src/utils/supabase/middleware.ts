@@ -90,42 +90,58 @@ export async function updateSession(request: NextRequest) {
         return supabaseResponse
     }
 
-    if (isBlocked) {
-        // Check if user is admin
-        let isAdmin = false
+    // Check if user is admin
+    let isUserAdmin = false
+    if (user) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+        const ADMIN_EMAILS = [
+            'jdhanush213@gmail.com',
+            'admin@broncstudio.com',
+            'demo@broncstudio.com'
+        ]
+        isUserAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || (user.email ? ADMIN_EMAILS.includes(user.email) : false)
+    }
+
+    if (!isUserAdmin && !isAuthRoute) {
+        // For API requests, return JSON
+        if (path.startsWith('/api/')) {
+            return NextResponse.json(
+                {
+                    maintenance: settings?.maintenance_mode,
+                    launch: settings?.launch_mode,
+                    launch_datetime: settings?.launch_datetime,
+                    message: settings?.maintenance_mode ? 'Site is under maintenance' : 'Site is launching soon'
+                },
+                { status: 503 }
+            )
+        }
+
+        // Redirect to construction or launch page
+        const url = request.nextUrl.clone()
+        url.pathname = redirectPath
+        return NextResponse.redirect(url)
+    }
+
+    // 7. Prevent standard admins from accessing /admin/super
+    if (path.startsWith('/admin/super')) {
+        let isSuperAdmin = false;
         if (user) {
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', user.id)
-                .single()
+                .single();
 
-            const ADMIN_EMAILS = [
-                'jdhanush213@gmail.com',
-                'admin@broncstudio.com',
-                'demo@broncstudio.com'
-            ]
-            isAdmin = profile?.role === 'admin' || (user.email ? ADMIN_EMAILS.includes(user.email) : false)
+            isSuperAdmin = profile?.role === 'super_admin' || user.email === 'jdhanush213@gmail.com';
         }
 
-        if (!isAdmin && !isAuthRoute) {
-            // For API requests, return JSON
-            if (path.startsWith('/api/')) {
-                return NextResponse.json(
-                    {
-                        maintenance: settings?.maintenance_mode,
-                        launch: settings?.launch_mode,
-                        launch_datetime: settings?.launch_datetime,
-                        message: settings?.maintenance_mode ? 'Site is under maintenance' : 'Site is launching soon'
-                    },
-                    { status: 503 }
-                )
-            }
-
-            // Redirect to construction or launch page
-            const url = request.nextUrl.clone()
-            url.pathname = redirectPath
-            return NextResponse.redirect(url)
+        if (!isSuperAdmin) {
+            return NextResponse.redirect(new URL('/admin', request.url))
         }
     }
 

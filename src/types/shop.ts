@@ -74,3 +74,23 @@ export interface ShopView {
     breadcrumbs: { label: string; href: string }[];
     heroImage?: string;
 }
+
+export interface SpecialCollection {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    banner_image?: string;
+    thumbnail_image?: string;
+    is_active: boolean;
+    sort_order: number;
+    seo_title?: string;
+    seo_description?: string;
+    created_at?: string;
+}
+
+export interface SpecialCollectionProduct {
+    collection_id: string;
+    product_id: string;
+    sort_order: number;
+}

@@ -29,6 +29,7 @@ const SIDEBAR_ITEMS = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingBag },
     { name: 'Products', href: '/admin/products', icon: Package },
+    { name: 'Special Collections', href: '/admin/special-collections', icon: Sparkles },
     { name: 'Curated', href: '/admin/curated', icon: Sparkles },
     { name: 'Personalization', href: '/admin/personalization', icon: Palette },
     { name: 'Coupons', href: '/admin/coupons', icon: Tag },
@@ -46,6 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const pathname = usePathname();
     const router = useRouter();
     const [verifying, setVerifying] = useState(true);
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
     React.useEffect(() => {
         const checkAccess = async () => {
@@ -60,12 +62,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 return;
             }
 
-            // Simple Admin Check
-            // Ideally this is RLS/Backend, but for Client Logic:
-            if (!isAdmin(user.email)) {
+            // Check actual role from DB
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user.id)
+                .single();
+
+            const role = profile?.role;
+            const isHardcodedAdmin = isAdmin(user.email);
+
+            if (role !== 'admin' && role !== 'super_admin' && !isHardcodedAdmin) {
                 // Not authorized
                 router.push('/');
                 return;
+            }
+
+            if (role === 'super_admin' || user.email === 'jdhanush213@gmail.com') {
+                setIsSuperAdmin(true);
             }
 
             setVerifying(false);
@@ -136,6 +150,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 </Link>
                             );
                         })}
+                        {isSuperAdmin && (
+                            <Link
+                                href="/admin/super"
+                                onClick={() => setIsSidebarOpen(false)}
+                                className={`
+                                    flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group mt-4 border border-coral-500/30
+                                    ${pathname === '/admin/super'
+                                        ? 'bg-gradient-to-r from-coral-500 to-rose-600 text-white font-bold shadow-lg shadow-coral-500/20'
+                                        : 'text-coral-200 hover:text-white hover:bg-white/5 font-medium'}
+                                `}
+                            >
+                                <Sparkles size={20} className={pathname === '/admin/super' ? 'text-white' : 'text-coral-400 group-hover:text-white'} />
+                                Super Admin
+                            </Link>
+                        )}
                     </nav>
                 </div>
 

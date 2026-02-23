@@ -48,7 +48,6 @@ export default function HeroVideo() {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -219,12 +218,10 @@ export default function HeroVideo() {
                         {/* Interactive Button Section */}
                         <div
                             className="relative flex items-center justify-center"
-                            onMouseEnter={() => setIsHovered(true)}
-                            onMouseLeave={() => setIsHovered(false)}
                         >
                             {/* Category Pop-out Buttons */}
                             <AnimatePresence>
-                                {isHovered && !isMobile && (
+                                {!isMobile && (
                                     <div className="absolute top-full left-1/2 -translate-x-1/2 pt-12 flex items-center justify-center gap-4 pointer-events-none">
                                         {CATEGORIES.map((cat, idx) => (
                                             <motion.div

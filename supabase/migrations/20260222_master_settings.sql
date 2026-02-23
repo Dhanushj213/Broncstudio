@@ -76,13 +76,7 @@ CREATE POLICY "Public can view site_settings" ON public.site_settings
 -- Allow admins to update site_settings
 DROP POLICY IF EXISTS "Admins can update site_settings" ON public.site_settings;
 CREATE POLICY "Admins can update site_settings" ON public.site_settings
-    FOR UPDATE USING (
-        auth.jwt() ->> 'email' IN (
-            'jdhanush213@gmail.com',
-            'admin@broncstudio.com',
-            'demo@broncstudio.com'
-        )
-    );
+    FOR UPDATE USING (public.is_admin_or_super_admin());
 
 -- 3. ENSURE USER ROLES
 DO $$
