@@ -266,7 +266,7 @@ export default function HeroVideo() {
                                 <MagneticButton
                                     strength={40}
                                     radius={200}
-                                    className={isMobile ? 'pointer-events-none translate-x-0 translate-y-0' : ''}
+                                    className={isMobile ? 'translate-x-0 translate-y-0' : ''}
                                 >
                                     <Link
                                         href={content.button_link || '#'}
