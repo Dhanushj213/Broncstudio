@@ -126,7 +126,7 @@ export default function QuickViewModal() {
                                 {/* Mobile Close Button */}
                                 <button
                                     onClick={closeQuickView}
-                                    className="absolute top-4 right-4 md:hidden w-10 h-10 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-navy-900 shadow-xl border border-black/5 transition-all active:scale-90 z-50 hover:bg-white"
+                                    className="absolute top-4 right-4 md:hidden w-10 h-10 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-black shadow-xl border border-black/5 transition-all active:scale-90 z-50 hover:bg-white"
                                 >
                                     <X size={22} className="stroke-[2.5px]" />
                                 </button>
