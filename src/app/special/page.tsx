@@ -57,9 +57,7 @@ export default function SpecialHubPage() {
             {/* Header */}
             <div className="relative z-10 container-premium max-w-[1200px] mx-auto px-6 py-12 md:py-20 text-center">
                 <div className="max-w-3xl mx-auto space-y-6">
-                    <div className="mx-auto w-12 h-12 rounded-full border border-navy-900/10 dark:border-white/10 flex items-center justify-center mb-6 bg-white dark:bg-white/5 shadow-sm">
-                        <Sparkles size={24} className="text-coral-500" />
-                    </div>
+
                     <h1 className="text-4xl md:text-7xl font-heading font-black text-navy-900 dark:text-white leading-[1.1]">
                         The <span className="text-coral-500 italic font-serif font-medium">Special</span> Collection
                     </h1>
