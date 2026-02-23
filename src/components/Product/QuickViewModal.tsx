@@ -83,11 +83,24 @@ export default function QuickViewModal() {
                             transition={{
                                 type: "spring", damping: 25, stiffness: 300,
                             }}
+                            drag="y"
+                            dragConstraints={{ top: 0, bottom: 0 }}
+                            dragElastic={{ top: 0, bottom: 0.5 }}
+                            onDragEnd={(e, info) => {
+                                if (info.offset.y > 100 || info.velocity.y > 500) {
+                                    closeQuickView();
+                                }
+                            }}
                             onClick={(e) => e.stopPropagation()}
                             className="bg-white dark:bg-navy-900 w-full max-w-5xl md:rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] md:max-h-[80vh] md:min-h-[500px]"
                         >
+                            {/* Drag Indicator (Mobile Only) */}
+                            <div className="w-full flex justify-center pt-3 pb-1 md:hidden absolute top-0 left-0 z-50 pointer-events-none">
+                                <div className="w-12 h-1.5 rounded-full bg-white/40 backdrop-blur-md shadow-sm"></div>
+                            </div>
+
                             {/* LEFT: Image Section (Full Height on Desktop) */}
-                            <div className="w-full md:w-1/2 bg-gray-100 dark:bg-black/20 relative md:h-auto h-[35vh] shrink-0">
+                            <div className="w-full md:w-1/2 bg-gray-100 dark:bg-black/20 relative md:h-auto h-[35vh] shrink-0 mt-3 md:mt-0">
                                 <Image
                                     src={getGoogleDriveDirectLink(product.image, { width: 1000, quality: 85 })}
                                     alt={product.name}
