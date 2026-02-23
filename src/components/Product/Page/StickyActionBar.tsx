@@ -8,6 +8,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { ShoppingBag, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+
 interface StickyActionBarProps {
     product: any;
     selectedSize: string;
@@ -77,11 +78,10 @@ export default function StickyActionBar({ product, selectedSize, selectedColor, 
             </button>
 
             <button
-                onClick={handleAddToCart}
-                disabled={isOutOfStock}
-                className={`h-[48px] flex-1 rounded-[8px] font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 ${isOutOfStock
-                    ? 'bg-[#E5E5E5] text-[#B5B5B5] dark:bg-white/10 dark:text-white/30'
-                    : 'bg-[#111] text-white dark:bg-white dark:text-black'
+                onClick={isOutOfStock ? undefined : handleAddToCart}
+                className={`h-[48px] flex-1 rounded-[8px] font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all ${isOutOfStock
+                    ? 'bg-[#E5E5E5] text-[#B5B5B5] dark:bg-white/10 dark:text-white/30 cursor-not-allowed'
+                    : 'bg-[#111] text-white dark:bg-white dark:text-black cursor-pointer hover:bg-black/80 dark:hover:bg-gray-200'
                     }`}
             >
                 {isOutOfStock ? 'Sold Out' : 'Add to Bag'}

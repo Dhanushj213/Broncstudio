@@ -14,6 +14,7 @@ import { createClient } from '@/utils/supabase/client';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { DEPARTMENT_TAXONOMY } from '@/data/categories';
 
+
 export default function Header() {
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -131,16 +132,20 @@ export default function Header() {
                         <button onClick={openSearch} className="hover:text-coral-500 transition-colors hidden md:block">
                             <Search size={22} strokeWidth={1.5} />
                         </button>
-                        <button onClick={toggleWishlist} className="hover:text-coral-500 transition-colors relative block">
+                        <button onClick={toggleWishlist} className="relative hover:text-coral-500 transition-colors">
                             <Heart size={22} strokeWidth={1.5} />
                             {wishlistItems.length > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent-orange)] rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{wishlistItems.length}</span>
+                                <span className="absolute -top-2 -right-2 bg-coral-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                    {wishlistItems.length}
+                                </span>
                             )}
                         </button>
-                        <Link href="/cart" className="hover:text-coral-500 transition-colors relative block">
+                        <Link href="/cart" className="relative hover:text-coral-500 transition-colors">
                             <ShoppingBag size={22} strokeWidth={1.5} />
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[var(--accent-orange)] rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-in zoom-in">{cartCount}</span>
+                                <span className="absolute -top-2 -right-2 bg-coral-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                    {cartCount}
+                                </span>
                             )}
                         </Link>
                         <Link href={currentUser ? '/profile' : '/login'} className="hover:text-coral-500 transition-colors hidden md:block">

@@ -177,11 +177,14 @@ export default function DepartmentBentoGrid() {
                             <Link href={tile.href} className="block h-full w-full relative z-10">
                                 <div className="absolute inset-0">
                                     <Image
-                                        src={getGoogleDriveDirectLink(tile.image) || '/images/placeholder.jpg'}
+                                        src={getGoogleDriveDirectLink(tile.image, { width: 800, quality: 80 }) || '/images/placeholder.jpg'}
                                         alt={tile.title}
                                         fill
+                                        unoptimized
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                         className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        placeholder="blur"
+                                        blurDataURL={getGoogleDriveDirectLink(tile.image, { width: 40, blur: 5, quality: 20 })}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-90" />
                                 </div>

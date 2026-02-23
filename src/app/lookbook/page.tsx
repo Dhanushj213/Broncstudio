@@ -71,6 +71,7 @@ export default function LookbookPage() {
                                             src={look.image.startsWith('http') ? getGoogleDriveDirectLink(look.image) : look.image}
                                             alt={`Look by ${look.user}`}
                                             fill
+                                            unoptimized
                                             sizes="(max-width: 768px) 100vw, 25vw"
                                             className="object-cover transition-transform duration-700 group-hover:scale-105"
                                         />

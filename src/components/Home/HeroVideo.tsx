@@ -24,6 +24,7 @@ import { ArrowRight, Box, Shirt, Heart, Home as HomeIcon, Smartphone, Watch, Dog
 import { motion, AnimatePresence } from 'framer-motion';
 import MagneticButton from '@/components/UI/MagneticButton';
 
+
 const CATEGORIES = [
     { name: 'Stationary & Toys', icon: Box, link: '/shop/stationary-toys' },
     { name: 'Clothing', icon: Shirt, link: '/shop/clothing' },
@@ -181,8 +182,11 @@ export default function HeroVideo() {
                                 alt={`Banner ${idx + 1}`}
                                 fill
                                 priority={idx === 0}
+                                unoptimized
                                 sizes="100vw"
                                 className="object-cover object-top opacity-90"
+                                placeholder="blur"
+                                blurDataURL={getGoogleDriveDirectLink(img, { width: 40, blur: 5, quality: 20 })}
                             />
                         </div>
                     ))}
@@ -196,6 +200,7 @@ export default function HeroVideo() {
             {/* Overlay Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none" />
 
+
             {/* Content Overlay - Centered/Bottom Biased */}
             {!isLoading && (processedContent.heading || processedContent.subheading || content.button_text) && (
                 <div className="absolute inset-0 flex flex-col items-center justify-end pb-20 md:pb-48 px-6 text-center z-10">
@@ -206,7 +211,7 @@ export default function HeroVideo() {
                             </span>
                         )}
                         {processedContent.heading && (
-                            <h2 className="text-white text-4xl md:text-8xl font-serif font-medium italic mb-12 drop-shadow-2xl leading-[1.1] text-center max-w-4xl mx-auto">
+                            <h2 className="relative text-white text-4xl md:text-8xl font-serif font-medium italic mb-12 drop-shadow-2xl leading-[1.1] text-center max-w-4xl mx-auto">
                                 {processedContent.heading}
                             </h2>
                         )}

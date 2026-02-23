@@ -23,7 +23,7 @@ export default function ShopClient() {
     const { formatPrice } = useUI();
     const params = useParams();
     const rawSlug = params?.slug;
-    const slugArray = Array.isArray(rawSlug) ? rawSlug : rawSlug ? [rawSlug] : [];
+    const slugArray = useMemo(() => Array.isArray(rawSlug) ? rawSlug : rawSlug ? [rawSlug] : [], [rawSlug]);
 
     // Derived State from Local Taxonomy
     const [currentView, setCurrentView] = useState<ShopView | null>(null);
@@ -70,10 +70,13 @@ export default function ShopClient() {
         };
 
 
-        // Helper to traverse
         const resolve = async () => {
             const { collections: dynamicCollections, heroImages } = await fetchShopConfigs();
-            setShopHeroConfig(heroImages);
+
+            setShopHeroConfig(prev => {
+                if (JSON.stringify(prev) === JSON.stringify(heroImages)) return prev;
+                return heroImages;
+            });
 
             // A. Root (/shop)
             if (slugArray.length === 0) {
@@ -368,12 +371,15 @@ export default function ShopClient() {
                     <div className="absolute inset-0 bg-gradient-to-r from-page/20 via-transparent to-page/20 z-20 opacity-30" />
 
                     <Image
-                        src={currentView.heroImage}
+                        src={getGoogleDriveDirectLink(currentView.heroImage, { width: 1600, quality: 90 })}
                         alt="Collection Hero"
                         fill
+                        unoptimized
                         priority
                         sizes="100vw"
                         className="object-cover"
+                        placeholder="blur"
+                        blurDataURL={getGoogleDriveDirectLink(currentView.heroImage, { width: 40, blur: 5, quality: 20 })}
                     />
                 </div>
             )}
@@ -437,7 +443,18 @@ export default function ShopClient() {
                                         className="relative h-full min-h-[400px] flex flex-col justify-end overflow-hidden rounded-[2rem] bg-gray-900/10 border border-white/20 shadow-[0_20px_40px_rgba(0,0,0,0.6)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.8)] hover:scale-[1.02] hover:border-white/40 transition-all duration-500 ease-out"
                                         disableTilt
                                     >
-                                        <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url(${getGoogleDriveDirectLink(child.image) || '/images/placeholder.jpg'})` }} />
+                                        <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+                                            <Image
+                                                src={getGoogleDriveDirectLink(child.image, { width: 800, quality: 80 }) || '/images/placeholder.jpg'}
+                                                alt={child.name}
+                                                fill
+                                                unoptimized
+                                                sizes="(max-width: 768px) 100vw, 33vw"
+                                                className="object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(child.image, { width: 40, blur: 5, quality: 20 })}
+                                            />
+                                        </div>
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
 
                                         <div className="relative z-10 p-8 transform transition-transform duration-500 group-hover:-translate-y-2">

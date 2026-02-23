@@ -12,6 +12,7 @@ import { getProductImage } from '@/utils/sampleImages';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 import clsx from 'clsx';
 
+
 interface ProductProps {
     id: string;
     name: string;
@@ -49,15 +50,23 @@ export default function ProductCard(props: ProductProps) {
     }, [isHovered, images]);
 
     const displayImages = images && images.length > 0 ? images : [image];
-    const currentImgSrc = getGoogleDriveDirectLink(displayImages[currentImageIndex] || image);
+
+    // Primary image for grid (600px width is plenty for 2-3 col grids)
+    const currentImgSrc = getGoogleDriveDirectLink(displayImages[currentImageIndex] || image, { width: 600, quality: 80 });
+
+    // Placeholder (Tiny blurred version)
+    const placeholderSrc = getGoogleDriveDirectLink(displayImages[currentImageIndex] || image, { width: 20, blur: 5, quality: 30 });
 
     return (
         <div
-            className="group relative bg-white dark:bg-navy-800 rounded-lg overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-xl dark:hover:shadow-black/30 transition-all duration-300 hover:-translate-y-1 h-full"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            className="group relative bg-white dark:bg-navy-800 rounded-lg overflow-hidden border border-gray-100 dark:border-white/5 hover:shadow-xl dark:hover:shadow-black/30 transition-all duration-300 hover:-translate-y-1 h-full block"
         >
-            <div className="relative bg-gray-50 dark:bg-white/5 overflow-hidden" style={{ aspectRatio: '3/4' }}>
+            <div
+                className="relative bg-gray-50 dark:bg-white/5 overflow-hidden w-full"
+                style={{ aspectRatio: '3/4' }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 {/* Sold Out Seal */}
                 {(badge === 'Sold Out' || props.is_sold_out) ? (
                     <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none p-4">
@@ -108,12 +117,11 @@ export default function ProductCard(props: ProductProps) {
                                 addToast(`${name} added to Bag!`);
                             }
                         }}
-                        disabled={!!props.is_sold_out || badge === 'Sold Out'}
                         className={clsx(
                             "w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-all duration-200",
                             (props.is_sold_out || badge === 'Sold Out')
                                 ? "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300"
-                                : "bg-black text-white border border-white/10 hover:bg-white hover:text-black delay-100"
+                                : "bg-black text-white border border-white/10 hover:bg-white hover:text-black delay-100 cursor-pointer"
                         )}
                         title={(props.is_sold_out || badge === 'Sold Out') ? "Sold Out" : "Add to Cart"}
                     >
@@ -126,9 +134,10 @@ export default function ProductCard(props: ProductProps) {
                     {displayImages.map((img, index) => (
                         <Image
                             key={index}
-                            src={getGoogleDriveDirectLink(img)}
+                            src={getGoogleDriveDirectLink(img, { width: 600, quality: 80 })}
                             alt={`${name} - ${index + 1}`}
                             fill
+                            unoptimized
                             sizes="(max-width: 768px) 50vw, 33vw"
                             className={clsx(
                                 "object-cover transition-all duration-700 ease-in-out",
@@ -136,6 +145,8 @@ export default function ProductCard(props: ProductProps) {
                                 isHovered && index === currentImageIndex && "scale-110" // Zoom-in effect on current image
                             )}
                             priority={index === 0}
+                            placeholder="blur"
+                            blurDataURL={getGoogleDriveDirectLink(img, { width: 40, blur: 5, quality: 20 })}
                         />
                     ))}
 

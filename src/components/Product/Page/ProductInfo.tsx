@@ -451,6 +451,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                                             src={getGoogleDriveDirectLink(meta.size_guide)}
                                             alt="Size Guide"
                                             fill
+                                            unoptimized
                                             className="object-contain"
                                             sizes="(max-width: 768px) 100vw, 800px"
                                         />

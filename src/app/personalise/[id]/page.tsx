@@ -212,7 +212,7 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
             <div className="sticky top-[var(--header-height)] z-40 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-800 lg:hidden px-4 py-3 flex items-center justify-between animate-in fade-in slide-in-from-top-4">
                 <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-neutral-100 dark:bg-neutral-800 relative overflow-hidden flex-shrink-0">
-                        <Image src={getGoogleDriveDirectLink(product.images[0])} alt={product.name} fill className="object-cover" />
+                        <Image src={getGoogleDriveDirectLink(product.images[0])} alt={product.name} fill unoptimized className="object-cover" />
                     </div>
                     <div className="overflow-hidden">
                         <h2 className="text-sm font-black truncate w-40 dark:text-white uppercase tracking-tight">{product.name}</h2>
@@ -247,6 +247,7 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                                 src={getGoogleDriveDirectLink(product.images[0])}
                                 alt={product.name}
                                 fill
+                                unoptimized
                                 className="object-cover group-hover:scale-105 transition-transform duration-1000"
                                 priority
                             />
@@ -418,7 +419,7 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                                                                             {placements[key].uploadedImage ? (
                                                                                 <div className="flex flex-col items-center gap-4">
                                                                                     <div className="w-24 h-24 bg-white rounded-3xl border-2 border-green-200 relative overflow-hidden shadow-2xl rotate-2">
-                                                                                        <Image src={placements[key].uploadedImage!} alt="Upload" fill className="object-contain p-2" />
+                                                                                        <Image src={placements[key].uploadedImage!} alt="Upload" fill unoptimized className="object-contain p-2" />
                                                                                     </div>
                                                                                     <div className="flex flex-col items-center">
                                                                                         <span className="text-sm font-black text-green-700 dark:text-green-400 mb-2">Design Captured</span>

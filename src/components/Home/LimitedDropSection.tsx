@@ -11,6 +11,7 @@ import { useToast } from '@/context/ToastContext';
 import { createClient } from '@/utils/supabase/client';
 import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
 
+
 interface LimitedDropProps {
     data: {
         is_enabled: boolean;
@@ -94,7 +95,8 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
 
     const isWishlisted = isInWishlist(productForInteractions.id);
 
-    const allImages = useMemo(() => [data.override_image, ...(data.gallery_images || [])].filter(Boolean).map(getGoogleDriveDirectLink) as string[], [data.override_image, data.gallery_images]);
+    const allRawImages = useMemo(() => [data.override_image, ...(data.gallery_images || [])].filter(Boolean) as string[], [data.override_image, data.gallery_images]);
+    const allImages = useMemo(() => allRawImages.map(url => getGoogleDriveDirectLink(url)), [allRawImages]);
 
     const slideVariants = {
         enter: (direction: number) => ({
@@ -273,11 +275,15 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                     className="absolute inset-0 w-full h-full"
                                 >
                                     <Image
-                                        src={allImages[currentImageIndex] || '/images/placeholder.jpg'}
+                                        src={getGoogleDriveDirectLink(allRawImages[currentImageIndex], { width: 1200, quality: 90 }) || '/images/placeholder.jpg'}
                                         alt={data.override_name || 'Limited Drop'}
                                         fill
+                                        unoptimized
                                         sizes="(max-width: 768px) 100vw, 50vw"
                                         className={`object-cover transition-opacity duration-1000 ${isOutOfStock ? 'opacity-40 grayscale-[0.8]' : 'opacity-100'}`}
+                                        priority
+                                        placeholder="blur"
+                                        blurDataURL={getGoogleDriveDirectLink(allRawImages[currentImageIndex], { width: 40, blur: 5, quality: 20 })}
                                     />
                                 </motion.div>
                             </AnimatePresence>
@@ -343,7 +349,16 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                             : 'border-white/5 opacity-50 hover:opacity-100 hover:border-white/20'
                                             }`}
                                     >
-                                        <Image src={img} alt={`Preview ${idx + 1}`} fill sizes="80px" className="object-cover" />
+                                        <Image
+                                            src={getGoogleDriveDirectLink(allRawImages[idx], { width: 200, quality: 70 })}
+                                            alt={`Preview ${idx + 1}`}
+                                            fill
+                                            unoptimized
+                                            sizes="80px"
+                                            className="object-cover"
+                                            placeholder="blur"
+                                            blurDataURL={getGoogleDriveDirectLink(allRawImages[idx], { width: 20, blur: 2, quality: 10 })}
+                                        />
                                         {currentImageIndex === idx && (
                                             <motion.div
                                                 layoutId="active-thumb-overlay"
@@ -434,6 +449,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                 <span className="text-[10px] font-black text-[#f1a333] uppercase tracking-[0.4em]">
                                     Limited Drop – No Restock
                                 </span>
+
                             </div>
                         </div>
 
@@ -646,10 +662,13 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                                 {data.size_chart_url ? (
                                     <div className="relative w-full aspect-[3/4]">
                                         <Image
-                                            src={getGoogleDriveDirectLink(data.size_chart_url)}
+                                            src={getGoogleDriveDirectLink(data.size_chart_url, { width: 1000, quality: 85 })}
                                             alt="Size Chart"
                                             fill
+                                            unoptimized
                                             className="object-contain rounded-lg shadow-2xl"
+                                            placeholder="blur"
+                                            blurDataURL={getGoogleDriveDirectLink(data.size_chart_url, { width: 40, blur: 5, quality: 20 })}
                                         />
                                     </div>
                                 ) : (

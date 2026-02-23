@@ -62,9 +62,6 @@ export default function DiscoverMore() {
                     <h2 className="text-3xl md:text-4xl font-heading font-black text-navy-900 dark:text-white mb-3">
                         Discover More
                     </h2>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl">
-                        Continue surfing through our entire collection. You might find something unexpected.
-                    </p>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">

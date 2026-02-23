@@ -20,6 +20,7 @@ import { ToastProvider } from "@/context/ToastContext";
 import { StoreSettingsProvider } from "@/context/StoreSettingsContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
 
+
 const greatVibes = localFont({
   src: "./fonts/Great_Vibes/GreatVibes-Regular.ttf",
   variable: "--font-great-vibes",
@@ -190,7 +191,6 @@ export default function RootLayout({
                     <SearchOverlay />
                     <WishlistDrawer />
                     <QuickViewModal />
-                    {/* Global Overlays will be injected here later */}
                   </UIProvider>
                 </ToastProvider>
               </WishlistProvider>

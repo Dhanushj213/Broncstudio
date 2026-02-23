@@ -145,10 +145,13 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                                 }`}
                                         >
                                             <Image
-                                                src={getGoogleDriveDirectLink(item.images?.[0] || item.image || '/images/placeholder.jpg')}
+                                                src={getGoogleDriveDirectLink(item.images?.[0] || item.image || '/images/placeholder.jpg', { width: 400, quality: 80 })}
                                                 alt={item.name}
                                                 fill
+                                                unoptimized
                                                 className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(item.images?.[0] || item.image || '/images/placeholder.jpg', { width: 40, blur: 5, quality: 20 })}
                                             />
 
                                             {/* Gradient Overlay */}
@@ -218,7 +221,7 @@ export default function ShopTheLook({ product }: ShopTheLookProps) {
                                     <div className="flex -space-x-3">
                                         {selectedItems.slice(0, 3).map((item, i) => (
                                             <div key={item.id} className="w-10 h-10 rounded-full border-2 border-white dark:border-[#0A0A0A] overflow-hidden bg-gray-100">
-                                                <Image src={getGoogleDriveDirectLink(item.images?.[0] || item.image || '/images/placeholder.jpg')} alt="" width={40} height={40} className="object-cover h-full w-full" />
+                                                <Image src={getGoogleDriveDirectLink(item.images?.[0] || item.image || '/images/placeholder.jpg')} alt="" width={40} height={40} unoptimized className="object-cover h-full w-full" />
                                             </div>
                                         ))}
                                         {totalItems > 3 && (

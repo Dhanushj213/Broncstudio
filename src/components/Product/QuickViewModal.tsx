@@ -75,20 +75,28 @@ export default function QuickViewModal() {
                         <motion.div
                             key="quick-view-modal-content"
                             initial={{ y: "100%", opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
+                            animate={{
+                                y: 0,
+                                opacity: 1,
+                            }}
                             exit={{ y: "100%", opacity: 0 }}
-                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                            transition={{
+                                type: "spring", damping: 25, stiffness: 300,
+                            }}
                             onClick={(e) => e.stopPropagation()}
                             className="bg-white dark:bg-navy-900 w-full max-w-5xl md:rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] md:max-h-[80vh] md:min-h-[500px]"
                         >
                             {/* LEFT: Image Section (Full Height on Desktop) */}
                             <div className="w-full md:w-1/2 bg-gray-100 dark:bg-black/20 relative md:h-auto h-[35vh] shrink-0">
                                 <Image
-                                    src={getGoogleDriveDirectLink(product.image)}
+                                    src={getGoogleDriveDirectLink(product.image, { width: 1000, quality: 85 })}
                                     alt={product.name}
                                     fill
+                                    unoptimized
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
+                                    placeholder="blur"
+                                    blurDataURL={getGoogleDriveDirectLink(product.image, { width: 40, blur: 5, quality: 20 })}
                                 />
                                 {/* Sold Out Seal */}
                                 {(product.badge === 'Sold Out' || product.is_sold_out) ? (
@@ -231,12 +239,11 @@ export default function QuickViewModal() {
                                     {/* Actions */}
                                     <div className="mt-auto space-y-3">
                                         <button
-                                            onClick={handleAddToBag}
-                                            disabled={!inStock}
+                                            onClick={inStock ? handleAddToBag : undefined}
                                             className={clsx(
                                                 "w-full py-4 rounded-lg font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 shadow-lg transition-all",
                                                 inStock
-                                                    ? "bg-navy-900 text-white hover:bg-coral-500 hover:shadow-coral-500/20 dark:bg-white dark:text-slate-900"
+                                                    ? "bg-navy-900 text-white hover:bg-coral-500 hover:shadow-coral-500/20 dark:bg-white dark:text-slate-900 cursor-pointer"
                                                     : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                             )}
                                         >
@@ -275,8 +282,12 @@ export default function QuickViewModal() {
                         <motion.div
                             key="size-guide-modal-content"
                             initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
+                            animate={{
+                                scale: 1,
+                                opacity: 1,
+                            }}
                             exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{}}
                             onClick={(e) => e.stopPropagation()}
                             className="bg-white dark:bg-navy-900 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative"
                         >
@@ -294,11 +305,14 @@ export default function QuickViewModal() {
                                 {meta.size_guide ? (
                                     <div className="relative w-full aspect-square md:aspect-video rounded-xl overflow-hidden bg-gray-50 dark:bg-white/5">
                                         <Image
-                                            src={getGoogleDriveDirectLink(meta.size_guide)}
+                                            src={getGoogleDriveDirectLink(meta.size_guide, { width: 800, quality: 80 })}
                                             alt="Size Guide"
                                             fill
+                                            unoptimized
                                             className="object-contain"
                                             sizes="(max-width: 768px) 100vw, 800px"
+                                            placeholder="blur"
+                                            blurDataURL={getGoogleDriveDirectLink(meta.size_guide, { width: 40, blur: 5, quality: 20 })}
                                         />
                                     </div>
                                 ) : (

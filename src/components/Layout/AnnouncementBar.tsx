@@ -40,7 +40,7 @@ export default function AnnouncementBar() {
 
     const Content = () => (
         <div className="flex container-premium items-center justify-center">
-            <span dangerouslySetInnerHTML={{ __html: text.replace(/•/g, '<span class="mx-2 opacity-50">•</span>') }}></span>
+            <span>{text}</span>
         </div>
     );
 

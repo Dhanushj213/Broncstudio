@@ -90,8 +90,14 @@ interface SocialLinksContent {
     address: string;
 }
 
-interface GlobalSizeGuideContent {
+interface SizeChart {
+    id: string;
+    label: string;
     image_url: string;
+}
+
+interface GlobalSizeGuideContent {
+    charts: SizeChart[];
 }
 
 interface SustainabilityContent {
@@ -222,7 +228,7 @@ export default function StorefrontPage() {
 
     // Global Size Guide State
     const [globalSizeGuide, setGlobalSizeGuide] = useState<GlobalSizeGuideContent>({
-        image_url: ''
+        charts: []
     });
 
     const [activeHeroTab, setActiveHeroTab] = useState<'desktop' | 'mobile'>('desktop');
@@ -392,7 +398,9 @@ export default function StorefrontPage() {
             .single();
 
         if (sizeGuideData && sizeGuideData.content) {
-            setGlobalSizeGuide(sizeGuideData.content);
+            setGlobalSizeGuide({
+                charts: sizeGuideData.content.charts || []
+            });
         }
 
         setLoading(false);
@@ -834,11 +842,14 @@ export default function StorefrontPage() {
                                                     getGoogleDriveDirectLink(heroContent.poster_url) && (
                                                         <div className="relative w-full h-full">
                                                             <Image
-                                                                src={getGoogleDriveDirectLink(heroContent.poster_url)}
+                                                                src={getGoogleDriveDirectLink(heroContent.poster_url, { width: 800, quality: 80 })}
                                                                 alt=""
                                                                 fill
+                                                                unoptimized
                                                                 sizes="800px"
                                                                 className="w-full h-full object-cover opacity-50"
+                                                                placeholder="blur"
+                                                                blurDataURL={getGoogleDriveDirectLink(heroContent.poster_url, { width: 40, blur: 5, quality: 20 })}
                                                             />
                                                         </div>
                                                     )
@@ -847,11 +858,14 @@ export default function StorefrontPage() {
                                                 <div className="relative w-full h-full overflow-hidden bg-navy-800">
                                                     {heroContent.images[0] && getGoogleDriveDirectLink(heroContent.images[0]) && (
                                                         <Image
-                                                            src={getGoogleDriveDirectLink(heroContent.images[0])}
+                                                            src={getGoogleDriveDirectLink(heroContent.images[0], { width: 800, quality: 80 })}
                                                             alt=""
                                                             fill
+                                                            unoptimized
                                                             sizes="800px"
                                                             className="w-full h-full object-cover"
+                                                            placeholder="blur"
+                                                            blurDataURL={getGoogleDriveDirectLink(heroContent.images[0], { width: 40, blur: 5, quality: 20 })}
                                                         />
                                                     )}
                                                 </div>
@@ -906,11 +920,14 @@ export default function StorefrontPage() {
                                     <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(personaliseHeroImage) && (
                                             <Image
-                                                src={getGoogleDriveDirectLink(personaliseHeroImage)}
+                                                src={getGoogleDriveDirectLink(personaliseHeroImage, { width: 400, quality: 70 })}
                                                 alt=""
                                                 fill
-                                                sizes="800px"
+                                                unoptimized
+                                                sizes="400px"
                                                 className="w-full h-full object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(personaliseHeroImage, { width: 40, blur: 3, quality: 10 })}
                                             />
                                         )}
                                     </div>
@@ -949,11 +966,14 @@ export default function StorefrontPage() {
                                     <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '') && (
                                             <Image
-                                                src={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '')}
+                                                src={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '', { width: 400, quality: 70 })}
                                                 alt=""
                                                 fill
+                                                unoptimized
                                                 sizes="400px"
                                                 className="w-full h-full object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(shopHeroImages['new-arrivals'] || '', { width: 40, blur: 3, quality: 10 })}
                                             />
                                         )}
                                     </div>
@@ -977,11 +997,14 @@ export default function StorefrontPage() {
                                     <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '') && (
                                             <Image
-                                                src={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '')}
+                                                src={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '', { width: 400, quality: 70 })}
                                                 alt=""
                                                 fill
+                                                unoptimized
                                                 sizes="400px"
                                                 className="w-full h-full object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(shopHeroImages['bestsellers'] || '', { width: 40, blur: 3, quality: 10 })}
                                             />
                                         )}
                                     </div>
@@ -1005,11 +1028,14 @@ export default function StorefrontPage() {
                                     <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '') && (
                                             <Image
-                                                src={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '')}
+                                                src={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '', { width: 400, quality: 70 })}
                                                 alt=""
                                                 fill
+                                                unoptimized
                                                 sizes="400px"
                                                 className="w-full h-full object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(shopHeroImages['sustainability'] || '', { width: 40, blur: 3, quality: 10 })}
                                             />
                                         )}
                                     </div>
@@ -1047,11 +1073,14 @@ export default function StorefrontPage() {
                                     <div className="relative w-32 h-20 rounded-xl bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/10">
                                         {getGoogleDriveDirectLink(shopHeroImages['root'] || '') && (
                                             <Image
-                                                src={getGoogleDriveDirectLink(shopHeroImages['root'] || '')}
+                                                src={getGoogleDriveDirectLink(shopHeroImages['root'] || '', { width: 400, quality: 70 })}
                                                 alt=""
                                                 fill
+                                                unoptimized
                                                 sizes="400px"
                                                 className="w-full h-full object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(shopHeroImages['root'] || '', { width: 40, blur: 3, quality: 10 })}
                                             />
                                         )}
                                     </div>
@@ -1086,15 +1115,17 @@ export default function StorefrontPage() {
                                                     <div className="relative w-20 h-10 rounded-lg bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
                                                         {getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '') && (
                                                             <Image
-                                                                src={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '')}
+                                                                src={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '', { width: 200, quality: 60 })}
                                                                 alt=""
                                                                 fill
-                                                                sizes="400px"
+                                                                unoptimized
+                                                                sizes="200px"
                                                                 className="w-full h-full object-cover"
+                                                                placeholder="blur"
+                                                                blurDataURL={getGoogleDriveDirectLink(shopHeroImages[cat.slug] || '', { width: 20, blur: 2, quality: 5 })}
                                                             />
                                                         )}
                                                     </div>
-                                                    streams
                                                 </div>
                                                 <input
                                                     type="url"
@@ -1115,11 +1146,14 @@ export default function StorefrontPage() {
                                                         <div className="relative w-16 h-8 rounded bg-gray-100 dark:bg-white/5 overflow-hidden border border-gray-100 dark:border-white/5">
                                                             {getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '') && (
                                                                 <Image
-                                                                    src={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '')}
+                                                                    src={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '', { width: 200, quality: 60 })}
                                                                     alt=""
                                                                     fill
+                                                                    unoptimized
                                                                     sizes="400px"
                                                                     className="w-full h-full object-cover"
+                                                                    placeholder="blur"
+                                                                    blurDataURL={getGoogleDriveDirectLink(shopHeroImages[`${cat.slug}/${sub.slug}`] || '', { width: 20, blur: 2, quality: 5 })}
                                                                 />
                                                             )}
                                                         </div>
@@ -1162,11 +1196,14 @@ export default function StorefrontPage() {
                                             <div className="relative w-full h-full">
                                                 {getGoogleDriveDirectLink(tile.image) && (
                                                     <Image
-                                                        src={getGoogleDriveDirectLink(tile.image)}
+                                                        src={getGoogleDriveDirectLink(tile.image, { width: 200, quality: 60 })}
                                                         alt=""
                                                         fill
+                                                        unoptimized
                                                         sizes="96px"
                                                         className="object-cover transition-transform group-hover/card:scale-110 duration-700"
+                                                        placeholder="blur"
+                                                        blurDataURL={getGoogleDriveDirectLink(tile.image, { width: 20, blur: 2, quality: 5 })}
                                                     />
                                                 )}
                                             </div>
@@ -1256,11 +1293,14 @@ export default function StorefrontPage() {
                                 <div key={idx} className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 overflow-hidden shadow-lg dark:shadow-none hover:shadow-2xl hover:border-blue-100 dark:hover:border-white/20 transition-all group/shopcard">
                                     <div className="h-40 relative bg-gray-900 overflow-hidden">
                                         <Image
-                                            src={getGoogleDriveDirectLink(col.image)}
+                                            src={getGoogleDriveDirectLink(col.image, { width: 400, quality: 70 })}
                                             alt=""
                                             fill
+                                            unoptimized
                                             sizes="400px"
                                             className="w-full h-full object-cover opacity-60 transition-transform group-hover/shopcard:scale-110 duration-1000"
+                                            placeholder="blur"
+                                            blurDataURL={getGoogleDriveDirectLink(col.image, { width: 40, blur: 3, quality: 10 })}
                                         />
                                         <div className="absolute inset-0 p-4 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent">
                                             <span className="text-white text-lg font-black tracking-tight leading-none px-2">{col.name}</span>
@@ -1589,33 +1629,35 @@ export default function StorefrontPage() {
                                                                 <div className="relative w-full h-full">
                                                                     {getGoogleDriveDirectLink(url) && (
                                                                         <Image
-                                                                            src={getGoogleDriveDirectLink(url)}
+                                                                            src={getGoogleDriveDirectLink(url, { width: 80, quality: 50 })}
                                                                             alt=""
                                                                             fill
+                                                                            unoptimized
                                                                             sizes="80px"
                                                                             className="w-full h-full object-cover"
+                                                                            placeholder="blur"
+                                                                            blurDataURL={getGoogleDriveDirectLink(url, { width: 20, blur: 2, quality: 5 })}
                                                                         />
                                                                     )}
                                                                 </div>
                                                             </div>
                                                         )}
-                                                        streams
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-black text-navy-900 uppercase tracking-widest block">Narrative Headline</label>
-                                        <textarea
-                                            value={loginContent.headline}
-                                            onChange={e => setLoginContent({ ...loginContent, headline: e.target.value })}
-                                            rows={4}
-                                            className="w-full text-navy-900 dark:text-white px-6 py-4 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-2xl outline-none font-bold text-lg leading-relaxed shadow-sm focus:bg-white dark:focus:bg-slate-950 transition-all"
-                                            placeholder="Introduce the brand vibe..."
-                                        />
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">HTML supported. Use \u003cbr /\u003e for line breaks.</p>
+                                        <div className="space-y-4">
+                                            <label className="text-xs font-black text-navy-900 uppercase tracking-widest block">Narrative Headline</label>
+                                            <textarea
+                                                value={loginContent.headline}
+                                                onChange={e => setLoginContent({ ...loginContent, headline: e.target.value })}
+                                                rows={4}
+                                                className="w-full text-navy-900 dark:text-white px-6 py-4 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-2xl outline-none font-bold text-lg leading-relaxed shadow-sm focus:bg-white dark:focus:bg-slate-950 transition-all"
+                                                placeholder="Introduce the brand vibe..."
+                                            />
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">HTML supported. Use \u003cbr /\u003e for line breaks.</p>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1630,11 +1672,14 @@ export default function StorefrontPage() {
                                             {loginContent.visual_urls.find(url => url !== '') ? (
                                                 <div className="relative w-full h-full">
                                                     <Image
-                                                        src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '')}
+                                                        src={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '', { width: 800, quality: 80 })}
                                                         alt=""
                                                         fill
+                                                        unoptimized
                                                         sizes="600px"
                                                         className="w-full h-full object-cover opacity-60"
+                                                        placeholder="blur"
+                                                        blurDataURL={getGoogleDriveDirectLink(loginContent.visual_urls.find(url => url !== '') || '', { width: 40, blur: 5, quality: 20 })}
                                                     />
                                                 </div>
                                             ) : (
@@ -1869,11 +1914,14 @@ export default function StorefrontPage() {
                                     <div className="relative w-20 h-20 rounded-lg bg-gray-200 shrink-0 overflow-hidden">
                                         {item.image && (
                                             <Image
-                                                src={getGoogleDriveDirectLink(item.image)}
+                                                src={getGoogleDriveDirectLink(item.image, { width: 200, quality: 60 })}
                                                 alt=""
                                                 fill
+                                                unoptimized
                                                 sizes="80px"
                                                 className="object-cover"
+                                                placeholder="blur"
+                                                blurDataURL={getGoogleDriveDirectLink(item.image, { width: 20, blur: 2, quality: 5 })}
                                             />
                                         )}
                                     </div>
@@ -1931,27 +1979,77 @@ export default function StorefrontPage() {
                             </div>
                         </div>
                         <div className="bg-white dark:bg-white/5 rounded-3xl border border-gray-100 dark:border-white/10 p-8 space-y-6">
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-navy-900 dark:text-white uppercase tracking-widest">Size Chart Image URL (Google Drive/Public Link)</label>
-                                    <input
-                                        type="text"
-                                        value={globalSizeGuide.image_url}
-                                        onChange={e => setGlobalSizeGuide({ ...globalSizeGuide, image_url: e.target.value })}
-                                        className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border-2 border-gray-200 dark:border-white/10 focus:border-indigo-500 rounded-xl outline-none font-medium text-sm transition-all"
-                                        placeholder="Paste image link here..."
-                                    />
-                                </div>
-                                {globalSizeGuide.image_url && (
-                                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 mt-4">
-                                        <Image
-                                            src={getGoogleDriveDirectLink(globalSizeGuide.image_url)}
-                                            alt="Size Guide Preview"
-                                            fill
-                                            className="object-contain"
-                                        />
+                            <div className="space-y-6">
+                                {globalSizeGuide.charts.map((chart, idx) => (
+                                    <div key={chart.id} className="p-6 bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-200 dark:border-white/10 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <h4 className="font-bold text-navy-900 dark:text-white uppercase text-xs tracking-widest">Chart #{idx + 1}</h4>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newCharts = globalSizeGuide.charts.filter(c => c.id !== chart.id);
+                                                    setGlobalSizeGuide({ charts: newCharts });
+                                                }}
+                                                className="text-red-500 hover:text-red-600 p-2"
+                                            >
+                                                <Trash2 size={20} />
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Category Label (e.g. T-Shirts)</label>
+                                                <input
+                                                    type="text"
+                                                    value={chart.label}
+                                                    onChange={e => {
+                                                        const newCharts = [...globalSizeGuide.charts];
+                                                        newCharts[idx].label = e.target.value;
+                                                        setGlobalSizeGuide({ charts: newCharts });
+                                                    }}
+                                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl outline-none font-medium text-sm focus:border-indigo-500 transition-all"
+                                                    placeholder="e.g. Oversized T-Shirts"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Image URL</label>
+                                                <input
+                                                    type="text"
+                                                    value={chart.image_url}
+                                                    onChange={e => {
+                                                        const newCharts = [...globalSizeGuide.charts];
+                                                        newCharts[idx].image_url = e.target.value;
+                                                        setGlobalSizeGuide({ charts: newCharts });
+                                                    }}
+                                                    className="w-full text-navy-900 dark:text-white px-4 py-3 bg-white dark:bg-slate-950 border border-gray-200 dark:border-white/10 rounded-xl outline-none font-medium text-sm focus:border-indigo-500 transition-all"
+                                                    placeholder="Paste link here..."
+                                                />
+                                            </div>
+                                        </div>
+                                        {chart.image_url && (
+                                            <div className="relative aspect-[21/9] rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 mt-2">
+                                                <Image
+                                                    src={getGoogleDriveDirectLink(chart.image_url, { width: 600, quality: 70 })}
+                                                    alt="Size Guide Preview"
+                                                    fill
+                                                    unoptimized
+                                                    className="object-contain"
+                                                    placeholder="blur"
+                                                    blurDataURL={getGoogleDriveDirectLink(chart.image_url, { width: 40, blur: 3, quality: 10 })}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                ))}
+
+                                <button
+                                    type="button"
+                                    onClick={() => setGlobalSizeGuide({
+                                        charts: [...globalSizeGuide.charts, { id: Date.now().toString(), label: '', image_url: '' }]
+                                    })}
+                                    className="w-full py-4 rounded-xl border-2 border-dashed border-gray-300 dark:border-white/20 text-gray-400 font-bold hover:border-navy-500 hover:text-navy-500 transition-colors"
+                                >
+                                    + Add New Size Chart
+                                </button>
                             </div>
                         </div>
                     </section>

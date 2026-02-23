@@ -68,6 +68,7 @@ const ProductCard = ({ product }: { product: BaseProduct }) => {
                             src={getGoogleDriveDirectLink(img)}
                             alt={`${product.name} - ${index + 1}`}
                             fill
+                            unoptimized
                             className={clsx(
                                 "object-cover transition-all duration-700 ease-in-out",
                                 index === currentImageIndex ? "opacity-100 scale-100" : "opacity-0 scale-110",
@@ -228,6 +229,7 @@ export default function PersonaliseListingPage() {
                         src={getGoogleDriveDirectLink(heroImage)}
                         alt="Custom Studio Hero"
                         fill
+                        unoptimized
                         className="object-cover"
                         priority
                     />

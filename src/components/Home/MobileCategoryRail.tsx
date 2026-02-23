@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
+
 // 14 Specific items requested by User
 const RAIL_ITEMS = [
     { label: 'Men', href: '/collections/men', img: '' },

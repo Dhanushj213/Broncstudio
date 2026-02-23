@@ -67,11 +67,14 @@ export default function BestsellersPage() {
             <div className="relative h-[60vh] w-full overflow-hidden flex items-center justify-center text-center">
                 {heroImage ? (
                     <Image
-                        src={getGoogleDriveDirectLink(heroImage)}
+                        src={getGoogleDriveDirectLink(heroImage, { width: 1600, quality: 90 })}
                         alt="Bestsellers"
                         fill
                         priority
+                        unoptimized
                         className="object-cover"
+                        placeholder="blur"
+                        blurDataURL={getGoogleDriveDirectLink(heroImage, { width: 40, blur: 5, quality: 20 })}
                     />
                 ) : (
                     <div className="absolute inset-0 bg-navy-900" />

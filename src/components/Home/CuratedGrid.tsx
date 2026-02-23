@@ -52,11 +52,14 @@ export default function CuratedGrid() {
                         >
                             {/* Image with Zoom Effect */}
                             <Image
-                                src={getGoogleDriveDirectLink(item.image_url)}
+                                src={getGoogleDriveDirectLink(item.image_url, { width: 600, quality: 80 })}
                                 alt={item.title}
                                 fill
+                                unoptimized
                                 sizes="(max-width: 768px) 100vw, 320px"
                                 className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                                placeholder="blur"
+                                blurDataURL={getGoogleDriveDirectLink(item.image_url, { width: 40, blur: 5, quality: 20 })}
                             />
 
                             {/* Floating Glass Card at Bottom */}

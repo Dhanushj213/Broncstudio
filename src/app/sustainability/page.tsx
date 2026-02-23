@@ -60,6 +60,7 @@ export default function SustainabilityPage() {
                         alt="Nature"
                         fill
                         priority
+                        unoptimized
                         className="absolute inset-0 w-full h-full object-cover opacity-60"
                     />
                 )}
@@ -123,6 +124,7 @@ export default function SustainabilityPage() {
                                     src={getGoogleDriveDirectLink(proudlyIndian.image)}
                                     alt="Artisans"
                                     fill
+                                    unoptimized
                                     className="object-cover"
                                 />
                             </div>

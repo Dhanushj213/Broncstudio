@@ -51,11 +51,14 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                         <div key={idx} className="relative w-full h-full flex-shrink-0 snap-center p-4">
                             <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-sm">
                                 <Image
-                                    src={getGoogleDriveDirectLink(img)}
+                                    src={getGoogleDriveDirectLink(img, { width: 800, quality: 80 })}
                                     alt={`View ${idx}`}
                                     fill
+                                    unoptimized
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
+                                    placeholder="blur"
+                                    blurDataURL={getGoogleDriveDirectLink(img, { width: 40, blur: 5, quality: 20 })}
                                 />
                             </div>
                         </div>
@@ -80,12 +83,15 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.4 }}
-                            src={getGoogleDriveDirectLink(images[activeIndex])}
+                            src={getGoogleDriveDirectLink(images[activeIndex], { width: 1200, quality: 90 })}
                             alt="Main product view"
                             fill
+                            unoptimized
                             priority
                             sizes="(max-width: 768px) 100vw, 50vw"
                             className="object-cover transition-transform duration-200 ease-out group-hover:scale-[2] origin-[var(--zoom-x)_var(--zoom-y)]"
+                            placeholder="blur"
+                            blurDataURL={getGoogleDriveDirectLink(images[activeIndex], { width: 40, blur: 5, quality: 20 })}
                         />
                     </AnimatePresence>
 
@@ -141,7 +147,16 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
                             : 'border-transparent opacity-60 hover:opacity-100'
                             }`}
                     >
-                        <Image src={getGoogleDriveDirectLink(img)} alt={`Thumbnail ${idx}`} fill sizes="10vw" className="object-cover" />
+                        <Image
+                            src={getGoogleDriveDirectLink(img, { width: 200, quality: 70 })}
+                            alt={`Thumbnail ${idx}`}
+                            fill
+                            unoptimized
+                            sizes="10vw"
+                            className="object-cover"
+                            placeholder="blur"
+                            blurDataURL={getGoogleDriveDirectLink(img, { width: 20, blur: 2, quality: 10 })}
+                        />
                         {activeIndex === idx && (
                             <motion.div
                                 layoutId="activeThumb"

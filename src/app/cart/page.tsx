@@ -211,6 +211,7 @@ const CartPage = () => {
                                                 src={item.image}
                                                 alt={item.name}
                                                 fill
+                                                unoptimized
                                                 className="object-cover transform group-hover:scale-110 transition-transform duration-700"
                                             />
                                         ) : (

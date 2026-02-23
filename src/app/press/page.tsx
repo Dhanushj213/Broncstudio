@@ -49,6 +49,7 @@ export default function PressPage() {
                                             src={getGoogleDriveDirectLink(feature.logo)}
                                             alt={feature.name}
                                             fill
+                                            unoptimized
                                             className="object-contain opacity-50 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0 dark:invert"
                                         />
                                     </div>
