@@ -61,9 +61,6 @@ export default function SpecialHubPage() {
                     <h1 className="text-4xl md:text-7xl font-heading font-black text-navy-900 dark:text-white leading-[1.1]">
                         The <span className="text-coral-500 italic font-serif font-medium">Special</span> Collection
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300">
-                        Curated selections of our finest pieces. Highly demanded, perfectly paired.
-                    </p>
                 </div>
             </div>
 
