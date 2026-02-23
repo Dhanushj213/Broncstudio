@@ -94,7 +94,7 @@ export default function SpecialCollectionsRail() {
             {/* Horizontally Scrollable Rail */}
             <div className="flex overflow-x-auto pb-8 pt-2 px-4 md:px-12 gap-6 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {products.map((product, idx) => (
-                    <div key={`${product.id}-${idx}`} className="snap-start shrink-0 w-[calc(50vw-28px)] sm:w-[240px] md:w-[280px] lg:w-[320px]">
+                    <div key={`${product.id}-${idx}`} className="snap-start shrink-0 w-[160px] sm:w-[200px] md:w-[240px] lg:w-[280px]">
                         <ProductCard
                             key={product.id}
                             {...product}
@@ -107,7 +107,7 @@ export default function SpecialCollectionsRail() {
                 ))}
 
                 {/* View All Card at the end */}
-                <div className="snap-start shrink-0 w-[calc(50vw-28px)] sm:w-[240px] md:w-[280px] lg:w-[320px] flex items-center justify-center p-0 md:p-6">
+                <div className="snap-start shrink-0 w-[160px] sm:w-[200px] md:w-[240px] lg:w-[280px] flex items-center justify-center p-0 md:p-6">
                     <Link href="/special" className="group flex flex-col items-center justify-center w-full h-[80%] min-h-[220px] rounded-[24px] md:rounded-[32px] border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-coral-500 dark:hover:border-coral-500 transition-colors bg-white/50 dark:bg-white/5 backdrop-blur-sm">
                         <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-coral-50 dark:group-hover:bg-coral-500/20 transition-all mb-3 md:mb-4 shadow-sm">
                             <ArrowRight size={20} className="text-navy-900 dark:text-white group-hover:text-coral-500 transition-colors" />
