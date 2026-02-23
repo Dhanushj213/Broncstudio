@@ -264,7 +264,7 @@ export default function QuickViewModal() {
                                                 router.push(`/product/${product.id}`);
                                                 closeQuickView();
                                             }}
-                                            className="block w-full text-center py-3 text-sm font-bold uppercase tracking-widest text-navy-900 dark:text-white hover:text-coral-500 transition-colors"
+                                            className="block w-full text-center py-4 text-sm font-bold uppercase tracking-widest transition-all rounded-lg bg-white/50 dark:bg-white/[0.03] backdrop-blur-md border border-black/5 dark:border-white/10 shadow-sm hover:shadow-md hover:-translate-y-0.5 text-navy-900 dark:text-white"
                                         >
                                             View Full Details
                                         </button>
