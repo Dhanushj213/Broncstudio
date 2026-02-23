@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { X, ChevronRight, User, Heart, ShoppingBag, Globe, Sparkles, Home as HomeIcon, Tag, LayoutGrid, Gift, Monitor, Shirt, Pencil, PawPrint } from 'lucide-react';
+import { X, ChevronRight, User, Heart, ShoppingBag, Globe, Sparkles, Home as HomeIcon, Tag, LayoutGrid, Gift, Monitor, Shirt, Pencil, PawPrint, Star } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -114,7 +114,6 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                             <div className="flex items-center justify-between relative z-10">
                                 <div>
                                     <h2 className="font-heading text-3xl font-bold tracking-tight text-navy-900 dark:text-white drop-shadow-sm">Menu</h2>
-                                    <p className="text-navy-600/70 dark:text-gray-400 text-sm mt-1 font-medium italic">Discover your world.</p>
                                 </div>
                                 <button
                                     onClick={onClose}
@@ -188,6 +187,25 @@ const MobileMenu = ({ isOpen, onClose, currentUser }: MobileMenuProps) => {
                                                 <Sparkles size={22} />
                                             </div>
                                             <span className="font-bold text-navy-900 dark:text-white text-lg">Personalise</span>
+                                        </motion.div>
+                                    </Link>
+                                </motion.div>
+
+                                <motion.div variants={itemVariants}>
+                                    <Link
+                                        href="/special"
+                                        onClick={onClose}
+                                        className="block px-2"
+                                    >
+                                        <motion.div
+                                            whileHover={{ x: 4 }}
+                                            whileTap={tapEffect}
+                                            className="flex items-center gap-4 p-4 rounded-3xl bg-white/50 dark:bg-white/5 border border-white/50 dark:border-white/10 shadow-[8px_8px_16px_rgba(0,0,0,0.05),-4px_-4px_16px_rgba(255,255,255,0.8)] dark:shadow-[8px_8px_16px_rgba(0,0,0,0.4),-4px_-4px_16px_rgba(255,255,255,0.02)] transition-all duration-300 group"
+                                        >
+                                            <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-900/20 shadow-inner flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                                                <Star size={22} className="fill-current" />
+                                            </div>
+                                            <span className="font-bold text-navy-900 dark:text-white text-lg">Special Collections</span>
                                         </motion.div>
                                     </Link>
                                 </motion.div>
