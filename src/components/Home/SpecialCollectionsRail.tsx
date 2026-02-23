@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
-import { getGoogleDriveDirectLink } from '@/utils/googleDrive';
+import ProductCard from '@/components/Product/ProductCard';
 import MagneticButton from '@/components/UI/MagneticButton';
 
 export default function SpecialCollectionsRail() {
@@ -71,10 +71,10 @@ export default function SpecialCollectionsRail() {
     if (isLoading || products.length === 0) return null;
 
     return (
-        <section className="relative pt-16 pb-4 overflow-hidden bg-gradient-to-b from-transparent to-[#F8F5F2] dark:to-black/40">
-            <div className="container-premium max-w-[1440px] mx-auto px-6 mb-8 flex items-end justify-between">
+        <section className="relative pt-8 pb-4 overflow-hidden bg-gradient-to-b from-transparent to-[#F8F5F2] dark:to-black/40">
+            <div className="container-premium max-w-[1440px] mx-auto px-4 md:px-6 mb-6 md:mb-8 flex items-end justify-between">
                 <div>
-                    <h2 className="text-3xl md:text-5xl font-heading font-black text-navy-900 dark:text-white leading-tight">
+                    <h2 className="text-2xl md:text-5xl font-heading font-black text-navy-900 dark:text-white leading-tight">
                         Special <span className="text-coral-500 italic font-serif font-medium">Collections</span>
                     </h2>
                 </div>
@@ -92,48 +92,27 @@ export default function SpecialCollectionsRail() {
             </div>
 
             {/* Horizontally Scrollable Rail */}
-            <div className="flex overflow-x-auto pb-12 pt-4 px-6 md:px-12 gap-6 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex overflow-x-auto pb-8 pt-2 px-4 md:px-12 gap-6 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {products.map((product, idx) => (
-                    <div key={`${product.id}-${idx}`} className="snap-start shrink-0 w-[280px] md:w-[320px] relative">
-                        {/* Glassmorphism Badge (Absolute to wrapper, detached from Product Link) */}
-                        <div className="absolute top-4 left-4 z-20">
-                            <Link href={`/special/${product.special_slug}`} onClick={(e) => e.stopPropagation()}>
-                                <div className="px-4 py-1.5 rounded-full bg-white/70 dark:bg-black/60 backdrop-blur-md border border-white/40 dark:border-white/10 text-[10px] font-bold uppercase tracking-widest text-navy-900 dark:text-white shadow-sm hover:scale-105 transition-transform">
-                                    {product.special_badge}
-                                </div>
-                            </Link>
-                        </div>
-
-                        <Link href={`/product/${product.slug}`} className="block group">
-                            <div className="relative aspect-[4/5] rounded-[24px] overflow-hidden bg-gray-100 dark:bg-gray-800 mb-4 shadow-sm border border-black/5 dark:border-white/5">
-                                <Image
-                                    src={getGoogleDriveDirectLink(product.images?.[0] || '/images/placeholder.jpg')}
-                                    alt={product.name}
-                                    fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                    sizes="(max-width: 768px) 280px, 320px"
-                                />
-                                {/* Liquid Hover Effect Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                            </div>
-
-                            <div className="px-2">
-                                <h3 className="font-bold text-lg text-navy-900 dark:text-white truncate mb-1 group-hover:text-coral-500 transition-colors">
-                                    {product.name}
-                                </h3>
-                                <p className="text-gray-500 font-medium">₹{product.price}</p>
-                            </div>
-                        </Link>
+                    <div key={`${product.id}-${idx}`} className="snap-start shrink-0 w-[calc(50vw-28px)] sm:w-[240px] md:w-[280px] lg:w-[320px]">
+                        <ProductCard
+                            key={product.id}
+                            {...product}
+                            brand="BroncStudio"
+                            originalPrice={product.compare_at_price}
+                            image={product.images?.[0] || '/images/placeholder.jpg'}
+                            badge={product.special_badge}
+                        />
                     </div>
                 ))}
 
                 {/* View All Card at the end */}
-                <div className="snap-start shrink-0 w-[280px] md:w-[320px] flex items-center justify-center p-6">
-                    <Link href="/special" className="group flex flex-col items-center justify-center w-full h-[80%] rounded-[32px] border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-coral-500 dark:hover:border-coral-500 transition-colors bg-white/50 dark:bg-white/5 backdrop-blur-sm">
-                        <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-coral-50 dark:group-hover:bg-coral-500/20 transition-all mb-4 shadow-sm">
-                            <ArrowRight size={24} className="text-navy-900 dark:text-white group-hover:text-coral-500 transition-colors" />
+                <div className="snap-start shrink-0 w-[calc(50vw-28px)] sm:w-[240px] md:w-[280px] lg:w-[320px] flex items-center justify-center p-0 md:p-6">
+                    <Link href="/special" className="group flex flex-col items-center justify-center w-full h-[80%] min-h-[220px] rounded-[24px] md:rounded-[32px] border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-coral-500 dark:hover:border-coral-500 transition-colors bg-white/50 dark:bg-white/5 backdrop-blur-sm">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-coral-50 dark:group-hover:bg-coral-500/20 transition-all mb-3 md:mb-4 shadow-sm">
+                            <ArrowRight size={20} className="text-navy-900 dark:text-white group-hover:text-coral-500 transition-colors" />
                         </div>
-                        <span className="font-bold uppercase tracking-widest text-navy-900 dark:text-white group-hover:text-coral-500 transition-colors">
+                        <span className="font-bold text-[10px] md:text-sm uppercase tracking-widest text-navy-900 dark:text-white group-hover:text-coral-500 transition-colors">
                             Explore All
                         </span>
                     </Link>
