@@ -120,7 +120,7 @@ export default function SpecialCollectionsRail() {
             </div>
 
             <div className="md:hidden px-6 mt-4 flex justify-center">
-                <Link href="/special" className="inline-flex items-center gap-2 bg-white text-navy-900 border border-black/10 px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider w-full justify-center shadow-lg hover:shadow-xl transition-shadow">
+                <Link href="/special" className="inline-flex items-center gap-2 bg-white text-navy-900 dark:text-navy-900 border border-black/10 px-8 py-4 rounded-xl font-bold text-sm uppercase tracking-wider w-full justify-center shadow-lg hover:shadow-xl transition-shadow">
                     View All Collections <ArrowRight size={16} />
                 </Link>
             </div>
