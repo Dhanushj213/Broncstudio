@@ -189,19 +189,18 @@ export default function DepartmentBentoGrid() {
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-90" />
                                 </div>
 
+                                <div className="absolute top-5 right-5 md:top-8 md:right-8 w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center transform group-hover:-rotate-45 transition-all duration-500 shadow-xl group-hover:bg-red-600 group-hover:text-black active:scale-95 border border-white/30 z-20">
+                                    <ArrowUpRight size={16} strokeWidth={1.5} className="md:w-6 md:h-6 transition-colors" />
+                                </div>
+
                                 <div className="absolute inset-0 p-5 md:p-8 flex flex-col justify-end text-white">
-                                    <div className="flex justify-between items-end">
-                                        <div className="space-y-1 md:space-y-2">
-                                            <div className="inline-block px-2 py-0.5 md:px-3 md:py-1 text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase bg-white/20 backdrop-blur-md rounded-full mb-1 md:mb-2">
-                                                {tile.subtitle}
-                                            </div>
-                                            <h2 className="text-2xl md:text-3xl font-heading font-medium leading-none drop-shadow-lg">
-                                                {tile.title}
-                                            </h2>
+                                    <div className="space-y-1 md:space-y-2">
+                                        <div className="inline-block px-2 py-0.5 md:px-3 md:py-1 text-[8px] md:text-[10px] font-bold tracking-[0.2em] uppercase bg-white/20 backdrop-blur-md rounded-full mb-1 md:mb-2">
+                                            {tile.subtitle}
                                         </div>
-                                        <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center transform group-hover:-rotate-45 transition-all duration-500 shadow-xl group-hover:bg-red-600 group-hover:text-black active:scale-95 border border-white/30">
-                                            <ArrowUpRight size={16} strokeWidth={1.5} className="md:w-6 md:h-6 transition-colors" />
-                                        </div>
+                                        <h2 className="text-2xl md:text-3xl font-heading font-medium leading-none drop-shadow-lg">
+                                            {tile.title}
+                                        </h2>
                                     </div>
                                 </div>
                             </Link>

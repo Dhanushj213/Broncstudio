@@ -41,21 +41,20 @@ export default function BentoGridWorld() {
 
                             {/* Content */}
                             <div className="relative z-20 h-full flex flex-col justify-end p-8 md:p-10 text-white">
-                                <div className="flex justify-between items-end">
-                                    <div className="space-y-3">
-                                        <span className="inline-block px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] uppercase bg-white text-black rounded-full shadow-lg">
-                                            Kids & Play
-                                        </span>
-                                        <h2 className="text-4xl md:text-6xl font-heading font-medium leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
-                                            Little Legends
-                                        </h2>
-                                        <p className="text-white/90 font-medium text-lg max-w-sm border-l-2 border-white/50 pl-3 drop-shadow-md">
-                                            Where curiosity begins.
-                                        </p>
-                                    </div>
-                                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white text-black flex items-center justify-center transform group-hover:-rotate-45 transition-all duration-500 shadow-xl group-hover:scale-110">
-                                        <ArrowUpRight size={24} strokeWidth={1.5} />
-                                    </div>
+                                <div className="absolute top-8 md:top-10 right-8 md:right-10 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white text-black flex items-center justify-center transform group-hover:-rotate-45 transition-all duration-500 shadow-xl group-hover:scale-110 z-30">
+                                    <ArrowUpRight size={24} strokeWidth={1.5} />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <span className="inline-block px-4 py-1.5 text-[10px] font-bold tracking-[0.2em] uppercase bg-white text-black rounded-full shadow-lg">
+                                        Kids & Play
+                                    </span>
+                                    <h2 className="text-4xl md:text-6xl font-heading font-medium leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">
+                                        Little Legends
+                                    </h2>
+                                    <p className="text-white/90 font-medium text-lg max-w-sm border-l-2 border-white/50 pl-3 drop-shadow-md">
+                                        Where curiosity begins.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +76,7 @@ export default function BentoGridWorld() {
                                     <h2 className="text-3xl md:text-3xl font-heading text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">Everyday Icons</h2>
                                     <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.25em] drop-shadow-md">Fashion for Everyone</p>
                                 </div>
-                                <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 text-white">
+                                <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0 text-white">
                                     <ArrowUpRight size={24} strokeWidth={1.5} className="drop-shadow-md" />
                                 </div>
                             </div>
@@ -98,7 +97,7 @@ export default function BentoGridWorld() {
                                     <h2 className="text-3xl md:text-3xl font-heading text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">Little Luxuries</h2>
                                     <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.25em] drop-shadow-md">Gifting & Joys</p>
                                 </div>
-                                <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 text-white">
+                                <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0 text-white">
                                     <ArrowUpRight size={24} strokeWidth={1.5} className="drop-shadow-md" />
                                 </div>
                             </div>
@@ -119,7 +118,7 @@ export default function BentoGridWorld() {
                                     <h2 className="text-3xl md:text-3xl font-heading text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">Space Stories</h2>
                                     <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.25em] drop-shadow-md">Home & Comfort</p>
                                 </div>
-                                <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 text-white">
+                                <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0 text-white">
                                     <ArrowUpRight size={24} strokeWidth={1.5} className="drop-shadow-md" />
                                 </div>
                             </div>
@@ -140,7 +139,7 @@ export default function BentoGridWorld() {
                                     <h2 className="text-3xl md:text-3xl font-heading text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]">Style Extras</h2>
                                     <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.25em] drop-shadow-md">Accessories</p>
                                 </div>
-                                <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 text-white">
+                                <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0 text-white">
                                     <ArrowUpRight size={24} strokeWidth={1.5} className="drop-shadow-md" />
                                 </div>
                             </div>
