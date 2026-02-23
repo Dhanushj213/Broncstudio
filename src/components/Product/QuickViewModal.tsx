@@ -198,18 +198,14 @@ export default function QuickViewModal() {
                                                             key={colorName}
                                                             onClick={() => setSelectedColor(colorName)}
                                                             className={clsx(
-                                                                "w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center",
+                                                                "w-8 h-8 rounded-[8px] transition-all flex items-center justify-center shrink-0",
                                                                 selectedColor === colorName
-                                                                    ? "border-navy-900 dark:border-white scale-110"
-                                                                    : "border-gray-200 dark:border-white/10 hover:border-gray-300"
+                                                                    ? "ring-2 ring-offset-2 ring-navy-900 dark:ring-white dark:ring-offset-navy-900 scale-[1.05]"
+                                                                    : "ring-1 ring-black/10 dark:ring-white/20 hover:ring-black/30 dark:hover:ring-white/40 border border-black/5"
                                                             )}
                                                             style={{ backgroundColor: colorValue }}
                                                             title={colorName}
-                                                        >
-                                                            {selectedColor === colorName && (
-                                                                <Check size={12} className={clsx(colorName.toLowerCase() === 'white' ? "text-black" : "text-white")} />
-                                                            )}
-                                                        </button>
+                                                        />
                                                     )
                                                 })}
                                             </div>

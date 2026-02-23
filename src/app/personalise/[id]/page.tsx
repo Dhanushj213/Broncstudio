@@ -312,7 +312,7 @@ export default function PersonaliseDetailPage({ params }: { params: Promise<{ id
                                                 <button
                                                     key={color}
                                                     onClick={() => setSelectedColor(color)}
-                                                    className={`px-6 py-3 rounded-2xl border-2 font-black text-sm transition-all duration-300 transform active:scale-95 ${selectedColor === color
+                                                    className={`px-6 py-3 rounded-xl border-2 font-black text-sm transition-all duration-300 transform active:scale-95 ${selectedColor === color
                                                         ? 'border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900 shadow-xl'
                                                         : 'border-neutral-100 text-neutral-500 hover:border-neutral-300 dark:border-neutral-800'
                                                         }`}

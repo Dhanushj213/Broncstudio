@@ -227,13 +227,13 @@ export default function ProductInfo({ product }: ProductInfoProps) {
                                 <div key={`${color.name}-${i}`} className="group relative">
                                     <button
                                         onClick={() => setSelectedColor(color.name)}
-                                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${selectedColor === color.name
-                                            ? 'ring-1 ring-offset-2 ring-[#111] dark:ring-white dark:ring-offset-black'
-                                            : 'hover:scale-105 opacity-90 hover:opacity-100'
+                                        className={`w-9 h-9 rounded-[8px] flex items-center justify-center transition-all duration-200 ${selectedColor === color.name
+                                            ? 'ring-2 ring-offset-2 ring-[#111] dark:ring-white dark:ring-offset-black scale-105'
+                                            : 'hover:scale-105 opacity-90 hover:opacity-100 ring-1 ring-black/10 dark:ring-white/20 hover:ring-black/30'
                                             }`}
                                         title={color.name}
                                     >
-                                        <div className="w-full h-full rounded-full border border-black/10 shadow-sm" style={{ backgroundColor: color.code }} />
+                                        <div className="w-full h-full rounded-[8px] border border-black/5 shadow-sm" style={{ backgroundColor: color.code }} />
                                     </button>
                                     {/* Tooltip */}
                                     <span className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-black text-white text-[9px] font-bold uppercase rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
