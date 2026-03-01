@@ -51,7 +51,10 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
     const [showSizeChart, setShowSizeChart] = useState(false);
     const [hasEnded, setHasEnded] = useState(false);
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
+        setMounted(true);
         if (!data.end_date) return;
         const checkEnded = () => {
             setHasEnded(new Date() > new Date(data.end_date));
@@ -197,7 +200,7 @@ export default function LimitedDropSection({ data }: LimitedDropProps) {
                 />
 
                 {/* Faint Floating Particles */}
-                {[...Array(6)].map((_, i) => (
+                {mounted && [...Array(6)].map((_, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, x: Math.random() * 100 + "%", y: Math.random() * 100 + "%" }}

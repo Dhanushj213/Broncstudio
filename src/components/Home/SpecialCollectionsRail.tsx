@@ -8,9 +8,9 @@ import { createBrowserClient } from '@supabase/ssr';
 import ProductCard from '@/components/Product/ProductCard';
 import MagneticButton from '@/components/UI/MagneticButton';
 
-export default function SpecialCollectionsRail() {
-    const [products, setProducts] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+export default function SpecialCollectionsRail({ initialData }: { initialData?: any[] }) {
+    const [products, setProducts] = useState<any[]>(initialData || []);
+    const [isLoading, setIsLoading] = useState(!initialData);
 
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,56 +19,100 @@ export default function SpecialCollectionsRail() {
 
     useEffect(() => {
         async function fetchSpecialProducts() {
-            // First get the active collections
-            const { data: collections } = await supabase
-                .from('special_collections')
-                .select('id, name, slug')
-                .eq('is_active', true);
-
-            if (!collections || collections.length === 0) {
+            if (initialData) {
                 setIsLoading(false);
                 return;
             }
+            try {
+                // First get the active collections
+                const collFetchPromise = supabase
+                    .from('special_collections')
+                    .select('id, name, slug')
+                    .eq('is_active', true);
 
-            const collectionMap: Record<string, any> = collections.reduce((acc, c) => ({ ...acc, [c.id]: c }), {});
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+                );
 
-            // Fetch products mapped to these collections
-            const { data: mappings } = await supabase
-                .from('special_collection_products')
-                .select('collection_id, product_id, products(*)')
-                .in('collection_id', Object.keys(collectionMap))
-                .order('created_at', { ascending: false })
-                .limit(8);
+                const { data: collections, error: collError } = await Promise.race([collFetchPromise, timeoutPromise]) as any;
 
-            if (mappings) {
-                // Map the results back to a usable product format with the badge attached
-                const formatted = mappings.map((m: any) => {
-                    const product = m.products;
-                    const coll = collectionMap[m.collection_id];
-                    return {
-                        ...product,
-                        special_badge: coll.name,
-                        special_slug: coll.slug
-                    };
-                });
+                if (collError) throw collError;
 
-                // Remove duplicates if a product is in multiple collections (keep first)
-                const uniqueIds = new Set();
-                const uniqueProducts = formatted.filter(p => {
-                    if (uniqueIds.has(p.id)) return false;
-                    uniqueIds.add(p.id);
-                    return true;
-                });
+                if (!collections || collections.length === 0) {
+                    setIsLoading(false);
+                    return;
+                }
 
-                setProducts(uniqueProducts);
+                const collectionMap: Record<string, any> = collections.reduce((acc: Record<string, any>, c: any) => ({ ...acc, [c.id]: c }), {});
+
+                // Fetch products mapped to these collections
+                const mapFetchPromise = supabase
+                    .from('special_collection_products')
+                    .select('collection_id, product_id, products(*)')
+                    .in('collection_id', Object.keys(collectionMap))
+                    .order('created_at', { ascending: false })
+                    .limit(8);
+
+                const { data: mappings, error: mapError } = await Promise.race([mapFetchPromise, timeoutPromise]) as any;
+
+                if (mapError) throw mapError;
+
+                if (mappings) {
+                    // Map the results back to a usable product format with the badge attached
+                    const formatted = mappings.map((m: any) => {
+                        const product = m.products;
+                        const coll = collectionMap[m.collection_id];
+                        return {
+                            ...product,
+                            special_badge: coll.name,
+                            special_slug: coll.slug
+                        };
+                    });
+
+                    // Remove duplicates if a product is in multiple collections (keep first)
+                    const uniqueIds = new Set();
+                    const uniqueProducts = formatted.filter((p: any) => {
+                        if (uniqueIds.has(p.id)) return false;
+                        uniqueIds.add(p.id);
+                        return true;
+                    });
+
+                    setProducts(uniqueProducts);
+                }
+            } catch (err: any) {
+                console.group('SpecialCollectionsRail Fetch Error');
+                console.error('Error Object:', err);
+                console.error('Error Message:', err.message || 'No message');
+                console.error('Error Code:', err.code || 'No code');
+                console.groupEnd();
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
         }
 
         fetchSpecialProducts();
     }, []);
 
-    if (isLoading || products.length === 0) return null;
+    if (isLoading) {
+        return (
+            <section className="relative pt-8 pb-4 overflow-hidden bg-gradient-to-b from-transparent to-[#F8F5F2] dark:to-black/40">
+                <div className="container-premium max-w-[1440px] mx-auto px-4 md:px-6 mb-8">
+                    <div className="h-12 w-64 bg-gray-200 dark:bg-white/10 rounded animate-pulse" />
+                </div>
+                <div className="flex overflow-x-auto pb-8 pt-2 px-4 md:px-12 gap-6 scrollbar-hide">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="shrink-0 w-[280px] animate-pulse">
+                            <div className="aspect-square bg-gray-200 dark:bg-white/10 rounded-[24px] mb-4" />
+                            <div className="h-4 w-3/4 bg-gray-200 dark:bg-white/10 rounded mb-2" />
+                            <div className="h-4 w-1/2 bg-gray-200 dark:bg-white/10 rounded" />
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    if (products.length === 0) return null;
 
     return (
         <section className="relative pt-8 pb-4 overflow-hidden bg-gradient-to-b from-transparent to-[#F8F5F2] dark:to-black/40">

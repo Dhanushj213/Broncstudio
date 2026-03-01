@@ -9,6 +9,7 @@ import Image from 'next/image';
 export default function ConstructionPage() {
     const [message, setMessage] = useState('We’re Crafting Something Powerful.');
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [socialLinks, setSocialLinks] = useState({
         instagram: '',
@@ -64,6 +65,7 @@ export default function ConstructionPage() {
     const cursorLightY = useTransform(springY, (t: number) => t + (typeof window !== 'undefined' ? window.innerHeight / 2 : 0));
 
     useEffect(() => {
+        setMounted(true);
         async function fetchSettings() {
             const { data } = await supabase
                 .from('site_settings')
@@ -384,7 +386,7 @@ export default function ConstructionPage() {
                 <div className="absolute bottom-10 right-10 text-right hidden lg:block">
                     <div className="text-[#8A8F98] text-[9px] uppercase tracking-[0.5em] font-bold mb-2">Systems Array Offline</div>
                     <div className="flex justify-end gap-1">
-                        {[1, 2, 3, 4, 5].map(i => (
+                        {mounted && [1, 2, 3, 4, 5].map(i => (
                             <motion.div
                                 key={i}
                                 animate={{ height: [4, Math.random() * 20 + 4, 4] }}

@@ -28,8 +28,9 @@ const INDIAN_STATES = [
 export default function CheckoutPage() {
     const router = useRouter();
     const [countdown, setCountdown] = useState(5);
-    const [paymentMethod, setPaymentMethod] = useState('upi');
+    const [paymentMethod, setPaymentMethod] = useState('razorpay');
     const [orderStatus, setOrderStatus] = useState<'idle' | 'processing' | 'success' | 'rejected'>('idle');
+    const [checkoutOrderId, setCheckoutOrderId] = useState<string | null>(null);
     const { userName } = useUI();
     const { items, clearCart, cartTotal } = useCart();
     const { settings } = useStoreSettings();
@@ -70,6 +71,28 @@ export default function CheckoutPage() {
         state: '',
         country: 'India'
     });
+
+    // Handle return from PhonePe
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        if (status === 'success') {
+            setOrderStatus('success');
+            clearCart();
+        } else if (status === 'failed') {
+            setOrderStatus('rejected');
+        }
+    }, []);
+
+    const loadRazorpay = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
 
     // OTP Auth State
     const [otpSent, setOtpSent] = useState(false);
@@ -506,12 +529,112 @@ export default function CheckoutPage() {
             } as any, finalTotal, paymentMethod, walletDiscount, appliedCoupon?.code, appliedCoupon?.discount);
 
             if (result.success) {
-                // Calculate Cashback (5% of Cart Total)
-                const cashback = parseFloat((cartTotal * 0.05).toFixed(2));
-                setLastOrderCashback(cashback);
+                const orderId = result.orderId;
 
-                clearCart();
-                setOrderStatus('success');
+                // Razorpay Flow
+                if (paymentMethod === 'razorpay') {
+                    const res = await loadRazorpay();
+                    if (!res) {
+                        toast.error("Razorpay SDK failed to load. Are you online?");
+                        setOrderStatus('rejected');
+                        return;
+                    }
+
+                    // Create Razorpay Order
+                    const rpRes = await fetch('/api/razorpay/create-order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: finalTotal, receipt: orderId })
+                    });
+                    const rpData = await rpRes.json();
+
+                    if (!rpRes.ok) {
+                        toast.error("Failed to initiate Razorpay.");
+                        setOrderStatus('rejected');
+                        return;
+                    }
+
+                    const options = {
+                        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'dummy_key',
+                        amount: rpData.order.amount,
+                        currency: rpData.order.currency,
+                        name: "Broncstudio",
+                        description: "Premium Purchase",
+                        image: "https://your-logo-url.com/logo.png", // Add your actual logo url later
+                        order_id: rpData.order.id,
+                        handler: async function (response: any) {
+                            // Verify Payment
+                            const verifyRes = await fetch('/api/razorpay/verify', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    orderId
+                                })
+                            });
+
+                            const verifyData = await verifyRes.json();
+                            if (verifyData.success) {
+                                // Calculate Cashback (5% of Cart Total)
+                                const cashback = parseFloat((cartTotal * 0.05).toFixed(2));
+                                setLastOrderCashback(cashback);
+
+                                clearCart();
+                                setOrderStatus('success');
+                            } else {
+                                toast.error("Payment verification failed.");
+                                setOrderStatus('rejected');
+                            }
+                        },
+                        prefill: {
+                            name: formData.name,
+                            email: formData.email,
+                            contact: formData.phone
+                        },
+                        theme: { color: "#1E2A38" }, // matches navy-900 approx
+                        modal: {
+                            ondismiss: function () {
+                                setOrderStatus('idle');
+                                toast.info("Payment was cancelled.");
+                            }
+                        }
+                    };
+
+                    const paymentObject = new (window as any).Razorpay(options);
+                    paymentObject.open();
+                }
+                // PhonePe Flow
+                else if (paymentMethod === 'phonepe') {
+                    const ppRes = await fetch('/api/phonepe/initiate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: finalTotal,
+                            transactionId: orderId,
+                            mobileNumber: formData.phone
+                        })
+                    });
+                    const ppData = await ppRes.json();
+
+                    if (ppRes.ok && ppData.url) {
+                        window.location.href = ppData.url; // Redirect to PhonePe
+                    } else {
+                        toast.error("Failed to initiate PhonePe payment.");
+                        setOrderStatus('rejected');
+                    }
+                }
+                // COD Flow
+                else {
+                    // Calculate Cashback (5% of Cart Total)
+                    const cashback = parseFloat((cartTotal * 0.05).toFixed(2));
+                    setLastOrderCashback(cashback);
+
+                    clearCart();
+                    setOrderStatus('success');
+                }
+
             } else {
                 console.error(result.error);
                 setOrderStatus('rejected');
@@ -841,20 +964,37 @@ export default function CheckoutPage() {
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div
-                                    onClick={() => setPaymentMethod('upi')}
-                                    className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'upi'
+                                    onClick={() => setPaymentMethod('razorpay')}
+                                    className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'razorpay'
                                         ? 'border-primary bg-surface-2'
                                         : 'border-subtle hover:border-primary/50'
                                         }`}
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
                                         <Wallet size={20} />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-primary">UPI / Online</p>
-                                        <p className="text-xs text-secondary">Pay securely</p>
+                                        <p className="font-bold text-primary">Razorpay</p>
+                                        <p className="text-xs text-secondary">Cards, UPI, Netbanking</p>
                                     </div>
-                                    {paymentMethod === 'upi' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
+                                    {paymentMethod === 'razorpay' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
+                                </div>
+
+                                <div
+                                    onClick={() => setPaymentMethod('phonepe')}
+                                    className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'phonepe'
+                                        ? 'border-primary bg-surface-2'
+                                        : 'border-subtle hover:border-primary/50'
+                                        }`}
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
+                                        <Wallet size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-primary">PhonePe</p>
+                                        <p className="text-xs text-secondary">UPI, Wallets</p>
+                                    </div>
+                                    {paymentMethod === 'phonepe' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
                                 </div>
 
                                 <div

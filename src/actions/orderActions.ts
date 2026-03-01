@@ -157,7 +157,7 @@ export async function createOrder(
             coupon_code: couponCode,
             discount_amount: discountAmount,
             status: 'pending',
-            payment_status: paymentMethod === 'upi' ? 'paid' : 'pending',
+            payment_status: paymentMethod === 'cod' ? 'pending' : (paymentMethod === 'wallet' && total === 0 ? 'paid' : 'pending'), // Online gets paid AFTER gateway verification.
             payment_method: paymentMethod,
             shipping_address: address,
         })

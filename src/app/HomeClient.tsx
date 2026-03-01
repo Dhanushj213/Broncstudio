@@ -32,10 +32,39 @@ const mapProduct = (p: any) => ({
   metadata: p.metadata,
 });
 
-export default function HomeClient() {
-  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
-  const [newArrivals, setNewArrivals] = useState<any[]>([]);
-  const [dropData, setDropData] = useState<any>(null);
+interface HomeClientProps {
+  initialNewArrivals?: any[];
+  initialFeaturedProducts?: any[];
+  initialDropData?: any;
+  initialHeroContent?: any;
+  initialSpecialCollections?: any[];
+  initialCuratedSections?: any[];
+  initialBentoData?: any[];
+}
+
+export default function HomeClient({
+  initialNewArrivals,
+  initialFeaturedProducts,
+  initialDropData,
+  initialHeroContent,
+  initialSpecialCollections,
+  initialCuratedSections,
+  initialBentoData
+}: HomeClientProps) {
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>(initialFeaturedProducts || []);
+  const [newArrivals, setNewArrivals] = useState<any[]>(initialNewArrivals || []);
+  const [dropData, setDropData] = useState<any>(initialDropData || null);
+  const [loading, setLoading] = useState({
+    newArrivals: !initialNewArrivals,
+    featured: !initialFeaturedProducts,
+    drop: !initialDropData
+  });
+  const [errors, setErrors] = useState<Record<string, boolean>>({
+    newArrivals: false,
+    featured: false,
+    drop: false
+  });
+
   const supabase = createClient();
   const { addToast } = useToast();
 
@@ -53,68 +82,143 @@ export default function HomeClient() {
   }, [addToast]);
 
   useEffect(() => {
-    async function fetchData() {
-      // Fetch New Arrivals (Manual Priority)
-      const { data: newProds } = await supabase
-        .from('products')
-        .select('*')
-        .contains('metadata', { is_new_arrival: true })
-        .limit(12);
-
-      if (newProds) {
-        setNewArrivals(newProds.map((p: any) => ({ ...mapProduct(p), badge: 'New' })));
+    async function fetchNewArrivals() {
+      if (initialNewArrivals && newArrivals.length > 0) {
+        setLoading(prev => ({ ...prev, newArrivals: false }));
+        return;
       }
+      try {
+        const fetchPromise = supabase
+          .from('products')
+          .select('*')
+          .contains('metadata', { is_new_arrival: true })
+          .limit(12);
 
-      // Fetch Featured (Random 25 or just general list)
-      // Since we don't have a 'featured' flag, we'll just take 25.
-      const { data: featProds } = await supabase
-        .from('products')
-        .select('*')
-        .contains('metadata', { is_featured: true })
-        .limit(28);
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+        );
 
-      if (featProds) {
-        setFeaturedProducts(featProds.map(mapProduct));
-      }
+        const { data: newProds, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
 
-      // Fetch Limited Drop
-      const { data: dropBlock } = await supabase
-        .from('content_blocks')
-        .select('content')
-        .eq('section_id', 'limited_drop')
-        .single();
-
-      if (dropBlock && dropBlock.content) {
-        setDropData(dropBlock.content);
+        if (error) throw error;
+        if (newProds) {
+          setNewArrivals(newProds.map((p: any) => ({ ...mapProduct(p), badge: 'New' })));
+        }
+      } catch (err: any) {
+        console.group('HomeClient: New Arrivals Fetch Error');
+        console.error('Error Object:', err);
+        console.error('Error Message:', err.message || 'No message');
+        console.error('Error Code:', err.code || 'No code');
+        console.groupEnd();
+        setErrors(prev => ({ ...prev, newArrivals: true }));
+      } finally {
+        setLoading(prev => ({ ...prev, newArrivals: false }));
       }
     }
-    fetchData();
+
+    async function fetchFeatured() {
+      if (initialFeaturedProducts && featuredProducts.length > 0) {
+        setLoading(prev => ({ ...prev, featured: false }));
+        return;
+      }
+      try {
+        const fetchPromise = supabase
+          .from('products')
+          .select('*')
+          .contains('metadata', { is_featured: true })
+          .limit(28);
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+        );
+
+        const { data: featProds, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+        if (error) throw error;
+        if (featProds) {
+          setFeaturedProducts(featProds.map(mapProduct));
+        }
+      } catch (err: any) {
+        console.group('HomeClient: Featured Products Fetch Error');
+        console.error('Error Object:', err);
+        console.error('Error Message:', err.message || 'No message');
+        console.error('Error Code:', err.code || 'No code');
+        console.groupEnd();
+        setErrors(prev => ({ ...prev, featured: true }));
+      } finally {
+        setLoading(prev => ({ ...prev, featured: false }));
+      }
+    }
+
+    async function fetchDropData() {
+      if (initialDropData) {
+        setLoading(prev => ({ ...prev, drop: false }));
+        return;
+      }
+      try {
+        const fetchPromise = supabase
+          .from('content_blocks')
+          .select('content')
+          .eq('section_id', 'limited_drop')
+          .single();
+
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+        );
+
+        const { data: dropBlock, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+        if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found" which is fine
+        if (dropBlock && dropBlock.content) {
+          setDropData(dropBlock.content);
+        }
+      } catch (err: any) {
+        console.group('HomeClient: Drop Data Fetch Error');
+        console.error('Error Object:', err);
+        console.error('Error Message:', err.message || 'No message');
+        console.error('Error Code:', err.code || 'No code');
+        console.groupEnd();
+        setErrors(prev => ({ ...prev, drop: true }));
+      } finally {
+        setLoading(prev => ({ ...prev, drop: false }));
+      }
+    }
+
+    fetchNewArrivals();
+    fetchFeatured();
+    fetchDropData();
   }, []);
 
   return (
     <main className="min-h-screen overflow-x-hidden">
       <AmbientBackground />
 
-      <HeroVideo />
+      <HeroVideo initialData={initialHeroContent} />
 
       {/* Department BentoGrid */}
       <div id="worlds" className="relative pt-6 pb-4 text-center scroll-mt-[var(--header-height)]">
         <h1 className="text-3xl font-cursive md:font-sans md:text-sm md:font-bold md:tracking-[0.2em] md:uppercase text-[#891d12] mb-4 animate-fade-in-up">
           Shop By Categories
         </h1>
-        <DepartmentBentoGrid />
+        <DepartmentBentoGrid initialData={initialBentoData} />
       </div>
 
       {/* Special Collections Edge Rail */}
-      <SpecialCollectionsRail />
+      <SpecialCollectionsRail initialData={initialSpecialCollections} />
 
       {/* New Arrivals Section */}
-      {newArrivals.length > 0 && (
+      {(loading.newArrivals || newArrivals.length > 0) && (
         <MasonryProductGrid
           products={newArrivals}
           title="Fresh Drops"
           subtitle="Get them before they're gone."
+          loading={loading.newArrivals}
         />
+      )}
+      {errors.newArrivals && !loading.newArrivals && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Could not load fresh drops at this time.</p>
+        </div>
       )}
 
       {/* Limited Edition Drop Section */}
@@ -123,13 +227,23 @@ export default function HomeClient() {
       )}
 
       {/* Featured Collection - Masonry Layout */}
-      <MasonryProductGrid products={featuredProducts} />
+      {(loading.featured || featuredProducts.length > 0) && (
+        <MasonryProductGrid
+          products={featuredProducts}
+          loading={loading.featured}
+        />
+      )}
+      {errors.featured && !loading.featured && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">Our featured collection is temporarily unavailable.</p>
+        </div>
+      )}
 
       {/* Unified Curated Grid (Mobile & Desktop) */}
-      <CuratedGrid />
+      <CuratedGrid initialData={initialCuratedSections} />
 
       {/* Discover More / Random Feed */}
-      <DiscoverMore />
+      <DiscoverMore initialData={[]} />
 
       {/* Premium Features / Trust Signals */}
       <section className="py-16 px-6">

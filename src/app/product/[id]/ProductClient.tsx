@@ -115,7 +115,7 @@ export default function ProductClient() {
     const handleAddFromSticky = () => {
         if (!product) return;
         addToCart(product, product.metadata?.sizes?.[0] || 'Default');
-        addToast(`${product.name} added to your bag!`, 'success');
+        addToast(`${product.name} added to cart successfully`, 'success');
     };
 
     const handleBuyNow = () => {

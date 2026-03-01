@@ -114,7 +114,7 @@ export default function ProductCard(props: ProductProps) {
                             e.stopPropagation();
                             if (!props.is_sold_out && badge !== 'Sold Out') {
                                 addToCart(props, "One Size");
-                                addToast(`${name} added to Bag!`);
+                                addToast(`${name} added to cart successfully`, 'success');
                             }
                         }}
                         className={clsx(
@@ -174,6 +174,23 @@ export default function ProductCard(props: ProductProps) {
                             </span>
                         </>
                     )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function ProductCardSkeleton() {
+    return (
+        <div className="bg-white dark:bg-navy-800 rounded-lg overflow-hidden border border-gray-100 dark:border-white/5 animate-pulse h-full">
+            <div className="relative bg-gray-200 dark:bg-white/10 w-full" style={{ aspectRatio: '3/4' }} />
+            <div className="p-4 space-y-3">
+                <div className="h-2 w-12 bg-gray-200 dark:bg-white/10 rounded" />
+                <div className="h-4 w-full bg-gray-200 dark:bg-white/10 rounded" />
+                <div className="h-4 w-2/3 bg-gray-200 dark:bg-white/10 rounded" />
+                <div className="flex gap-2">
+                    <div className="h-6 w-16 bg-gray-200 dark:bg-white/10 rounded" />
+                    <div className="h-6 w-12 bg-gray-200 dark:bg-white/10 rounded" />
                 </div>
             </div>
         </div>

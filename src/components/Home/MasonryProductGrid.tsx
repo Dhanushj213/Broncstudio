@@ -1,16 +1,40 @@
 'use client';
 
 import React from 'react';
-import ProductCard from '@/components/Product/ProductCard';
+import ProductCard, { ProductCardSkeleton } from '@/components/Product/ProductCard';
 import { motion } from 'framer-motion';
 
 interface MasonryProductGridProps {
     products: any[];
     title?: string;
     subtitle?: string;
+    loading?: boolean;
 }
 
-export default function MasonryProductGrid({ products, title = "Featured Collection", subtitle = "Our most loved pieces." }: MasonryProductGridProps) {
+export default function MasonryProductGrid({
+    products,
+    title = "Featured Collection",
+    subtitle = "Our most loved pieces.",
+    loading = false
+}: MasonryProductGridProps) {
+    if (loading) {
+        return (
+            <section className="pt-8 pb-16 md:pt-12 md:pb-24 px-4 bg-transparent dark:bg-black">
+                <div className="container-premium max-w-[1440px] mx-auto">
+                    <div className="text-center mb-12">
+                        <div className="h-10 w-64 bg-gray-200 dark:bg-white/10 mx-auto rounded mb-4 animate-pulse" />
+                        <div className="h-6 w-96 bg-gray-200 dark:bg-white/10 mx-auto rounded animate-pulse" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {[...Array(8)].map((_, i) => (
+                            <ProductCardSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
     if (!products || products.length === 0) return null;
 
     return (

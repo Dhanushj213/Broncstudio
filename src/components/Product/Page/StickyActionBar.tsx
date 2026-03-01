@@ -41,6 +41,7 @@ export default function StickyActionBar({ product, selectedSize, selectedColor, 
     const handleAddToCart = () => {
         if (isOutOfStock) return;
         addToCart({ ...product, color: selectedColor }, selectedSize);
+        addToast(`${product.name} added to cart successfully`, 'success');
     };
 
     const toggleWishlist = () => {

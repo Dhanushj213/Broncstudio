@@ -115,7 +115,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             return;
         }
         addToCart({ ...product, color: selectedColor }, selectedSize);
-        addToast(`${quantity} x ${product.name} added to bag`, 'success');
+        addToast(`${product.name} added to cart successfully`, 'success');
     };
 
     const handleBuyNow = () => {

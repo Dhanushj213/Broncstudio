@@ -7,31 +7,43 @@ import ProductCard from '@/components/Product/ProductCard';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function DiscoverMore() {
-    const [products, setProducts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function DiscoverMore({ initialData }: { initialData?: any[] }) {
+    const [products, setProducts] = useState<any[]>(initialData || []);
+    const [loading, setLoading] = useState(!initialData);
+    const [error, setError] = useState(false);
     const supabase = createClient();
 
-    useEffect(() => {
-        const fetchAllProducts = async () => {
-            setLoading(true);
+    const fetchAllProducts = async () => {
+        if (initialData && products.length > 0) {
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        setError(false);
 
-            // Fetch a larger batch of products to shuffle
-            const { data, error } = await supabase
+        try {
+            const fetchPromise = supabase
                 .from('products')
                 .select('*')
-                .limit(50); // Reasonable limit for performance
+                .limit(50);
 
-            if (error) {
-                console.error('DiscoverMore Fetch Error:', error);
-                setLoading(false);
-                return;
-            }
+            const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+            );
 
-            if (data) {
-                // Shuffle logic
+            const { data, error: fetchError } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+            if (fetchError) {
+                console.group('DiscoverMore Fetch Error');
+                console.error('Error Object:', fetchError);
+                console.error('Error Message:', fetchError.message || 'No message');
+                console.error('Error Code:', fetchError.code || 'No code');
+                console.groupEnd();
+
+                setError(true);
+                setProducts([]);
+            } else if (data) {
                 const shuffled = [...data].sort(() => Math.random() - 0.5);
-
                 setProducts(shuffled.map((p: any) => ({
                     id: p.id,
                     name: p.name,
@@ -39,13 +51,19 @@ export default function DiscoverMore() {
                     price: p.price,
                     originalPrice: p.compare_at_price,
                     image: p.images?.[0] || '/images/placeholder.jpg',
-                    images: p.images || [], // Pass full images array
+                    images: p.images || [],
                     badge: p.stock_status === 'out_of_stock' ? 'Sold Out' : undefined
                 })));
             }
+        } catch (err) {
+            console.error('Unexpected error in DiscoverMore:', err);
+            setError(true);
+        } finally {
             setLoading(false);
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchAllProducts();
     }, []);
 
@@ -64,19 +82,41 @@ export default function DiscoverMore() {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
-                    {products.map((product, idx) => (
-                        <motion.div
-                            key={product.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.05, duration: 0.5 }}
+                {loading ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+                        {[...Array(10)].map((_, i) => (
+                            <div key={i} className="animate-pulse">
+                                <div className="aspect-[3/4] bg-gray-200 dark:bg-white/10 rounded-lg mb-4" />
+                                <div className="h-4 w-3/4 bg-gray-200 dark:bg-white/10 rounded mb-2" />
+                                <div className="h-4 w-1/2 bg-gray-200 dark:bg-white/10 rounded" />
+                            </div>
+                        ))}
+                    </div>
+                ) : error ? (
+                    <div className="text-center py-12 bg-white/5 backdrop-blur-sm rounded-[32px] border border-white/10">
+                        <p className="text-gray-500 mb-6">We couldn't load more products right now.</p>
+                        <button
+                            onClick={() => fetchAllProducts()}
+                            className="inline-flex items-center gap-2 bg-navy-900 dark:bg-white text-white dark:text-black px-8 py-3 rounded-full font-bold uppercase tracking-widest hover:opacity-90 transition-transform hover:scale-105 shadow-md"
                         >
-                            <ProductCard {...product} />
-                        </motion.div>
-                    ))}
-                </div>
+                            Try Again
+                        </button>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-12">
+                        {products.map((product, idx) => (
+                            <motion.div
+                                key={product.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.05, duration: 0.5 }}
+                            >
+                                <ProductCard {...product} />
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
 
                 <div className="mt-16 text-center">
                     <Link href="/shop/all" className="inline-flex items-center gap-2 bg-white text-black px-12 py-4 rounded-[18px] font-bold uppercase tracking-widest hover:bg-white/90 transition-transform hover:scale-105 shadow-[0_10px_25px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.8)] group">

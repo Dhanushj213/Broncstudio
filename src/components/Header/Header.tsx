@@ -39,7 +39,11 @@ export default function Header() {
         });
 
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 20);
+            const shouldBeScrolled = window.scrollY > 20;
+            setIsScrolled((prev) => {
+                if (prev !== shouldBeScrolled) return shouldBeScrolled;
+                return prev;
+            });
         };
         window.addEventListener('scroll', handleScroll);
 

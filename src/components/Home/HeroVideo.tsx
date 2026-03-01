@@ -34,48 +34,71 @@ const CATEGORIES = [
     { name: 'Pets', icon: Dog, link: '/shop/pets' },
 ];
 
-export default function HeroVideo() {
-    const [content, setContent] = useState<HeroContent>({
+export default function HeroVideo({ initialData }: { initialData?: any }) {
+    const [content, setContent] = useState<HeroContent>(initialData || {
         type: 'video',
-        video_url: '',
-        poster_url: '',
+        video_url: 'https://cdn.pixabay.com/vimeo/327323602/luxury-fashion-advertising-video-327323602.mp4?width=1280&hash=8b58a1f8b4c5d5e5e5e5e5e5e5e5e5e5e5e5e5e5', // Generic fashion fallback
+        poster_url: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=2000', // Premium retail fallback
         images: [],
         mobile_images: [],
-        heading: '',
-        subheading: '',
+        heading: 'Elegance Redefined',
+        subheading: 'BroncStudio Premium',
         button_text: 'Shop Now',
         button_link: '/shop/new-arrivals'
     });
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(!initialData);
     const [isMobile, setIsMobile] = useState(false);
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const fetchContent = async () => {
+            if (initialData) {
+                setIsLoading(false);
+                return;
+            }
+
             const supabase = createBrowserClient(
                 process.env.NEXT_PUBLIC_SUPABASE_URL!,
                 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
             );
 
-            const { data } = await supabase
-                .from('content_blocks')
-                .select('content')
-                .eq('section_id', 'hero_main')
-                .single();
+            try {
+                // Add a timeout to prevent indefinite hanging
+                const fetchPromise = supabase
+                    .from('content_blocks')
+                    .select('content')
+                    .eq('section_id', 'hero_main')
+                    .single();
 
-            if (data && data.content) {
-                // Merge with defaults to ensure safety
-                setContent(prev => ({
-                    ...prev,
-                    ...data.content,
-                    // Fallbacks for legacy data
-                    type: data.content.type || 'video',
-                    images: data.content.images || prev.images,
-                    mobile_images: data.content.mobile_images || data.content.images || prev.mobile_images
-                }));
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+                );
+
+                const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+                if (error && error.code !== 'PGRST116') throw error;
+
+                if (data && data.content) {
+                    // Merge with defaults to ensure safety
+                    setContent(prev => ({
+                        ...prev,
+                        ...data.content,
+                        // Fallbacks for legacy data
+                        type: data.content.type || 'video',
+                        images: data.content.images || prev.images,
+                        mobile_images: data.content.mobile_images || data.content.images || prev.mobile_images
+                    }));
+                }
+            } catch (err: any) {
+                console.group('HeroVideo Fetch Error');
+                console.error('Error Object:', err);
+                console.error('Error Message:', err.message || 'No message');
+                console.error('Error Code:', err.code || 'No code');
+                console.groupEnd();
+            } finally {
+                setIsLoading(false);
             }
-            setIsLoading(false);
         };
 
         fetchContent();

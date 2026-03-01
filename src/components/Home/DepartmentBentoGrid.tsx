@@ -117,13 +117,17 @@ const DEFAULT_TILES: BentoTile[] = [
     }
 ];
 
-export default function DepartmentBentoGrid() {
-    const [tiles, setTiles] = useState<BentoTile[]>([]);
-    const [loading, setLoading] = useState(true);
+export default function DepartmentBentoGrid({ initialData }: { initialData?: BentoTile[] }) {
+    const [tiles, setTiles] = useState<BentoTile[]>(initialData || []);
+    const [loading, setLoading] = useState(!initialData);
     const supabase = createClient();
 
     useEffect(() => {
         async function fetchTiles() {
+            if (initialData) {
+                setLoading(false);
+                return;
+            }
             try {
                 const { data, error } = await supabase
                     .from('content_blocks')
@@ -136,8 +140,12 @@ export default function DepartmentBentoGrid() {
                 } else {
                     setTiles(DEFAULT_TILES);
                 }
-            } catch (err) {
-                console.error('Error fetching bento grid tiles:', err);
+            } catch (err: any) {
+                console.group('DepartmentBentoGrid Fetch Error');
+                console.error('Error Object:', err);
+                console.error('Error Message:', err.message || 'No message');
+                console.error('Error Code:', err.code || 'No code');
+                console.groupEnd();
                 setTiles(DEFAULT_TILES);
             } finally {
                 setLoading(false);

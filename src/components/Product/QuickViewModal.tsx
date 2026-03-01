@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useUI } from '@/context/UIContext';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { X, ShoppingBag, Check, AlertCircle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -15,6 +16,7 @@ export default function QuickViewModal() {
     const router = useRouter();
     const { quickViewProduct, closeQuickView, formatPrice, userName } = useUI();
     const { addToCart } = useCart();
+    const { addToast } = useToast();
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [selectedColor, setSelectedColor] = useState<string>('');
     const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -57,6 +59,9 @@ export default function QuickViewModal() {
         }
 
         addToCart({ ...product, color: selectedColor }, selectedSize);
+        if (product) {
+            addToast(`${product.name} added to cart successfully`, 'success');
+        }
         closeQuickView();
     };
 

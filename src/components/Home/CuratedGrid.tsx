@@ -14,22 +14,58 @@ interface CuratedSection {
     category_slugs?: string[];
 }
 
-export default function CuratedGrid() {
-    const [sections, setSections] = useState<CuratedSection[]>([]);
+export default function CuratedGrid({ initialData }: { initialData?: CuratedSection[] }) {
+    const [sections, setSections] = useState<CuratedSection[]>(initialData || []);
+    const [loading, setLoading] = useState(!initialData);
     const supabase = createClient();
 
     useEffect(() => {
         const fetchSections = async () => {
-            const { data } = await supabase
-                .from('curated_sections')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true });
+            if (initialData) {
+                setLoading(false);
+                return;
+            }
+            try {
+                const fetchPromise = supabase
+                    .from('curated_sections')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('display_order', { ascending: true });
 
-            if (data) setSections(data);
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Fetch timeout')), 60000)
+                );
+
+                const { data } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+                if (data) setSections(data);
+            } catch (err: any) {
+                console.group('CuratedGrid Fetch Error');
+                console.error('Error Object:', err);
+                console.error('Error Message:', err.message || 'No message');
+                console.error('Error Code:', err.code || 'No code');
+                console.groupEnd();
+            } finally {
+                setLoading(false);
+            }
         };
         fetchSections();
     }, []);
+
+    if (loading) {
+        return (
+            <section className="pt-12 md:pt-20 pb-0 md:pb-0 px-4 md:px-8 bg-white dark:bg-black/5">
+                <div className="max-w-[1440px] mx-auto">
+                    <div className="h-8 w-48 bg-gray-200 dark:bg-white/10 mx-auto rounded mb-10 animate-pulse" />
+                    <div className="flex overflow-x-auto gap-4 pb-8 md:gap-6 no-scrollbar">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="flex-shrink-0 w-[45vw] md:w-[320px] aspect-[4/5] bg-gray-200 dark:bg-white/10 rounded-[20px] md:rounded-[32px] animate-pulse" />
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
     if (sections.length === 0) return null;
 
