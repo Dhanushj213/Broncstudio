@@ -1,12 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Server-side only Supabase client using Service Role
-// This bypasses RLS and should NEVER be exposed to the client
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export interface PaymentSettings {
     razorpay_active: boolean;
     razorpay_key_id: string | null;
@@ -25,6 +18,15 @@ export interface PaymentSettings {
  */
 export async function getPaymentSettings(): Promise<PaymentSettings> {
     try {
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!url || !key) {
+            throw new Error("Missing Supabase credentials during build/runtime.");
+        }
+
+        const supabaseAdmin = createClient(url, key);
+
         const { data, error } = await supabaseAdmin
             .from('payment_settings')
             .select('*')
