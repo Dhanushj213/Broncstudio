@@ -1,17 +1,29 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
+import { getPaymentSettings } from '@/utils/paymentSettings';
 
 export async function POST(req: Request) {
     try {
         const { amount, receipt } = await req.json();
 
-        // 1. Initialize Razorpay instance
+        // 1. Fetch secure gateway settings
+        const settings = await getPaymentSettings();
+
+        if (!settings.razorpay_active) {
+            return NextResponse.json({ error: 'Razorpay is currently disabled.' }, { status: 403 });
+        }
+
+        if (!settings.razorpay_key_id || !settings.razorpay_key_secret) {
+            return NextResponse.json({ error: 'Razorpay keys are not configured.' }, { status: 500 });
+        }
+
+        // 2. Initialize Razorpay instance
         const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key',
-            key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
+            key_id: settings.razorpay_key_id,
+            key_secret: settings.razorpay_key_secret,
         });
 
-        // 2. Create Order in Razorpay
+        // 3. Create Order in Razorpay
         // Amount should be in paise (e.g., 100 INR = 10000 paise)
         const options = {
             amount: Math.round(amount * 100),

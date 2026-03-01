@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+import { getPaymentSettings } from '@/utils/paymentSettings';
 
 export async function POST(req: Request) {
     try {
@@ -12,7 +13,13 @@ export async function POST(req: Request) {
         } = await req.json();
 
         // 1. Verify Signature
-        const secret = process.env.RAZORPAY_KEY_SECRET || 'dummy_secret';
+        const settings = await getPaymentSettings();
+        const secret = settings.razorpay_key_secret;
+
+        if (!secret) {
+            return NextResponse.json({ error: 'Razorpay secret is not configured.' }, { status: 500 });
+        }
+
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
         const expectedSignature = crypto

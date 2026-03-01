@@ -1,19 +1,32 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+import { getPaymentSettings } from '@/utils/paymentSettings';
 
 export async function POST(req: Request) {
     try {
-        const formData = await req.formData();
-        const code = formData.get('code') as string;
-        const merchantId = formData.get('merchantId') as string;
-        const transactionId = formData.get('transactionId') as string;
+        const urlRequest = new URL(req.url);
+        // Sometimes PhonePe sends data as form-urlencoded base64, sometimes JSON.
+        // Handling both requires parsing body. For now, assuming standard s2s callback
+        const bodyText = await req.text();
+        const bodyObj = JSON.parse(bodyText);
+
         // In some flows, response comes as body, in redirect it comes as form data
+        // For now, assuming merchantId and transactionId are part of the body for S2S callback
+        const merchantId = bodyObj.merchantId as string;
+        const transactionId = bodyObj.transactionId as string;
+        const code = bodyObj.code as string; // Assuming code is also in the body if needed
 
         // We need to verify status with S2S call
-        const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
-        const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
-        const env = process.env.PHONEPE_ENV || 'UAT';
+        const settings = await getPaymentSettings();
+
+        const saltKey = settings.phonepe_salt_key;
+        const saltIndex = settings.phonepe_salt_index || '1';
+        const env = settings.phonepe_env || 'UAT';
+
+        if (!saltKey) {
+            return NextResponse.json({ error: 'PhonePe keys not configured.' }, { status: 500 });
+        }
 
         const baseUrl = env === 'PROD'
             ? 'https://api.phonepe.com/apis/hermes'

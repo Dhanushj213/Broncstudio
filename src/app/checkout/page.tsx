@@ -29,6 +29,7 @@ export default function CheckoutPage() {
     const router = useRouter();
     const [countdown, setCountdown] = useState(5);
     const [paymentMethod, setPaymentMethod] = useState('razorpay');
+    const [paymentConfig, setPaymentConfig] = useState({ razorpay_active: false, phonepe_active: false });
     const [orderStatus, setOrderStatus] = useState<'idle' | 'processing' | 'success' | 'rejected'>('idle');
     const [checkoutOrderId, setCheckoutOrderId] = useState<string | null>(null);
     const { userName } = useUI();
@@ -82,6 +83,28 @@ export default function CheckoutPage() {
         } else if (status === 'failed') {
             setOrderStatus('rejected');
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchPaymentConfig = async () => {
+            try {
+                const res = await fetch('/api/payment/config');
+                const data = await res.json();
+                setPaymentConfig(data);
+
+                // Set default payment method based on what's active
+                if (data.razorpay_active) {
+                    setPaymentMethod('razorpay');
+                } else if (data.phonepe_active) {
+                    setPaymentMethod('phonepe');
+                } else {
+                    setPaymentMethod('cod');
+                }
+            } catch (err) {
+                console.error("Failed to fetch payment config:", err);
+            }
+        };
+        fetchPaymentConfig();
     }, []);
 
     const loadRazorpay = () => {
@@ -963,39 +986,43 @@ export default function CheckoutPage() {
                                 Payment Method
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div
-                                    onClick={() => setPaymentMethod('razorpay')}
-                                    className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'razorpay'
-                                        ? 'border-primary bg-surface-2'
-                                        : 'border-subtle hover:border-primary/50'
-                                        }`}
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                                        <Wallet size={20} />
+                                {paymentConfig.razorpay_active && (
+                                    <div
+                                        onClick={() => setPaymentMethod('razorpay')}
+                                        className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'razorpay'
+                                            ? 'border-primary bg-surface-2'
+                                            : 'border-subtle hover:border-primary/50'
+                                            }`}
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                            <Wallet size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-primary">Razorpay</p>
+                                            <p className="text-xs text-secondary">Cards, UPI, Netbanking</p>
+                                        </div>
+                                        {paymentMethod === 'razorpay' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-primary">Razorpay</p>
-                                        <p className="text-xs text-secondary">Cards, UPI, Netbanking</p>
-                                    </div>
-                                    {paymentMethod === 'razorpay' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
-                                </div>
+                                )}
 
-                                <div
-                                    onClick={() => setPaymentMethod('phonepe')}
-                                    className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'phonepe'
-                                        ? 'border-primary bg-surface-2'
-                                        : 'border-subtle hover:border-primary/50'
-                                        }`}
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
-                                        <Wallet size={20} />
+                                {paymentConfig.phonepe_active && (
+                                    <div
+                                        onClick={() => setPaymentMethod('phonepe')}
+                                        className={`cursor-pointer p-4 rounded-xl border-2 flex items-center gap-4 transition-all ${paymentMethod === 'phonepe'
+                                            ? 'border-primary bg-surface-2'
+                                            : 'border-subtle hover:border-primary/50'
+                                            }`}
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center">
+                                            <Wallet size={20} />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-primary">PhonePe</p>
+                                            <p className="text-xs text-secondary">UPI, Wallets</p>
+                                        </div>
+                                        {paymentMethod === 'phonepe' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-primary">PhonePe</p>
-                                        <p className="text-xs text-secondary">UPI, Wallets</p>
-                                    </div>
-                                    {paymentMethod === 'phonepe' && <CheckCircle2 className="ml-auto text-primary" size={20} />}
-                                </div>
+                                )}
 
                                 <div
                                     onClick={() => {

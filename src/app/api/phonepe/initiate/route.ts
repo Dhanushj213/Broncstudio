@@ -1,14 +1,25 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { getPaymentSettings } from '@/utils/paymentSettings';
 
 export async function POST(req: Request) {
     try {
         const { amount, transactionId, mobileNumber } = await req.json();
 
-        const merchantId = process.env.PHONEPE_MERCHANT_ID || 'PGTESTPAYUAT';
-        const saltKey = process.env.PHONEPE_SALT_KEY || '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
-        const saltIndex = process.env.PHONEPE_SALT_INDEX || '1';
-        const env = process.env.PHONEPE_ENV || 'UAT';
+        const settings = await getPaymentSettings();
+
+        if (!settings.phonepe_active) {
+            return NextResponse.json({ error: 'PhonePe is currently disabled.' }, { status: 403 });
+        }
+
+        const merchantId = settings.phonepe_merchant_id;
+        const saltKey = settings.phonepe_salt_key;
+        const saltIndex = settings.phonepe_salt_index || '1';
+        const env = settings.phonepe_env || 'UAT';
+
+        if (!merchantId || !saltKey) {
+            return NextResponse.json({ error: 'PhonePe keys are not configured.' }, { status: 500 });
+        }
 
         const baseUrl = env === 'PROD'
             ? 'https://api.phonepe.com/apis/hermes'
