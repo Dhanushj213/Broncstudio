@@ -1,6 +1,7 @@
 export const ADMIN_EMAILS = [
     'jdhanush213@gmail.com', // User confirmed email
     'monikacn15@gmail.com', // Added admin
+    'mohanreddymr0201@gmail.com', // Added admin
     'admin@broncstudio.com',
     'demo@broncstudio.com' // For testing if needed
 ];
